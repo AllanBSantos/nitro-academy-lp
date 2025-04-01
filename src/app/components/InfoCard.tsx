@@ -82,7 +82,13 @@ const InfoCard: FC<InfoCardProps> = ({
         {classModel && <p>{classModel}</p>}
         {target && <p>{target}</p>}
         {requirements && <p>{requirements}</p>}
-        {projects && <p>{projects}</p>}
+        {projects && (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: projects.replace(/\n/g, "<br />"),
+            }}
+          />
+        )}
         {homework && <p>{homework}</p>}
         {highlight && <p>{highlight}</p>}
         {additionalInfo && <p>{additionalInfo}</p>}
