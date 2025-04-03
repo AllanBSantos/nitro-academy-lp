@@ -1,33 +1,33 @@
 {
-  "TeenGuy":{
-    "Transforme":"Turn",
-    "tempo livre":"free time",
-    "em talento":"into talent"
+  "TeenGuy": {
+    "Transforme": "Turn",
+    "tempo livre": "free time",
+    "em talento": "into talent"
   },
-  "Introduction":{
-    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 15 anos através de projetos práticos e estimulantes orientados por mentores experientes":"Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 15 through practical and stimulating projects guided by experienced mentors"
+  "Introduction": {
+    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 15 anos através de projetos práticos e estimulantes orientados por mentores experientes": "Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 15 through practical and stimulating projects guided by experienced mentors"
   },
-  "MiniUniversity":{
-    "Uma mini universidade":"A mini university",
-    "Escolha suas matérias a cada semestre":"Choose your subjects each semester",
-    "Aprenda o que realmente interessa":"Learn what really matters",
-    "Aulas 100% online, interativas e ao vivo":"100% online, interactive, and live classes"
+  "MiniUniversity": {
+    "Uma mini universidade": "A mini university",
+    "Escolha suas matérias a cada semestre": "Choose your subjects each semester",
+    "Aprenda o que realmente interessa": "Learn what really matters",
+    "Aulas 100% online, interativas e ao vivo": "100% online, interactive, and live classes"
   },
-  "ChildGirl":{
-    "Mentores incríveis e metodologia baseada em projetos":"Incredible mentors and project-based methodology"
+  "ChildGirl": {
+    "Mentores incríveis e metodologia baseada em projetos": "Incredible mentors and project-based methodology"
   },
-  "HaveYouImagined":{
+  "HaveYouImagined": {
     "Já imaginou criar sua própria fragrância natural ou fazer sua primeira venda na internet? Na Nitro Academy, a vocação nasce na prática": "Have you ever imagined creating your own natural fragrance or making your first online sale? At Nitro Academy, vocation is born through practice",
     "Descubra quem você nasceu para ser!": "Uncover your true self!"
   },
-  "OurApproach":{
-    "Nossa abordagem é centrada no aluno":"Our approach is student-centered",
-    "Com projetos práticos, aplicamos conhecimentos em desafios reais, como criar um negócio sustentável ou programar um jogo educativo":"Through practical projects, we apply knowledge to real-world challenges, such as creating a sustainable business or programming an educational game"
+  "OurApproach": {
+    "Nossa abordagem é centrada no aluno": "Our approach is student-centered",
+    "Com projetos práticos, aplicamos conhecimentos em desafios reais, como criar um negócio sustentável ou programar um jogo educativo": "Through practical projects, we apply knowledge to real-world challenges, such as creating a sustainable business or programming an educational game"
   },
-  "TeenGirl":{
-    "Turmas pequenas, projetos divertidos e mentores que são referência":"Small groups, engaging projects, and expert mentors"
+  "TeenGirl": {
+    "Turmas pequenas, projetos divertidos e mentores que são referência": "Small groups, engaging projects, and expert mentors"
   },
- "Carousel":{
+  "Carousel": {
     "Estagiando com uma Youtuber": "Interning with a YouTuber",
     "Mergulhe no universo do YouTube e aprenda como transformar suas ideias em vídeos incríveis! Descubra como planejar, gravar e editar conteúdos envolventes, além de entender estratégias para crescer no digital No final, você publicará seu próprio vídeo sobre o uso do tempo dos adolescentes!": "Dive into the world of YouTube and learn how to turn your ideas into amazing videos! Discover how to plan, record, and edit engaging content, as well as understand strategies to grow digitally. In the end, you will publish your own video about how teenagers use their time!",
     "Explorando a Ciência ao Seu Redor": "Exploring the Science Around You",
@@ -44,9 +44,9 @@
     "Você já imaginou criar um perfume que seja só seu? Neste curso, você vai aprender com especialistas como extrair aromas das plantas que você pode encontrar na sua região, entender os efeitos terapêuticos dos cheiros e criar fragrâncias únicas que podem até ajudar no bem-estar": "Have you ever imagined creating a perfume that is uniquely yours? In this course, you will learn from experts how to extract scents from plants found in your region, understand the therapeutic effects of fragrances, and create unique scents that can even promote well-being.",
     "Produção de Vídeo com IA": "AI Video Production",
     "E se você pudesse usar inteligência artificial para criar vídeos incríveis de forma mais rápida e criativa? Neste curso, você vai explorar ferramentas de IA para roteirizar, editar e até gerar cenas automaticamente! Aprenda a transformar suas ideias em produções impressionantes, combinando criatividade com tecnologia de ponta": "What if you could use artificial intelligence to create amazing videos faster and more creatively? In this course, you will explore AI tools to script, edit, and even generate scenes automatically! Learn how to turn your ideas into impressive productions by combining creativity with cutting-edge technology.",
-    "Descrição do curso":"Course overview",
+    "Descrição do curso": "Course overview",
     "Escolha um projeto": "Choose a project",
-    "Saiba mais":"Find out more",
+    "Saiba mais": "Find out more",
     "Aprendendo a Dublar Personagens": "Learning to Voice Act Characters",
     "Já imaginou emprestar sua voz para personagens incríveis? Neste curso, você mergulhará no universo da dublagem de animação, aprendendo técnicas para interpretar diferentes vozes, dar emoção às falas e sincronizar com os movimentos dos personagens Prepare-se para criar e dublar cenas, experimentando o poder da sua voz para contar histórias!": "Have you ever imagined lending your voice to incredible characters? In this course, you'll dive into the world of animation voice acting, learning techniques to interpret different voices, add emotion to lines, and synchronize with character movements. Get ready to create and voice scenes, experiencing the power of your voice to tell stories!",
     "Wellness Lab: Saúde e Beleza": "Wellness Lab: Health and Beauty",
@@ -58,46 +58,46 @@
     "Futemática: o Segredo do Gol": "Futematics: The Secret of the Goal",
     "Você sabia que Neymar entende de matemática? Mas não é a matemática que você está pensando! Neste curso, você vai descobrir qual O Pep Guardiola acabou com a magia do futebol porque ele trouxe matemática pro negócio Você quer resgatar a magia ou vencer a partida? Independente do objetivo, o caminho é um só: tÁTICA, matemÁTICA": "Did you know that Neymar understands mathematics? But it's not the math you're thinking of! In this course, you will discover what Pep Guardiola ended the magic of football because he brought mathematics to the business. Do you want to rescue the magic or win the match? Regardless of the goal, the path is one: TACTICS, MATHEMATICS."
   },
-  "WhyChooseNitro":{
-    "Turmas reduzidas (máximo 10 alunos)":"Small groups (max 10 students)",
-    "Ensino personalizado":"Individualized instruction",
-    "Desenvolvimento de habilidades do século XXI":"Development of 21st-century skills",
-    "Flexibilidade de horários":"Flexible schedules",
-    "Professores de alto nível":"Highly qualified teachers",
-    "Uso produtivo do tempo livre":"Productive use of free time",
-    "Por que escolher a Nitro?":"Why choose Nitro?"
+  "WhyChooseNitro": {
+    "Turmas reduzidas (máximo 10 alunos)": "Small groups (max 10 students)",
+    "Ensino personalizado": "Individualized instruction",
+    "Desenvolvimento de habilidades do século XXI": "Development of 21st-century skills",
+    "Flexibilidade de horários": "Flexible schedules",
+    "Professores de alto nível": "Highly qualified teachers",
+    "Uso produtivo do tempo livre": "Productive use of free time",
+    "Por que escolher a Nitro?": "Why choose Nitro?"
   },
-  "Perks":{
-    "Flexibilidade":"Flexibility",
-    "Pagamento por matéria, horários adaptáveis e acesso nacional":"Payment per subject, adaptable schedules, and national access.",
-    "Metodologia Inovadora":"Innovative Methodology",
-    "Projetos estimulantes em áreas de interesse do aluno":"Stimulating projects in areas of student interest.",
-    "Foco no Futuro":"Future-focused",
-    "Preparação para vida profissional e autoconhecimento, sem competir com a escola regular":"Preparation for professional life and self-knowledge, without competing with regular school.",
-    "Evento Presencial":"In-Person Event",
-    "Semana intensiva anual para integração e networking familiar":"Annual intensive week for integration and family networking",
-    "Conteúdo Variado":"Diverse Content",
-    "Mais de 10 projetos para explorar":"Over 10 projects to explore."
+  "Perks": {
+    "Flexibilidade": "Flexibility",
+    "Pagamento por matéria, horários adaptáveis e acesso nacional": "Payment per subject, adaptable schedules, and national access.",
+    "Metodologia Inovadora": "Innovative Methodology",
+    "Projetos estimulantes em áreas de interesse do aluno": "Stimulating projects in areas of student interest.",
+    "Foco no Futuro": "Future-focused",
+    "Preparação para vida profissional e autoconhecimento, sem competir com a escola regular": "Preparation for professional life and self-knowledge, without competing with regular school.",
+    "Evento Presencial": "In-Person Event",
+    "Semana intensiva anual para integração e networking familiar": "Annual intensive week for integration and family networking",
+    "Conteúdo Variado": "Diverse Content",
+    "Mais de 10 projetos para explorar": "Over 10 projects to explore."
   },
-  "HowItWorks":{
-    "Se inscreva no processo seletivo":"Apply for the selection process.",
-    "Participe de uma aula experimental":"Participate in a trial class.",
-    "Receba a grade de projetos e seus horários":"Get the project grid and its schedule.",
-    "Escolha seu primeiro projeto e alavanque seu futuro":"Choose your first project and boost your future.",
-    "Como funciona?":"How it works?",
-    "Você só paga pelas matérias que escolher":"You only pay for the subjects you choose."
+  "HowItWorks": {
+    "Se inscreva no processo seletivo": "Apply for the selection process.",
+    "Participe de uma aula experimental": "Participate in a trial class.",
+    "Receba a grade de projetos e seus horários": "Get the project grid and its schedule.",
+    "Escolha seu primeiro projeto e alavanque seu futuro": "Choose your first project and boost your future.",
+    "Como funciona?": "How it works?",
+    "Você só paga pelas matérias que escolher": "You only pay for the subjects you choose."
   },
-  "ChildGuy":{
+  "ChildGuy": {
     "+ Autonomia, criatividade e preparo para o futuro": "+ Autonomy, creativity, and future readiness"
   },
-  "OurGoal":{
+  "OurGoal": {
     "Nosso objetivo é ajudar cada aluno a descobrir sua vocação real ainda jovem, poupando anos de indecisão e escolhas equivocadas": "Our goal is to help each student discover their true calling at a young age, saving years of indecision and misguided choices."
   },
-  "Parents":{
+  "Parents": {
     "Sabemos que a adolescência é uma fase de escolhas Na Nitro, nossos filhos usam o tempo livre para explorar interesses, longe das distrações das redes sociais Oferecemos um ambiente seguro, com acompanhamentos e relatórios de progresso": "We know that adolescence is a phase of choices. At Nitro, our children use their free time to explore interests, away from the distractions of social media. We offer a safe environment with monitoring and progress reports."
   },
-  "Faq":{
-    "Dúvidas?":"Do you have any questions?",
+  "Faq": {
+    "Dúvidas?": "Do you have any questions?",
     "O que é a Nitro Academy?": "What is Nitro Academy?",
     "A Nitro Academy é uma escola online para alunos de 11 a 15 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "Nitro Academy is an online school for students aged 11 to 15 who want to learn beyond traditional school. With dynamic classes, small groups, and a project-based approach, our students develop creativity, leadership, critical thinking, and much more!",
     "Por que a Nitro é diferente?": "Why is Nitro different?",
@@ -116,15 +116,51 @@
     "Não": "No",
     "É possível a participação de crianças com necessidades neurológicas especiais?": "Is it possible for children with special neurological needs to participate?",
     "Se os pais acreditam que o filho consiga participar de uma aula online concentrada, criar projetos ou resolver desafios, fique à vontade para inscrever o seu filho": "If parents believe their child can participate in a focused online class, create projects, or solve challenges, feel free to enroll your child.",
-    "Saiba mais":"Find out more",
-    "Seja um professor Nitro Academy!":"Become a Nitro Academy teacher!",
-    "Vamos juntos transformar o aprendizado!":"Let's transform learning together!",
-    "Você se lembra de quando era adolescente e tinha tempo e energia, e talvez até vontade de experimentar diversas profissões, mas nem sempre boas oportunidades de fazer isso?":"Do you remember when you were a teenager and had time and energy, and maybe even the desire to try out various professions, but didn't always have good opportunities to do so?",
-    "É algo que a Nitro Academy veio solucionar, transformando o tempo livre dos adolescentes (11-15 anos) em talento":"This is something Nitro Academy came to solve, transforming adolescents' (11-15 years) free time into talent.",
-    "Exemplos de projetos já estruturados na Nitro Academy:":"Examples of established projects at Nitro Academy:",
-    "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico":"Interning as a Youtuber, Making your First Online Sale, Creating your Own Perfume, Creating a Cinematic Script",
-    "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores":"We are an online vocational initiation project school and we are looking for professionals passionate about education who have practical experience in their professional fields to act as mentors.",
-    "Se essa proposta ressoou com você, venha fazer parte da Nitro Academy O primeiro passo é preencher este formulário:":"If this proposal appeals to you, come and be part of Nitro Academy. The first step is to complete this form:",
-    "Faça parte do nosso time":"Become part of our team"
+    "Saiba mais": "Find out more",
+    "Seja um professor Nitro Academy!": "Become a Nitro Academy teacher!",
+    "Vamos juntos transformar o aprendizado!": "Let's transform learning together!",
+    "Você se lembra de quando era adolescente e tinha tempo e energia, e talvez até vontade de experimentar diversas profissões, mas nem sempre boas oportunidades de fazer isso?": "Do you remember when you were a teenager and had time and energy, and maybe even the desire to try out various professions, but didn't always have good opportunities to do so?",
+    "É algo que a Nitro Academy veio solucionar, transformando o tempo livre dos adolescentes (11-15 anos) em talento": "This is something Nitro Academy came to solve, transforming adolescents' (11-15 years) free time into talent.",
+    "Exemplos de projetos já estruturados na Nitro Academy:": "Examples of established projects at Nitro Academy:",
+    "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico": "Interning as a Youtuber, Making your First Online Sale, Creating your Own Perfume, Creating a Cinematic Script",
+    "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores": "We are an online vocational initiation project school and we are looking for professionals passionate about education who have practical experience in their professional fields to act as mentors.",
+    "Se essa proposta ressoou com você, venha fazer parte da Nitro Academy O primeiro passo é preencher este formulário:": "If this proposal appeals to you, come and be part of Nitro Academy. The first step is to complete this form:",
+    "Faça parte do nosso time": "Become part of our team"
+  },
+  "AboutUs": {
+    "title": "About Us",
+    "foundation": "Nitro Academy was founded by us (Vahid Sherafat and Samareh Shams Sherafat) with the intention of offering complementary education to school for their children Mona Yasmin (13 years old) and Dayyan (11 years old) after realizing the urgent need to offer innovative complementary education after finding that their children were wasting precious time on electronic games and social media, without fully developing their creative and professional potential.",
+    "inspiration": "From this simple intention, we were inspired by some references to expand the purpose of this school:",
+    "quote1": "Consider man as a mine rich in gems of inestimable value. Education can, alone, cause it to reveal its treasures, and enable mankind to benefit therefrom.",
+    "quote2": "The earth is but one country, and mankind its citizens",
+    "quote3": "The best of men are they that earn their livelihood by their calling and spend upon themselves and upon their kindred for the love of God, the Lord of all worlds.",
+    "quote4": "All men have been created to carry forward an ever-advancing civilization.",
+    "team": "Our Team",
+    "viewLinkedIn": "View LinkedIn",
+    "nobleCreation": "We assume that each of us was created noble and with countless virtues, capabilities and talents that need to be awakened and stimulated.",
+    "internationalSchool": "Our school has mentors and students from all over the world, making it an international school.",
+    "professionalJourney": "Starting a journey of preparation for the professional future is not synonymous with seeking wealth or sustenance. We are promoting a school that develops students to discover their vocations and talents not only to ensure their sustenance but mainly as a form of service to society.",
+    "civilizationAdvancement": "We want to stimulate each one not only to develop and evolve, but also to contribute to the advancement of human civilization.",
+    "dailyDedication": "Every day we are dedicated to doing a little better what we are proposing to do.",
+    "sincerely": "Sincerely,",
+    "bahaiReference": "¹ Writings of Bahá'u'lláh",
+    "teamMembers": {
+      "vahid": {
+        "name": "Vahid Sherafat",
+        "desc": "Computer engineer graduated from Unicamp, specialized in Artificial Intelligence, serial entrepreneur, co-founder of ClassApp and Escolas Exponenciais, acted as CEO, CTO and advisor to educational institutions."
+      },
+      "samareh": {
+        "name": "Samareh Sherafat",
+        "desc": "Graduated in International Relations from Facamp and has previous experience as a teacher, headhunter and human resources leader. She was a volunteer in Gambia, Guinea Bissau and Israel in social projects."
+      },
+      "odecio": {
+        "name": "Odecio Pompeo Neto",
+        "desc": "Graduated in business administration from Unicamp, has more than 5 years of experience working with customer service and operations in technology and education companies."
+      },
+      "barbara": {
+        "name": "Bárbara de Padua",
+        "desc": "Publicity and Advertising student at Uninter, has previous experience with customer service and development of new projects."
+      }
+    }
   }
 }
