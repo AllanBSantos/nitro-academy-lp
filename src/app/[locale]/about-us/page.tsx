@@ -22,10 +22,22 @@ export default function AboutUs({
           <p className="mb-6 text-lg text-white">{t("inspiration")}</p>
           <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
             &ldquo;{t("quote1")}&rdquo;
+            <span
+              style={{ fontSize: "0.7em", verticalAlign: "super" }}
+              className="ml-1"
+            >
+              ¹
+            </span>
           </blockquote>
           <p className="mb-6 text-lg text-white">{t("nobleCreation")}</p>
           <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
             &ldquo;{t("quote2")}&rdquo;
+            <span
+              style={{ fontSize: "0.7em", verticalAlign: "super" }}
+              className="ml-1"
+            >
+              ¹
+            </span>
           </blockquote>
           <p className="mb-6 text-lg text-white">{t("internationalSchool")}</p>
           <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
@@ -40,17 +52,23 @@ export default function AboutUs({
           <p className="mb-6 text-lg text-white">{t("professionalJourney")}</p>
           <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
             &ldquo;{t("quote4")}&rdquo;
+            <span
+              style={{ fontSize: "0.7em", verticalAlign: "super" }}
+              className="ml-1"
+            >
+              ¹
+            </span>
           </blockquote>
           <p className="mb-6 text-lg text-white">
             {t("civilizationAdvancement")}
           </p>
           <p className="mb-6 text-lg text-white">{t("dailyDedication")}</p>
-          <p className="mt-8 text-lg text-white">
+          <p className="mt-8 mb-6 text-lg text-white">
             {t("sincerely")}
             <br />
             <strong>Samareh e Vahid</strong>
           </p>
-          <p className="mt-2 text-sm text-white">{t("bahaiReference")}</p>
+          <p className="mt-2 text-[11px] text-white">{t("bahaiReference")}</p>
         </div>
       </section>
 
