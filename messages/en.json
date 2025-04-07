@@ -45,7 +45,7 @@
     "Produção de Vídeo com IA": "AI Video Production",
     "E se você pudesse usar inteligência artificial para criar vídeos incríveis de forma mais rápida e criativa? Neste curso, você vai explorar ferramentas de IA para roteirizar, editar e até gerar cenas automaticamente! Aprenda a transformar suas ideias em produções impressionantes, combinando criatividade com tecnologia de ponta": "What if you could use artificial intelligence to create amazing videos faster and more creatively? In this course, you will explore AI tools to script, edit, and even generate scenes automatically! Learn how to turn your ideas into impressive productions by combining creativity with cutting-edge technology.",
     "Descrição do curso": "Course overview",
-    "Escolha um projeto": "Choose a project",
+    "Escolha um projeto": "Choose your project",
     "Saiba mais": "Find out more",
     "Aprendendo a Dublar Personagens": "Learning to Voice Act Characters",
     "Já imaginou emprestar sua voz para personagens incríveis? Neste curso, você mergulhará no universo da dublagem de animação, aprendendo técnicas para interpretar diferentes vozes, dar emoção às falas e sincronizar com os movimentos dos personagens Prepare-se para criar e dublar cenas, experimentando o poder da sua voz para contar histórias!": "Have you ever imagined lending your voice to incredible characters? In this course, you'll dive into the world of animation voice acting, learning techniques to interpret different voices, add emotion to lines, and synchronize with character movements. Get ready to create and voice scenes, experiencing the power of your voice to tell stories!",
@@ -161,6 +161,16 @@
         "name": "Bárbara de Padua",
         "desc": "Publicity and Advertising student at Uninter, has previous experience with customer service and development of new projects."
       }
+    }
+  },
+  "course": {
+    "level": {
+      "label": "Level",
+      "all": "Open to all"
+    },
+    "model": {
+      "label": "Class Model",
+      "projects_discussion": "Projects + Discussion"
     }
   }
 }
