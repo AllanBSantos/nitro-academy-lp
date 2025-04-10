@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Footer from "@/app/components/Footer";
+import Header from "@/components/Header";
 
 export default function AboutUs({
   params: { locale },
@@ -13,6 +14,7 @@ export default function AboutUs({
 
   return (
     <div className="bg-white text-gray-800 font-sans">
+      <Header />
       <section className="bg-blue-950 py-16 px-4 md:px-20">
         <div className="max-w-4xl mx-auto">
           <h1 className="py-10 text-4xl font-gilroy-extrabold sm:text-6xl text-theme-orange text-center">

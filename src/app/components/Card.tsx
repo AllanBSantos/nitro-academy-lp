@@ -1,8 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Star, StarHalf } from "lucide-react";
+import { useParams } from "next/navigation";
 
 export interface CardProps {
   id: string;
@@ -35,6 +38,8 @@ export default function Card({
   image,
 }: CardProps) {
   const t = useTranslations("Carousel");
+  const params = useParams();
+  const locale = (params?.locale as string) || "pt";
 
   const renderStars = (rating: number) => {
     if (!rating) return null;
@@ -93,7 +98,7 @@ export default function Card({
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link href={`/curso/${id}`}>
+          <Link href={`/${locale}/curso/${id}`}>
             <Button className="w-1/2 bg-transparent hover:bg-white/10 text-white border border-white py-2 px-4 rounded-full font-normal">
               + informações
             </Button>

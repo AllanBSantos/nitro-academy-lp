@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import EnrollmentModal from "./EnrollmentModal";
 
 export default function TimeSelectionSection() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const params = useParams();
+  const locale = (params?.locale as string) || "pt";
 
   const schedules = [
     {
@@ -43,7 +49,7 @@ export default function TimeSelectionSection() {
 
         <p className="text-white text-xl mb-6">
           <span className="font-bold">Selecione</span> o melhor horário e clique
-          em &ldquo;<span className="font-bold">ADICIONAR AO CARRINHO</span>
+          em &ldquo;<span className="font-bold">REALIZAR MATRÍCULA</span>
           &rdquo;
         </p>
 
@@ -65,16 +71,39 @@ export default function TimeSelectionSection() {
                   {schedule.day} {schedule.time}
                 </div>
                 <div className="text-sm mt-1">
-                  Data início: {schedule.startDate} Data Fim: {schedule.endDate}
+                  Data início: {schedule.startDate} Data fim: {schedule.endDate}
                 </div>
               </div>
             </button>
           ))}
         </div>
 
-        <button className="bg-orange-600 text-[#1e1b4b] text-xl font-bold py-4 px-8 rounded-[24px] hover:bg-orange-500 transition-colors duration-300 w-full max-w-md">
-          ADICIONAR AO CARRINHO
-        </button>
+        <div className="flex items-center justify-center gap-4 mb-4 relative">
+          <EnrollmentModal
+            courseName="Curso Selecionado"
+            selectedTime={selectedTime}
+          />
+          <div className="absolute right-0 translate-x-1/2">
+            <Image
+              src={`/${locale}/garantia-30-dias.png`}
+              alt="Garantia de 30 dias"
+              width={120}
+              height={120}
+              className="w-32 h-32"
+            />
+          </div>
+        </div>
+
+        <div className="text-white text-sm mt-4">
+          Ao clicar você aceita com os nossos{" "}
+          <Link
+            href="/termos"
+            target="_blank"
+            className="text-[#3B82F6] hover:underline"
+          >
+            Termos de uso e política de privacidade
+          </Link>
+        </div>
       </div>
     </section>
   );

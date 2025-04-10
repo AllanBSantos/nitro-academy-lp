@@ -15,7 +15,7 @@ import { useParams } from "next/navigation";
 export default function Header() {
   const t = useTranslations("Faq");
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = (params?.locale as string) || "pt"; // Default to 'pt' if no locale
 
   return (
     <section className="bg-background">

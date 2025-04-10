@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/carousel";
 import Link from "next/link";
 import TimeSelectionSection from "@/components/TimeSelectionSection";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 // This function tells Next.js which paths to pre-render
 export async function generateStaticParams() {
@@ -127,11 +129,12 @@ const exampleReviews = [
 ];
 
 export default async function CourseDetails({
-  params,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  params: { id, locale },
 }: {
-  params: { id: string };
+  params: { id: string; locale: string };
 }) {
-  const course = cardsContent.find((course) => course.id === params.id);
+  const course = cardsContent.find((course) => course.id === id);
 
   console.log(course);
 
@@ -141,6 +144,7 @@ export default async function CourseDetails({
 
   return (
     <div className="min-h-screen bg-orange-600">
+      <Header />
       {/* Primeira seção - Laranja */}
       <section className="w-full bg-orange-600 py-16">
         <div className="max-w-3xl mx-auto px-4">
@@ -176,7 +180,7 @@ export default async function CourseDetails({
       <section className="w-full bg-[#1e1b4b] py-16 relative z-10">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-white mb-8">
-            Vídeos do Curso
+            Entenda mais sobre o curso
           </h2>
 
           <div className="relative">
@@ -322,7 +326,7 @@ export default async function CourseDetails({
               >
                 <CarouselContent>
                   {cardsContent
-                    .filter((c) => c.id !== params.id)
+                    .filter((c) => c.id !== id)
                     .map((course) => (
                       <CarouselItem
                         key={course.id}
@@ -346,7 +350,7 @@ export default async function CourseDetails({
                               Mentor: {course.mentor.name}
                             </p>
                             <Link
-                              href={`/curso/${course.id}`}
+                              href={`/${locale}/curso/${course.id}`}
                               className="inline-block text-[#1e1b4b] border-2 border-[#1e1b4b] rounded-full px-6 py-2 hover:bg-[#1e1b4b] hover:text-white transition-colors duration-300"
                             >
                               + informações
@@ -454,7 +458,7 @@ export default async function CourseDetails({
               >
                 <CarouselContent>
                   {exampleCourses
-                    .filter((c) => c.id !== params.id)
+                    .filter((c) => c.id !== id)
                     .map((course) => (
                       <CarouselItem
                         key={course.id}
@@ -478,7 +482,7 @@ export default async function CourseDetails({
                               Mentor: {course.mentor.name}
                             </p>
                             <Link
-                              href={`/curso/${course.id}`}
+                              href={`/${locale}/curso/${course.id}`}
                               className="inline-block text-[#1e1b4b] border-2 border-[#1e1b4b] rounded-full px-6 py-2 hover:bg-[#1e1b4b] hover:text-white transition-colors duration-300"
                             >
                               + informações
@@ -591,6 +595,9 @@ export default async function CourseDetails({
       </section>
 
       <TimeSelectionSection />
+      <section className="bg-background">
+        <Footer />
+      </section>
     </div>
   );
 }

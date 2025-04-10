@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 
 export default function Footer() {
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = (params?.locale as string) || "pt"; // Default to 'pt' if no locale
 
   return (
     <>
