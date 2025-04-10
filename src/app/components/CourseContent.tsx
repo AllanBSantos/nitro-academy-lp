@@ -74,9 +74,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                   (video: {
                     titulo: string;
                     descricao: string;
-                    video: {
-                      url: string;
-                    };
+                    video: { url: string } | null;
                     video_url: string;
                   }) => (
                     <CarouselItem key={video.titulo} className="w-full">
