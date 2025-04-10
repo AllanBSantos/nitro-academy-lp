@@ -26,6 +26,7 @@ export interface CardProps {
   price: {
     installment: number;
     total: number;
+    installments: number;
   };
   image: string;
   nivel?: string;
@@ -42,6 +43,12 @@ export interface CardProps {
       url: string;
     } | null;
     video_url: string;
+  }>;
+  cronograma?: Array<{
+    data_fim: string;
+    data_inicio: string;
+    dia: string;
+    horario: string;
   }>;
 }
 

@@ -194,7 +194,7 @@
   },
   "TimeSelection": {
     "only": "Only",
-    "payment_options": "in {installment}x interest-free or ${total} in cash",
+    "payment_options": "in {installments}x interest-free or {total} in cash",
     "select": "Select",
     "best_time": "the best time and click",
     "enroll": "ENROLL NOW",

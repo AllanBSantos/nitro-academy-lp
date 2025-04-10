@@ -194,7 +194,7 @@
   },
   "TimeSelection": {
     "only": "Apenas",
-    "payment_options": "em {installment}x sem juros ou R${total} à vista",
+    "payment_options": "em {installments}x sem juros ou {total} à vista",
     "select": "Selecione",
     "best_time": "o melhor horário e clique em",
     "enroll": "REALIZAR MATRÍCULA",

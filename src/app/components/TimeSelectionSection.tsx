@@ -6,47 +6,50 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 import { useTranslations } from "next-intl";
+import { CardProps } from "./Card";
 
-export default function TimeSelectionSection() {
+interface TimeSelectionSectionProps {
+  course: CardProps;
+}
+
+export default function TimeSelectionSection({
+  course,
+}: TimeSelectionSectionProps) {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
 
-  const schedules = [
-    {
-      day: t("days.monday"),
-      time: "11:30",
-      startDate: "04/05/25",
-      endDate: "04/06/25",
-    },
-    {
-      day: t("days.tuesday"),
-      time: "14:00",
-      startDate: "05/05/25",
-      endDate: "05/06/25",
-    },
-    {
-      day: t("days.wednesday"),
-      time: "15:30",
-      startDate: "06/05/25",
-      endDate: "06/06/25",
-    },
-    {
-      day: t("days.thursday"),
-      time: "16:00",
-      startDate: "07/05/25",
-      endDate: "07/06/25",
-    },
-  ];
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year.slice(-2)}`;
+  };
+
+  const schedules = course.cronograma || [];
+
+  const price = course.price;
+  const installment = price.installment.toFixed(2).replace(".", ",");
+  const total = price.total.toFixed(2).replace(".", ",");
 
   return (
     <section className="w-full bg-[#1e1b4b] py-16 -mt-[48px]">
       <div className="max-w-3xl mx-auto px-4 text-center">
         <h2 className="text-white text-2xl mb-2">{t("only")}</h2>
-        <div className="text-white text-6xl font-bold mb-4">R$ 35,59</div>
+        <div className="text-white text-6xl font-bold mb-4">
+          {locale === "pt-BR" ? "R$" : "$"}{" "}
+          {course.price.installment.toFixed(2).replace(".", ",")}
+        </div>
         <p className="text-white text-xl mb-8">
-          {t("payment_options", { installment: "35,59", total: "99,99" })}
+          {t("payment_options", {
+            installment: `${
+              locale === "pt-BR" ? "R$" : "$"
+            } ${course.price.installment.toFixed(2).replace(".", ",")}`,
+            total: `${locale === "pt-BR" ? "R$" : "$"} ${course.price.total
+              .toFixed(2)
+              .replace(".", ",")}`,
+            installments: course.price.installments,
+          })}
         </p>
 
         <p className="text-white text-xl mb-6">
@@ -57,23 +60,24 @@ export default function TimeSelectionSection() {
         <div className="space-y-4 max-w-md mx-auto mb-8">
           {schedules.map((schedule) => (
             <button
-              key={`${schedule.day}-${schedule.time}`}
+              key={`${schedule.dia}-${schedule.horario}`}
               onClick={() =>
-                setSelectedTime(`${schedule.day}-${schedule.time}`)
+                setSelectedTime(`${schedule.dia}-${schedule.horario}`)
               }
               className={`w-full py-4 px-8 rounded-[24px] text-xl font-medium transition-colors duration-300 ${
-                selectedTime === `${schedule.day}-${schedule.time}`
+                selectedTime === `${schedule.dia}-${schedule.horario}`
                   ? "bg-orange-600 text-white"
                   : "border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white"
               }`}
             >
               <div className="flex flex-col items-center">
                 <div>
-                  {schedule.day} {schedule.time}
+                  {schedule.dia} {schedule.horario}
                 </div>
                 <div className="text-sm mt-1">
-                  {t("start_date")}: {schedule.startDate} {t("end_date")}:{" "}
-                  {schedule.endDate}
+                  {t("start_date")}: {formatDate(schedule.data_inicio)}
+                  {schedule.data_fim &&
+                    ` ${t("end_date")}: ${formatDate(schedule.data_fim)}`}
                 </div>
               </div>
             </button>
@@ -82,7 +86,7 @@ export default function TimeSelectionSection() {
 
         <div className="flex items-center justify-center gap-4 mb-4 relative">
           <EnrollmentModal
-            courseName={t("selected_course")}
+            courseName={course.title || t("selected_course")}
             selectedTime={selectedTime}
           />
           <div className="absolute right-0 translate-x-1/2">

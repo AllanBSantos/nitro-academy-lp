@@ -98,6 +98,7 @@ export interface Course {
   modelo: string;
   objetivo: string;
   pre_requisitos: string;
+  cronograma: string;
   projetos: string;
   tarefa_de_casa: string;
   preco: number;

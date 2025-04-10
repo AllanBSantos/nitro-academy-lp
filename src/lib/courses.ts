@@ -36,6 +36,7 @@ export async function getCardsContent(
       price: {
         installment: course.preco / course.parcelas || 0,
         total: course.preco || 0,
+        installments: course.parcelas || 0,
       },
       image: courseImage?.url
         ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${courseImage.url}`
@@ -48,6 +49,7 @@ export async function getCardsContent(
       tarefa_de_casa: course.tarefa_de_casa || "",
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
+      cronograma: course.cronograma || [],
     };
   });
 }

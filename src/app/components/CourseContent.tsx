@@ -462,7 +462,7 @@ export default function CourseContent({ course }: CourseContentProps) {
       )}
 
       {/* seção - Seleção de horários */}
-      <TimeSelectionSection />
+      <TimeSelectionSection course={course} />
 
       {/* seção - Footer */}
       <section className="bg-background">
