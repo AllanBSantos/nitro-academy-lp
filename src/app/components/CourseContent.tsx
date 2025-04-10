@@ -30,7 +30,7 @@ export default function CourseContent({ course }: CourseContentProps) {
             <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
               <Image
                 src={course.image}
-                alt={course.title || course.titleKey}
+                alt={course.title || ""}
                 width={1280}
                 height={720}
                 className="w-full h-full object-cover"
@@ -40,16 +40,14 @@ export default function CourseContent({ course }: CourseContentProps) {
 
           <div className="text-white">
             <h1 className="text-3xl font-bold mb-2 text-background">
-              {course.title || course.titleKey}
+              {course.title || ""}
             </h1>
             <div className="mb-4">
               <span className="text-xl">
                 {t("mentor.label")}: {course.mentor.name}
               </span>
             </div>
-            <p className="text-lg">
-              {course.description || course.descriptionKey}
-            </p>
+            <p className="text-lg">{course.description || ""}</p>
           </div>
         </div>
       </section>

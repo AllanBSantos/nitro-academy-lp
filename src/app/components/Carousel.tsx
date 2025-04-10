@@ -22,6 +22,8 @@ export async function CarouselContentWrapper({
 }) {
   const cardsContent = await getCardsContent(locale);
 
+  console.log(">>>>>>>> 11111", cardsContent);
+
   return (
     <div className="flex flex-col items-center bg-theme-orange py-16">
       <section>
@@ -50,8 +52,8 @@ export async function CarouselContentWrapper({
                 >
                   <Card
                     {...props}
-                    title={t(props.titleKey)}
-                    description={t(props.descriptionKey)}
+                    title={props.title}
+                    description={props.description}
                   />
                 </CarouselItem>
               ))}

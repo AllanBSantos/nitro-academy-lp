@@ -11,8 +11,6 @@ export interface CardProps {
   id: string;
   title?: string;
   description?: string;
-  titleKey: string;
-  descriptionKey: string;
   mentor: {
     name: string;
     image: string;
@@ -51,13 +49,10 @@ export default function Card({
   id,
   title,
   description,
-  titleKey,
-  descriptionKey,
   mentor,
   rating,
   image,
 }: CardProps) {
-  const t = useTranslations("Carousel");
   const commonT = useTranslations("common");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
@@ -99,7 +94,7 @@ export default function Card({
           <>
             <Image
               src={image}
-              alt={title || t(titleKey)}
+              alt={title || ""}
               fill
               className="object-cover"
               priority
@@ -120,14 +115,12 @@ export default function Card({
       <div className="p-6 flex flex-col gap-6">
         <div>
           <h2 className="text-2xl font-bold text-background mb-4">
-            <strong>{title || t(titleKey)}</strong>
+            <strong>{title}</strong>
           </h2>
           <p className="text-white mb-4">
             <strong>Mentor: {mentor.name}</strong>
           </p>
-          <p className="text-white line-clamp-8">
-            {description || t(descriptionKey)}
-          </p>
+          <p className="text-white line-clamp-8">{description}</p>
         </div>
 
         <div className="flex flex-col gap-3">

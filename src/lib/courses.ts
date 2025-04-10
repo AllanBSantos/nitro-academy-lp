@@ -17,8 +17,8 @@ export async function getCardsContent(
 
     return {
       id: course.id.toString(),
-      titleKey: course.titulo || "",
-      descriptionKey: course.descricao || "",
+      title: course.titulo || "",
+      description: course.descricao || "",
       mentor: {
         name: mentor?.nome || "",
         image: mentorImage?.url
