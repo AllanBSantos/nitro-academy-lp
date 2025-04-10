@@ -31,7 +31,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       <HaveYouImagined />
       <OurApproach />
       <TeenGirl />
-      <Carousel />
+      <Carousel locale={params.locale} />
       <WhyChooseNitro />
       <div className="bg-theme-orange">
         <Perks />
@@ -42,6 +42,6 @@ export default function Home({ params }: { params: { locale: string } }) {
       <Parents />
       <Faq />
       <Footer />
-    </div >
+    </div>
   );
 }

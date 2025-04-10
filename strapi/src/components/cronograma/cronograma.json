@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_cronograma_cronogramas",
+  "info": {
+    "displayName": "cronograma"
+  },
+  "options": {},
+  "attributes": {
+    "dia": {
+      "type": "string"
+    },
+    "horario": {
+      "type": "string"
+    },
+    "data_inicio": {
+      "type": "date"
+    },
+    "data_fim": {
+      "type": "date"
+    }
+  }
+}
