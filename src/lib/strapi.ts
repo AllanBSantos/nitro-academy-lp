@@ -9,7 +9,7 @@ export async function fetchCourses(
 ): Promise<Course[]> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[videos][populate]=video&locale=${locale}`,
+      `${STRAPI_API_URL}/api/cursos?fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[videos][populate]=video&locale=${locale}&_=${Date.now()}`,
       {
         headers: {
           Authorization: `Bearer ${STRAPI_TOKEN}`,
