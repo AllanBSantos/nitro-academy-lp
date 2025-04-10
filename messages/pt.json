@@ -43,6 +43,39 @@
     "realestate_title": "Explorando o Mercado Imobiliário",
     "realestate_desc": "Já imaginou ajudar sua família a encontrar a casa dos sonhos ou fazer negócios inteligentes no mercado imobiliário? Neste curso, você aprenderá como pesquisar imóveis e avaliar preços!"
   },
+  "Course": {
+    "understand_more": "Entenda mais sobre o curso",
+    "level": {
+      "label": "Nível",
+      "all": "Aberto a todos"
+    },
+    "model": {
+      "label": "Modelo da aula",
+      "projects_discussion": "Projetos + Discussão"
+    },
+    "objective": {
+      "label": "Objetivo"
+    },
+    "prerequisites": {
+      "label": "Pré-requisitos"
+    },
+    "projects": {
+      "label": "Projetos"
+    },
+    "homework": {
+      "label": "Lição de Casa"
+    },
+    "related_topics": {
+      "title": "Explore tópicos relacionados"
+    },
+    "mentor": {
+      "label": "Mentor",
+      "rating_label": "Avaliação do Instrutor",
+      "reviews_label": "Avaliações",
+      "students_label": "Estudantes",
+      "courses_label": "Cursos"
+    }
+  },
   "WhyChooseNitro": {
     "Turmas reduzidas (máximo 10 alunos)": "Turmas reduzidas (máximo 10 alunos)",
     "Ensino personalizado": "Ensino personalizado",
@@ -148,35 +181,6 @@
       }
     }
   },
-  "Course": {
-    "other_courses": {
-      "title": "Outros cursos de {name}:"
-    },
-    "youtuber": {
-      "title": "Estagiando com uma YouTuber",
-      "description": "Mergulhe no universo do YouTube..."
-    },
-    "level": {
-      "label": "Nível",
-      "all": "Aberto a todos"
-    },
-    "model": {
-      "label": "Modelo da aula",
-      "projects_discussion": "Projetos + Discussão"
-    },
-    "mentor": {
-      "label": "Mentor",
-      "rating_label": "Avaliação do Instrutor",
-      "reviews_label": "Avaliações",
-      "students_label": "Estudantes",
-      "courses_label": "Cursos"
-    },
-    "reviews": {
-      "title": "Avaliações do curso",
-      "helpful": "Essa avaliação foi útil?",
-      "report": "Denunciar"
-    }
-  },
   "topics": {
     "science": "Ciência",
     "ai": "Inteligência Artificial",
@@ -187,5 +191,47 @@
   },
   "common": {
     "more_info": "+ informações"
+  },
+  "TimeSelection": {
+    "only": "Apenas",
+    "payment_options": "em {installment}x sem juros ou R${total} à vista",
+    "select": "Selecione",
+    "best_time": "o melhor horário e clique em",
+    "enroll": "REALIZAR MATRÍCULA",
+    "days": {
+      "monday": "Segundas-feiras",
+      "tuesday": "Terças-feiras",
+      "wednesday": "Quartas-feiras",
+      "thursday": "Quintas-feiras"
+    },
+    "start_date": "Data início",
+    "end_date": "Data fim",
+    "selected_course": "Curso Selecionado",
+    "warranty_alt": "Garantia de 30 dias",
+    "terms_agreement": "Ao clicar você aceita com os nossos",
+    "terms_link": "Termos de uso e política de privacidade"
+  },
+  "EnrollmentModal": {
+    "title": "Formulário de Matrícula",
+    "enroll": "MATRICULAR AGORA",
+    "student": {
+      "name": "Nome completo do aluno*",
+      "birthDate": "Data de nascimento do aluno*",
+      "phone": "Telefone do aluno"
+    },
+    "guardian": {
+      "name": "Nome completo do responsável*",
+      "email": "Email do responsável*",
+      "cpf": "CPF do responsável*",
+      "phone": "Telefone do responsável*"
+    },
+    "location": {
+      "country": "País*",
+      "state": "Estado*",
+      "city": "Cidade*"
+    },
+    "errors": {
+      "submit": "Erro ao enviar matrícula. Por favor, tente novamente."
+    }
   }
 }

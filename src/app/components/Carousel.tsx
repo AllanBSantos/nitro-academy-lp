@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Carousel as CdnCarousel,
   CarouselContent,
@@ -5,121 +7,20 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
 import Card, { CardProps } from "@/components/Card";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getCardsContent } from "@/lib/courses";
 
-export const cardsContent: CardProps[] = [
-  {
-    id: "estagiando-youtuber",
-    titleKey: "youtuber_title",
-    descriptionKey: "youtuber_desc",
-    mentor: {
-      name: "Beatriz Aoki",
-      image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-      students: 47000,
-      courses: 7,
-    },
-    rating: 4.8,
-    price: {
-      installment: 33.33,
-      total: 99.99,
-    },
-    image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-  },
-  {
-    id: "explorando-ciencia",
-    titleKey: "science_title",
-    descriptionKey: "science_desc",
-    mentor: {
-      name: "Maria Silva",
-      image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-      students: 35000,
-      courses: 5,
-    },
-    rating: 4.7,
-    price: {
-      installment: 33.33,
-      total: 99.99,
-    },
-    image: "https://escola.nitro.academy/wp-content/uploads/2025/03/222.webp",
-  },
-  {
-    id: "escrevendo-livro",
-    titleKey: "book_title",
-    descriptionKey: "book_desc",
-    mentor: {
-      name: "Ana Costa",
-      image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-      students: 28000,
-      courses: 4,
-    },
-    rating: 4.9,
-    price: {
-      installment: 33.33,
-      total: 99.99,
-    },
-    image: "https://escola.nitro.academy/wp-content/uploads/2025/03/3-2.webp",
-  },
-  {
-    id: "empreendedorismo",
-    titleKey: "entrepreneurship_title",
-    descriptionKey: "entrepreneurship_desc",
-    mentor: {
-      name: "João Silva",
-      image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-      students: 32000,
-      courses: 6,
-    },
-    rating: 4.6,
-    price: {
-      installment: 33.33,
-      total: 99.99,
-    },
-    image:
-      "https://escola.nitro.academy/wp-content/uploads/2025/03/4-Descobrindo-o-Mundo-do-Empreendedorismo_-1.webp",
-  },
-  {
-    id: "english-quizzes",
-    titleKey: "english_title",
-    descriptionKey: "english_desc",
-    mentor: {
-      name: "Sarah Johnson",
-      image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-      students: 41000,
-      courses: 8,
-    },
-    rating: 4.9,
-    price: {
-      installment: 33.33,
-      total: 99.99,
-    },
-    image:
-      "https://escola.nitro.academy/wp-content/uploads/2025/03/mask_group.webp",
-  },
-  {
-    id: "mercado-imobiliario",
-    titleKey: "realestate_title",
-    descriptionKey: "realestate_desc",
-    mentor: {
-      name: "Carlos Santos",
-      image: "https://escola.nitro.academy/wp-content/uploads/2025/03/111.webp",
-      students: 25000,
-      courses: 4,
-    },
-    rating: 4.7,
-    price: {
-      installment: 33.33,
-      total: 99.99,
-    },
-    image: "https://escola.nitro.academy/wp-content/uploads/2025/03/6-1.webp",
-  },
-];
-
-export default function Carousel() {
-  const t = useTranslations("Carousel");
+export async function CarouselContentWrapper({
+  locale,
+  t,
+}: {
+  locale: string;
+  t: (key: string) => string;
+}) {
+  const cardsContent = await getCardsContent(locale);
 
   return (
     <div className="flex flex-col items-center bg-theme-orange py-16">
@@ -169,4 +70,9 @@ export default function Carousel() {
       </div>
     </div>
   );
+}
+
+export default function Carousel({ locale }: { locale: string }) {
+  const t = useTranslations("Carousel");
+  return <CarouselContentWrapper locale={locale} t={t} />;
 }

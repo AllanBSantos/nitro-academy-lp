@@ -48,6 +48,7 @@ export interface StrapiImage {
       url: string;
       previewUrl: string | null;
       provider: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       provider_metadata: any;
       createdAt: string;
       updatedAt: string;
@@ -92,30 +93,45 @@ export interface Course {
   id: number;
   titulo: string;
   descricao: string;
-  imagem: {
-    url: string;
-  };
+  nota: number | null;
   nivel: string;
   modelo: string;
   objetivo: string;
-  nota: number;
   pre_requisitos: string;
   projetos: string;
   tarefa_de_casa: string;
   preco: number;
   parcelas: number;
   destaques: string;
-  mentor: {
-    nome: string;
-    imagem: {
-      url: string;
-    };
-    alunos: number;
-    cursos: number;
-  };
-  avaliacoes: Review[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
   locale: string;
+  imagem: {
+    url: string;
+  } | null;
+  mentor: {
+    nome: string;
+    profissao: string | null;
+    descricao: string;
+    nota: number | null;
+    avaliacoes: number | null;
+    alunos: number | null;
+    cursos: number | null;
+    instagram: string;
+    imagem: {
+      url: string;
+    } | null;
+  } | null;
+  tags: Array<{
+    nome: string;
+  }> | null;
+  videos: Array<{
+    titulo: string;
+    descricao: string;
+    video_url: string;
+    video: {
+      url: string;
+    } | null;
+  }> | null;
 }

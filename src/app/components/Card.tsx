@@ -18,6 +18,11 @@ export interface CardProps {
     image: string;
     students: number;
     courses: number;
+    profissao?: string;
+    nota?: number;
+    avaliacoes?: number;
+    descricao?: string;
+    instagram?: string;
   };
   rating: number;
   price: {
@@ -25,6 +30,21 @@ export interface CardProps {
     total: number;
   };
   image: string;
+  nivel?: string;
+  modelo?: string;
+  objetivo?: string;
+  pre_requisitos?: string;
+  projetos?: string;
+  tarefa_de_casa?: string;
+  topicosRelacionados?: string[];
+  videos?: Array<{
+    titulo: string;
+    descricao: string;
+    video: {
+      url: string;
+    } | null;
+    video_url: string;
+  }>;
 }
 
 export default function Card({
@@ -38,6 +58,7 @@ export default function Card({
   image,
 }: CardProps) {
   const t = useTranslations("Carousel");
+  const commonT = useTranslations("common");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
 
@@ -72,24 +93,36 @@ export default function Card({
   };
 
   return (
-    <div className="flex flex-col bg-theme-orange rounded-xl overflow-hidden h-[720px]">
-      <div className="relative h-72 w-full shrink-0">
-        <Image
-          src={image}
-          alt={title || t(titleKey)}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+    <div className="flex flex-col bg-theme-orange rounded-xl overflow-hidden">
+      <div className="relative h-72 w-full">
+        {image ? (
+          <>
+            <Image
+              src={image}
+              alt={title || t(titleKey)}
+              fill
+              className="object-cover"
+              priority
+              onError={(e) => {
+                console.error("Error loading image:", image);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+            <span className="text-gray-500">No image available</span>
+          </div>
+        )}
       </div>
 
-      <div className="p-6 flex flex-col h-full justify-between">
-        <div className="flex flex-col gap-4">
-          <h2 className="text-2xl font-bold text-background">
+      <div className="p-6 flex flex-col gap-6">
+        <div>
+          <h2 className="text-2xl font-bold text-background mb-4">
             <strong>{title || t(titleKey)}</strong>
           </h2>
-          <p className="text-white">
+          <p className="text-white mb-4">
             <strong>Mentor: {mentor.name}</strong>
           </p>
           <p className="text-white line-clamp-8">
@@ -98,9 +131,9 @@ export default function Card({
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link href={`/${locale}/curso/${id}`}>
-            <Button className="w-1/2 bg-transparent hover:bg-white/10 text-white border border-white py-2 px-4 rounded-full font-normal">
-              + informações
+          <Link href={`/${locale}/curso/${id}`} className="block">
+            <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white py-2 px-4 rounded-full font-medium transition-colors duration-200">
+              {commonT("more_info")}
             </Button>
           </Link>
           <div className="flex items-center gap-1">

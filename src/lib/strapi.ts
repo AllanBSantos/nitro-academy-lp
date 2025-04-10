@@ -7,49 +7,27 @@ const STRAPI_TOKEN = process.env.NEXT_PUBLIC_STRAPI_TOKEN;
 export async function fetchCourses(
   locale: string = "pt-BR"
 ): Promise<Course[]> {
-  // First try with locale
-  const response = await fetch(
-    `${STRAPI_API_URL}/api/cursos?populate[mentor][populate]=imagem&populate=imagem&locale=${locale}&pagination[pageSize]=100`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${STRAPI_TOKEN}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    console.error("Response status:", response.status);
-    console.error("Response text:", await response.text());
-    throw new Error("Failed to fetch courses");
-  }
-
-  const result = await response.json();
-  console.log("Courses API Response:", JSON.stringify(result, null, 2));
-
-  // If no results with locale, try without locale
-  if (!result.data || result.data.length === 0) {
-    console.log("No results with locale, trying without locale");
-    const fallbackResponse = await fetch(
-      `${STRAPI_API_URL}/api/cursos?populate[mentor][populate]=imagem&populate=imagem&pagination[pageSize]=100`,
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/cursos?populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[videos][populate]=video&locale=${locale}`,
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${STRAPI_TOKEN}`,
         },
       }
     );
 
-    if (!fallbackResponse.ok) {
+    if (!response.ok) {
       throw new Error("Failed to fetch courses");
     }
 
-    const fallbackResult = await fallbackResponse.json();
-    console.log("Fallback Response:", JSON.stringify(fallbackResult, null, 2));
-    return fallbackResult.data || [];
+    const data = await response.json();
+    console.log("Strapi response:", data);
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    return [];
   }
-
-  return result.data;
 }
 
 export async function fetchCourse(

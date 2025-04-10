@@ -17,7 +17,7 @@ import ChildGuy from "@/components/image-cards/ChildGuy";
 import OurGoal from "@/components/text-cards/OurGoal";
 import Parents from "@/components/image-cards/Parents";
 import Faq from "@/components/Faq";
-import Carousel from "@/components/Carousel";
+import CarouselClient from "@/components/CarouselClient";
 
 export default function Home({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
@@ -31,7 +31,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       <HaveYouImagined />
       <OurApproach />
       <TeenGirl />
-      <Carousel locale={params.locale} />
+      <CarouselClient locale={params.locale} />
       <WhyChooseNitro />
       <div className="bg-theme-orange">
         <Perks />
