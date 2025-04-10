@@ -24,7 +24,7 @@ export interface CardProps {
     descricao?: string;
     instagram?: string;
   };
-  rating: number;
+  rating: number | null;
   price: {
     installment: number;
     total: number;
@@ -54,7 +54,7 @@ export default function Card({
   titleKey,
   descriptionKey,
   mentor,
-  rating = 0,
+  rating,
   image,
 }: CardProps) {
   const t = useTranslations("Carousel");
@@ -136,12 +136,12 @@ export default function Card({
               {commonT("more_info")}
             </Button>
           </Link>
-          <div className="flex items-center gap-1">
-            {rating > 0 && renderStars(rating)}
-            <span className="text-white ml-2">
-              {rating > 0 ? rating.toFixed(1) : "-"}
-            </span>
-          </div>
+          {rating && (
+            <div className="flex items-center gap-1">
+              {renderStars(rating)}
+              <span className="text-white ml-2">{rating.toFixed(1)}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

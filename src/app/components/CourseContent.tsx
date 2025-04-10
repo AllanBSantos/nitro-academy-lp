@@ -221,12 +221,12 @@ export default function CourseContent({ course }: CourseContentProps) {
               <div className="flex items-center gap-2 text-white">
                 <span className="text-[#3B82F6]">★</span>
                 <span className="text-xl">
-                  {course.mentor.nota || 0} {t("mentor.rating_label")}
+                  {course.mentor.nota || null} {t("mentor.rating_label")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-white">
                 <span className="text-xl">
-                  {course.mentor.avaliacoes || 0} {t("mentor.reviews_label")}
+                  {course.mentor.avaliacoes || null} {t("mentor.reviews_label")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-white">

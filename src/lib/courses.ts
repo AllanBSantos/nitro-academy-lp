@@ -32,7 +32,7 @@ export async function getCardsContent(
         descricao: mentor?.descricao || "",
         instagram: mentor?.instagram || "",
       },
-      rating: course.nota || 0,
+      rating: course.nota || null,
       price: {
         installment: course.preco / course.parcelas || 0,
         total: course.preco || 0,
