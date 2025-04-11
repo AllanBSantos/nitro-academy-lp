@@ -5,22 +5,21 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Card from "@/components/Card";
+import Card, { CardProps } from "@/components/Card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getCardsContent } from "@/lib/courses";
 
-export async function CarouselContentWrapper({
-  locale,
-  learnMoreLabel,
-  chooseProjectLabel,
-}: {
-  locale: string;
+interface CarouselContentWrapperProps {
+  cardsContent: CardProps[];
   learnMoreLabel: string;
   chooseProjectLabel: string;
-}) {
-  const cardsContent = await getCardsContent(locale);
+}
 
+export function CarouselContentWrapper({
+  cardsContent,
+  learnMoreLabel,
+  chooseProjectLabel,
+}: CarouselContentWrapperProps) {
   return (
     <div className="flex flex-col items-center bg-theme-orange py-8 sm:py-16">
       <section className="w-full max-w-[1400px] mx-auto">
