@@ -172,6 +172,10 @@
     },
     "destaques": {
       "type": "text"
+    },
+    "slug": {
+      "type": "string",
+      "required": true
     }
   }
 }

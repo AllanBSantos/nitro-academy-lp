@@ -253,7 +253,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                               Mentor: {relatedCourse.mentor.name}
                             </p>
                             <Link
-                              href={`/${locale}/curso/${relatedCourse.id}`}
+                              href={`/${locale}/curso/${relatedCourse.slug}`}
                               className="inline-block text-[#1e1b4b] border-2 border-[#1e1b4b] rounded-full px-6 py-2 hover:bg-[#1e1b4b] hover:text-white transition-colors duration-300"
                             >
                               {commonT("more_info")}
@@ -446,7 +446,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                                 Mentor: {relatedCourse.mentor.name}
                               </p>
                               <Link
-                                href={`/${locale}/curso/${relatedCourse.id}`}
+                                href={`/${locale}/curso/${relatedCourse.slug}`}
                                 className="inline-block text-[#1e1b4b] border-2 border-[#1e1b4b] rounded-full px-6 py-2 hover:bg-[#1e1b4b] hover:text-white transition-colors duration-300"
                               >
                                 {commonT("more_info")}

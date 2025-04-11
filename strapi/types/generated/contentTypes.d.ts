@@ -531,6 +531,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String & Schema.Attribute.Required;
     tags: Schema.Attribute.Component<'tags.tags', true> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

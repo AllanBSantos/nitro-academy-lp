@@ -6,20 +6,18 @@ import CourseContent from "@/components/CourseContent";
 // This function tells Next.js which paths to pre-render
 export async function generateStaticParams() {
   const cardsContent = await getCardsContent();
-  return cardsContent.map((course: { id: string }) => ({
-    id: course.id,
+  return cardsContent.map((course) => ({
+    slug: course.slug,
   }));
 }
 
 export default async function CourseDetails({
-  params: { id, locale },
+  params: { slug, locale },
 }: {
-  params: { id: string; locale: string };
+  params: { slug: string; locale: string };
 }) {
   const cardsContent = await getCardsContent(locale);
-  const course = cardsContent.find(
-    (course: { id: string }) => course.id === id
-  );
+  const course = cardsContent.find((course) => course.slug === slug);
 
   if (!course) {
     notFound();

@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 
 export interface CardProps {
   id: string;
+  slug: string;
   title?: string;
   description?: string;
   mentor: {
@@ -54,6 +55,7 @@ export interface CardProps {
 
 export default function Card({
   id,
+  slug,
   title,
   description,
   mentor,
@@ -130,7 +132,7 @@ export default function Card({
         </div>
 
         <div className="flex flex-col gap-2 sm:gap-3 mt-auto">
-          <Link href={`/${locale}/curso/${id}`} className="block w-full">
+          <Link href={`/${locale}/curso/${slug}`} className="block w-full">
             <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white py-2 px-4 rounded-full text-sm sm:text-base font-medium transition-colors duration-200">
               {commonT("more_info")}
             </Button>

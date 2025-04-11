@@ -17,6 +17,7 @@ export async function getCardsContent(
 
     return {
       id: course.id.toString(),
+      slug: course.slug,
       title: course.titulo || "",
       description: course.descricao || "",
       mentor: {

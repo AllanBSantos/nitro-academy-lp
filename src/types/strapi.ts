@@ -108,6 +108,7 @@ export interface Course {
   updatedAt: string;
   publishedAt: string;
   locale: string;
+  slug: string;
   imagem: {
     url: string;
   } | null;
