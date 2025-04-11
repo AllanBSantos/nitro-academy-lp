@@ -2,8 +2,7 @@ import { Course, Mentor, Review } from "@/types/strapi";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-const STRAPI_TOKEN = process.env.NEXT_PUBLIC_STRAPI_TOKEN;
-
+const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
 export async function fetchCourses(
   locale: string = "pt-BR"
 ): Promise<Course[]> {
