@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Carousel as CdnCarousel,
   CarouselContent,
@@ -8,17 +6,18 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Card from "@/components/Card";
-import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getCardsContent } from "@/lib/courses";
 
 export async function CarouselContentWrapper({
   locale,
-  t,
+  learnMoreLabel,
+  chooseProjectLabel,
 }: {
   locale: string;
-  t: (key: string) => string;
+  learnMoreLabel: string;
+  chooseProjectLabel: string;
 }) {
   const cardsContent = await getCardsContent(locale);
 
@@ -28,7 +27,7 @@ export async function CarouselContentWrapper({
         <div className="container px-4 sm:px-6 mx-auto">
           <div className="flex flex-col items-start gap-4 sm:gap-8 mb-8">
             <h2 className="font-helvetica text-white text-3xl sm:text-6xl font-normal leading-tight">
-              {t("choose_project")}
+              {chooseProjectLabel}
             </h2>
             <div className="w-full sm:w-[30vw] h-[1px] bg-white"></div>
           </div>
@@ -71,15 +70,10 @@ export async function CarouselContentWrapper({
           className="w-full sm:w-auto"
         >
           <Button className="w-full sm:w-auto rounded-xl bg-background text-base sm:text-lg font-bold py-6 sm:py-8 px-6 sm:px-12 hover:bg-[#0c0c25] transition-colors duration-200">
-            {t("learn_more")}
+            {learnMoreLabel}
           </Button>
         </Link>
       </div>
     </div>
   );
-}
-
-export default function Carousel({ locale }: { locale: string }) {
-  const t = useTranslations("Carousel");
-  return <CarouselContentWrapper locale={locale} t={t} />;
 }

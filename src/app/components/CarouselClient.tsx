@@ -1,9 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CarouselContentWrapper } from "./Carousel";
+import { CarouselContentWrapper } from "./CarouselContentWrapper";
 
 export default function CarouselClient({ locale }: { locale: string }) {
   const t = useTranslations("Carousel");
-  return <CarouselContentWrapper locale={locale} t={t} />;
+
+  return (
+    <CarouselContentWrapper
+      locale={locale}
+      learnMoreLabel={t("learn_more")}
+      chooseProjectLabel={t("choose_project")}
+    />
+  );
 }
