@@ -1,9 +1,18 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  //output: "export",
   images: { unoptimized: true },
-  trailingSlash: true
+  trailingSlash: true,
+
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /strapi\/.*/,
+      use: "null-loader",
+    });
+
+    return config;
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
