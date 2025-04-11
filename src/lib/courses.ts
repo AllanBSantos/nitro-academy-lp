@@ -50,7 +50,7 @@ export async function getCardsContent(
       tarefa_de_casa: course.tarefa_de_casa || "",
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
-      cronograma: course.cronograma || [],
+      cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
     };
   });
 }
