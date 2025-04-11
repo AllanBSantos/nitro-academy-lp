@@ -15,6 +15,7 @@ export async function fetchCourses(
     }
 
     const data = await response.json();
+    console.log("data", data);
     return data.data;
   } catch (error) {
     console.error("Error fetching courses:", error);
