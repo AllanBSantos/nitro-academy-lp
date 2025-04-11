@@ -15,14 +15,18 @@ export default ({ env }) => {
             database: env("DATABASE_NAME"),
             user: env("DATABASE_USERNAME"),
             password: env("DATABASE_PASSWORD"),
-            ssl: env.bool("DATABASE_SSL", true),
+            ssl: env.bool("DATABASE_SSL", false)
+              ? {
+                  rejectUnauthorized: env.bool("DATABASE_SSL_REJECT_UNAUTHORIZED", false),
+                }
+              : false,
           }
         : {
             filename: path.join(
               __dirname,
               "..",
               "..",
-              env("DATABASE_FILENAME", ".tmp/data.db"),
+              env("DATABASE_FILENAME", ".tmp/data.db")
             ),
           },
       useNullAsDefault: !isPostgres,
