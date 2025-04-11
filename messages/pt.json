@@ -235,5 +235,8 @@
     "errors": {
       "submit": "Erro ao enviar matrícula. Por favor, tente novamente."
     }
+  },
+  "Terms": {
+    "title": "Termos de Uso e Política de Privacidade"
   }
 }

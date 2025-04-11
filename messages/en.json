@@ -235,5 +235,8 @@
     "errors": {
       "submit": "Error sending enrollment. Please try again."
     }
+  },
+  "Terms": {
+    "title": "Terms of Use and Privacy Policy"
   }
 }

@@ -103,7 +103,7 @@ export default function TimeSelectionSection({
         <div className="text-white text-sm mt-4">
           {t("terms_agreement")}{" "}
           <Link
-            href="/termos"
+            href={`/${locale}/termos`}
             target="_blank"
             className="text-[#3B82F6] hover:underline"
           >
