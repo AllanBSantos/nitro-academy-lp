@@ -30,9 +30,7 @@ export async function CarouselContentWrapper({
         <div className="container">
           <div className="flex flex-col items-start gap-8">
             <h2 className=" font-helvetica  text-white text-6xl font-normal leading-tight">
-              Escolha seu
-              <br />
-              projeto
+              {t("choose_project")}
             </h2>
             <div className="w-[30vw] h-[1px] bg-white mb-12"></div>
           </div>

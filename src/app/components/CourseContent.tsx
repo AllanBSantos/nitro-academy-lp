@@ -217,7 +217,7 @@ export default function CourseContent({ course }: CourseContentProps) {
         <section className="w-full bg-orange-600 py-16 rounded-[24px] rounded-t-none">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">
-              Você também pode se interessar por:
+              {t("you_may_also_like")}
             </h2>
 
             <div className="relative">

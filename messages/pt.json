@@ -45,6 +45,7 @@
   },
   "Course": {
     "understand_more": "Entenda mais sobre o curso",
+    "you_may_also_like": "Você também pode se interessar por",
     "level": {
       "label": "Nível",
       "all": "Aberto a todos"
@@ -214,6 +215,7 @@
   "EnrollmentModal": {
     "title": "Formulário de Matrícula",
     "enroll": "MATRICULAR AGORA",
+    "loading": "Enviando...",
     "student": {
       "name": "Nome completo do aluno*",
       "birthDate": "Data de nascimento do aluno*",

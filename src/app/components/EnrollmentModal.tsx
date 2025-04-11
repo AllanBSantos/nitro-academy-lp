@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -26,6 +27,8 @@ export default function EnrollmentModal({
   const [isLoading, setIsLoading] = useState(false);
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
+  const t = useTranslations("TimeSelection");
+  const modalT = useTranslations("EnrollmentModal");
   const [formData, setFormData] = useState({
     studentName: "",
     studentBirthDate: "",
@@ -95,18 +98,18 @@ export default function EnrollmentModal({
           className="bg-orange-600 text-[#1e1b4b] text-xl font-bold py-4 px-8 rounded-[24px] hover:bg-orange-500 transition-colors duration-300 w-full max-w-md"
           disabled={!selectedTime}
         >
-          REALIZAR MATRÍCULA
+          {t("enroll")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] bg-[#1e1b4b] text-white border-none max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center mb-6 text-orange-600">
-            Formulário de Matrícula
+            {modalT("title")}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 p-4">
           <div className="space-y-2">
-            <Label htmlFor="studentName">Nome completo do aluno*</Label>
+            <Label htmlFor="studentName">{modalT("student.name")}</Label>
             <Input
               id="studentName"
               required
@@ -120,7 +123,7 @@ export default function EnrollmentModal({
 
           <div className="space-y-2">
             <Label htmlFor="studentBirthDate">
-              Data de nascimento do aluno*
+              {modalT("student.birthDate")}
             </Label>
             <Input
               id="studentBirthDate"
@@ -135,7 +138,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianName">Nome completo do responsável*</Label>
+            <Label htmlFor="guardianName">{modalT("guardian.name")}</Label>
             <Input
               id="guardianName"
               required
@@ -148,7 +151,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianEmail">E-mail do responsável*</Label>
+            <Label htmlFor="guardianEmail">{modalT("guardian.email")}</Label>
             <Input
               id="guardianEmail"
               type="email"
@@ -162,7 +165,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianCPF">CPF do responsável*</Label>
+            <Label htmlFor="guardianCPF">{modalT("guardian.cpf")}</Label>
             <Input
               id="guardianCPF"
               required
@@ -175,7 +178,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianPhone">Celular do responsável*</Label>
+            <Label htmlFor="guardianPhone">{modalT("guardian.phone")}</Label>
             <Input
               id="guardianPhone"
               type="tel"
@@ -189,7 +192,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country">País*</Label>
+            <Label htmlFor="country">{modalT("location.country")}</Label>
             <Input
               id="country"
               required
@@ -202,7 +205,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="state">Estado*</Label>
+            <Label htmlFor="state">{modalT("location.state")}</Label>
             <Input
               id="state"
               required
@@ -215,7 +218,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="city">Cidade*</Label>
+            <Label htmlFor="city">{modalT("location.city")}</Label>
             <Input
               id="city"
               required
@@ -228,7 +231,7 @@ export default function EnrollmentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="studentPhone">Celular do aluno</Label>
+            <Label htmlFor="studentPhone">{modalT("student.phone")}</Label>
             <Input
               id="studentPhone"
               type="tel"
@@ -245,7 +248,7 @@ export default function EnrollmentModal({
             className="w-full bg-orange-600 text-[#1e1b4b] hover:bg-orange-500"
             disabled={isLoading}
           >
-            {isLoading ? "Enviando..." : "Enviar"}
+            {isLoading ? modalT("loading") : modalT("enroll")}
           </Button>
         </form>
       </DialogContent>

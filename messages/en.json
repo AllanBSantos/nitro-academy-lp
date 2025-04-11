@@ -45,6 +45,7 @@
   },
   "Course": {
     "understand_more": "Learn more about the course",
+    "you_may_also_like": "You may also like",
     "level": {
       "label": "Level",
       "all": "Open to all"
@@ -214,6 +215,7 @@
   "EnrollmentModal": {
     "title": "Enrollment Form",
     "enroll": "ENROLL NOW",
+    "loading": "Sending...",
     "student": {
       "name": "Student's full name*",
       "birthDate": "Student's birth date*",
