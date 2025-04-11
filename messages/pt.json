@@ -179,6 +179,10 @@
       "barbara": {
         "name": "Bárbara de Padua",
         "desc": "Estudante de Publicidade e Propaganda pela Uninter, possui experiência anterior com atendimento e desenvolvimento de novos projetos."
+      },
+      "maiara": {
+        "name": "Maiara Matos de Assunção",
+        "desc": "Estudante de Engenharia Ambiental e Sanitária pela UFS, possui experiência em diferentes escolas digitais como professora, gerente de operação, gerente comercial e assessora de marketing."
       }
     }
   },

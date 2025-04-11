@@ -107,6 +107,12 @@ export default function AboutUs({
                 desc: t("teamMembers.barbara.desc"),
                 image: `/${locale}/barbara.jpeg`,
               },
+              {
+                name: t("teamMembers.maiara.name"),
+                linkedin: "https://www.linkedin.com/in/maiara-matos/",
+                desc: t("teamMembers.maiara.desc"),
+                image: `/${locale}/maiara.png`,
+              },
             ].map((person, i) => (
               <div
                 key={i}
