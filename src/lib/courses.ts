@@ -9,7 +9,9 @@ export async function getCardsContent(
   }
   const courses = await fetchCourses(locale);
 
-  return courses.map((course) => {
+  const shuffledCourses = [...courses].sort(() => Math.random() - 0.5);
+
+  return shuffledCourses.map((course) => {
     const mentor = course.mentor;
     const mentorImage = mentor?.imagem;
     const courseImage = course.imagem;
