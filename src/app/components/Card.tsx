@@ -61,7 +61,6 @@ export default function Card({
   mentor,
   rating,
   image,
-  link_pagamento,
 }: CardProps) {
   const commonT = useTranslations("common");
   const params = useParams();
