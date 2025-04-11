@@ -54,7 +54,6 @@ export interface CardProps {
 }
 
 export default function Card({
-  id,
   slug,
   title,
   description,

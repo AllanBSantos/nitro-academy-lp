@@ -2,9 +2,10 @@ export default function TermsEN() {
   return (
     <div className="prose prose-invert max-w-none">
       <p className="mb-8">
-        These Terms of Use ("Terms") govern the use of the Nitro Academy
-        platform, owned by Digniti Ltda, a limited liability company based in
-        Brazil, hereinafter referred to as "Platform" or "Nitro Academy".
+        These Terms of Use (&quot;Terms&quot;) govern the use of the Nitro
+        Academy platform, owned by Digniti Ltda, a limited liability company
+        based in Brazil, hereinafter referred to as &quot;Platform&quot; or
+        &quot;Nitro Academy&quot;.
       </p>
       <p className="mb-8">
         By accessing or using the Platform, you agree to these Terms. If you do
@@ -97,8 +98,8 @@ export default function TermsEN() {
         applicable.
       </p>
       <p className="mb-8">
-        6.2. Legal guardians authorize the collection and processing of minors'
-        data for course access and support purposes.
+        6.2. Legal guardians authorize the collection and processing of
+        minors&apos; data for course access and support purposes.
       </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">
@@ -159,11 +160,11 @@ export default function TermsEN() {
       <p className="text-lg mb-8">Last updated: April 7, 2025</p>
 
       <p className="mb-8">
-        This Privacy Policy demonstrates Nitro Academy's commitment, operated by
-        Digniti Ltda, to the privacy and protection of personal data of its
-        users, especially minors, in compliance with applicable data protection
-        laws: LGPD (Brazil), GDPR (EU), COPPA (US), among other international
-        regulations.
+        This Privacy Policy demonstrates Nitro Academy&apos;s commitment,
+        operated by Digniti Ltda, to the privacy and protection of personal data
+        of its users, especially minors, in compliance with applicable data
+        protection laws: LGPD (Brazil), GDPR (EU), COPPA (US), among other
+        international regulations.
       </p>
       <p className="mb-8">
         By using our platform, you agree to the terms of this Policy.
@@ -265,7 +266,7 @@ export default function TermsEN() {
       <h2 className="text-2xl font-bold mt-8 mb-4">7. User Rights</h2>
       <p className="mb-4">You may, at any time:</p>
       <ul className="list-disc pl-8 mb-4">
-        <li>Access your data and your child's data;</li>
+        <li>Access your data and your child&apos;s data;</li>
         <li>Correct inaccurate information;</li>
         <li>Request data deletion (when permitted by law);</li>
         <li>Withdraw consent;</li>

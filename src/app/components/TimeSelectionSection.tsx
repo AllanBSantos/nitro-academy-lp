@@ -28,10 +28,6 @@ export default function TimeSelectionSection({
 
   const schedules = course.cronograma || [];
 
-  const price = course.price;
-  const installment = price.installment.toFixed(2).replace(".", ",");
-  const total = price.total.toFixed(2).replace(".", ",");
-
   return (
     <section className="w-full bg-[#1e1b4b] py-16 -mt-[48px]">
       <div className="max-w-3xl mx-auto px-4 text-center">

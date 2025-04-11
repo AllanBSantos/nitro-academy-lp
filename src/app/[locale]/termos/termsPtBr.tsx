@@ -2,9 +2,10 @@ export default function TermsPTBR() {
   return (
     <div className="prose prose-invert max-w-none">
       <p className="mb-8">
-        Estes Termos de Uso ("Termos") regem o uso da plataforma Nitro Academy,
-        de propriedade da Digniti Ltda, uma sociedade limitada com sede no
-        Brasil, doravante denominada "Plataforma" ou "Nitro Academy".
+        Estes Termos de Uso (&quot;Termos&quot;) regem o uso da plataforma Nitro
+        Academy, de propriedade da Digniti Ltda, uma sociedade limitada com sede
+        no Brasil, doravante denominada &quot;Plataforma&quot; ou &quot;Nitro
+        Academy&quot;.
       </p>
       <p className="mb-8">
         Ao acessar ou utilizar a Plataforma, você concorda com estes Termos. Se
