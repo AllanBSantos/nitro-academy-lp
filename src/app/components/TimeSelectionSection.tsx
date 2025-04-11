@@ -84,18 +84,18 @@ export default function TimeSelectionSection({
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-4 mb-4 relative">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4 relative">
           <EnrollmentModal
             courseName={course.title || t("selected_course")}
             selectedTime={selectedTime}
           />
-          <div className="absolute right-0 translate-x-1/2">
+          <div className="sm:absolute sm:right-0 sm:translate-x-1/2 mt-4 sm:mt-0">
             <Image
               src={`/${locale}/garantia-30-dias.png`}
               alt={t("warranty_alt")}
               width={120}
               height={120}
-              className="w-32 h-32"
+              className="w-24 h-24 sm:w-32 sm:h-32"
             />
           </div>
         </div>

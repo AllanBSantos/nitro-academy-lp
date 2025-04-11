@@ -71,21 +71,18 @@ export default function Card({
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
 
-    // Adiciona estrelas cheias
     for (let i = 0; i < fullStars; i++) {
       stars.push(
         <Star key={`full-${i}`} className="w-5 h-5 fill-white text-white" />
       );
     }
 
-    // Adiciona meia estrela se necessário
     if (hasHalfStar) {
       stars.push(
         <StarHalf key="half" className="w-5 h-5 fill-white text-white" />
       );
     }
 
-    // Adiciona estrelas vazias
     const emptyStars = 5 - Math.ceil(rating);
     for (let i = 0; i < emptyStars; i++) {
       stars.push(<Star key={`empty-${i}`} className="w-5 h-5 text-white" />);
@@ -95,8 +92,8 @@ export default function Card({
   };
 
   return (
-    <div className="flex flex-col bg-theme-orange rounded-xl overflow-hidden">
-      <div className="relative h-72 w-full">
+    <div className="flex flex-col bg-theme-orange rounded-xl overflow-hidden h-full">
+      <div className="relative h-48 sm:h-56 md:h-72 w-full">
         {image ? (
           <>
             <Image
@@ -119,27 +116,31 @@ export default function Card({
         )}
       </div>
 
-      <div className="p-6 flex flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-bold text-background mb-4">
+      <div className="p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 flex-grow">
+        <div className="flex-grow">
+          <h2 className="text-xl sm:text-2xl font-bold text-background mb-2 sm:mb-4">
             <strong>{title}</strong>
           </h2>
-          <p className="text-white mb-4">
+          <p className="text-white text-sm sm:text-base mb-2 sm:mb-4">
             <strong>Mentor: {mentor.name}</strong>
           </p>
-          <p className="text-white line-clamp-8">{description}</p>
+          <p className="text-white text-sm sm:text-base line-clamp-4 sm:line-clamp-8">
+            {description}
+          </p>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <Link href={`/${locale}/curso/${id}`} className="block">
-            <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white py-2 px-4 rounded-full font-medium transition-colors duration-200">
+        <div className="flex flex-col gap-2 sm:gap-3 mt-auto">
+          <Link href={`/${locale}/curso/${id}`} className="block w-full">
+            <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white py-2 px-4 rounded-full text-sm sm:text-base font-medium transition-colors duration-200">
               {commonT("more_info")}
             </Button>
           </Link>
           {rating && (
             <div className="flex items-center gap-1">
               {renderStars(rating)}
-              <span className="text-white ml-2">{rating.toFixed(1)}</span>
+              <span className="text-white text-sm sm:text-base ml-2">
+                {rating.toFixed(1)}
+              </span>
             </div>
           )}
         </div>
