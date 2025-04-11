@@ -17,11 +17,13 @@ import { useTranslations } from "next-intl";
 interface EnrollmentModalProps {
   courseName: string;
   selectedTime: string | null;
+  paymentLink?: string;
 }
 
 export default function EnrollmentModal({
   courseName,
   selectedTime,
+  paymentLink,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +82,9 @@ export default function EnrollmentModal({
 
       if (response.ok) {
         setIsOpen(false);
+        if (paymentLink) {
+          window.location.href = paymentLink;
+        }
       } else {
         alert("Erro ao enviar matrícula. Por favor, tente novamente.");
       }

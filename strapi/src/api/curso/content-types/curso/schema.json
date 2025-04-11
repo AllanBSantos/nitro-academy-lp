@@ -176,6 +176,10 @@
     "slug": {
       "type": "string",
       "required": true
+    },
+    "link_pagamento": {
+      "type": "string",
+      "required": true
     }
   }
 }

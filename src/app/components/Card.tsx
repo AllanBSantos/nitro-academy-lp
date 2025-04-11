@@ -36,6 +36,7 @@ export interface CardProps {
   pre_requisitos?: string;
   projetos?: string;
   tarefa_de_casa?: string;
+  link_pagamento?: string;
   topicosRelacionados?: string[];
   videos?: Array<{
     titulo: string;
@@ -60,6 +61,7 @@ export default function Card({
   mentor,
   rating,
   image,
+  link_pagamento,
 }: CardProps) {
   const commonT = useTranslations("common");
   const params = useParams();

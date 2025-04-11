@@ -103,12 +103,13 @@ export interface Course {
   tarefa_de_casa: string;
   preco: number;
   parcelas: number;
-  destaques: string;
+  destaques: string | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
   locale: string;
   slug: string;
+  link_pagamento: string | null;
   imagem: {
     url: string;
   } | null;

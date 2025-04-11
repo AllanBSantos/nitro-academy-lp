@@ -50,6 +50,7 @@ export async function getCardsContent(
       pre_requisitos: course.pre_requisitos || "",
       projetos: course.projetos || "",
       tarefa_de_casa: course.tarefa_de_casa || "",
+      link_pagamento: course.link_pagamento || "",
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
