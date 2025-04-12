@@ -16,6 +16,7 @@ import { CardProps } from "./Card";
 import { getCardsContent } from "@/lib/courses";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { convertToEmbedUrl } from "@/lib/utils";
 
 interface CourseContentProps {
   course: CardProps;
@@ -103,7 +104,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                               <iframe
                                 width="100%"
                                 height="100%"
-                                src={video.video_url}
+                                src={convertToEmbedUrl(video.video_url)}
                                 title={video.titulo}
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
