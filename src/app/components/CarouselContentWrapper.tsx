@@ -43,7 +43,7 @@ export function CarouselContentWrapper({
                 {cardsContent.map((props) => (
                   <CarouselItem
                     key={props.id}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
+                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 h-[1100px]"
                   >
                     <div className="h-full">
                       <Card
