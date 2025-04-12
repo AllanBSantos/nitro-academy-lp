@@ -17,6 +17,13 @@ export async function getCardsContent(
     const courseImage = course.imagem;
     const videos = course.videos || [];
 
+    const buildUrl = (url?: string) => {
+      if (!url) return "";
+      return url.startsWith("http")
+        ? url
+        : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${url}`;
+    };
+
     return {
       id: course.id.toString(),
       slug: course.slug,
@@ -24,9 +31,7 @@ export async function getCardsContent(
       description: course.descricao || "",
       mentor: {
         name: mentor?.nome || "",
-        image: mentorImage?.url
-          ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${mentorImage.url}`
-          : "",
+        image: buildUrl(mentorImage?.url),
         students: mentor?.alunos || 0,
         courses: mentor?.cursos || 0,
         profissao: mentor?.profissao || "",
@@ -41,9 +46,7 @@ export async function getCardsContent(
         total: course.preco || 0,
         installments: course.parcelas || 0,
       },
-      image: courseImage?.url
-        ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${courseImage.url}`
-        : "",
+      image: buildUrl(courseImage?.url),
       nivel: course.nivel || "",
       modelo: course.modelo || "",
       objetivo: course.objetivo || "",
