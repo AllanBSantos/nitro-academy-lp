@@ -1,5 +1,3 @@
-import path from "path";
-
 export default () => ({
   "users-permissions": {
     config: {
@@ -10,8 +8,8 @@ export default () => ({
     config: {
       provider: "local",
       providerOptions: {
-        sizeLimit: 1000000, 
-        uploadPath: path.resolve("/opt/render/project/src/public/uploads"),
+        sizeLimit: 1000000,
+        path: "/opt/render/project/src/public/uploads",
       },
     },
   },
