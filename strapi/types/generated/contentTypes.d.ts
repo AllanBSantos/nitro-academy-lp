@@ -476,14 +476,14 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     mentor: Schema.Attribute.Relation<'manyToOne', 'api::mentor.mentor'>;
-    modelo: Schema.Attribute.String &
+    modelo: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
-    nivel: Schema.Attribute.String &
+    nivel: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

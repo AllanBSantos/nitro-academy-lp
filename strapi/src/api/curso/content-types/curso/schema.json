@@ -83,7 +83,7 @@
       }
     },
     "nivel": {
-      "type": "string",
+      "type": "text",
       "pluginOptions": {
         "i18n": {
           "localized": true
@@ -92,7 +92,7 @@
       "required": true
     },
     "modelo": {
-      "type": "string",
+      "type": "text",
       "pluginOptions": {
         "i18n": {
           "localized": true
