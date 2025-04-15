@@ -86,10 +86,13 @@ export default function CourseContent({ course }: CourseContentProps) {
                 opts={{
                   align: "start",
                   loop: true,
+                  containScroll: "trimSnaps",
+                  dragFree: true,
+                  slidesToScroll: 1,
                 }}
                 className="w-full"
               >
-                <CarouselContent>
+                <CarouselContent className="-ml-2 md:-ml-4">
                   {course.videos.map(
                     (video: {
                       titulo: string;
@@ -97,7 +100,10 @@ export default function CourseContent({ course }: CourseContentProps) {
                       video: { url: string } | null;
                       video_url: string;
                     }) => (
-                      <CarouselItem key={video.titulo} className="w-full">
+                      <CarouselItem
+                        key={video.titulo}
+                        className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"
+                      >
                         <div className="p-4">
                           <div className="bg-white rounded-xl overflow-hidden">
                             <div className="aspect-video">
@@ -227,14 +233,17 @@ export default function CourseContent({ course }: CourseContentProps) {
                   opts={{
                     align: "start",
                     loop: true,
+                    containScroll: "trimSnaps",
+                    dragFree: true,
+                    slidesToScroll: 1,
                   }}
                   className="w-full"
                 >
-                  <CarouselContent>
+                  <CarouselContent className="-ml-2 md:-ml-4">
                     {relatedCourses.map((relatedCourse) => (
                       <CarouselItem
                         key={relatedCourse.id}
-                        className="md:basis-1/2 lg:basis-1/3"
+                        className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"
                       >
                         <div className="p-4">
                           <div className="rounded-2xl overflow-hidden">
@@ -418,16 +427,19 @@ export default function CourseContent({ course }: CourseContentProps) {
                   opts={{
                     align: "start",
                     loop: true,
+                    containScroll: "trimSnaps",
+                    dragFree: true,
+                    slidesToScroll: 1,
                   }}
                   className="w-full"
                 >
-                  <CarouselContent>
+                  <CarouselContent className="-ml-2 md:-ml-4">
                     {relatedCourses
                       .filter((c) => c.mentor.name === course.mentor.name)
                       .map((relatedCourse) => (
                         <CarouselItem
                           key={relatedCourse.id}
-                          className="md:basis-1/2 lg:basis-1/3"
+                          className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"
                         >
                           <div className="p-4">
                             <div className="rounded-2xl overflow-hidden">

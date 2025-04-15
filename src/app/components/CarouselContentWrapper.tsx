@@ -34,16 +34,19 @@ export function CarouselContentWrapper({
           <div className="relative w-full">
             <CdnCarousel
               opts={{
-                align: "center",
+                align: "start",
                 loop: true,
+                containScroll: "trimSnaps",
+                dragFree: true,
+                slidesToScroll: 1,
               }}
               className="w-full"
             >
-              <CarouselContent className="-ml-4">
+              <CarouselContent className="-ml-2 md:-ml-4">
                 {cardsContent.map((props) => (
                   <CarouselItem
                     key={props.id}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 h-[1100px]"
+                    className="pl-2 md:pl-4 basis-[95%] md:basis-[48%] lg:basis-[32%] h-[1100px]"
                   >
                     <div className="h-full">
                       <Card
