@@ -33,15 +33,15 @@ export default function TimeSelectionSection({
       <div className="max-w-3xl mx-auto px-4 text-center">
         <h2 className="text-white text-2xl mb-2">{t("only")}</h2>
         <div className="text-white text-6xl font-bold mb-4">
-          {locale === "pt-BR" ? "R$" : "$"}{" "}
+          {locale === "pt" ? "R$" : "USD"}{" "}
           {course.price.installment.toFixed(2).replace(".", ",")}
         </div>
         <p className="text-white text-xl mb-8">
           {t("payment_options", {
             installment: `${
-              locale === "pt-BR" ? "R$" : "$"
+              locale === "pt" ? "R$" : "USD"
             } ${course.price.installment.toFixed(2).replace(".", ",")}`,
-            total: `${locale === "pt-BR" ? "R$" : "$"} ${course.price.total
+            total: `${locale === "pt" ? "R$" : "USD"} ${course.price.total
               .toFixed(2)
               .replace(".", ",")}`,
             installments: course.price.installments,
