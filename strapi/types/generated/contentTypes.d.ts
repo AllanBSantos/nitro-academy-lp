@@ -504,7 +504,6 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     parcelas: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
