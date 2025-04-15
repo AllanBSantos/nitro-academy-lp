@@ -32,7 +32,7 @@ export default function TimeSelectionSection({
     <section className="w-full bg-[#1e1b4b] py-16 -mt-[48px]">
       <div className="max-w-3xl mx-auto px-4 text-center">
         <h2 className="text-white text-2xl mb-2">{t("only")}</h2>
-        <div className="text-white text-6xl font-bold mb-4">
+        <div className="text-white text-5xl font-bold mb-4">
           {locale === "pt" ? "R$" : "USD"}{" "}
           {course.price.installment.toFixed(2).replace(".", ",")}
         </div>
