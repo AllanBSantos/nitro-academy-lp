@@ -34,19 +34,23 @@ export default function TimeSelectionSection({
         <h2 className="text-white text-2xl mb-2">{t("only")}</h2>
         <div className="text-white text-5xl font-bold mb-4">
           {locale === "pt" ? "R$" : "USD"}{" "}
-          {course.price.installment.toFixed(2).replace(".", ",")}
+          {course.price.installments
+            ? course.price.installment.toFixed(2).replace(".", ",")
+            : course.price.total.toFixed(2).replace(".", ",")}
         </div>
-        <p className="text-white text-xl mb-8">
-          {t("payment_options", {
-            installment: `${
-              locale === "pt" ? "R$" : "USD"
-            } ${course.price.installment.toFixed(2).replace(".", ",")}`,
-            total: `${locale === "pt" ? "R$" : "USD"} ${course.price.total
-              .toFixed(2)
-              .replace(".", ",")}`,
-            installments: course.price.installments,
-          })}
-        </p>
+        {course.price.installments ? (
+          <p className="text-white text-md mb-8">
+            {t("payment_options", {
+              installment: `${
+                locale === "pt" ? "R$" : "USD"
+              } ${course.price.installment.toFixed(2).replace(".", ",")}`,
+              total: `${locale === "pt" ? "R$" : "USD"} ${course.price.total
+                .toFixed(2)
+                .replace(".", ",")}`,
+              installments: course.price.installments,
+            })}
+          </p>
+        ) : null}
 
         <p className="text-white text-xl mb-6">
           <span className="font-bold">{t("select")}</span> {t("best_time")}{" "}
