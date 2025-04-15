@@ -6,8 +6,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Card, { CardProps } from "@/components/Card";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 interface CarouselContentWrapperProps {
   cardsContent: CardProps[];
@@ -17,7 +15,6 @@ interface CarouselContentWrapperProps {
 
 export function CarouselContentWrapper({
   cardsContent,
-  learnMoreLabel,
   chooseProjectLabel,
 }: CarouselContentWrapperProps) {
   return (

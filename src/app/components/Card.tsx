@@ -7,6 +7,22 @@ import { Button } from "./ui/button";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 
+export interface Video {
+  titulo: string;
+  descricao: string;
+  video_url: string;
+  video: {
+    url: string;
+  } | null;
+}
+
+export interface Schedule {
+  dia: string;
+  horario: string;
+  data_inicio: string;
+  data_fim?: string;
+}
+
 export interface CardProps {
   id: string;
   slug: string;
@@ -38,8 +54,8 @@ export interface CardProps {
   tarefa_de_casa: string;
   link_pagamento: string;
   topicosRelacionados: string[];
-  videos: any[];
-  cronograma: any[];
+  videos: Video[];
+  cronograma: Schedule[];
   moeda: "Real" | "Dólar";
 }
 
