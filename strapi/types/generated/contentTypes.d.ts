@@ -483,6 +483,9 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    moeda: Schema.Attribute.Enumeration<['Real', 'D\u00F3lar']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Real'>;
     nivel: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{

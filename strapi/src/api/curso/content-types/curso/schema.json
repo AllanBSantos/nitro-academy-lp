@@ -180,6 +180,15 @@
     "link_pagamento": {
       "type": "string",
       "required": true
+    },
+    "moeda": {
+      "type": "enumeration",
+      "enum": [
+        "Real",
+        "Dólar"
+      ],
+      "required": true,
+      "default": "Real"
     }
   }
 }

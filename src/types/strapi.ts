@@ -110,6 +110,7 @@ export interface Course {
   locale: string;
   slug: string;
   link_pagamento: string | null;
+  moeda: "Real" | "Dólar";
   imagem: {
     url: string;
   } | null;

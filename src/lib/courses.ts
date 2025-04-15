@@ -57,6 +57,7 @@ export async function getCardsContent(
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
+      moeda: course.moeda || "Real",
     };
   });
 }

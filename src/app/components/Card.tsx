@@ -10,18 +10,18 @@ import { useParams } from "next/navigation";
 export interface CardProps {
   id: string;
   slug: string;
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
   mentor: {
     name: string;
     image: string;
     students: number;
     courses: number;
-    profissao?: string;
-    nota?: number;
-    avaliacoes?: number;
-    descricao?: string;
-    instagram?: string;
+    profissao: string;
+    nota: number;
+    avaliacoes: number;
+    descricao: string;
+    instagram: string;
   };
   rating: number | null;
   price: {
@@ -30,28 +30,17 @@ export interface CardProps {
     installments: number;
   };
   image: string;
-  nivel?: string;
-  modelo?: string;
-  objetivo?: string;
-  pre_requisitos?: string;
-  projetos?: string;
-  tarefa_de_casa?: string;
-  link_pagamento?: string;
-  topicosRelacionados?: string[];
-  videos?: Array<{
-    titulo: string;
-    descricao: string;
-    video: {
-      url: string;
-    } | null;
-    video_url: string;
-  }>;
-  cronograma?: Array<{
-    data_fim: string;
-    data_inicio: string;
-    dia: string;
-    horario: string;
-  }>;
+  nivel: string;
+  modelo: string;
+  objetivo: string;
+  pre_requisitos: string;
+  projetos: string;
+  tarefa_de_casa: string;
+  link_pagamento: string;
+  topicosRelacionados: string[];
+  videos: any[];
+  cronograma: any[];
+  moeda: "Real" | "Dólar";
 }
 
 export default function Card({
