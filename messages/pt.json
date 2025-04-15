@@ -5,7 +5,7 @@
     "em talento": "em talento"
   },
   "Introduction": {
-    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 15 anos através de projetos práticos e estimulantes orientados por mentores experientes": "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 15 anos através de projetos práticos e estimulantes orientados por mentores experientes"
+    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes": "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes"
   },
   "MiniUniversity": {
     "Uma mini universidade": "Uma mini universidade",
@@ -99,12 +99,11 @@
     "Mais de 10 projetos para explorar": "Mais de 10 projetos para explorar."
   },
   "HowItWorks": {
-    "Se inscreva no processo seletivo": "Se inscreva no processo seletivo.",
-    "Participe de uma aula experimental": "Participe de uma aula experimental.",
-    "Receba a grade de projetos e seus horários": "Receba a grade de projetos e seus horários.",
-    "Escolha seu primeiro projeto e alavanque seu futuro": "Escolha seu primeiro projeto e alavanque seu futuro.",
-    "Como funciona?": "Como funciona?",
-    "Você só paga pelas matérias que escolher": "Você só paga pelas matérias que escolher"
+    "title": "Como funciona?",
+    "choose_course": "Escolha seu curso",
+    "enroll": "Faça sua matrícula",
+    "receive_link": "Receba o link das aulas",
+    "payment_info": "Você só paga pelas matérias que escolher"
   },
   "ChildGuy": {
     "+ Autonomia, criatividade e preparo para o futuro": "+ Autonomia, criatividade e preparo para o futuro"
@@ -118,7 +117,7 @@
   "Faq": {
     "Dúvidas?": "Dúvidas?",
     "O que é a Nitro Academy?": "O que é a Nitro Academy?",
-    "A Nitro Academy é uma escola online para alunos de 11 a 15 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "A Nitro Academy é uma escola online para alunos de 11 a 15 anos que desejam aprender além da escola tradicional. Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!",
+    "A Nitro Academy é uma escola online para alunos de 11 a 17 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "A Nitro Academy é uma escola online para alunos de 11 a 17 anos que desejam aprender além da escola tradicional. Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!",
     "Por que a Nitro é diferente?": "Por que a Nitro é diferente?",
     "Turmas reduzidas, projetos práticos e uma abordagem moderna Aqui, você desenvolve habilidades que as escolas tradicionais não ensinam": "Turmas reduzidas, projetos práticos e uma abordagem moderna. Aqui, você desenvolve habilidades que as escolas tradicionais não ensinam",
     "Por que a Nitro é diferente? 2": "Por que a Nitro é diferente? 2",

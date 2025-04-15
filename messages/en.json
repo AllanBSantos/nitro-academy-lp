@@ -5,7 +5,7 @@
     "em talento": "into talent"
   },
   "Introduction": {
-    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 15 anos através de projetos práticos e estimulantes orientados por mentores experientes": "Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 15 through practical and stimulating projects guided by experienced mentors"
+    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes": "Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 15 through practical and stimulating projects guided by experienced mentors"
   },
   "MiniUniversity": {
     "Uma mini universidade": "A mini university",
@@ -99,12 +99,11 @@
     "Mais de 10 projetos para explorar": "Over 10 projects to explore."
   },
   "HowItWorks": {
-    "Se inscreva no processo seletivo": "Apply for the selection process.",
-    "Participe de uma aula experimental": "Participate in a trial class.",
-    "Receba a grade de projetos e seus horários": "Get the project grid and its schedule.",
-    "Escolha seu primeiro projeto e alavanque seu futuro": "Choose your first project and boost your future.",
-    "Como funciona?": "How it works?",
-    "Você só paga pelas matérias que escolher": "You only pay for the subjects you choose."
+    "title": "How it works?",
+    "choose_course": "Choose your course",
+    "enroll": "Enroll",
+    "receive_link": "Receive the class link",
+    "payment_info": "You only pay for the subjects you choose"
   },
   "ChildGuy": {
     "+ Autonomia, criatividade e preparo para o futuro": "+ Autonomy, creativity, and future readiness"
@@ -118,7 +117,7 @@
   "Faq": {
     "Dúvidas?": "Do you have any questions?",
     "O que é a Nitro Academy?": "What is Nitro Academy?",
-    "A Nitro Academy é uma escola online para alunos de 11 a 15 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "Nitro Academy is an online school for students aged 11 to 15 who want to learn beyond traditional school. With dynamic classes, small groups, and a project-based approach, our students develop creativity, leadership, critical thinking, and much more!",
+    "A Nitro Academy é uma escola online para alunos de 11 a 17 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "Nitro Academy is an online school for students aged 11 to 15 who want to learn beyond traditional school. With dynamic classes, small groups, and a project-based approach, our students develop creativity, leadership, critical thinking, and much more!",
     "Por que a Nitro é diferente?": "Why is Nitro different?",
     "Turmas reduzidas, projetos práticos e uma abordagem moderna Aqui, você desenvolve habilidades que as escolas tradicionais não ensinam": "Small classes, practical projects, and a modern approach. Here, you develop skills that traditional schools don't teach.",
     "Por que a Nitro é diferente? 2": "Why is Nitro different? 2",

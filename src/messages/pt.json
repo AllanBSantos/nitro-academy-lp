@@ -1,5 +1,12 @@
 {
   "Course": {
     "you_may_also_like": "Você também pode se interessar por"
+  },
+  "HowItWorks": {
+    "Como funciona?": "Como funciona?",
+    "Escolha seu curso": "Escolha seu curso",
+    "Faça sua matrícula": "Faça sua matrícula",
+    "Receba o link das aulas": "Receba o link das aulas",
+    "Você só paga pelas matérias que escolher": "Você só paga pelas matérias que escolher"
   }
 }

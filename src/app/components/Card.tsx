@@ -120,7 +120,7 @@ export default function Card({
 
         <div className="flex flex-col gap-4 sm:gap-6 mt-auto">
           <Link href={`/${locale}/curso/${slug}`} className="block w-full">
-            <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white py-3 px-6 rounded-full text-lg font-medium transition-colors duration-200">
+            <Button className="w-full bg-background hover:bg-white/20 text-white py-3 px-6 rounded-full text-lg font-medium transition-colors duration-200">
               {commonT("more_info")}
             </Button>
           </Link>

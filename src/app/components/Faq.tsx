@@ -16,7 +16,7 @@ const getQuestions = (t: (value: string) => string): FaqItem[] => [
   {
     question: "O que é a Nitro Academy?",
     answer:
-      "A Nitro Academy é uma escola online para alunos de 11 a 15 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!",
+      "A Nitro Academy é uma escola online para alunos de 11 a 17 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!",
   },
   {
     question: "Por que a Nitro é diferente?",
@@ -86,13 +86,6 @@ export default function Faq() {
           </AccordionItem>
         ))}
       </Accordion>
-      <div className="flex w-full items-center justify-center pt-14">
-        <Link href="https://escola.nitro.academy">
-          <Button className="rounded-xl bg-background text-lg font-bold py-8 px-12 hover:bg-[#0c0c25] transition-colors duration-200">
-            {t("Saiba mais")}
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 }

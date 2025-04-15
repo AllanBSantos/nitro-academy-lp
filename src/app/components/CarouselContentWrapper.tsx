@@ -66,16 +66,6 @@ export function CarouselContentWrapper({
           </div>
         </div>
       </section>
-      <div className="flex items-center justify-center w-full max-w-[1400px] pt-8 sm:pt-14 px-4">
-        <Link
-          href="https://wa.me/5511975809082?text=Visitei%20o%20site%20da%20Nitro%20Academy%20e%20queria%20saber%20mais%1"
-          className="w-full sm:w-auto"
-        >
-          <Button className="w-full sm:w-auto rounded-xl bg-background text-base sm:text-lg font-bold py-6 sm:py-8 px-6 sm:px-12 hover:bg-[#0c0c25] transition-colors duration-200">
-            {learnMoreLabel}
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 }
