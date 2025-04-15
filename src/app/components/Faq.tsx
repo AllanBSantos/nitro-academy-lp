@@ -41,11 +41,6 @@ const getQuestions = (t: (value: string) => string): FaqItem[] => [
       "Nossa abordagem é centrada no aluno Com projetos práticos, os adolescentes aplicam conhecimentos em desafios reais, como criar um negócio sustentável ou programar um jogo educativo Não ensinamos para provas – ensinamos para a vida",
   },
   {
-    question: "Haverá Semana Intensiva Presencial?",
-    answer:
-      "Uma vez por ano, famílias de todo o Brasil se reúnem para uma semana de imersão! Palestras inspiradoras, workshops para pais e atividades colaborativas para os alunos É a chance de conectar-se com outras famílias que valorizam educação inovadora A participação é opcional",
-  },
-  {
     question:
       "Como saberei sobre o desenvolvimento que o meu filho está tendo na Nitro Academy?",
     answer:
