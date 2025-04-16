@@ -7,7 +7,7 @@ export async function getCardsContent(
   if (locale === "pt") {
     locale = "pt-BR";
   }
-  const courses = await fetchCourses(locale);
+  const courses = await fetchCourses();
 
   const shuffledCourses = [...courses].sort(() => Math.random() - 0.5);
 
