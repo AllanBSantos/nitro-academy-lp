@@ -58,29 +58,33 @@ export default function TimeSelectionSection({
         </p>
 
         <div className="space-y-4 max-w-md mx-auto mb-8">
-          {schedules.map((schedule) => (
-            <button
-              key={`${schedule.dia}-${schedule.horario}`}
-              onClick={() =>
-                setSelectedTime(`${schedule.dia}-${schedule.horario}`)
-              }
-              className={`w-full py-4 px-8 rounded-[24px] text-xl font-medium transition-colors duration-300 ${
-                selectedTime === `${schedule.dia}-${schedule.horario}`
-                  ? "bg-orange-600 text-white"
-                  : "border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white"
-              }`}
-            >
-              <div className="flex flex-col items-center">
-                <div>
-                  {schedule.dia} {schedule.horario}
+          {schedules.map((schedule, index) => (
+            <div key={`${schedule.dia}-${schedule.horario}`}>
+              <button
+                onClick={() =>
+                  setSelectedTime(`${schedule.dia}-${schedule.horario}`)
+                }
+                className={`w-full py-4 px-8 rounded-[24px] text-xl font-medium transition-colors duration-300 ${
+                  selectedTime === `${schedule.dia}-${schedule.horario}`
+                    ? "bg-orange-600 text-white"
+                    : "border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white"
+                }`}
+              >
+                <div className="text-sm mt-1 text-white mb-2 font-bold">
+                  {t("class")} {index + 1} - {schedule.faixa_etaria}
                 </div>
-                <div className="text-sm mt-1">
-                  {t("start_date")}: {formatDate(schedule.data_inicio)}
-                  {schedule.data_fim &&
-                    ` ${t("end_date")}: ${formatDate(schedule.data_fim)}`}
+                <div className="flex flex-col items-center">
+                  <div>
+                    {schedule.dia} {schedule.horario}
+                  </div>
+                  <div className="text-sm mt-1">
+                    {t("start_date")}: {formatDate(schedule.data_inicio)}
+                    {schedule.data_fim &&
+                      ` ${t("end_date")}: ${formatDate(schedule.data_fim)}`}
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+            </div>
           ))}
         </div>
 

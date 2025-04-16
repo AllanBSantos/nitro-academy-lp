@@ -213,7 +213,9 @@
     "selected_course": "Curso Selecionado",
     "warranty_alt": "Garantia de 30 dias",
     "terms_agreement": "Ao clicar você aceita com os nossos",
-    "terms_link": "Termos de uso e política de privacidade"
+    "terms_link": "Termos de uso e política de privacidade",
+    "class": "Turma",
+    "age_range": "Faixa Etária"
   },
   "EnrollmentModal": {
     "title": "Formulário de Matrícula",

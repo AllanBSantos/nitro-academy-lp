@@ -21,6 +21,7 @@ export interface Schedule {
   horario: string;
   data_inicio: string;
   data_fim?: string;
+  faixa_etaria: string;
 }
 
 export interface CardProps {

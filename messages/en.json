@@ -213,7 +213,9 @@
     "selected_course": "Selected Course",
     "warranty_alt": "30-day warranty",
     "terms_agreement": "By clicking you agree to our",
-    "terms_link": "Terms of use and privacy policy"
+    "terms_link": "Terms of use and privacy policy",
+    "class": "Class",
+    "age_range": "Age Range"
   },
   "EnrollmentModal": {
     "title": "Enrollment Form",
