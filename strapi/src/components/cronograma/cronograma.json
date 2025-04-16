@@ -1,7 +1,8 @@
 {
   "collectionName": "components_cronograma_cronogramas",
   "info": {
-    "displayName": "cronograma"
+    "displayName": "cronograma",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -16,6 +17,9 @@
     },
     "data_fim": {
       "type": "date"
+    },
+    "faixa_etaria": {
+      "type": "string"
     }
   }
 }

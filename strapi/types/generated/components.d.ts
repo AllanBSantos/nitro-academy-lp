@@ -3,12 +3,14 @@ import type { Schema, Struct } from '@strapi/strapi';
 export interface CronogramaCronograma extends Struct.ComponentSchema {
   collectionName: 'components_cronograma_cronogramas';
   info: {
+    description: '';
     displayName: 'cronograma';
   };
   attributes: {
     data_fim: Schema.Attribute.Date;
     data_inicio: Schema.Attribute.Date;
     dia: Schema.Attribute.String;
+    faixa_etaria: Schema.Attribute.String;
     horario: Schema.Attribute.String;
   };
 }
