@@ -1,6 +1,6 @@
 import path from "path";
 
-export default ({ env }) => {
+const plugins = ({ env }) => {
   const isProduction = env("NODE_ENV") === "production";
 
   return {
@@ -22,10 +22,11 @@ export default ({ env }) => {
         : {
             provider: "local",
             providerOptions: {
-              sizeLimit: 1000000,
               uploadPath: path.resolve(__dirname, "..", "..", "public/uploads"),
             },
           },
     },
   };
 };
+
+export default plugins;
