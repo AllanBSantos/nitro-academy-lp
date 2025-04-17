@@ -9,7 +9,6 @@ import MiniUniversity from "@/components/text-cards/MiniUniversity";
 import ChildGirl from "@/components/image-cards/ChildGirl";
 import HaveYouImagined from "@/components/text-cards/HaveYouImagined";
 import OurApproach from "@/components/text-cards/OurApproach";
-import TeenGirl from "@/components/image-cards/TeenGirl";
 import WhyChooseNitro from "@/components/text-cards/WhyChooseNitro";
 import Perks from "@/components/text-cards/Perks";
 import HowItWorks from "@/components/text-cards/HowItWorks";
@@ -30,7 +29,6 @@ export default function Home({ params }: { params: { locale: string } }) {
       <ChildGirl />
       <HaveYouImagined />
       <OurApproach />
-      <TeenGirl />
       <CarouselClient locale={params.locale} />
       <WhyChooseNitro />
       <div className="bg-theme-orange">
