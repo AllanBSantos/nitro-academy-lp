@@ -268,5 +268,9 @@
         "description": "Giovana's father"
       }
     }
+  },
+  "Footer": {
+    "home": "Home",
+    "about_us": "About Us"
   }
 }

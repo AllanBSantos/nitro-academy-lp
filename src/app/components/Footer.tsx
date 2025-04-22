@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
   const params = useParams();
   const locale = (params?.locale as string) || "pt"; // Default to 'pt' if no locale
+  const t = useTranslations("Footer");
 
   return (
     <>
@@ -63,13 +65,13 @@ export default function Footer() {
               href={`/${locale}`}
               className="text-white hover:text-[#03A9F4] transition-colors"
             >
-              Home
+              {t("home")}
             </Link>
             <Link
               href={`/${locale}/about-us`}
               className="text-white hover:text-[#03A9F4] transition-colors"
             >
-              Sobre Nós
+              {t("about_us")}
             </Link>
           </div>
         </div>

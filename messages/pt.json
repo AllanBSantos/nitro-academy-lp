@@ -268,5 +268,9 @@
         "description": "Pai da Giovana"
       }
     }
+  },
+  "Footer": {
+    "home": "Home",
+    "about_us": "Sobre Nós"
   }
 }
