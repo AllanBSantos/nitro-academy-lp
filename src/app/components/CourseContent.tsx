@@ -158,6 +158,15 @@ export default function CourseContent({ course }: CourseContentProps) {
               </div>
             )}
 
+            <div>
+              <h2 className="text-2xl font-bold mb-2">{t("language.label")}</h2>
+              <p className="text-lg">
+                {course.moeda === "Real"
+                  ? t("language.portuguese")
+                  : t("language.english")}
+              </p>
+            </div>
+
             {course.objetivo && (
               <div>
                 <h2 className="text-2xl font-bold mb-2">

@@ -74,6 +74,11 @@
       "reviews_label": "Reviews",
       "students_label": "Students",
       "courses_label": "Courses"
+    },
+    "language": {
+      "label": "Language",
+      "portuguese": "Brazilian Portuguese",
+      "english": "English"
     }
   },
   "WhyChooseNitro": {
