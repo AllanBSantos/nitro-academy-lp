@@ -53,6 +53,7 @@ export interface CardProps {
   pre_requisitos: string;
   projetos: string;
   tarefa_de_casa: string;
+  informacoes_adicionais: string;
   link_pagamento: string;
   topicosRelacionados: string[];
   videos: Video[];

@@ -68,7 +68,16 @@ export default function CourseContent({ course }: CourseContentProps) {
                 {t("mentor.label")}: {course.mentor.name}
               </span>
             </div>
-            <p className="text-lg">{course.description || ""}</p>
+            <p className="text-lg whitespace-pre-line">
+              {course.description || ""}
+            </p>
+            {course.informacoes_adicionais && (
+              <div className="mt-6">
+                <p className="text-lg whitespace-pre-line">
+                  {course.informacoes_adicionais}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>

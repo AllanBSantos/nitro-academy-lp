@@ -472,6 +472,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    informacoes_adicionais: Schema.Attribute.Text;
     link_pagamento: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;

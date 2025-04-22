@@ -53,6 +53,7 @@ export async function getCardsContent(
       pre_requisitos: course.pre_requisitos || "",
       projetos: course.projetos || "",
       tarefa_de_casa: course.tarefa_de_casa || "",
+      informacoes_adicionais: course.informacoes_adicionais || "",
       link_pagamento: course.link_pagamento || "",
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,

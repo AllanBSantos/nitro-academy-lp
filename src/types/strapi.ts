@@ -104,6 +104,7 @@ export interface Course {
   preco: number;
   parcelas: number;
   destaques: string | null;
+  informacoes_adicionais: string | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
