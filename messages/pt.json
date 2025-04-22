@@ -242,5 +242,31 @@
   },
   "Terms": {
     "title": "Termos de Uso e Política de Privacidade"
+  },
+  "Reviews": {
+    "title": "O que nossos alunos e pais estão dizendo",
+    "years": "anos",
+    "reviews": {
+      "cecilia": {
+        "name": "Cecília",
+        "comment": "A professora interage bastante, foi muito bom!",
+        "description": "13 anos"
+      },
+      "giovana": {
+        "name": "Giovana",
+        "comment": "Gostei bastante da experiência.",
+        "description": "13 anos"
+      },
+      "alessandra": {
+        "name": "Alessandra",
+        "comment": "Ela adorou a aula! A professora foi muito dinâmica e divertida",
+        "description": "Mãe da Cecília"
+      },
+      "valdecir": {
+        "name": "Valdecir",
+        "comment": "Esse trabalho é maravilhoso, muito bom! Vai ajudar muitos adolescentes.",
+        "description": "Pai da Giovana"
+      }
+    }
   }
 }

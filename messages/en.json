@@ -242,5 +242,31 @@
   },
   "Terms": {
     "title": "Terms of Use and Privacy Policy"
+  },
+  "Reviews": {
+    "title": "What our students and parents are saying",
+    "years": "years",
+    "reviews": {
+      "cecilia": {
+        "name": "Cecilia",
+        "comment": "The teacher interacts a lot, it was great!",
+        "description": "13 years"
+      },
+      "giovana": {
+        "name": "Giovana",
+        "comment": "I really enjoyed the experience.",
+        "description": "13 years"
+      },
+      "alessandra": {
+        "name": "Alessandra",
+        "comment": "She loved the class! The teacher was very dynamic and fun",
+        "description": "Cecilia's mother"
+      },
+      "valdecir": {
+        "name": "Valdecir",
+        "comment": "This work is wonderful, very good! It will help many teenagers.",
+        "description": "Giovana's father"
+      }
+    }
   }
 }
