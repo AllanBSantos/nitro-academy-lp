@@ -14,6 +14,7 @@ import Parents from "@/components/image-cards/Parents";
 import Reviews from "@/components/Reviews";
 import Faq from "@/components/Faq";
 import CarouselClient from "@/components/CarouselClient";
+import Perks from "../components/text-cards/Perks";
 
 export default function Home({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
@@ -26,10 +27,13 @@ export default function Home({ params }: { params: { locale: string } }) {
       <OurApproach />
       <CarouselClient locale={params.locale} />
       <WhyChooseNitro />
+      <div className="bg-theme-orange">
+        <Perks />
+      </div>
       <ChildGuy />
       <OurGoal />
       <Parents />
-      <Reviews locale={params.locale}  />
+      <Reviews locale={params.locale} />
       <Faq />
       <Footer />
     </div>
