@@ -426,10 +426,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                   target="_blank"
                   className="text-white text-lg hover:text-[#3B82F6] transition-colors"
                 >
-                  {course.mentor.instagram.replace(
-                    "https://www.instagram.com/",
-                    ""
-                  )}
+                  {course.mentor.instagram_label}
                 </Link>
               </div>
             )}

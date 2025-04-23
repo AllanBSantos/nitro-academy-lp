@@ -39,6 +39,7 @@ export async function getCardsContent(
         avaliacoes: mentor?.avaliacoes || 0,
         descricao: mentor?.descricao || "",
         instagram: mentor?.instagram || "",
+        instagram_label: mentor?.instagram_label || "",
       },
       rating: course.nota || null,
       price: {

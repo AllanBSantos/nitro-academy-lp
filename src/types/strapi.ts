@@ -124,6 +124,7 @@ export interface Course {
     alunos: number | null;
     cursos: number | null;
     instagram: string;
+    instagram_label: string;
     imagem: {
       url: string;
     } | null;

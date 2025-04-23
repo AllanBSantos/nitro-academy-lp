@@ -39,6 +39,7 @@ export interface CardProps {
     avaliacoes: number;
     descricao: string;
     instagram: string;
+    instagram_label: string;
   };
   rating: number | null;
   price: {
