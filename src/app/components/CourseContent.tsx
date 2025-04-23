@@ -28,7 +28,7 @@ export default function CourseContent({ course }: CourseContentProps) {
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const [relatedCourses, setRelatedCourses] = useState<CardProps[]>([]);
-
+  const [isMentorImageTall, setIsMentorImageTall] = useState(false);
   useEffect(() => {
     async function fetchRelatedCourses() {
       try {
@@ -322,7 +322,14 @@ export default function CourseContent({ course }: CourseContentProps) {
                   alt={course.mentor.name}
                   width={160}
                   height={160}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover ${
+                    isMentorImageTall ? "object-top" : "object-center"
+                  }`}
+                  onLoad={(e) => {
+                    const { naturalWidth, naturalHeight } = e.currentTarget;
+                    const aspectRatio = naturalHeight / naturalWidth;
+                    setIsMentorImageTall(aspectRatio > 1.5);
+                  }}
                 />
               </div>
 
