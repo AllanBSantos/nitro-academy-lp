@@ -623,6 +623,7 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    instagram_label: Schema.Attribute.String;
     listaCursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::mentor.mentor'>;

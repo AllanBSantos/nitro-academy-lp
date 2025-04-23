@@ -99,6 +99,9 @@
       "relation": "oneToMany",
       "target": "api::curso.curso",
       "mappedBy": "mentor"
+    },
+    "instagram_label": {
+      "type": "string"
     }
   }
 }
