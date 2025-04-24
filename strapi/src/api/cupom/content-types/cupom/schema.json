@@ -10,6 +10,9 @@
     "draftAndPublish": true
   },
   "attributes": {
+    "nome_interno": {
+      "type": "string"
+    },
     "nome": {
       "type": "string",
       "required": true
@@ -25,9 +28,6 @@
     },
     "validade": {
       "type": "date"
-    },
-    "nome_interno": {
-      "type": "string"
     }
   }
 }
