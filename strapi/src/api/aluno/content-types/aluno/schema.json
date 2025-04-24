@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "alunos",
+  "info": {
+    "singularName": "aluno",
+    "pluralName": "alunos",
+    "displayName": "aluno",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "nome": {
+      "type": "string",
+      "required": true
+    },
+    "data_nascimento": {
+      "type": "date",
+      "required": true
+    },
+    "responsavel": {
+      "type": "string",
+      "required": true
+    },
+    "email_responsavel": {
+      "type": "string",
+      "required": true
+    },
+    "cpf_responsavel": {
+      "type": "string",
+      "required": true
+    },
+    "telefone_responsavel": {
+      "type": "string",
+      "required": true
+    },
+    "pais": {
+      "type": "string",
+      "required": true
+    },
+    "estado": {
+      "type": "string",
+      "required": true
+    },
+    "cidade": {
+      "type": "string",
+      "required": true
+    },
+    "telefone_aluno": {
+      "type": "string"
+    },
+    "cursos": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::curso.curso",
+      "inversedBy": "alunos"
+    }
+  }
+}

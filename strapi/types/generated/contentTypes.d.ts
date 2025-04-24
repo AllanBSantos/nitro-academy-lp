@@ -369,6 +369,42 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
+  collectionName: 'alunos';
+  info: {
+    description: '';
+    displayName: 'aluno';
+    pluralName: 'alunos';
+    singularName: 'aluno';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    cidade: Schema.Attribute.String & Schema.Attribute.Required;
+    cpf_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cursos: Schema.Attribute.Relation<'manyToMany', 'api::curso.curso'>;
+    data_nascimento: Schema.Attribute.Date & Schema.Attribute.Required;
+    email_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
+    estado: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'> &
+      Schema.Attribute.Private;
+    nome: Schema.Attribute.String & Schema.Attribute.Required;
+    pais: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    responsavel: Schema.Attribute.String & Schema.Attribute.Required;
+    telefone_aluno: Schema.Attribute.String;
+    telefone_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
   collectionName: 'avaliacoes';
   info: {
@@ -474,6 +510,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    alunos: Schema.Attribute.Relation<'manyToMany', 'api::aluno.aluno'>;
     avaliacoes: Schema.Attribute.Relation<
       'oneToMany',
       'api::avaliacao.avaliacao'
@@ -1194,6 +1231,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::aluno.aluno': ApiAlunoAluno;
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::cupom.cupom': ApiCupomCupom;
       'api::curso.curso': ApiCursoCurso;

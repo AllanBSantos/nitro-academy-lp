@@ -15,7 +15,6 @@ export async function fetchCourses(
     }
 
     const data = await response.json();
-    console.log("data", data);
     return data.data;
   } catch (error) {
     console.error("Error fetching courses:", error);
@@ -60,4 +59,54 @@ export async function fetchReviews(courseId: string): Promise<Review[]> {
 
   const { data } = await response.json();
   return data;
+}
+
+export async function createStudent(data: {
+  nome: string;
+  data_nascimento: string;
+  responsavel: string;
+  email_responsavel: string;
+  cpf_responsavel: string;
+  telefone_responsavel: string;
+  pais: string;
+  estado: string;
+  cidade: string;
+  telefone_aluno?: string;
+  curso: number;
+}) {
+  try {
+    const createResponse = await fetch(`${STRAPI_API_URL}/api/alunos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: {
+          nome: data.nome,
+          data_nascimento: data.data_nascimento,
+          responsavel: data.responsavel,
+          email_responsavel: data.email_responsavel,
+          cpf_responsavel: data.cpf_responsavel,
+          telefone_responsavel: data.telefone_responsavel,
+          pais: data.pais,
+          estado: data.estado,
+          cidade: data.cidade,
+          telefone_aluno: data.telefone_aluno,
+          cursos: [data.curso],
+          publishedAt: new Date().toISOString(),
+        },
+      }),
+    });
+
+    if (!createResponse.ok) {
+      const errorData = await createResponse.json();
+      console.error("Strapi error response:", errorData);
+      throw new Error(`Failed to create student: ${JSON.stringify(errorData)}`);
+    }
+
+    return await createResponse.json();
+  } catch (error) {
+    console.error("Error creating student:", error);
+    throw error;
+  }
 }

@@ -94,6 +94,7 @@ export default function TimeSelectionSection({
             selectedTime={selectedTime}
             paymentLink={course.link_pagamento}
             cupons={course.cupons}
+            courseId={parseInt(course.id)}
           />
           <div className="sm:absolute sm:right-0 sm:translate-x-1/2 mt-4 sm:mt-0">
             <Image

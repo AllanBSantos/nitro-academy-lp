@@ -14,6 +14,7 @@ import { Label } from "../../components/ui/label";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
+import { createStudent } from "@/lib/strapi";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -25,6 +26,7 @@ interface EnrollmentModalProps {
     valido: boolean;
     validade: string;
   }>;
+  courseId: number;
 }
 
 export default function EnrollmentModal({
@@ -32,6 +34,7 @@ export default function EnrollmentModal({
   selectedTime,
   paymentLink,
   cupons = [],
+  courseId,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -111,7 +114,8 @@ export default function EnrollmentModal({
     `;
 
     try {
-      const response = await fetch("/api/send-email", {
+      // Enviar email
+      const emailResponse = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -123,18 +127,33 @@ export default function EnrollmentModal({
         }),
       });
 
-      if (response.ok) {
-        setIsOpen(false);
-        if (appliedCoupon) {
-          window.location.href = appliedCoupon.url;
-        } else if (paymentLink) {
-          window.location.href = paymentLink;
-        }
-      } else {
-        alert(modalT("errors.submit"));
+      if (!emailResponse.ok) {
+        throw new Error("Failed to send email");
+      }
+
+      // Criar aluno no Strapi
+      await createStudent({
+        nome: formData.studentName,
+        data_nascimento: formData.studentBirthDate,
+        responsavel: formData.guardianName,
+        email_responsavel: formData.guardianEmail,
+        cpf_responsavel: formData.guardianCPF,
+        telefone_responsavel: formData.guardianPhone,
+        pais: formData.country,
+        estado: formData.state,
+        cidade: formData.city,
+        telefone_aluno: formData.studentPhone,
+        curso: courseId,
+      });
+
+      setIsOpen(false);
+      if (appliedCoupon) {
+        window.location.href = appliedCoupon.url;
+      } else if (paymentLink) {
+        window.location.href = paymentLink;
       }
     } catch (error) {
-      console.error("Error sending email:", error);
+      console.error("Error in enrollment process:", error);
       alert(modalT("errors.submit"));
     } finally {
       setIsLoading(false);
