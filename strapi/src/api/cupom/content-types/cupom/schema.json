@@ -4,13 +4,14 @@
   "info": {
     "singularName": "cupom",
     "pluralName": "cupoms",
-    "displayName": "Cupom"
+    "displayName": "Cupom",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "nome_interno": {
+    "title": {
       "type": "string"
     },
     "nome": {

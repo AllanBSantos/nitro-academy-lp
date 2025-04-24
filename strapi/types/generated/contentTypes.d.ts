@@ -465,6 +465,7 @@ export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
 export interface ApiCupomCupom extends Struct.CollectionTypeSchema {
   collectionName: 'cupoms';
   info: {
+    description: '';
     displayName: 'Cupom';
     pluralName: 'cupoms';
     singularName: 'cupom';
@@ -480,8 +481,8 @@ export interface ApiCupomCupom extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::cupom.cupom'> &
       Schema.Attribute.Private;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
-    nome_interno: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
