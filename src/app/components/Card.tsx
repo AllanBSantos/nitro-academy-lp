@@ -60,6 +60,12 @@ export interface CardProps {
   videos: Video[];
   cronograma: Schedule[];
   moeda: "Real" | "Dólar";
+  cupons: Array<{
+    nome: string;
+    url: string;
+    valido: boolean;
+    validade: string;
+  }>;
 }
 
 export default function Card({

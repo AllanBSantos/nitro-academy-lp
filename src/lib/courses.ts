@@ -60,6 +60,7 @@ export async function getCardsContent(
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
       moeda: course.moeda || "Real",
+      cupons: course.cupons || [],
     };
   });
 }

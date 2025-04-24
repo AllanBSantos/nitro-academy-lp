@@ -192,6 +192,11 @@
     },
     "informacoes_adicionais": {
       "type": "text"
+    },
+    "cupons": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::cupom.cupom"
     }
   }
 }

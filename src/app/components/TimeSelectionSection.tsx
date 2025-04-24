@@ -93,6 +93,7 @@ export default function TimeSelectionSection({
             courseName={course.title || t("selected_course")}
             selectedTime={selectedTime}
             paymentLink={course.link_pagamento}
+            cupons={course.cupons}
           />
           <div className="sm:absolute sm:right-0 sm:translate-x-1/2 mt-4 sm:mt-0">
             <Image

@@ -426,6 +426,37 @@ export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCupomCupom extends Struct.CollectionTypeSchema {
+  collectionName: 'cupoms';
+  info: {
+    displayName: 'Cupom';
+    pluralName: 'cupoms';
+    singularName: 'cupom';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::cupom.cupom'> &
+      Schema.Attribute.Private;
+    nome: Schema.Attribute.String & Schema.Attribute.Required;
+    nome_interno: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
+    validade: Schema.Attribute.Date;
+    valido: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+  };
+}
+
 export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
   collectionName: 'cursos';
   info: {
@@ -457,6 +488,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    cupons: Schema.Attribute.Relation<'oneToMany', 'api::cupom.cupom'>;
     descricao: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -1163,6 +1195,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
+      'api::cupom.cupom': ApiCupomCupom;
       'api::curso.curso': ApiCursoCurso;
       'api::mentor.mentor': ApiMentorMentor;
       'plugin::content-releases.release': PluginContentReleasesRelease;

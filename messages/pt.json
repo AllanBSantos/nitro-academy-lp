@@ -225,6 +225,11 @@
     "title": "Formulário de Matrícula",
     "enroll": "MATRICULAR AGORA",
     "loading": "Enviando...",
+    "coupon": {
+      "label": "Cupom de desconto",
+      "placeholder": "Digite seu cupom",
+      "apply": "Aplicar"
+    },
     "student": {
       "name": "Nome completo do aluno*",
       "birthDate": "Data de nascimento do aluno*",
@@ -242,7 +247,9 @@
       "city": "Cidade*"
     },
     "errors": {
-      "submit": "Erro ao enviar matrícula. Por favor, tente novamente."
+      "submit": "Erro ao enviar matrícula. Por favor, tente novamente.",
+      "invalid_coupon": "Cupom inválido",
+      "expired_coupon": "Cupom expirado ou inválido"
     }
   },
   "Terms": {

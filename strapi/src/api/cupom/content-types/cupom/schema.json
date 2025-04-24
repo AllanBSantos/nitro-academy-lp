@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cupoms",
+  "info": {
+    "singularName": "cupom",
+    "pluralName": "cupoms",
+    "displayName": "Cupom"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "nome": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "valido": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "validade": {
+      "type": "date"
+    },
+    "nome_interno": {
+      "type": "string"
+    }
+  }
+}

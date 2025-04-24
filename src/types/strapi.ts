@@ -140,4 +140,10 @@ export interface Course {
       url: string;
     } | null;
   }> | null;
+  cupons: Array<{
+    nome: string;
+    url: string;
+    valido: boolean;
+    validade: string;
+  }> | null;
 }

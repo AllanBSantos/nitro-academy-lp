@@ -13,20 +13,34 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { X } from "lucide-react";
 
 interface EnrollmentModalProps {
   courseName: string;
   selectedTime: string | null;
   paymentLink?: string;
+  cupons?: Array<{
+    nome: string;
+    url: string;
+    valido: boolean;
+    validade: string;
+  }>;
 }
 
 export default function EnrollmentModal({
   courseName,
   selectedTime,
   paymentLink,
+  cupons = [],
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    nome: string;
+    url: string;
+  } | null>(null);
+  const [couponError, setCouponError] = useState("");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
@@ -44,6 +58,34 @@ export default function EnrollmentModal({
     studentPhone: "",
   });
 
+  const handleApplyCoupon = () => {
+    setCouponError("");
+    const coupon = cupons.find(
+      (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
+    );
+
+    if (!coupon) {
+      setCouponError(modalT("errors.invalid_coupon"));
+      return;
+    }
+
+    const today = new Date();
+    const validade = new Date(coupon.validade);
+
+    if (!coupon.valido || today > validade) {
+      setCouponError(modalT("errors.expired_coupon"));
+      return;
+    }
+
+    setAppliedCoupon(coupon);
+    setCouponCode("");
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -51,6 +93,7 @@ export default function EnrollmentModal({
     const emailBody = `
       Nova matrícula para o curso: ${courseName}
       Horário selecionado: ${selectedTime}
+      ${appliedCoupon ? `Cupom aplicado: ${appliedCoupon.nome}` : ""}
       
       Dados do Aluno:
       Nome: ${formData.studentName}
@@ -82,15 +125,17 @@ export default function EnrollmentModal({
 
       if (response.ok) {
         setIsOpen(false);
-        if (paymentLink) {
+        if (appliedCoupon) {
+          window.location.href = appliedCoupon.url;
+        } else if (paymentLink) {
           window.location.href = paymentLink;
         }
       } else {
-        alert("Erro ao enviar matrícula. Por favor, tente novamente.");
+        alert(modalT("errors.submit"));
       }
     } catch (error) {
       console.error("Error sending email:", error);
-      alert("Erro ao enviar matrícula. Por favor, tente novamente.");
+      alert(modalT("errors.submit"));
     } finally {
       setIsLoading(false);
     }
@@ -246,6 +291,41 @@ export default function EnrollmentModal({
               }
               className="bg-[#2a2a4a] border-none text-white"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
+            <div className="flex gap-2">
+              <Input
+                id="couponCode"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                className="bg-[#2a2a4a] border-none text-white"
+                placeholder={modalT("coupon.placeholder")}
+              />
+              <Button
+                type="button"
+                onClick={handleApplyCoupon}
+                className="bg-orange-600 text-[#1e1b4b] hover:bg-orange-500"
+              >
+                {modalT("coupon.apply")}
+              </Button>
+            </div>
+            {couponError && (
+              <p className="text-red-500 text-sm">{couponError}</p>
+            )}
+            {appliedCoupon && (
+              <div className="flex items-center gap-2 bg-green-500/20 p-2 rounded">
+                <span>{appliedCoupon.nome}</span>
+                <button
+                  type="button"
+                  onClick={handleRemoveCoupon}
+                  className="text-white hover:text-red-500"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
           </div>
 
           <Button

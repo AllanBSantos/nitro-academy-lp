@@ -225,6 +225,11 @@
     "title": "Enrollment Form",
     "enroll": "ENROLL NOW",
     "loading": "Sending...",
+    "coupon": {
+      "label": "Discount coupon",
+      "placeholder": "Enter your coupon",
+      "apply": "Apply"
+    },
     "student": {
       "name": "Student's full name*",
       "birthDate": "Student's birth date*",
@@ -242,7 +247,9 @@
       "city": "City*"
     },
     "errors": {
-      "submit": "Error sending enrollment. Please try again."
+      "submit": "Error sending enrollment. Please try again.",
+      "invalid_coupon": "Invalid coupon",
+      "expired_coupon": "Coupon expired or invalid"
     }
   },
   "Terms": {
