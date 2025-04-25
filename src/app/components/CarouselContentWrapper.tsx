@@ -6,6 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Card, { CardProps } from "@/components/Card";
+import CardVariant from "@/components/CardVariant";
 
 interface CarouselContentWrapperProps {
   cardsContent: CardProps[];
@@ -43,10 +44,10 @@ export function CarouselContentWrapper({
                 {cardsContent.map((props) => (
                   <CarouselItem
                     key={props.id}
-                    className="pl-2 md:pl-4 basis-[95%] md:basis-[48%] lg:basis-[32%] h-[1100px]"
+                    className="pl-2 md:pl-4 basis-[95%] md:basis-[48%] lg:basis-[32%]"
                   >
                     <div className="h-full">
-                      <Card
+                      <CardVariant
                         {...props}
                         title={props.title}
                         description={props.description}

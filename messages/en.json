@@ -198,7 +198,8 @@
     "innovation": "Innovation"
   },
   "common": {
-    "more_info": "+ information"
+    "more_info": "+ information",
+    "per_class": "per class"
   },
   "TimeSelection": {
     "only": "Only",

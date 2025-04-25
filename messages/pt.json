@@ -198,7 +198,8 @@
     "innovation": "Inovação"
   },
   "common": {
-    "more_info": "+ informações"
+    "more_info": "+ informações",
+    "per_class": "por aula"
   },
   "TimeSelection": {
     "only": "Apenas",

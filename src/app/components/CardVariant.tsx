@@ -1,0 +1,208 @@
+"use client";
+
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { Button } from "./ui/button";
+import { Star, StarHalf } from "lucide-react";
+import { useParams } from "next/navigation";
+
+export interface Video {
+  titulo: string;
+  descricao: string;
+  video_url: string;
+  video: {
+    url: string;
+  } | null;
+}
+
+export interface Schedule {
+  dia: string;
+  horario: string;
+  data_inicio: string;
+  data_fim?: string;
+  faixa_etaria: string;
+}
+
+export interface CardProps {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  mentor: {
+    name: string;
+    image: string;
+    students: number;
+    courses: number;
+    profissao: string;
+    nota: number;
+    avaliacoes: number;
+    descricao: string;
+    instagram: string;
+    instagram_label: string;
+  };
+  rating: number | null;
+  price: {
+    installment: number;
+    total: number;
+    installments: number;
+    moeda: "Real" | "Dólar";
+  };
+  image: string;
+  nivel: string;
+  modelo: string;
+  objetivo: string;
+  pre_requisitos: string;
+  projetos: string;
+  tarefa_de_casa: string;
+  informacoes_adicionais: string;
+  link_pagamento: string;
+  topicosRelacionados: string[];
+  videos: Video[];
+  cronograma: Schedule[];
+  moeda: "Real" | "Dólar";
+  cupons: Array<{
+    nome: string;
+    url: string;
+    valido: boolean;
+    validade: string;
+  }>;
+}
+
+export default function Card({
+  slug,
+  title,
+  mentor,
+  rating,
+  image,
+  cronograma,
+  price,
+  moeda,
+}: CardProps) {
+  const commonT = useTranslations("common");
+  const t = useTranslations("TimeSelection");
+  const params = useParams();
+  const locale = (params?.locale as string) || "pt";
+
+  const renderStars = (rating: number) => {
+    if (!rating) return null;
+
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <Star
+          key={`full-${i}`}
+          className="w-4 h-4 fill-[#FFD700] text-[#FFD700]"
+        />
+      );
+    }
+
+    if (hasHalfStar) {
+      stars.push(
+        <StarHalf
+          key="half"
+          className="w-4 h-4 fill-[#FFD700] text-[#FFD700]"
+        />
+      );
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(
+        <Star key={`empty-${i}`} className="w-4 h-4 text-[#FFD700]" />
+      );
+    }
+
+    return stars;
+  };
+
+  const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
+  const priceClass = (price.total / 8).toFixed(2);
+  const dataInicio = cronograma?.[0]?.data_inicio || "";
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year.slice(-2)}`;
+  };
+
+  return (
+    <Link
+      href={`/${locale}/curso/${slug}`}
+      className="block h-full transition-transform hover:scale-[1.02] duration-200"
+    >
+      <div className="flex flex-col bg-white rounded-2xl overflow-hidden h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="relative h-[140px] w-full">
+          {image ? (
+            <Image
+              src={image}
+              alt={title || ""}
+              fill
+              className="object-cover"
+              priority
+              onError={(e) => {
+                console.error("Error loading image:", image);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500">No image available</span>
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 flex flex-col gap-3">
+          <div className="flex items-start justify-between">
+            <div className="flex-grow">
+              <h2 className="text-lg font-bold text-gray-800 line-clamp-2 mb-2">
+                {title}
+              </h2>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                  <Image
+                    src={mentor.image}
+                    alt={mentor.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span className="text-sm text-gray-600">{mentor.name}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {renderStars(rating || 0)}
+          </div>
+
+          <div className="flex flex-wrap gap-2 mt-1">
+            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+              {faixaEtaria}
+            </span>
+          </div>
+
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">{t("start_date")}</span>
+              <span className="text-base font-bold text-theme-orange">
+                {formatDate(dataInicio)}
+              </span>
+            </div>
+            <div className="flex flex-col items-end">
+              <span className="text-xs text-gray-500">
+                {commonT("per_class")}
+              </span>
+              <span className="text-base font-bold text-theme-orange">
+                {moeda === "Real" ? "R$" : "USD"} {priceClass}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
