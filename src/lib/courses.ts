@@ -46,6 +46,7 @@ export async function getCardsContent(
         installment: course.preco / course.parcelas || 0,
         total: course.preco || 0,
         installments: course.parcelas || 0,
+        moeda: course.moeda || "Real",
       },
       image: buildUrl(courseImage?.url),
       nivel: course.nivel || "",
@@ -61,6 +62,7 @@ export async function getCardsContent(
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
       moeda: course.moeda || "Real",
       cupons: course.cupons || [],
+      badge: course.badge || null,
     };
   });
 }

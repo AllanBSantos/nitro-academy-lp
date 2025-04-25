@@ -112,6 +112,7 @@ export interface Course {
   slug: string;
   link_pagamento: string | null;
   moeda: "Real" | "Dólar";
+  badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
   imagem: {
     url: string;
   } | null;

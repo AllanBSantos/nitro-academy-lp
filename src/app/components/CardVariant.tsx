@@ -67,6 +67,7 @@ export interface CardProps {
     valido: boolean;
     validade: string;
   }>;
+  badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
 }
 
 export default function Card({
@@ -78,6 +79,7 @@ export default function Card({
   cronograma,
   price,
   moeda,
+  badge,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
@@ -120,13 +122,77 @@ export default function Card({
   };
 
   const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
-  const priceClass = (price.total / 8).toFixed(2);
+  const priceClass = (price.total / 8)
+    .toFixed(2)
+    .replace(".", moeda === "Real" ? "," : ".");
   const dataInicio = cronograma?.[0]?.data_inicio || "";
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
     const [year, month, day] = dateString.split("-");
-    return `${day}/${month}/${year.slice(-2)}`;
+    const months = {
+      pt: {
+        "01": "Janeiro",
+        "02": "Fevereiro",
+        "03": "Março",
+        "04": "Abril",
+        "05": "Maio",
+        "06": "Junho",
+        "07": "Julho",
+        "08": "Agosto",
+        "09": "Setembro",
+        "10": "Outubro",
+        "11": "Novembro",
+        "12": "Dezembro",
+      },
+      en: {
+        "01": "January",
+        "02": "February",
+        "03": "March",
+        "04": "April",
+        "05": "May",
+        "06": "June",
+        "07": "July",
+        "08": "August",
+        "09": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December",
+      },
+    };
+    const currentLocale = locale === "pt" ? "pt" : "en";
+    return `${day} ${currentLocale === "pt" ? "de" : ""} ${
+      months[currentLocale][month as keyof typeof months.pt]
+    }`;
+  };
+
+  const getDaysRemaining = (startDate: string) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const diffTime = start.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const renderBadge = () => {
+    if (!badge) return null;
+
+    const daysRemaining = getDaysRemaining(dataInicio);
+    if (badge === "dias_faltantes" && daysRemaining < 0) return null;
+
+    const badgeText = {
+      dias_faltantes: commonT("days_remaining", {
+        days: daysRemaining.toString(),
+      }),
+      poucos_dias: commonT("few_days"),
+      poucas_vagas: commonT("few_spots"),
+    };
+
+    return (
+      <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
+        {badgeText[badge]}
+      </span>
+    );
   };
 
   return (
@@ -183,6 +249,7 @@ export default function Card({
             <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
               {faixaEtaria}
             </span>
+            {renderBadge()}
           </div>
 
           <div className="mt-2 flex items-center justify-between">

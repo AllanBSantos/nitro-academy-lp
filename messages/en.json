@@ -199,7 +199,10 @@
   },
   "common": {
     "more_info": "+ information",
-    "per_class": "per class"
+    "per_class": "per class",
+    "days_remaining": "{days} days remaining",
+    "few_days": "Last days",
+    "few_spots": "Few spots"
   },
   "TimeSelection": {
     "only": "Only",

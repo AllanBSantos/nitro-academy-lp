@@ -199,7 +199,10 @@
   },
   "common": {
     "more_info": "+ informações",
-    "per_class": "por aula"
+    "per_class": "por aula",
+    "days_remaining": "Faltam {days} dias",
+    "few_days": "Últimos dias",
+    "few_spots": "Poucas vagas"
   },
   "TimeSelection": {
     "only": "Apenas",

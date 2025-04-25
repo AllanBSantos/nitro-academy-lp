@@ -203,6 +203,14 @@
       "relation": "manyToMany",
       "target": "api::aluno.aluno",
       "mappedBy": "cursos"
+    },
+    "badge": {
+      "type": "enumeration",
+      "enum": [
+        "poucos_dias",
+        "poucas_vagas",
+        "dias_faltantes"
+      ]
     }
   }
 }

@@ -516,6 +516,9 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::avaliacao.avaliacao'
     >;
+    badge: Schema.Attribute.Enumeration<
+      ['poucos_dias', 'poucas_vagas', 'dias_faltantes']
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
