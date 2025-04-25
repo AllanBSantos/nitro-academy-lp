@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 
@@ -129,6 +128,7 @@ export default function Card({
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [year, month, day] = dateString.split("-");
     const months = {
       pt: {
