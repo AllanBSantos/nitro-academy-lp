@@ -44,7 +44,7 @@ export function CarouselContentWrapper({
                 {cardsContent.map((props) => (
                   <CarouselItem
                     key={props.id}
-                    className="pl-2 md:pl-4 basis-[95%] md:basis-[48%] lg:basis-[32%]"
+                    className="pl-2 md:pl-4 basis-[75%] md:basis-[40%] lg:basis-[25%]"
                   >
                     <div className="h-full">
                       <CardVariant
