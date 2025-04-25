@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import localFont from "next/font/local";
+import GoogleTagManager from "./components/GoogleTagManager";
 
 import "./globals.css";
 import { Metadata } from "next";
@@ -40,23 +41,31 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: PropsWithChildren) {
-
   return (
-    <html>
+    <html lang="pt-BR">
       <body
         className={`
-    ${gilroyExtrabold.variable} 
-    ${helveticaNeue.variable} 
-    ${montserratBlack.variable} 
-    ${montserratLight.variable}
-    ${montserratRegular.variable}
-
-    ${gilroyLight.variable}
-    antialiased
-    tracking-wider`}
+            ${gilroyExtrabold.variable} 
+            ${helveticaNeue.variable} 
+            ${montserratBlack.variable} 
+            ${montserratLight.variable}
+            ${montserratRegular.variable}
+            ${gilroyLight.variable}
+            antialiased
+            tracking-wider
+          `}
       >
+        <GoogleTagManager />
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-N4C5FS8S"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         {children}
       </body>
     </html>
-  )
+  );
 }
