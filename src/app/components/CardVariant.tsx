@@ -197,6 +197,7 @@ export default function Card({
 
   return (
     <Link
+      id="card-link"
       href={`/${locale}/curso/${slug}`}
       className="block h-full transition-transform hover:scale-[1.02] duration-200"
     >

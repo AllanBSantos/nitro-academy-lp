@@ -164,6 +164,7 @@ export default function EnrollmentModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          id="enrollment-button"
           className="bg-orange-600 text-[#1e1b4b] text-xl font-bold py-4 px-8 rounded-[24px] hover:bg-orange-500 transition-colors duration-300 w-full max-w-md"
           disabled={!selectedTime}
         >
@@ -349,6 +350,7 @@ export default function EnrollmentModal({
 
           <Button
             type="submit"
+            id="enrollment-button-modal"
             className="w-full bg-orange-600 text-[#1e1b4b] hover:bg-orange-500"
             disabled={isLoading}
           >
