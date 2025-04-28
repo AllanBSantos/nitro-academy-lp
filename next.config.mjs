@@ -1,49 +1,11 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
-const strapiHostname = new URL(strapiUrl).hostname;
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    unoptimized: false,
-    domains: [
-      'localhost',
-      'localhost:1337',
-      strapiHostname,
-      'nitroacademy.com.br',
-      'res.cloudinary.com'
-    ],
-    remotePatterns: [
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '1337',
-        pathname: '/uploads/**',
-      },
-      {
-        protocol: new URL(strapiUrl).protocol.replace(':', ''),
-        hostname: strapiHostname,
-        pathname: '/uploads/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'nitroacademy.com.br',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        pathname: '/dkzxwpuxf/image/upload/**',
-      }
-    ],
-    dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  },
+  images: { unoptimized: true },
   trailingSlash: true,
 
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.module.rules.push({
       test: /strapi\/.*/,
       use: "null-loader",
