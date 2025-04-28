@@ -75,13 +75,11 @@ export default function EnrollmentModal({
     const today = new Date();
     let validade: Date | null = null;
 
-    // Only check expiration date if it exists
     if (coupon.validade) {
       const [year, month, day] = coupon.validade.split("-").map(Number);
       validade = new Date(year, month - 1, day, 23, 59, 59, 999);
     }
 
-    // Check if coupon is valid and not expired (if it has an expiration date)
     if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
       setCouponError(modalT("errors.expired_coupon"));
       return;
