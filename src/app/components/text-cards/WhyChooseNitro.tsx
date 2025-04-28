@@ -2,6 +2,10 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
+interface WhyChooseNitroProps {
+  locale: string;
+}
+
 const titles = [
   "Turmas reduzidas (máximo 10 alunos)",
   "Ensino personalizado",
@@ -11,7 +15,7 @@ const titles = [
   "Uso produtivo do tempo livre",
 ];
 
-export default function WhyChooseNitro() {
+export default function WhyChooseNitro({ locale }: WhyChooseNitroProps) {
   const t = useTranslations("WhyChooseNitro");
   return (
     <div className="p-12 md:p-0 md:py-12">
@@ -26,11 +30,12 @@ export default function WhyChooseNitro() {
           >
             <div>
               <Image
-                src="logo-azul.png"
+                src={`/${locale}/logo-azul.png`}
                 alt="Logo Nitro"
                 width={64}
                 height={64}
                 className="pt-10"
+                unoptimized
               />
               <p className="font-montserrat-regular text-2xl pl-1 pr-5 pt-4 w-64">
                 {t(title)}

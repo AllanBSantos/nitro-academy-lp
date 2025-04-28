@@ -1,16 +1,22 @@
 "use client";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-export default function Parents() {
+
+interface ParentsProps {
+  locale: string;
+}
+
+export default function Parents({ locale }: ParentsProps) {
   const t = useTranslations("Parents");
   return (
     <div className="h-[40rem] flex justify-center items-end">
       <Image
-        src="parents.jpeg"
+        src={`/${locale}/parents.jpeg`}
         alt="Pais olhando para filha adolescente"
         width={300}
         height={300}
         priority={true}
+        unoptimized
         className="absolute w-full h-[40rem] object-cover brightness-[0.6]"
       />
       <h1 className="font-montserrat-regular font-bold z-10 text-xl px-10 pb-10 sm:text-3xl sm:px-28 sm:pb-20">

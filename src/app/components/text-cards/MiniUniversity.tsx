@@ -1,8 +1,11 @@
-"use client";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-export default function MiniUniversity() {
+interface MiniUniversityProps {
+  locale: string;
+}
+
+export default function MiniUniversity({ locale }: MiniUniversityProps) {
   const t = useTranslations("MiniUniversity");
   return (
     <div className=" py-10 bg-theme-orange rounded-t-2xl  font-gilroy-light font-bold text-3xl">
@@ -12,11 +15,12 @@ export default function MiniUniversity() {
       <div className="pl-10 flex flex-col justify-center gap-10 md:flex-row md:p-0">
         <div className="md:flex md:items-center md:flex-col md:text-center md:w-1/3">
           <Image
-            src="correct.svg"
+            src={`/${locale}/correct.svg`}
             width={75}
             height={75}
             alt="icone correto"
             className="w-20 h-20"
+            unoptimized
           />
           <p className="w-80 pt-5 md:w-auto">
             {t("Escolha suas matérias a cada semestre")}
@@ -24,11 +28,12 @@ export default function MiniUniversity() {
         </div>
         <div className="md:flex md:items-center md:flex-col md:text-center md:w-1/3">
           <Image
-            src="target.svg"
+            src={`/${locale}/target.svg`}
             width={75}
             height={75}
             alt="icone flecha ao alvo"
             className="w-20 h-20"
+            unoptimized
           />
           <p className="w-80 pt-5 md:w-auto">
             {t("Aprenda o que realmente interessa")}
@@ -36,11 +41,12 @@ export default function MiniUniversity() {
         </div>
         <div className="md:flex md:items-center md:flex-col md:text-center md:w-1/3">
           <Image
-            src="online-class.svg"
+            src={`/${locale}/online-class.svg`}
             width={75}
             height={75}
             alt="icone aula online"
             className="w-20 h-20"
+            unoptimized
           />
           <p className="w-80 pt-5 md:w-auto">
             {t("Aulas 100% online, interativas e ao vivo")}
