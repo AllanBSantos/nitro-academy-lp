@@ -15,7 +15,11 @@ interface TimeSelectionSectionProps {
 export default function TimeSelectionSection({
   course,
 }: TimeSelectionSectionProps) {
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(
+    course.cronograma && course.cronograma.length > 0
+      ? `${course.cronograma[0].dia}-${course.cronograma[0].horario}`
+      : null
+  );
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
