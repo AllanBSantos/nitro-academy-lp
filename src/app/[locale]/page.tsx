@@ -21,18 +21,18 @@ export default function Home({ params }: { params: { locale: string } }) {
   return (
     <div className="overflow-x-hidden">
       <Header />
-      <TeenGuy />
-      <Introduction />
-      <MiniUniversity />
+      <TeenGuy locale={params.locale} />
+      <Introduction locale={params.locale} />
+      <MiniUniversity locale={params.locale} />
       <OurApproach />
       <CarouselClient locale={params.locale} />
-      <WhyChooseNitro />
+      <WhyChooseNitro locale={params.locale} />
       <div className="bg-theme-orange">
         <Perks />
       </div>
-      <ChildGuy />
+      <ChildGuy locale={params.locale} />
       <OurGoal />
-      <Parents />
+      <Parents locale={params.locale} />
       <Reviews locale={params.locale} />
       <Faq />
       <Footer />
