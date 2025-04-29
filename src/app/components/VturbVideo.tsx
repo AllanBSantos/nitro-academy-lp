@@ -1,26 +1,14 @@
 "use client";
 
 import Script from "next/script";
+import Image from "next/image";
 import { CSSProperties } from "react";
 
 const containerStyle: CSSProperties = {
   position: "relative",
   width: "100%",
-  maxWidth: "1200px",
-  margin: "0 auto",
-  padding: "42.85% 0 0",
-  overflow: "hidden",
-};
-
-const imgStyle: CSSProperties = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: "100%",
   height: "100%",
-  objectFit: "cover",
-  display: "block",
-  borderRadius: "12px",
+  overflow: "hidden",
 };
 
 const backdropStyle: CSSProperties = {
@@ -45,20 +33,21 @@ const playerWrapperStyle: CSSProperties = {
 
 export default function VturbVideo() {
   return (
-    <div className="py-12 px-4">
+    <div className="h-full">
       <div id="vid_67dabe7b49c4b7bf82565f10" style={containerStyle}>
         <div style={playerWrapperStyle}>
-          <img
+          <Image
             id="thumb_67dabe7b49c4b7bf82565f10"
             src="https://images.converteai.net/3a4fbb06-ca28-4858-9d27-5208e40d8e6d/players/67dabe7b49c4b7bf82565f10/thumbnail.jpg"
             alt="thumbnail"
-            style={imgStyle}
+            fill
+            className="object-cover rounded-xl"
+            priority
           />
           <div id="backdrop_67dabe7b49c4b7bf82565f10" style={backdropStyle} />
         </div>
       </div>
 
-      {/* player.js da VTurb */}
       <Script
         src="https://scripts.converteai.net/3a4fbb06-ca28-4858-9d27-5208e40d8e6d/players/67dabe7b49c4b7bf82565f10/player.js"
         strategy="afterInteractive"

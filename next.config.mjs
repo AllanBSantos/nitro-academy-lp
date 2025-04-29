@@ -12,7 +12,8 @@ const nextConfig = {
       'localhost:1337',
       strapiHostname,
       'nitroacademy.com.br',
-      'res.cloudinary.com'
+      'res.cloudinary.com',
+      'images.converteai.net'
     ],
     remotePatterns: [
       {
@@ -35,6 +36,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
         pathname: '/dkzxwpuxf/image/upload/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.converteai.net',
+        pathname: '/**',
       }
     ],
     dangerouslyAllowSVG: true,
