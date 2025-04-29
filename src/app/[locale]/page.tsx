@@ -14,8 +14,7 @@ import Reviews from "@/components/Reviews";
 import Faq from "@/components/Faq";
 import CarouselClient from "@/components/CarouselClient";
 import Perks from "../components/text-cards/Perks";
-/* import VturbVideo from "@/components/VturbVideo"; */
-import MiniUniversity from "@/components/text-cards/MiniUniversity";
+import VturbVideo from "@/components/VturbVideo";
 
 export default function Home({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
@@ -24,10 +23,11 @@ export default function Home({ params }: { params: { locale: string } }) {
       <Header />
       <TeenGuy locale={params.locale} />
       <Introduction locale={params.locale} />
-      <MiniUniversity locale={params.locale} />
-      {/* <div className="bg-theme-orange">
-        <VturbVideo />
-      </div> */}
+      <div className="bg-theme-orange p-10">
+        <div className="max-w-[1200px] mx-auto h-[750px]">
+          <VturbVideo />
+        </div>
+      </div>
       <OurApproach />
       <CarouselClient locale={params.locale} />
       <WhyChooseNitro locale={params.locale} />
