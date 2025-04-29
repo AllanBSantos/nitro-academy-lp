@@ -176,187 +176,210 @@ export default function EnrollmentModal({
           {t("enroll")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] bg-[#1e1b4b] text-white border-none max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] bg-white text-[#1e1b4b] border-none max-h-[90vh] overflow-y-auto rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-6 text-orange-600">
+          <DialogTitle className="text-2xl font-bold text-center mb-6 text-[#1e1b4b]">
             {modalT("title")}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 p-4">
-          <div className="space-y-2">
-            <Label htmlFor="studentName">{modalT("student.name")}</Label>
-            <Input
-              id="studentName"
-              required
-              value={formData.studentName}
-              onChange={(e) =>
-                setFormData({ ...formData, studentName: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="studentBirthDate">
-              {modalT("student.birthDate")}
-            </Label>
-            <Input
-              id="studentBirthDate"
-              type="date"
-              required
-              value={formData.studentBirthDate}
-              onChange={(e) =>
-                setFormData({ ...formData, studentBirthDate: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="guardianName">{modalT("guardian.name")}</Label>
-            <Input
-              id="guardianName"
-              required
-              value={formData.guardianName}
-              onChange={(e) =>
-                setFormData({ ...formData, guardianName: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="guardianEmail">{modalT("guardian.email")}</Label>
-            <Input
-              id="guardianEmail"
-              type="email"
-              required
-              value={formData.guardianEmail}
-              onChange={(e) =>
-                setFormData({ ...formData, guardianEmail: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="guardianCPF">{modalT("guardian.cpf")}</Label>
-            <Input
-              id="guardianCPF"
-              required
-              value={formData.guardianCPF}
-              onChange={(e) =>
-                setFormData({ ...formData, guardianCPF: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="guardianPhone">{modalT("guardian.phone")}</Label>
-            <Input
-              id="guardianPhone"
-              type="tel"
-              required
-              value={formData.guardianPhone}
-              onChange={(e) =>
-                setFormData({ ...formData, guardianPhone: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="country">{modalT("location.country")}</Label>
-            <Input
-              id="country"
-              required
-              value={formData.country}
-              onChange={(e) =>
-                setFormData({ ...formData, country: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="state">{modalT("location.state")}</Label>
-            <Input
-              id="state"
-              required
-              value={formData.state}
-              onChange={(e) =>
-                setFormData({ ...formData, state: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="city">{modalT("location.city")}</Label>
-            <Input
-              id="city"
-              required
-              value={formData.city}
-              onChange={(e) =>
-                setFormData({ ...formData, city: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="studentPhone">{modalT("student.phone")}</Label>
-            <Input
-              id="studentPhone"
-              type="tel"
-              value={formData.studentPhone}
-              onChange={(e) =>
-                setFormData({ ...formData, studentPhone: e.target.value })
-              }
-              className="bg-[#2a2a4a] border-none text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="couponCode"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                className="bg-[#2a2a4a] border-none text-white"
-                placeholder={modalT("coupon.placeholder")}
-              />
-              <Button
-                type="button"
-                onClick={handleApplyCoupon}
-                className="bg-orange-600 text-[#1e1b4b] hover:bg-orange-500"
-              >
-                {modalT("coupon.apply")}
-              </Button>
-            </div>
-            {couponError && (
-              <p className="text-red-500 text-sm">{couponError}</p>
-            )}
-            {appliedCoupon && (
-              <div className="flex items-center gap-2 bg-green-500/20 p-2 rounded">
-                <span>{appliedCoupon.nome}</span>
-                <button
-                  type="button"
-                  onClick={handleRemoveCoupon}
-                  className="text-white hover:text-red-500"
-                >
-                  <X size={16} />
-                </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Student Information */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="studentName">{modalT("student.name")}</Label>
+                <Input
+                  id="studentName"
+                  required
+                  value={formData.studentName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, studentName: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
               </div>
-            )}
+
+              <div className="space-y-2">
+                <Label htmlFor="studentBirthDate">
+                  {modalT("student.birthDate")}
+                </Label>
+                <Input
+                  id="studentBirthDate"
+                  type="date"
+                  required
+                  value={formData.studentBirthDate}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      studentBirthDate: e.target.value,
+                    })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="studentPhone">{modalT("student.phone")}</Label>
+                <Input
+                  id="studentPhone"
+                  type="tel"
+                  value={formData.studentPhone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, studentPhone: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+            </div>
+
+            {/* Guardian Information */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="guardianName">{modalT("guardian.name")}</Label>
+                <Input
+                  id="guardianName"
+                  required
+                  value={formData.guardianName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, guardianName: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="guardianEmail">
+                  {modalT("guardian.email")}
+                </Label>
+                <Input
+                  id="guardianEmail"
+                  type="email"
+                  required
+                  value={formData.guardianEmail}
+                  onChange={(e) =>
+                    setFormData({ ...formData, guardianEmail: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="guardianCPF">{modalT("guardian.cpf")}</Label>
+                <Input
+                  id="guardianCPF"
+                  required
+                  value={formData.guardianCPF}
+                  onChange={(e) =>
+                    setFormData({ ...formData, guardianCPF: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="guardianPhone">
+                  {modalT("guardian.phone")}
+                </Label>
+                <Input
+                  id="guardianPhone"
+                  type="tel"
+                  required
+                  value={formData.guardianPhone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, guardianPhone: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Location Information */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="country">{modalT("location.country")}</Label>
+                <Input
+                  id="country"
+                  required
+                  value={formData.country}
+                  onChange={(e) =>
+                    setFormData({ ...formData, country: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="state">{modalT("location.state")}</Label>
+                <Input
+                  id="state"
+                  required
+                  value={formData.state}
+                  onChange={(e) =>
+                    setFormData({ ...formData, state: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="city">{modalT("location.city")}</Label>
+                <Input
+                  id="city"
+                  required
+                  value={formData.city}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Coupon Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="couponCode"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                  placeholder={modalT("coupon.placeholder")}
+                />
+                <Button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  className="bg-orange-600 text-white hover:bg-orange-500"
+                >
+                  {modalT("coupon.apply")}
+                </Button>
+              </div>
+              {couponError && (
+                <p className="text-red-500 text-sm">{couponError}</p>
+              )}
+              {appliedCoupon && (
+                <div className="flex items-center gap-2 bg-green-50 p-2 rounded-lg border border-green-200">
+                  <span className="text-green-700">{appliedCoupon.nome}</span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="text-green-700 hover:text-red-500"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <Button
             type="submit"
             id="enrollment-button-modal"
-            className="w-full bg-orange-600 text-[#1e1b4b] hover:bg-orange-500"
+            className="w-full bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold"
             disabled={isLoading}
           >
             {isLoading ? modalT("loading") : modalT("enroll")}

@@ -201,72 +201,74 @@ export default function Card({
       href={`/${locale}/curso/${slug}`}
       className="block h-full transition-transform hover:scale-[1.02] duration-200"
     >
-      <div className="flex flex-col bg-white rounded-2xl overflow-hidden h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <div className="relative h-[140px] w-full">
-          {image ? (
-            <Image
-              src={image}
-              alt={title || ""}
-              fill
-              className="object-cover"
-              priority
-              onError={(e) => {
-                console.error("Error loading image:", image);
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
-              <span className="text-gray-500">No image available</span>
-            </div>
-          )}
-        </div>
+      <div className="relative group">
+        <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
+          <div className="relative h-[140px] w-full">
+            {image ? (
+              <Image
+                src={image}
+                alt={title || ""}
+                fill
+                className="object-cover"
+                priority
+                onError={(e) => {
+                  console.error("Error loading image:", image);
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+                <span className="text-gray-500">No image available</span>
+              </div>
+            )}
+          </div>
 
-        <div className="p-4 flex flex-col gap-3">
-          <div className="flex items-start justify-between">
-            <div className="flex-grow">
-              <h2 className="text-lg font-bold text-gray-800 line-clamp-2 mb-2">
-                {title}
-              </h2>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="relative w-8 h-8 rounded-full overflow-hidden">
-                  <Image
-                    src={mentor.image}
-                    alt={mentor.name}
-                    fill
-                    className="object-cover"
-                  />
+          <div className="p-4 flex flex-col gap-3">
+            <div className="flex items-start justify-between">
+              <div className="flex-grow">
+                <h2 className="text-lg font-bold text-gray-800 line-clamp-2 mb-2">
+                  {title}
+                </h2>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                    <Image
+                      src={mentor.image}
+                      alt={mentor.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-sm text-gray-600">{mentor.name}</span>
                 </div>
-                <span className="text-sm text-gray-600">{mentor.name}</span>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-1">
-            {renderStars(rating || 0)}
-          </div>
-
-          <div className="flex flex-wrap gap-2 mt-1">
-            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
-              {faixaEtaria}
-            </span>
-            {renderBadge()}
-          </div>
-
-          <div className="mt-2 flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-xs text-gray-500">{t("start_date")}</span>
-              <span className="text-base font-bold text-theme-orange">
-                {formatDate(dataInicio)}
-              </span>
+            <div className="flex items-center gap-1">
+              {renderStars(rating || 0)}
             </div>
-            <div className="flex flex-col items-end">
-              <span className="text-xs text-gray-500">
-                {commonT("per_class")}
+
+            <div className="flex flex-wrap gap-2 mt-1">
+              <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+                {faixaEtaria}
               </span>
-              <span className="text-base font-bold text-theme-orange">
-                {moeda === "Real" ? "R$" : "USD"} {priceClass}
-              </span>
+              {renderBadge()}
+            </div>
+
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500">{t("start_date")}</span>
+                <span className="text-base font-bold text-theme-orange">
+                  {formatDate(dataInicio)}
+                </span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-xs text-gray-500">
+                  {commonT("per_class")}
+                </span>
+                <span className="text-base font-bold text-theme-orange">
+                  {moeda === "Real" ? "R$" : "USD"} {priceClass}
+                </span>
+              </div>
             </div>
           </div>
         </div>
