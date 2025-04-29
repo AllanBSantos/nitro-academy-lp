@@ -119,7 +119,6 @@ export default function TimeSelectionSection({
             </div>
           </div>
 
-          {/* Warranty Seal - Positioned at the bottom right of the card */}
           <div className="absolute -bottom-12 -right-16 hidden sm:block">
             <Image
               src={`/${locale}/garantia-30-dias.png`}

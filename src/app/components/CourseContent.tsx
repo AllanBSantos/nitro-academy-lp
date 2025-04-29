@@ -18,6 +18,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { convertToEmbedUrl } from "@/lib/utils";
 import CardVariant from "@/components/CardVariant";
+import CategoryModal from "./CategoryModal";
 
 interface CourseContentProps {
   course: CardProps;
@@ -86,6 +87,11 @@ export default function CourseContent({ course }: CourseContentProps) {
   const [relatedCourses, setRelatedCourses] = useState<CardProps[]>([]);
   const [isMentorImageTall, setIsMentorImageTall] = useState(false);
   const [activeModule, setActiveModule] = useState<string | null>("ementa");
+  const [selectedCategory, setSelectedCategory] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
+
   useEffect(() => {
     async function fetchRelatedCourses() {
       try {
@@ -98,6 +104,177 @@ export default function CourseContent({ course }: CourseContentProps) {
     }
     fetchRelatedCourses();
   }, [course.id, locale]);
+
+  const formatDescription = (text: string) => {
+    if (!text) return "";
+
+    const paragraphs = text.split("\n");
+
+    return paragraphs.map((paragraph, index) => {
+      if (paragraph.trim().startsWith("*")) {
+        return (
+          <li key={index} className="ml-4">
+            {paragraph.trim().substring(1).trim()}
+          </li>
+        );
+      }
+      return <p key={index}>{paragraph}</p>;
+    });
+  };
+
+  const getPreviewDescription = (text: string) => {
+    if (!text) return "";
+    const paragraphs = text.split("\n");
+    return paragraphs[0];
+  };
+
+  const categories = [
+    {
+      title: "Nível",
+      description: course.nivel || "Aberto a todos",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Pré-requisitos",
+      description:
+        course.pre_requisitos?.replace(/\\n/g, "\n") ||
+        "Nenhum — só vontade de aprender!",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Competências Desenvolvidas",
+      description:
+        course.competencias?.replace(/\\n/g, "\n") ||
+        "Criatividade, pensamento crítico, resolução de problemas",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Projeto Final",
+      description:
+        course.projetos?.replace(/\\n/g, "\n") ||
+        "Projeto prático aplicando os conhecimentos adquiridos",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Modelo da Aula",
+      description:
+        course.modelo?.replace(/\\n/g, "\n") ||
+        "Aulas online ao vivo com atividades práticas",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Atividades Semanais",
+      description:
+        course.tarefa_de_casa?.replace(/\\n/g, "\n") ||
+        "Projetos práticos para fixação do conteúdo",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Ideal para jovens que...",
+      description:
+        course.ideal_para?.replace(/\\n/g, "\n") ||
+        "Querem desenvolver habilidades práticas e criativas",
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -195,173 +372,40 @@ export default function CourseContent({ course }: CourseContentProps) {
             Informações do curso
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Short Info Cards - 2 per row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Nível */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {categories.map((category) => (
+              <button
+                key={category.title}
+                onClick={() => setSelectedCategory(category)}
+                className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:border-[#3B82F6] transition-colors duration-300 text-left"
+              >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-14v6.59L16.59 12 18 13.41l-8 8-6-6L5.41 14 11 19.59V8c0-.55.45-1 1-1h1c.55 0 1 .45 1 1v4.17l4.59-4.59L20 9l-9 9-5-5 1.41-1.41L11 15.17V4c0-1.1.9-2 2-2h1c1.1 0 2 .9 2 2v4.17l2.59-2.59L20 7l-7 7-4-4 1.41-1.41L13 11.17V4h-2z"></path>
-                    </svg>
+                    {category.icon}
                   </div>
                   <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Nível
+                    {category.title}
                   </h3>
                 </div>
-                <p className="text-gray-600">
-                  {course.nivel || "Aberto a todos"}
+                <p className="text-gray-600 line-clamp-3">
+                  {getPreviewDescription(category.description)}
                 </p>
-              </div>
-
-              {/* Modelo da aula */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Modelo da aula
-                  </h3>
-                </div>
-                <p className="text-gray-600">
-                  {course.modelo || "Simulação + Projetos"}
-                </p>
-              </div>
-
-              {/* Idioma */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Idioma
-                  </h3>
-                </div>
-                <p className="text-gray-600">
-                  {course.moeda === "Real" ? "Português do Brasil" : "English"}
-                </p>
-              </div>
-
-              {/* Pré-requisitos */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Pré-requisitos
-                  </h3>
-                </div>
-                <p className="text-gray-600">
-                  {course.pre_requisitos ||
-                    "Nenhum — só vontade de aprender e empreender!"}
-                </p>
-              </div>
-            </div>
-
-            {/* Long Info Cards - 1 per row */}
-            <div className="space-y-6">
-              {/* Objetivo */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-14v6.59L16.59 12 18 13.41l-8 8-6-6L5.41 14 11 19.59V8c0-.55.45-1 1-1h1c.55 0 1 .45 1 1v4.17l4.59-4.59L20 9l-9 9-5-5 1.41-1.41L11 15.17V4c0-1.1.9-2 2-2h1c1.1 0 2 .9 2 2v4.17l2.59-2.59L20 7l-7 7-4-4 1.41-1.41L13 11.17V4h-2z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Objetivo
-                  </h3>
-                </div>
-                <p className="text-gray-600">
-                  {course.objetivo ||
-                    "Desenvolver habilidades práticas de empreendedorismo através de simulações e projetos reais."}
-                </p>
-              </div>
-
-              {/* Projeto Final */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Projeto Final
-                  </h3>
-                </div>
-                <p className="text-gray-600">
-                  {course.projetos ||
-                    "A turma será dividida em duas empresas fictícias que irão planejar, divulgar e vender um produto ou serviço real, aplicando estratégias de mercado para alcançar melhores resultados."}
-                </p>
-              </div>
-
-              {/* Atividades Semanais */}
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="white"
-                    >
-                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#1e1b4b]">
-                    Atividades Semanais
-                  </h3>
-                </div>
-                <p className="text-gray-600">
-                  {course.tarefa_de_casa ||
-                    "Até 30 minutos semanais, incluindo planejamento de estratégias, pesquisas de mercado e otimização de vendas."}
-                </p>
-              </div>
-            </div>
+              </button>
+            ))}
           </div>
         </div>
       </section>
+
+      <CategoryModal
+        isOpen={!!selectedCategory}
+        onClose={() => setSelectedCategory(null)}
+        title={selectedCategory?.title || ""}
+        description={
+          <div className="space-y-4">
+            {formatDescription(selectedCategory?.description || "")}
+          </div>
+        }
+      />
 
       {/* seção - Conteúdo do Curso */}
       <section className="w-full bg-white py-16">
@@ -371,7 +415,6 @@ export default function CourseContent({ course }: CourseContentProps) {
           </h2>
 
           <div className="space-y-4">
-            {/* Ementa Resumida */}
             <div className="border rounded-lg overflow-hidden">
               <button
                 onClick={() =>
@@ -398,7 +441,6 @@ export default function CourseContent({ course }: CourseContentProps) {
               )}
             </div>
 
-            {/* Aulas */}
             <div className="border rounded-lg overflow-hidden">
               <button
                 onClick={() =>
@@ -419,9 +461,6 @@ export default function CourseContent({ course }: CourseContentProps) {
                         key={index}
                         className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg"
                       >
-                        <div className="w-12 h-12 rounded-full bg-[#3B82F6] text-white flex items-center justify-center flex-shrink-0">
-                          <span className="text-xl">📚</span>
-                        </div>
                         <div>
                           <h4 className="font-semibold text-[#1e1b4b] mb-1">
                             {aula.titulo}
@@ -468,7 +507,6 @@ export default function CourseContent({ course }: CourseContentProps) {
 
           <div className="bg-white rounded-xl p-8 shadow-md border border-gray-200">
             <div className="flex flex-col md:flex-row gap-8">
-              {/* Mentor Image and Basic Info */}
               <div className="flex-shrink-0">
                 <div className="w-40 h-40 rounded-full overflow-hidden">
                   <Image
@@ -506,7 +544,6 @@ export default function CourseContent({ course }: CourseContentProps) {
                 )}
               </div>
 
-              {/* Mentor Details */}
               <div className="flex-1">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-[#1e1b4b] mb-2">

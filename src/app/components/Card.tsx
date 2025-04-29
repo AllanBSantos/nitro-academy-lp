@@ -66,6 +66,8 @@ export interface CardProps {
     valido: boolean;
     validade: string;
   }>;
+  competencias?: string;
+  ideal_para?: string;
 }
 
 export default function Card({
