@@ -13,10 +13,14 @@ import CourseContentSection from "./course/CourseContentSection";
 import RelatedTopics from "./course/RelatedTopics";
 import MentorSection from "./course/MentorSection";
 import RelatedCourses from "./course/RelatedCourses";
+import CourseSummaryCard from "@/components/CourseSummaryCard";
 
 interface CourseContentProps {
   course: CardProps;
 }
+
+// TODO: Fazer as traducoes
+// TODO: Pegar os dados do strapi em vez de usar os mockados
 
 export default function CourseContent({ course }: CourseContentProps) {
   const t = useTranslations("Course");
@@ -28,8 +32,7 @@ export default function CourseContent({ course }: CourseContentProps) {
     async function fetchRelatedCourses() {
       try {
         const courses = await getCardsContent(locale);
-        const filteredCourses = courses.filter((c) => c.id !== course.id);
-        setRelatedCourses(filteredCourses);
+        setRelatedCourses(courses.filter((c) => c.id !== course.id));
       } catch (error) {
         console.error("Error fetching related courses:", error);
       }
@@ -40,12 +43,69 @@ export default function CourseContent({ course }: CourseContentProps) {
   return (
     <>
       <CourseDescription course={course} />
-      <CourseInformation course={course} />
-      <CourseContentSection />
-      <RelatedTopics course={course} />
-      <MentorSection course={course} />
-      <TimeSelectionSection course={course} />
+
+      <div className="relative lg:grid lg:grid-cols-[1fr_16rem] lg:gap-8 bg-white pr-4 pt-4">
+        <div>
+          <CourseInformation course={course} />
+          <CourseContentSection />
+          <RelatedTopics course={course} />
+          <MentorSection course={course} />
+        </div>
+
+        <div className="hidden lg:block">
+          <div className="sticky top-20 z-10">
+            <CourseSummaryCard
+              title={course.title}
+              weeklyClasses={1}
+              modelo={course.modelo}
+              nivel={course.nivel}
+              idioma={
+                course.moeda === "Dólar"
+                  ? t("language.english")
+                  : t("language.portuguese")
+              }
+              priceTotal={course.price?.total}
+              moeda={course.moeda}
+              onEnrollClick={() => {
+                document
+                  .getElementById("time-selection")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="lg:hidden fixed bottom-0 left-0 w-full z-10">
+          <div className="bg-white p-4 border-t border-gray-200">
+            <CourseSummaryCard
+              title={course.title}
+              weeklyClasses={1}
+              modelo={course.modelo}
+              nivel={course.nivel}
+              idioma={
+                course.moeda === "Dólar"
+                  ? t("language.english")
+                  : t("language.portuguese")
+              }
+              priceTotal={course.price?.total}
+              moeda={course.moeda}
+              onEnrollClick={() => {
+                document
+                  .getElementById("time-selection")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+              isMobile={true}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="time-selection">
+        <TimeSelectionSection course={course} />
+      </div>
+
       <RelatedCourses relatedCourses={relatedCourses} />
+
       <section className="bg-background">
         <Footer />
       </section>

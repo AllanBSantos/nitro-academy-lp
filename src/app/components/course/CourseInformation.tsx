@@ -15,7 +15,15 @@ export default function CourseInformation({ course }: CourseInformationProps) {
   const getPreviewDescription = (text: string) => {
     if (!text) return "";
     const paragraphs = text.split("\n");
-    return paragraphs[0];
+    const firstParagraph = paragraphs[0];
+
+    if (firstParagraph.length > 100) {
+      const lastSpace = firstParagraph.substring(0, 100).lastIndexOf(" ");
+      const cutPoint = lastSpace > 0 ? lastSpace : 100;
+      return firstParagraph.substring(0, cutPoint) + "...";
+    }
+
+    return firstParagraph;
   };
 
   const formatDescription = (text: string) => {

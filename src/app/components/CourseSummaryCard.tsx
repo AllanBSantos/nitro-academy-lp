@@ -8,7 +8,9 @@ interface CourseSummaryCardProps {
   nivel: string;
   idioma: string;
   priceTotal: number;
+  moeda: "Real" | "Dólar";
   onEnrollClick: () => void;
+  isMobile?: boolean;
 }
 
 export default function CourseSummaryCard({
@@ -18,16 +20,47 @@ export default function CourseSummaryCard({
   nivel,
   idioma,
   priceTotal,
+  moeda,
   onEnrollClick,
+  isMobile = false,
 }: CourseSummaryCardProps) {
   const pricePerClass = priceTotal / 8;
 
   const formatPrice = (price: number) => {
+    if (moeda === "Dólar") {
+      return `USD ${price.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    }
     return price.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
   };
+
+  if (isMobile) {
+    return (
+      <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden mb-4">
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-2xl font-bold text-[#1e1b4b]">
+                {formatPrice(pricePerClass)}
+              </span>
+              <span className="text-sm text-gray-600 ml-2">por aula</span>
+            </div>
+            <Button
+              onClick={onEnrollClick}
+              className="bg-orange-600 hover:bg-orange-500 text-white py-2"
+            >
+              Ver turmas
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">

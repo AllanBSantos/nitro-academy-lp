@@ -38,7 +38,7 @@ export default function TimeSelectionSection({
         <div className="bg-white rounded-[32px] p-8 shadow-md border-2 border-gray-200 relative">
           <div className="text-center">
             <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
-            <div className="text-[#3B82F6] text-5xl font-bold mb-4">
+            <div className="text-[#3B82F6] text-4xl font-bold mb-4">
               {course.moeda === "Real" ? "R$" : "USD"}{" "}
               {course.price.installments
                 ? course.price.installment.toFixed(2).replace(".", ",")
