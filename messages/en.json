@@ -288,5 +288,67 @@
   "Footer": {
     "home": "Home",
     "about_us": "About Us"
+  },
+  "CourseContent": {
+    "title": "Course Content",
+    "syllabus": {
+      "title": "Course Syllabus"
+    },
+    "classes": {
+      "title": "Class Summary"
+    }
+  },
+  "CourseInformation": {
+    "title": "Course Information",
+    "categories": {
+      "level": {
+        "title": "Level",
+        "default": "Open to all"
+      },
+      "prerequisites": {
+        "title": "Prerequisites",
+        "default": "None — just the desire to learn!"
+      },
+      "competencies": {
+        "title": "Developed Competencies",
+        "default": "Creativity, critical thinking, problem-solving"
+      },
+      "final_project": {
+        "title": "Final Project",
+        "default": "Practical project applying acquired knowledge"
+      },
+      "class_model": {
+        "title": "Class Model",
+        "default": "Live online classes with practical activities"
+      },
+      "weekly_activities": {
+        "title": "Weekly Activities",
+        "default": "Practical projects for content reinforcement"
+      },
+      "ideal_for": {
+        "title": "Ideal for teenagers who...",
+        "default": "Want to develop practical and creative skills"
+      }
+    }
+  },
+  "MentorSection": {
+    "title": "Mentor",
+    "stats": {
+      "rating": "Rating",
+      "reviews": "Reviews",
+      "students": "Students",
+      "courses": "Courses"
+    }
+  },
+  "CourseSummaryCard": {
+    "per_class": "per class",
+    "classes_per_week": {
+      "one": "class per week",
+      "other": "classes per week"
+    },
+    "level": "Level",
+    "language": "Language",
+    "see_classes": "See all classes",
+    "see_classes_mobile": "View classes"
   }
 }

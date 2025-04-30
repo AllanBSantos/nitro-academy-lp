@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 // Mock data for course content
 const mockCourseContent = {
@@ -58,13 +59,12 @@ const mockCourseContent = {
 
 export default function CourseContentSection() {
   const [activeModule, setActiveModule] = useState<string | null>("ementa");
+  const t = useTranslations("CourseContent");
 
   return (
     <section className="w-full bg-white py-16">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">
-          Conteúdo do curso
-        </h2>
+        <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">{t("title")}</h2>
 
         <div className="space-y-4">
           <div className="border rounded-lg overflow-hidden">
@@ -74,7 +74,7 @@ export default function CourseContentSection() {
               }
               className="w-full flex items-center justify-between p-6 bg-[#1e1b4b] text-white"
             >
-              <h3 className="text-xl font-semibold">Ementa Resumida</h3>
+              <h3 className="text-xl font-semibold">{t("syllabus.title")}</h3>
               <span className="text-2xl">
                 {activeModule === "ementa" ? "−" : "+"}
               </span>
@@ -100,7 +100,7 @@ export default function CourseContentSection() {
               }
               className="w-full flex items-center justify-between p-6 bg-[#1e1b4b] text-white"
             >
-              <h3 className="text-xl font-semibold">Resumo das Aulas</h3>
+              <h3 className="text-xl font-semibold">{t("classes.title")}</h3>
               <span className="text-2xl">
                 {activeModule === "aulas" ? "−" : "+"}
               </span>

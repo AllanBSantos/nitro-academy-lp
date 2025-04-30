@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { CardProps } from "../Card";
+import { useTranslations } from "next-intl";
 
 interface MentorSectionProps {
   course: CardProps;
@@ -9,11 +10,12 @@ interface MentorSectionProps {
 
 export default function MentorSection({ course }: MentorSectionProps) {
   const [isMentorImageTall, setIsMentorImageTall] = useState(false);
+  const t = useTranslations("MentorSection");
 
   return (
     <section id="mentor-section" className="w-full bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">Mentor</h2>
+        <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">{t("title")}</h2>
 
         <div className="bg-white rounded-xl p-8 shadow-md border border-gray-200">
           <div className="flex flex-col md:flex-row gap-8">
@@ -71,7 +73,9 @@ export default function MentorSection({ course }: MentorSectionProps) {
                   <div className="flex items-center gap-2">
                     <span className="text-[#3B82F6] text-xl">★</span>
                     <div>
-                      <p className="text-sm text-gray-600">Avaliação</p>
+                      <p className="text-sm text-gray-600">
+                        {t("stats.rating")}
+                      </p>
                       <p className="font-semibold text-[#1e1b4b]">
                         {course.mentor.nota}
                       </p>
@@ -95,7 +99,9 @@ export default function MentorSection({ course }: MentorSectionProps) {
                         />
                       </svg>
                       <div>
-                        <p className="text-sm text-gray-600">Avaliações</p>
+                        <p className="text-sm text-gray-600">
+                          {t("stats.reviews")}
+                        </p>
                         <p className="font-semibold text-[#1e1b4b]">
                           {course.mentor.avaliacoes.toLocaleString("pt-BR")}
                         </p>
@@ -118,7 +124,9 @@ export default function MentorSection({ course }: MentorSectionProps) {
                       />
                     </svg>
                     <div>
-                      <p className="text-sm text-gray-600">Alunos</p>
+                      <p className="text-sm text-gray-600">
+                        {t("stats.students")}
+                      </p>
                       <p className="font-semibold text-[#1e1b4b]">
                         {course.mentor.students.toLocaleString("pt-BR")}
                       </p>
@@ -141,7 +149,9 @@ export default function MentorSection({ course }: MentorSectionProps) {
                       />
                     </svg>
                     <div>
-                      <p className="text-sm text-gray-600">Cursos</p>
+                      <p className="text-sm text-gray-600">
+                        {t("stats.courses")}
+                      </p>
                       <p className="font-semibold text-[#1e1b4b]">
                         {course.mentor.courses}
                       </p>

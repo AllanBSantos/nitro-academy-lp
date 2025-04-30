@@ -1,6 +1,7 @@
 import { CardProps } from "../Card";
 import CategoryModal from "../CategoryModal";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface CourseInformationProps {
   course: CardProps;
@@ -11,6 +12,7 @@ export default function CourseInformation({ course }: CourseInformationProps) {
     title: string;
     description: string;
   } | null>(null);
+  const t = useTranslations("CourseInformation");
 
   const getPreviewDescription = (text: string) => {
     if (!text) return "";
@@ -45,8 +47,8 @@ export default function CourseInformation({ course }: CourseInformationProps) {
 
   const categories = [
     {
-      title: "Nível",
-      description: course.nivel || "Aberto a todos",
+      title: t("categories.level.title"),
+      description: course.nivel || t("categories.level.default"),
       icon: (
         <svg
           className="w-6 h-6 text-white"
@@ -64,10 +66,10 @@ export default function CourseInformation({ course }: CourseInformationProps) {
       ),
     },
     {
-      title: "Pré-requisitos",
+      title: t("categories.prerequisites.title"),
       description:
         course.pre_requisitos?.replace(/\\n/g, "\n") ||
-        "Nenhum — só vontade de aprender!",
+        t("categories.prerequisites.default"),
       icon: (
         <svg
           className="w-6 h-6 text-white"
@@ -85,52 +87,10 @@ export default function CourseInformation({ course }: CourseInformationProps) {
       ),
     },
     {
-      title: "Competências Desenvolvidas",
-      description:
-        course.competencias?.replace(/\\n/g, "\n") ||
-        "Criatividade, pensamento crítico, resolução de problemas",
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
-      ),
-    },
-    {
-      title: "Projeto Final",
-      description:
-        course.projetos?.replace(/\\n/g, "\n") ||
-        "Projeto prático aplicando os conhecimentos adquiridos",
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-          />
-        </svg>
-      ),
-    },
-    {
-      title: "Modelo da Aula",
+      title: t("categories.class_model.title"),
       description:
         course.modelo?.replace(/\\n/g, "\n") ||
-        "Aulas online ao vivo com atividades práticas",
+        t("categories.class_model.default"),
       icon: (
         <svg
           className="w-6 h-6 text-white"
@@ -148,10 +108,52 @@ export default function CourseInformation({ course }: CourseInformationProps) {
       ),
     },
     {
-      title: "Atividades Semanais",
+      title: t("categories.competencies.title"),
+      description:
+        course.competencias?.replace(/\\n/g, "\n") ||
+        t("categories.competencies.default"),
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: t("categories.final_project.title"),
+      description:
+        course.projetos?.replace(/\\n/g, "\n") ||
+        t("categories.final_project.default"),
+      icon: (
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: t("categories.weekly_activities.title"),
       description:
         course.tarefa_de_casa?.replace(/\\n/g, "\n") ||
-        "Projetos práticos para fixação do conteúdo",
+        t("categories.weekly_activities.default"),
       icon: (
         <svg
           className="w-6 h-6 text-white"
@@ -169,10 +171,10 @@ export default function CourseInformation({ course }: CourseInformationProps) {
       ),
     },
     {
-      title: "Ideal para jovens que...",
+      title: t("categories.ideal_for.title"),
       description:
         course.ideal_para?.replace(/\\n/g, "\n") ||
-        "Querem desenvolver habilidades práticas e criativas",
+        t("categories.ideal_for.default"),
       icon: (
         <svg
           className="w-6 h-6 text-white"
@@ -196,7 +198,7 @@ export default function CourseInformation({ course }: CourseInformationProps) {
       <section className="w-full bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">
-            Informações do curso
+            {t("title")}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

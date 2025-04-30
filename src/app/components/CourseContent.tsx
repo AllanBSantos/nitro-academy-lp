@@ -19,7 +19,6 @@ interface CourseContentProps {
   course: CardProps;
 }
 
-// TODO: Fazer as traducoes
 // TODO: Pegar os dados do strapi em vez de usar os mockados
 
 export default function CourseContent({ course }: CourseContentProps) {
