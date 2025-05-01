@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 import { useTranslations } from "next-intl";
-import { CardProps } from "./Card";
+import { CardProps } from "@/types/card";
 
 interface TimeSelectionSectionProps {
   course: CardProps;

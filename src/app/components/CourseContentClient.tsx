@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import CourseContent from "./CourseContent";
 import { getCardsContent } from "@/lib/courses";
-import { CardProps } from "./Card";
+import { CardProps } from "@/types/card";
 
 export default function CourseContentClient() {
   const params = useParams();

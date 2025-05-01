@@ -1,5 +1,5 @@
 import { fetchCourses } from "@/lib/strapi";
-import { CardProps } from "@/components/Card";
+import { CardProps } from "@/types/card";
 
 export async function getCardsContent(
   locale: string = "pt"
@@ -62,65 +62,16 @@ export async function getCardsContent(
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
       moeda: course.moeda || "Real",
-      cupons: course.cupons || [],
+      cupons: (course.cupons || []).map((coupon, index) => ({
+        id: index + 1,
+        documentId: `coupon_${index + 1}`,
+        nome: coupon.nome || "",
+        url: coupon.url || null,
+        valido: coupon.valido || false,
+        validade: coupon.validade || null,
+      })),
       badge: course.badge || null,
     };
     return mappedCourse;
   });
-}
-
-export interface CardProps {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  mentor: {
-    name: string;
-    image: string;
-    students: number;
-    courses: number;
-    profissao: string;
-    nota: number;
-    avaliacoes: number;
-    descricao: string;
-    instagram: string;
-    instagram_label: string;
-  };
-  rating: number | null;
-  price: {
-    installment: number;
-    total: number;
-    installments: number;
-    moeda: string;
-  };
-  image: string;
-  nivel: string;
-  modelo: string;
-  objetivo: string;
-  pre_requisitos: string;
-  projetos: string;
-  tarefa_de_casa: string;
-  informacoes_adicionais: string;
-  link_pagamento: string;
-  link_desconto: string | null;
-  topicosRelacionados: string[];
-  videos: string[];
-  cronograma: {
-    id: number;
-    data_fim: string | null;
-    data_inicio: string;
-    dia: string;
-    horario: string;
-    faixa_etaria: string;
-  }[];
-  moeda: string;
-  cupons: {
-    id: number;
-    documentId: string;
-    nome: string;
-    url: string | null;
-    valido: boolean;
-    validade: string | null;
-  }[];
-  badge: string;
 }

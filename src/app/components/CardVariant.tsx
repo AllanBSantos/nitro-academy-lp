@@ -5,69 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
-
-export interface Video {
-  titulo: string;
-  descricao: string;
-  video_url: string;
-  video: {
-    url: string;
-  } | null;
-}
-
-export interface Schedule {
-  dia: string;
-  horario: string;
-  data_inicio: string;
-  data_fim?: string;
-  faixa_etaria: string;
-}
-
-export interface CardProps {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  mentor: {
-    name: string;
-    image: string;
-    students: number;
-    courses: number;
-    profissao: string;
-    nota: number;
-    avaliacoes: number;
-    descricao: string;
-    instagram: string;
-    instagram_label: string;
-  };
-  rating: number | null;
-  price: {
-    installment: number;
-    total: number;
-    installments: number;
-    moeda?: "Real" | "Dólar";
-  };
-  image: string;
-  nivel: string;
-  modelo: string;
-  objetivo: string;
-  pre_requisitos: string;
-  projetos: string;
-  tarefa_de_casa: string;
-  informacoes_adicionais: string;
-  link_pagamento: string;
-  topicosRelacionados: string[];
-  videos: Video[];
-  cronograma: Schedule[];
-  moeda: "Real" | "Dólar";
-  cupons: Array<{
-    nome: string;
-    url: string;
-    valido: boolean;
-    validade: string;
-  }>;
-  badge?: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
-}
+import { CardProps } from "@/types/card";
 
 export default function Card({
   slug,

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { getCardsContent } from "@/lib/courses";
-import { CardProps } from "@/components/Card";
+import { CardProps } from "@/types/card";
 import { CarouselContentWrapper } from "./CarouselContentWrapper";
 
 export default function CarouselClient({ locale }: { locale: string }) {
