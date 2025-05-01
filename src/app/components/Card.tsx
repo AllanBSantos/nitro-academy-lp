@@ -46,7 +46,7 @@ export interface CardProps {
     installment: number;
     total: number;
     installments: number;
-    moeda?: "Real" | "Dólar";
+    moeda: string;
   };
   image: string;
   nivel: string;
@@ -61,7 +61,7 @@ export interface CardProps {
   topicosRelacionados: string[];
   videos: Video[];
   cronograma: Schedule[];
-  moeda: "Real" | "Dólar";
+  moeda: string;
   cupons: {
     id: number;
     documentId: string;
@@ -70,7 +70,7 @@ export interface CardProps {
     valido: boolean;
     validade: string | null;
   }[];
-  badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
+  badge: string;
 }
 
 export default function Card({

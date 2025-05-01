@@ -61,12 +61,10 @@ export interface CardProps {
   cronograma: Schedule[];
   moeda: "Real" | "Dólar";
   cupons: Array<{
-    id: number;
-    documentId: string;
     nome: string;
-    url: string | null;
+    url: string;
     valido: boolean;
-    validade: string | null;
+    validade: string;
   }>;
   badge?: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
 }
