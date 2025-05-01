@@ -211,6 +211,9 @@
         "poucas_vagas",
         "dias_faltantes"
       ]
+    },
+    "link_desconto": {
+      "type": "string"
     }
   }
 }

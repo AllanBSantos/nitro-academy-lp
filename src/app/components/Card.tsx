@@ -46,6 +46,7 @@ export interface CardProps {
     installment: number;
     total: number;
     installments: number;
+    moeda: string;
   };
   image: string;
   nivel: string;
@@ -56,16 +57,20 @@ export interface CardProps {
   tarefa_de_casa: string;
   informacoes_adicionais: string;
   link_pagamento: string;
+  link_desconto: string | null;
   topicosRelacionados: string[];
   videos: Video[];
   cronograma: Schedule[];
-  moeda: "Real" | "Dólar";
-  cupons: Array<{
+  moeda: string;
+  cupons: {
+    id: number;
+    documentId: string;
     nome: string;
-    url: string;
+    url: string | null;
     valido: boolean;
-    validade: string;
-  }>;
+    validade: string | null;
+  }[];
+  badge: string;
 }
 
 export default function Card({

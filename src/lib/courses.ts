@@ -24,7 +24,7 @@ export async function getCardsContent(
         : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${url}`;
     };
 
-    return {
+    const mappedCourse = {
       id: course.id.toString(),
       slug: course.slug,
       title: course.titulo || "",
@@ -57,6 +57,7 @@ export async function getCardsContent(
       tarefa_de_casa: course.tarefa_de_casa || "",
       informacoes_adicionais: course.informacoes_adicionais || "",
       link_pagamento: course.link_pagamento || "",
+      link_desconto: course.link_desconto || null,
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
@@ -64,5 +65,62 @@ export async function getCardsContent(
       cupons: course.cupons || [],
       badge: course.badge || null,
     };
+    return mappedCourse;
   });
+}
+
+export interface CardProps {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  mentor: {
+    name: string;
+    image: string;
+    students: number;
+    courses: number;
+    profissao: string;
+    nota: number;
+    avaliacoes: number;
+    descricao: string;
+    instagram: string;
+    instagram_label: string;
+  };
+  rating: number | null;
+  price: {
+    installment: number;
+    total: number;
+    installments: number;
+    moeda: string;
+  };
+  image: string;
+  nivel: string;
+  modelo: string;
+  objetivo: string;
+  pre_requisitos: string;
+  projetos: string;
+  tarefa_de_casa: string;
+  informacoes_adicionais: string;
+  link_pagamento: string;
+  link_desconto: string | null;
+  topicosRelacionados: string[];
+  videos: string[];
+  cronograma: {
+    id: number;
+    data_fim: string | null;
+    data_inicio: string;
+    dia: string;
+    horario: string;
+    faixa_etaria: string;
+  }[];
+  moeda: string;
+  cupons: {
+    id: number;
+    documentId: string;
+    nome: string;
+    url: string | null;
+    valido: boolean;
+    validade: string | null;
+  }[];
+  badge: string;
 }

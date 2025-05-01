@@ -34,8 +34,7 @@ export default function CourseContentClient() {
     fetchCourse();
   }, [locale, slug]);
 
-  if (loading)
-    return <p className="text-white text-center">{t("loading")}...</p>;
+  if (loading) return <p className="text-white text-center">Loading...</p>;
   if (!course)
     return <p className="text-white text-center">{t("not_found")}</p>;
 
