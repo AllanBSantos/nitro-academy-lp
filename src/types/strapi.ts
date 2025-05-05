@@ -147,4 +147,11 @@ export interface Course {
     valido: boolean;
     validade: string;
   }> | null;
+  ementa_resumida: Array<{
+    descricao: string;
+  }> | null;
+  resumo_aulas: Array<{
+    nome_aula: string;
+    descricao_aula: string;
+  }> | null;
 }

@@ -68,6 +68,13 @@ export interface CardProps {
   }>;
   competencias?: string;
   ideal_para?: string;
+  ementa_resumida?: Array<{
+    descricao: string;
+  }>;
+  resumo_aulas?: Array<{
+    nome_aula: string;
+    descricao_aula: string;
+  }>;
 }
 
 export default function Card({

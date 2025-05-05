@@ -538,6 +538,10 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     destaques: Schema.Attribute.Text;
+    ementa_resumida: Schema.Attribute.Component<
+      'componentes.emenda-resumida',
+      true
+    >;
     imagem: Schema.Attribute.Media<'images'> &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -608,6 +612,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    resumo_aulas: Schema.Attribute.Component<'componentes.resumo-aulas', true>;
     slug: Schema.Attribute.String & Schema.Attribute.Required;
     tags: Schema.Attribute.Component<'tags.tags', true> &
       Schema.Attribute.SetPluginOptions<{

@@ -63,6 +63,8 @@ export async function getCardsContent(
       moeda: course.moeda || "Real",
       cupons: course.cupons || [],
       badge: course.badge || null,
+      ementa_resumida: course.ementa_resumida || [],
+      resumo_aulas: course.resumo_aulas || [],
     };
   });
 }

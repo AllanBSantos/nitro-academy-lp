@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_componentes_resumo_aulas",
+  "info": {
+    "displayName": "resumo_aulas"
+  },
+  "options": {},
+  "attributes": {
+    "nome_aula": {
+      "type": "string"
+    },
+    "descricao_aula": {
+      "type": "string"
+    }
+  }
+}

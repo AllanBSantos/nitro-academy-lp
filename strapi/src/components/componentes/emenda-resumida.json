@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_componentes_emenda_resumidas",
+  "info": {
+    "displayName": "emenda_resumida",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "descricao": {
+      "type": "string"
+    }
+  }
+}

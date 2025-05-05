@@ -211,6 +211,17 @@
         "poucas_vagas",
         "dias_faltantes"
       ]
+    },
+    "ementa_resumida": {
+      "displayName": "emenda_resumida",
+      "type": "component",
+      "repeatable": true,
+      "component": "componentes.emenda-resumida"
+    },
+    "resumo_aulas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "componentes.resumo-aulas"
     }
   }
 }

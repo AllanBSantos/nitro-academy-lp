@@ -46,7 +46,7 @@ export default function CourseContent({ course }: CourseContentProps) {
       <div className="relative lg:grid lg:grid-cols-[1fr_16rem] lg:gap-8 bg-white pr-4 pt-4">
         <div>
           <CourseInformation course={course} />
-          <CourseContentSection />
+          <CourseContentSection course={course} />
           <RelatedTopics course={course} />
           <MentorSection course={course} />
         </div>
