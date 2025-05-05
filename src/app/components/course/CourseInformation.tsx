@@ -2,6 +2,7 @@ import { CardProps } from "../Card";
 import CategoryModal from "../CategoryModal";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 interface CourseInformationProps {
   course: CardProps;
@@ -206,8 +207,9 @@ export default function CourseInformation({ course }: CourseInformationProps) {
               <button
                 key={category.title}
                 onClick={() => setSelectedCategory(category)}
-                className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:border-[#3B82F6] transition-colors duration-300 text-left"
+                className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:border-[#3B82F6] transition-colors duration-300 text-left group relative"
               >
+                <ChevronDownIcon className="w-5 h-5 text-gray-400 group-hover:text-[#3B82F6] transition-colors absolute top-2 right-4" />
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center">
                     {category.icon}
