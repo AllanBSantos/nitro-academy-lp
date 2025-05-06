@@ -114,6 +114,7 @@ export interface Course {
   link_desconto: string | null;
   moeda: "Real" | "Dólar";
   badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
+  competencias: string | null;
   imagem: {
     url: string;
   } | null;
