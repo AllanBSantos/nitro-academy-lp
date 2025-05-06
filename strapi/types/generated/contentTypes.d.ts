@@ -519,6 +519,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     badge: Schema.Attribute.Enumeration<
       ['poucos_dias', 'poucas_vagas', 'dias_faltantes']
     >;
+    competencias: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

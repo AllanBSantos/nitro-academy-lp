@@ -73,6 +73,7 @@ export async function getCardsContent(
       badge: course.badge || undefined,
       ementa_resumida: course.ementa_resumida || [],
       resumo_aulas: course.resumo_aulas || [],
+      competencias: course.competencias || "",
     };
     return mappedCourse;
   });
