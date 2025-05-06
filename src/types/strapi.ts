@@ -143,9 +143,18 @@ export interface Course {
     } | null;
   }> | null;
   cupons: Array<{
+    id: number;
+    documentId: string;
     nome: string;
-    url: string;
+    url: string | null;
     valido: boolean;
-    validade: string;
+    validade: string | null;
+  }> | null;
+  ementa_resumida: Array<{
+    descricao: string;
+  }> | null;
+  resumo_aulas: Array<{
+    nome_aula: string;
+    descricao_aula: string;
   }> | null;
 }

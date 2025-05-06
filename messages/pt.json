@@ -288,5 +288,67 @@
   "Footer": {
     "home": "Home",
     "about_us": "Sobre Nós"
+  },
+  "CourseContent": {
+    "title": "Conteúdo do curso",
+    "syllabus": {
+      "title": "Ementa Resumida"
+    },
+    "classes": {
+      "title": "Resumo das Aulas"
+    }
+  },
+  "CourseInformation": {
+    "title": "Informações do curso",
+    "categories": {
+      "level": {
+        "title": "Nível",
+        "default": "Aberto a todos"
+      },
+      "prerequisites": {
+        "title": "Pré-requisitos",
+        "default": "Nenhum — só vontade de aprender!"
+      },
+      "competencies": {
+        "title": "Competências Desenvolvidas",
+        "default": "Criatividade, pensamento crítico, resolução de problemas"
+      },
+      "final_project": {
+        "title": "Projeto Final",
+        "default": "Projeto prático aplicando os conhecimentos adquiridos"
+      },
+      "class_model": {
+        "title": "Modelo da Aula",
+        "default": "Aulas online ao vivo com atividades práticas"
+      },
+      "weekly_activities": {
+        "title": "Atividades Semanais",
+        "default": "Projetos práticos para fixação do conteúdo"
+      },
+      "ideal_for": {
+        "title": "Ideal para jovens que...",
+        "default": "Querem desenvolver habilidades práticas e criativas"
+      }
+    }
+  },
+  "MentorSection": {
+    "title": "Mentor",
+    "stats": {
+      "rating": "Nota",
+      "reviews": "Avaliações",
+      "students": "Alunos",
+      "courses": "Cursos"
+    }
+  },
+  "CourseSummaryCard": {
+    "per_class": "por aula",
+    "classes_per_week": {
+      "one": "aula por semana",
+      "other": "aulas por semana"
+    },
+    "level": "Nível",
+    "language": "Idioma",
+    "see_classes": "Veja todas as turmas",
+    "see_classes_mobile": "Ver turmas"
   }
 }

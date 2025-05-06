@@ -52,13 +52,22 @@ export interface CardProps {
   videos: Video[];
   cronograma: Schedule[];
   moeda: "Real" | "Dólar";
-  cupons: {
+  badge?: "dias_faltantes" | "poucos_dias" | "poucas_vagas";
+  cupons: Array<{
     id: number;
     documentId: string;
     nome: string;
     url: string | null;
     valido: boolean;
     validade: string | null;
-  }[];
-  badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
+  }>;
+  competencias?: string;
+  ideal_para?: string;
+  ementa_resumida?: Array<{
+    descricao: string;
+  }>;
+  resumo_aulas?: Array<{
+    nome_aula: string;
+    descricao_aula: string;
+  }>;
 }

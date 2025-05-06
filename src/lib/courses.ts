@@ -70,7 +70,9 @@ export async function getCardsContent(
         valido: coupon.valido || false,
         validade: coupon.validade || null,
       })),
-      badge: course.badge || null,
+      badge: course.badge || undefined,
+      ementa_resumida: course.ementa_resumida || [],
+      resumo_aulas: course.resumo_aulas || [],
     };
     return mappedCourse;
   });
