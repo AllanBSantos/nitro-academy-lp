@@ -5,7 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { CardProps } from "@/components/CardVariant";
+import { CardProps } from "@/types/card";
 import CardVariant from "@/components/CardVariant";
 
 interface CarouselContentWrapperProps {

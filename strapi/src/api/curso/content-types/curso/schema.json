@@ -38,9 +38,7 @@
       "type": "media",
       "multiple": false,
       "required": true,
-      "allowedTypes": [
-        "images"
-      ],
+      "allowedTypes": ["images"],
       "pluginOptions": {
         "i18n": {
           "localized": true
@@ -183,10 +181,7 @@
     },
     "moeda": {
       "type": "enumeration",
-      "enum": [
-        "Real",
-        "Dólar"
-      ],
+      "enum": ["Real", "Dólar"],
       "required": true,
       "default": "Real"
     },
@@ -206,11 +201,7 @@
     },
     "badge": {
       "type": "enumeration",
-      "enum": [
-        "poucos_dias",
-        "poucas_vagas",
-        "dias_faltantes"
-      ]
+      "enum": ["poucos_dias", "poucas_vagas", "dias_faltantes"]
     },
     "ementa_resumida": {
       "displayName": "emenda_resumida",
@@ -222,6 +213,9 @@
       "type": "component",
       "repeatable": true,
       "component": "componentes.resumo-aulas"
+    },
+    "link_desconto": {
+      "type": "string"
     }
   }
 }

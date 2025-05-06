@@ -111,6 +111,7 @@ export interface Course {
   locale: string;
   slug: string;
   link_pagamento: string | null;
+  link_desconto: string | null;
   moeda: "Real" | "Dólar";
   badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
   imagem: {
@@ -142,10 +143,12 @@ export interface Course {
     } | null;
   }> | null;
   cupons: Array<{
+    id: number;
+    documentId: string;
     nome: string;
-    url: string;
+    url: string | null;
     valido: boolean;
-    validade: string;
+    validade: string | null;
   }> | null;
   ementa_resumida: Array<{
     descricao: string;

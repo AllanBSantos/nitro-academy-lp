@@ -1,5 +1,5 @@
 import { fetchCourses } from "@/lib/strapi";
-import { CardProps } from "@/components/Card";
+import { CardProps } from "@/types/card";
 
 export async function getCardsContent(
   locale: string = "pt"
@@ -24,7 +24,7 @@ export async function getCardsContent(
         : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${url}`;
     };
 
-    return {
+    const mappedCourse = {
       id: course.id.toString(),
       slug: course.slug,
       title: course.titulo || "",
@@ -57,14 +57,23 @@ export async function getCardsContent(
       tarefa_de_casa: course.tarefa_de_casa || "",
       informacoes_adicionais: course.informacoes_adicionais || "",
       link_pagamento: course.link_pagamento || "",
+      link_desconto: course.link_desconto || null,
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
       moeda: course.moeda || "Real",
-      cupons: course.cupons || [],
+      cupons: (course.cupons || []).map((coupon, index) => ({
+        id: index + 1,
+        documentId: `coupon_${index + 1}`,
+        nome: coupon.nome || "",
+        url: coupon.url || null,
+        valido: coupon.valido || false,
+        validade: coupon.validade || null,
+      })),
       badge: course.badge || null,
       ementa_resumida: course.ementa_resumida || [],
       resumo_aulas: course.resumo_aulas || [],
     };
+    return mappedCourse;
   });
 }

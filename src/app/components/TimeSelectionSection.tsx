@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 import { useTranslations } from "next-intl";
-import { CardProps } from "./Card";
+import { CardProps } from "@/types/card";
 
 interface TimeSelectionSectionProps {
   course: CardProps;
@@ -100,6 +100,7 @@ export default function TimeSelectionSection({
                 courseName={course.title || t("selected_course")}
                 selectedTime={selectedTime}
                 paymentLink={course.link_pagamento}
+                link_desconto={course.link_desconto}
                 cupons={course.cupons}
                 courseId={parseInt(course.id)}
               />

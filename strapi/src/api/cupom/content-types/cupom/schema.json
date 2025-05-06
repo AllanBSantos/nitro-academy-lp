@@ -20,7 +20,7 @@
     },
     "url": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "valido": {
       "type": "boolean",

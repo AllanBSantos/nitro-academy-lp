@@ -20,11 +20,14 @@ interface EnrollmentModalProps {
   courseName: string;
   selectedTime: string | null;
   paymentLink?: string;
+  link_desconto: string | null;
   cupons?: Array<{
+    id: number;
+    documentId: string;
     nome: string;
-    url: string;
+    url: string | null;
     valido: boolean;
-    validade: string;
+    validade: string | null;
   }>;
   courseId: number;
 }
@@ -33,6 +36,7 @@ export default function EnrollmentModal({
   courseName,
   selectedTime,
   paymentLink,
+  link_desconto,
   cupons = [],
   courseId,
 }: EnrollmentModalProps) {
@@ -40,14 +44,19 @@ export default function EnrollmentModal({
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: number;
+    documentId: string;
     nome: string;
-    url: string;
+    url: string | null;
+    valido: boolean;
+    validade: string | null;
   } | null>(null);
   const [couponError, setCouponError] = useState("");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const modalT = useTranslations("EnrollmentModal");
+
   const [formData, setFormData] = useState({
     studentName: "",
     studentBirthDate: "",
@@ -82,6 +91,11 @@ export default function EnrollmentModal({
 
     if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
       setCouponError(modalT("errors.expired_coupon"));
+      return;
+    }
+
+    if (!coupon.url && !link_desconto) {
+      setCouponError(modalT("errors.invalid_coupon"));
       return;
     }
 
@@ -153,7 +167,10 @@ export default function EnrollmentModal({
 
       setIsOpen(false);
       if (appliedCoupon) {
-        window.location.href = appliedCoupon.url;
+        const redirectUrl = appliedCoupon.url || link_desconto;
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
       } else if (paymentLink) {
         window.location.href = paymentLink;
       }

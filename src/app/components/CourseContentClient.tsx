@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import CourseContent from "./CourseContent";
 import { getCardsContent } from "@/lib/courses";
-import { CardProps } from "./Card";
+import { CardProps } from "@/types/card";
 
 export default function CourseContentClient() {
   const params = useParams();
@@ -34,8 +34,7 @@ export default function CourseContentClient() {
     fetchCourse();
   }, [locale, slug]);
 
-  if (loading)
-    return <p className="text-white text-center">{t("loading")}...</p>;
+  if (loading) return <p className="text-white text-center">Loading...</p>;
   if (!course)
     return <p className="text-white text-center">{t("not_found")}</p>;
 

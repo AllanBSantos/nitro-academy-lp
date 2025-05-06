@@ -486,7 +486,7 @@ export interface ApiCupomCupom extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    url: Schema.Attribute.String & Schema.Attribute.Required;
+    url: Schema.Attribute.String;
     validade: Schema.Attribute.Date;
     valido: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
@@ -550,6 +550,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     informacoes_adicionais: Schema.Attribute.Text;
+    link_desconto: Schema.Attribute.String;
     link_pagamento: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;

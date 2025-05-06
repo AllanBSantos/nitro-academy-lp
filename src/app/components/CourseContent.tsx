@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CardProps } from "./Card";
+import { CardProps } from "@/types/card";
 import { getCardsContent } from "@/lib/courses";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
