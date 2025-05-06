@@ -74,6 +74,7 @@ export async function getCardsContent(
       ementa_resumida: course.ementa_resumida || [],
       resumo_aulas: course.resumo_aulas || [],
       competencias: course.competencias || "",
+      ideal_para: course.ideal_para || "",
     };
     return mappedCourse;
   });

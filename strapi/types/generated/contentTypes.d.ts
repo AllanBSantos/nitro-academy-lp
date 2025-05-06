@@ -543,6 +543,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       'componentes.emenda-resumida',
       true
     >;
+    ideal_para: Schema.Attribute.Text;
     imagem: Schema.Attribute.Media<'images'> &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{

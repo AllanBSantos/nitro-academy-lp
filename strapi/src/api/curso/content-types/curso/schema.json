@@ -228,6 +228,9 @@
     },
     "competencias": {
       "type": "text"
+    },
+    "ideal_para": {
+      "type": "text"
     }
   }
 }
