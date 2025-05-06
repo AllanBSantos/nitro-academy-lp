@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CardProps } from "../Card";
+import { CardProps } from "@/types/card";
 
 interface CourseContentSectionProps {
   course: CardProps;

@@ -7,7 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import CardVariant from "../CardVariant";
-import { CardProps } from "../Card";
+import { CardProps } from "@/types/card";
 
 interface RelatedCoursesProps {
   relatedCourses: CardProps[];

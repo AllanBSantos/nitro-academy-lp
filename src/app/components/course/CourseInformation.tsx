@@ -1,4 +1,4 @@
-import { CardProps } from "../Card";
+import { CardProps } from "@/types/card";
 import CategoryModal from "../CategoryModal";
 import { useState } from "react";
 import { useTranslations } from "next-intl";

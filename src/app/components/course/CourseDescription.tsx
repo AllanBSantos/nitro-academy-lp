@@ -7,7 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { convertToEmbedUrl } from "@/lib/utils";
-import { CardProps } from "../Card";
+import { CardProps } from "@/types/card";
 
 interface CourseDescriptionProps {
   course: CardProps;

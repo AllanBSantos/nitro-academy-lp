@@ -52,6 +52,7 @@ export interface CardProps {
   videos: Video[];
   cronograma: Schedule[];
   moeda: "Real" | "Dólar";
+  badge?: "dias_faltantes" | "poucos_dias" | "poucas_vagas";
   cupons: Array<{
     id: number;
     documentId: string;
