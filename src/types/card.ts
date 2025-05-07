@@ -60,6 +60,7 @@ export interface CardProps {
     url: string | null;
     valido: boolean;
     validade: string | null;
+    voucher_gratuito: boolean;
   }>;
   competencias?: string;
   ideal_para?: string;

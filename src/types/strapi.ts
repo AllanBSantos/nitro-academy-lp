@@ -151,6 +151,7 @@ export interface Course {
     url: string | null;
     valido: boolean;
     validade: string | null;
+    voucher_gratuito: boolean;
   }> | null;
   ementa_resumida: Array<{
     descricao: string;

@@ -491,6 +491,7 @@ export interface ApiCupomCupom extends Struct.CollectionTypeSchema {
     valido: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<true>;
+    voucher_gratuito: Schema.Attribute.Boolean;
   };
 }
 

@@ -229,6 +229,11 @@
     "title": "Enrollment Form",
     "enroll": "ENROLL NOW",
     "loading": "Sending...",
+    "success": {
+      "title": "Enrollment Successful!",
+      "message": "Successfully enrolled in the course:  {courseName}",
+      "ok": "OK"
+    },
     "coupon": {
       "label": "Discount coupon",
       "placeholder": "Enter your coupon",

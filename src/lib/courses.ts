@@ -69,6 +69,7 @@ export async function getCardsContent(
         url: coupon.url || null,
         valido: coupon.valido || false,
         validade: coupon.validade || null,
+        voucher_gratuito: coupon.voucher_gratuito || false,
       })),
       badge: course.badge || undefined,
       ementa_resumida: course.ementa_resumida || [],

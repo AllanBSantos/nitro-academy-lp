@@ -29,6 +29,9 @@
     },
     "validade": {
       "type": "date"
+    },
+    "voucher_gratuito": {
+      "type": "boolean"
     }
   }
 }

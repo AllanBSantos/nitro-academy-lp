@@ -229,6 +229,11 @@
     "title": "Formulário de Matrícula",
     "enroll": "MATRICULAR AGORA",
     "loading": "Enviando...",
+    "success": {
+      "title": "Matrícula Realizada!",
+      "message": "Matrícula realizada com sucesso para o curso: {courseName}",
+      "ok": "OK"
+    },
     "coupon": {
       "label": "Cupom de desconto",
       "placeholder": "Digite seu cupom",
