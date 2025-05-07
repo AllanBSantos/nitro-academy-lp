@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "escolas",
+  "info": {
+    "singularName": "escola",
+    "pluralName": "escolas",
+    "displayName": "escola"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "nome": {
+      "type": "string"
+    }
+  }
+}

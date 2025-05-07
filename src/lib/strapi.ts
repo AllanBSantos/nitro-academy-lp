@@ -73,6 +73,7 @@ export async function createStudent(data: {
   cidade: string;
   telefone_aluno?: string;
   curso: number;
+  escola_parceira?: string;
 }) {
   try {
     const createResponse = await fetch(`${STRAPI_API_URL}/api/alunos`, {
@@ -92,6 +93,7 @@ export async function createStudent(data: {
           estado: data.estado,
           cidade: data.cidade,
           telefone_aluno: data.telefone_aluno,
+          escola_parceira: data.escola_parceira,
           cursos: [data.curso],
           publishedAt: new Date().toISOString(),
         },
@@ -108,5 +110,24 @@ export async function createStudent(data: {
   } catch (error) {
     console.error("Error creating student:", error);
     throw error;
+  }
+}
+
+export async function fetchSchools() {
+  try {
+    const response = await fetch(`${STRAPI_API_URL}/api/escolas?populate=*`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch schools");
+    }
+
+    const data = await response.json();
+    return data.data.map((school: { id: number; nome: string }) => ({
+      id: school.id.toString(),
+      nome: school.nome,
+    }));
+  } catch (error) {
+    console.error("Error fetching schools:", error);
+    return [];
   }
 }

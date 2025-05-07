@@ -231,8 +231,12 @@
     "loading": "Sending...",
     "success": {
       "title": "Enrollment Successful!",
-      "message": "Successfully enrolled in the course:  {courseName}",
+      "message": "Successfully enrolled in the course {courseName}",
       "ok": "OK"
+    },
+    "partner_school": {
+      "label": "Partner School*",
+      "placeholder": "Select your school"
     },
     "coupon": {
       "label": "Discount coupon",

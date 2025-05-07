@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import { Label } from "../../components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { createStudent } from "@/lib/strapi";
+import { createStudent, fetchSchools } from "@/lib/strapi";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -33,6 +33,11 @@ interface EnrollmentModalProps {
   courseId: number;
 }
 
+interface School {
+  id: string;
+  nome: string;
+}
+
 export default function EnrollmentModal({
   courseName,
   selectedTime,
@@ -45,6 +50,7 @@ export default function EnrollmentModal({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
+  const [schools, setSchools] = useState<School[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<{
     id: number;
     documentId: string;
@@ -72,7 +78,16 @@ export default function EnrollmentModal({
     state: "",
     city: "",
     studentPhone: "",
+    partnerSchool: "",
   });
+
+  useEffect(() => {
+    const loadSchools = async () => {
+      const fetchedSchools = await fetchSchools();
+      setSchools(fetchedSchools);
+    };
+    loadSchools();
+  }, []);
 
   const handleApplyCoupon = () => {
     setCouponError("");
@@ -98,7 +113,7 @@ export default function EnrollmentModal({
       return;
     }
 
-    if (!coupon.url && !link_desconto) {
+    if (!coupon.url && !link_desconto && !coupon.voucher_gratuito) {
       setCouponError(modalT("errors.invalid_coupon"));
       return;
     }
@@ -120,6 +135,14 @@ export default function EnrollmentModal({
       Nova matrícula para o curso: ${courseName}
       Horário selecionado: ${selectedTime}
       ${appliedCoupon ? `Cupom aplicado: ${appliedCoupon.nome}` : ""}
+      ${
+        appliedCoupon?.voucher_gratuito
+          ? `Escola parceira: ${
+              schools.find((s) => s.id === formData.partnerSchool)?.nome ||
+              "Não informada"
+            }`
+          : ""
+      }
       
       Dados do Aluno:
       Nome: ${formData.studentName}
@@ -154,6 +177,10 @@ export default function EnrollmentModal({
         throw new Error("Failed to send email");
       }
 
+      const schoolName = appliedCoupon?.voucher_gratuito
+        ? schools.find((s) => s.id === formData.partnerSchool)?.nome
+        : undefined;
+
       // Criar aluno no Strapi
       await createStudent({
         nome: formData.studentName,
@@ -167,6 +194,7 @@ export default function EnrollmentModal({
         cidade: formData.city,
         telefone_aluno: formData.studentPhone,
         curso: courseId,
+        escola_parceira: schoolName,
       });
 
       setIsOpen(false);
@@ -415,6 +443,36 @@ export default function EnrollmentModal({
                   </div>
                 )}
               </div>
+
+              {/* Partner School Selector - Only shown when free voucher is applied */}
+              {appliedCoupon?.voucher_gratuito && (
+                <div className="space-y-2">
+                  <Label htmlFor="partnerSchool">
+                    {modalT("partner_school.label")}
+                  </Label>
+                  <select
+                    id="partnerSchool"
+                    required
+                    value={formData.partnerSchool}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        partnerSchool: e.target.value,
+                      })
+                    }
+                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
+                  >
+                    <option value="">
+                      {modalT("partner_school.placeholder")}
+                    </option>
+                    {schools.map((school) => (
+                      <option key={school.id} value={school.id}>
+                        {school.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             <Button

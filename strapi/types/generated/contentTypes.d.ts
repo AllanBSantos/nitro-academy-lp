@@ -389,6 +389,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     cursos: Schema.Attribute.Relation<'manyToMany', 'api::curso.curso'>;
     data_nascimento: Schema.Attribute.Date & Schema.Attribute.Required;
     email_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
+    escola_parceira: Schema.Attribute.String;
     estado: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'> &
@@ -646,6 +647,34 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+  };
+}
+
+export interface ApiEscolaEscola extends Struct.CollectionTypeSchema {
+  collectionName: 'escolas';
+  info: {
+    displayName: 'escola';
+    pluralName: 'escolas';
+    singularName: 'escola';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::escola.escola'
+    > &
+      Schema.Attribute.Private;
+    nome: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1248,6 +1277,7 @@ declare module '@strapi/strapi' {
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::cupom.cupom': ApiCupomCupom;
       'api::curso.curso': ApiCursoCurso;
+      'api::escola.escola': ApiEscolaEscola;
       'api::mentor.mentor': ApiMentorMentor;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

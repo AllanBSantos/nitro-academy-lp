@@ -231,8 +231,12 @@
     "loading": "Enviando...",
     "success": {
       "title": "Matrícula Realizada!",
-      "message": "Matrícula realizada com sucesso para o curso: {courseName}",
+      "message": "Matrícula realizada com sucesso para o curso {courseName}",
       "ok": "OK"
+    },
+    "partner_school": {
+      "label": "Escola parceira*",
+      "placeholder": "Selecione sua escola"
     },
     "coupon": {
       "label": "Cupom de desconto",
