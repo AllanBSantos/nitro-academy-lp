@@ -26,7 +26,8 @@ export default function CourseSummaryCard({
   isMobile = false,
 }: CourseSummaryCardProps) {
   const t = useTranslations("CourseSummaryCard");
-  const pricePerClass = priceTotal / 8;
+  const CLASSES_PER_COURSE = 6;
+  const pricePerClass = priceTotal / CLASSES_PER_COURSE;
 
   const formatPrice = (price: number) => {
     if (moeda === "Dólar") {
