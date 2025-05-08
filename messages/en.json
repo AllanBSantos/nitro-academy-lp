@@ -211,10 +211,13 @@
     "best_time": "the best time and click",
     "enroll": "ENROLL NOW",
     "days": {
-      "monday": "Mondays",
-      "tuesday": "Tuesdays",
-      "wednesday": "Wednesdays",
-      "thursday": "Thursdays"
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
     },
     "start_date": "Start date",
     "end_date": "End date",
@@ -223,7 +226,18 @@
     "terms_agreement": "By clicking you agree to our",
     "terms_link": "Terms of use and privacy policy",
     "class": "Class",
-    "age_range": "Age Range"
+    "age_range": "Age Range",
+    "course_full": "All classes for this course have exceeded the student enrollment limit",
+    "suggest_new_time": "Suggest new time",
+    "class_full": "Class full",
+    "suggestion": {
+      "weekdays": "Weekdays",
+      "time": "Suggested time",
+      "comment": "Comment (optional)",
+      "comment_placeholder": "Why do you suggest this time?",
+      "sending": "Sending...",
+      "submit": "Submit suggestion"
+    }
   },
   "EnrollmentModal": {
     "title": "Enrollment Form",

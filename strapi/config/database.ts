@@ -1,6 +1,12 @@
 import path from "path";
 
-export default ({ env }) => {
+interface StrapiEnv {
+  (key: string, defaultValue?: string): string;
+  int(key: string, defaultValue?: number): number;
+  bool(key: string, defaultValue?: boolean): boolean;
+}
+
+export default ({ env }: { env: StrapiEnv }) => {
   const client = env("DATABASE_CLIENT", "sqlite");
 
   const isPostgres = client === "postgres";
@@ -17,7 +23,10 @@ export default ({ env }) => {
             password: env("DATABASE_PASSWORD"),
             ssl: env.bool("DATABASE_SSL", false)
               ? {
-                  rejectUnauthorized: env.bool("DATABASE_SSL_REJECT_UNAUTHORIZED", false),
+                  rejectUnauthorized: env.bool(
+                    "DATABASE_SSL_REJECT_UNAUTHORIZED",
+                    false,
+                  ),
                 }
               : false,
           }
@@ -26,7 +35,7 @@ export default ({ env }) => {
               __dirname,
               "..",
               "..",
-              env("DATABASE_FILENAME", ".tmp/data.db")
+              env("DATABASE_FILENAME", ".tmp/data.db"),
             ),
           },
       useNullAsDefault: !isPostgres,

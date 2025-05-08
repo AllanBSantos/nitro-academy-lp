@@ -400,6 +400,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     responsavel: Schema.Attribute.String & Schema.Attribute.Required;
     telefone_aluno: Schema.Attribute.String;
     telefone_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
+    turma: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

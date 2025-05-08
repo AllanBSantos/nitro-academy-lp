@@ -9,8 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
@@ -31,6 +31,7 @@ interface EnrollmentModalProps {
     voucher_gratuito: boolean;
   }>;
   courseId: number;
+  scheduleIndex: number;
 }
 
 interface School {
@@ -45,6 +46,7 @@ export default function EnrollmentModal({
   link_desconto,
   cupons = [],
   courseId,
+  scheduleIndex,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -79,6 +81,7 @@ export default function EnrollmentModal({
     city: "",
     studentPhone: "",
     partnerSchool: "",
+    classNumber: "",
   });
 
   useEffect(() => {
@@ -134,6 +137,7 @@ export default function EnrollmentModal({
     const emailBody = `
       Nova matrícula para o curso: ${courseName}
       Horário selecionado: ${selectedTime}
+      Turma: ${formData.classNumber}
       ${appliedCoupon ? `Cupom aplicado: ${appliedCoupon.nome}` : ""}
       ${
         appliedCoupon?.voucher_gratuito
@@ -193,8 +197,10 @@ export default function EnrollmentModal({
         estado: formData.state,
         cidade: formData.city,
         telefone_aluno: formData.studentPhone,
-        curso: courseId,
+        cursos: [{ id: courseId, documentId: courseId.toString() }],
         escola_parceira: schoolName,
+        turma: scheduleIndex + 1,
+        publishedAt: new Date().toISOString(),
       });
 
       setIsOpen(false);

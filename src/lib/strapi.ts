@@ -61,7 +61,9 @@ export async function fetchReviews(courseId: string): Promise<Review[]> {
   return data;
 }
 
-export async function createStudent(data: {
+export interface Student {
+  id?: number;
+  documentId?: string;
   nome: string;
   data_nascimento: string;
   responsavel: string;
@@ -72,45 +74,58 @@ export async function createStudent(data: {
   estado: string;
   cidade: string;
   telefone_aluno?: string;
-  curso: number;
   escola_parceira?: string;
-}) {
-  try {
-    const createResponse = await fetch(`${STRAPI_API_URL}/api/alunos`, {
+  cursos: Array<{
+    id: number;
+    documentId: string;
+  }>;
+  turma: number;
+  publishedAt?: string;
+}
+
+export async function createStudent(
+  student: Omit<Student, "id">
+): Promise<Student> {
+  const payload = {
+    data: {
+      nome: student.nome,
+      data_nascimento: student.data_nascimento,
+      responsavel: student.responsavel,
+      email_responsavel: student.email_responsavel,
+      cpf_responsavel: student.cpf_responsavel,
+      telefone_responsavel: student.telefone_responsavel,
+      pais: student.pais,
+      estado: student.estado,
+      cidade: student.cidade,
+      telefone_aluno: student.telefone_aluno,
+      cursos: student.cursos.map((course) => ({
+        id: course.id,
+      })),
+      escola_parceira: student.escola_parceira,
+      turma: student.turma,
+    },
+  };
+
+  console.log("Payload:", JSON.stringify(payload, null, 2));
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos`,
+    {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        data: {
-          nome: data.nome,
-          data_nascimento: data.data_nascimento,
-          responsavel: data.responsavel,
-          email_responsavel: data.email_responsavel,
-          cpf_responsavel: data.cpf_responsavel,
-          telefone_responsavel: data.telefone_responsavel,
-          pais: data.pais,
-          estado: data.estado,
-          cidade: data.cidade,
-          telefone_aluno: data.telefone_aluno,
-          escola_parceira: data.escola_parceira,
-          cursos: [data.curso],
-          publishedAt: new Date().toISOString(),
-        },
-      }),
-    });
-
-    if (!createResponse.ok) {
-      const errorData = await createResponse.json();
-      console.error("Strapi error response:", errorData);
-      throw new Error(`Failed to create student: ${JSON.stringify(errorData)}`);
+      body: JSON.stringify(payload),
     }
+  );
 
-    return await createResponse.json();
-  } catch (error) {
-    console.error("Error creating student:", error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Strapi Error:", errorData);
+    throw new Error("Failed to create student");
   }
+
+  return response.json();
 }
 
 export async function fetchSchools() {
@@ -130,4 +145,36 @@ export async function fetchSchools() {
     console.error("Error fetching schools:", error);
     return [];
   }
+}
+
+export async function fetchAllStudents(): Promise<Student[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/alunos?populate[cursos][fields][0]=id&fields[0]=turma`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch students");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return [];
+  }
+}
+
+export function getStudentsByCourseAndClass(
+  students: Student[],
+  courseId: number,
+  classNumber: string
+): Student[] {
+  const studentsInCourse = students.filter((student) =>
+    student.cursos?.some((course) => course.id === courseId)
+  );
+  const studentsInClass = studentsInCourse.filter(
+    (student) => student.turma === parseInt(classNumber)
+  );
+  return studentsInClass;
 }

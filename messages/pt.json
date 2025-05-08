@@ -211,10 +211,13 @@
     "best_time": "o melhor horário e clique em",
     "enroll": "REALIZAR MATRÍCULA",
     "days": {
-      "monday": "Segundas-feiras",
-      "tuesday": "Terças-feiras",
-      "wednesday": "Quartas-feiras",
-      "thursday": "Quintas-feiras"
+      "sunday": "Domingo",
+      "monday": "Segunda-feira",
+      "tuesday": "Terça-feira",
+      "wednesday": "Quarta-feira",
+      "thursday": "Quinta-feira",
+      "friday": "Sexta-feira",
+      "saturday": "Sábado"
     },
     "start_date": "Data início",
     "end_date": "Data fim",
@@ -223,7 +226,18 @@
     "terms_agreement": "Ao clicar você aceita com os nossos",
     "terms_link": "Termos de uso e política de privacidade",
     "class": "Turma",
-    "age_range": "Faixa Etária"
+    "age_range": "Faixa Etária",
+    "course_full": "Todas as turmas desse curso já excederam o limite de alunos matriculados",
+    "suggest_new_time": "Sugerir novo horário",
+    "class_full": "Turma cheia",
+    "suggestion": {
+      "weekdays": "Dias da semana",
+      "time": "Horário sugerido",
+      "comment": "Comentário (opcional)",
+      "comment_placeholder": "Por que você sugere este horário?",
+      "sending": "Enviando...",
+      "submit": "Enviar sugestão"
+    }
   },
   "EnrollmentModal": {
     "title": "Formulário de Matrícula",

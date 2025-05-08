@@ -1,6 +1,12 @@
 import path from "path";
 
-const plugins = ({ env }) => {
+interface StrapiEnv {
+  (key: string, defaultValue?: string): string;
+  int(key: string, defaultValue?: number): number;
+  bool(key: string, defaultValue?: boolean): boolean;
+}
+
+const plugins = ({ env }: { env: StrapiEnv }) => {
   const isProduction = env("NODE_ENV") === "production";
 
   return {

@@ -22,9 +22,14 @@
       "@/app/*": ["./src/app/*"],
       "@/components/*": ["./src/app/components/*"],
       "@/lib/*": ["./src/lib/*"],
-      "@/i18n/*": ["./src/i18n/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/styles/*": ["./src/styles/*"],
+      "@/public/*": ["./public/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "strapi"]
+  "exclude": ["node_modules"]
 }

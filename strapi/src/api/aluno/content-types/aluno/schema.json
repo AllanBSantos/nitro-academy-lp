@@ -58,6 +58,9 @@
     },
     "escola_parceira": {
       "type": "string"
+    },
+    "turma": {
+      "type": "integer"
     }
   }
 }
