@@ -57,9 +57,9 @@ export default function Card({
 
     return stars;
   };
-
+  const CLASSES_PER_COURSE = 6;
   const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
-  const priceClass = (price.total / 8)
+  const priceClass = (price.total / CLASSES_PER_COURSE)
     .toFixed(2)
     .replace(".", moeda === "Real" ? "," : ".");
   const dataInicio = cronograma?.[0]?.data_inicio || "";
