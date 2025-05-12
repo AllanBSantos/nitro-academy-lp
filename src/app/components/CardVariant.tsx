@@ -164,7 +164,7 @@ export default function Card({
           <div className="p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between">
               <div className="flex-grow">
-                <h2 className="text-lg font-bold text-gray-800 line-clamp-2 mb-2">
+                <h2 className="text-lg font-bold text-gray-800 min-h-[3.5rem] line-clamp-2 mb-2">
                   {title}
                 </h2>
                 <div className="flex items-center gap-2 mb-2">
