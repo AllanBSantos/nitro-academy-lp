@@ -151,7 +151,7 @@ export default function EnrollmentModal({
       Dados do Aluno:
       Nome: ${formData.studentName}
       Data de Nascimento: ${formData.studentBirthDate}
-      Celular: ${formData.studentPhone || "Não informado"}
+      Celular: ${formData.studentPhone}
       
       Dados do Responsável:
       Nome: ${formData.guardianName}
@@ -285,11 +285,12 @@ export default function EnrollmentModal({
 
                 <div className="space-y-2">
                   <Label htmlFor="studentPhone">
-                    {modalT("student.phone")}
+                    {modalT("student.phone")} <span>*</span>
                   </Label>
                   <Input
                     id="studentPhone"
                     type="tel"
+                    required
                     value={formData.studentPhone}
                     onChange={(e) =>
                       setFormData({ ...formData, studentPhone: e.target.value })
