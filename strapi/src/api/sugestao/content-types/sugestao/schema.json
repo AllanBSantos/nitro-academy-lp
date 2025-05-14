@@ -23,6 +23,11 @@
       "type": "component",
       "repeatable": true,
       "component": "componentes.dias-da-semana"
+    },
+    "curso": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::curso.curso"
     }
   }
 }

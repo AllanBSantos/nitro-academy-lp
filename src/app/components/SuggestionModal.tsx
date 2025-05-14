@@ -16,12 +16,14 @@ interface SuggestionModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   courseName: string;
+  courseId: number;
 }
 
 export default function SuggestionModal({
   isOpen,
   onOpenChange,
   courseName,
+  courseId,
 }: SuggestionModalProps) {
   const t = useTranslations("TimeSelection");
   const WEEKDAYS = [
@@ -85,6 +87,7 @@ export default function SuggestionModal({
         dias_da_semana: suggestionData.weekdays,
         horario: suggestionData.time,
         comentario: suggestionData.comment,
+        curso: courseId,
       });
 
       // Depois, enviar o email

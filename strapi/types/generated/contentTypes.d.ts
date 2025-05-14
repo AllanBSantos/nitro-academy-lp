@@ -785,6 +785,7 @@ export interface ApiSugestaoSugestao extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    curso: Schema.Attribute.Relation<'oneToOne', 'api::curso.curso'>;
     dias_da_semana: Schema.Attribute.Component<
       'componentes.dias-da-semana',
       true

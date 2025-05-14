@@ -183,6 +183,7 @@ export interface Suggestion {
   dias_da_semana: Array<{ dia_da_semana: string }>;
   horario: string;
   comentario?: string;
+  curso: number;
 }
 
 export async function createSuggestion(suggestion: Suggestion): Promise<void> {
@@ -190,6 +191,7 @@ export async function createSuggestion(suggestion: Suggestion): Promise<void> {
     dias_da_semana: suggestion.dias_da_semana,
     horario: suggestion.horario,
     comentario: suggestion.comentario,
+    curso: suggestion.curso,
   });
 
   const payload = {
@@ -199,6 +201,9 @@ export async function createSuggestion(suggestion: Suggestion): Promise<void> {
       })),
       horario: suggestion.horario,
       comentario: suggestion.comentario || "",
+      curso: {
+        connect: [{ id: suggestion.curso }],
+      },
     },
   };
 

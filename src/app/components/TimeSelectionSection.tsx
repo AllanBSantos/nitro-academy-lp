@@ -236,6 +236,7 @@ export default function TimeSelectionSection({
         isOpen={isSuggestionModalOpen}
         onOpenChange={setIsSuggestionModalOpen}
         courseName={course.title}
+        courseId={parseInt(course.id)}
       />
     </section>
   );
