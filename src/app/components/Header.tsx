@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import LocaleSwitch from "@/components/LocaleSwitch";
 import {
   Menubar,
@@ -20,13 +21,15 @@ export default function Header() {
   return (
     <section className="bg-background">
       <header className="py-2 flex items-center justify-between w-full px-2 md:px-10">
-        <Image
-          src={`/${locale}/nitro-logo-azul.png`}
-          alt="logo nitro academy"
-          width={170}
-          height={47}
-          className="h-14 w-52"
-        />
+        <Link href={`/${locale}`}>
+          <Image
+            src={`/${locale}/nitro-logo-azul.png`}
+            alt="logo nitro academy"
+            width={170}
+            height={47}
+            className="h-14 w-52"
+          />
+        </Link>
         <Menubar className="border-none">
           <MenubarMenu>
             <MenubarTrigger>
