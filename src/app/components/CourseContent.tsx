@@ -32,7 +32,7 @@ export default function CourseContent({ course }: CourseContentProps) {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
-  const MAX_STUDENTS_PER_CLASS = 10;
+  const MAX_STUDENTS_PER_CLASS = 12;
 
   useEffect(() => {
     async function fetchData() {
