@@ -239,7 +239,12 @@
       "submit": "Submit suggestion",
       "morning": "Morning",
       "afternoon": "Afternoon",
-      "select_time": "Select a time"
+      "select_time": "Select a time",
+      "success": {
+        "title": "Suggestion Sent!",
+        "message": "Your time suggestion for the course {courseName} has been sent successfully. We'll contact you soon!",
+        "ok": "Got it"
+      }
     }
   },
   "EnrollmentModal": {
