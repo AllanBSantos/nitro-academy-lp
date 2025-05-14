@@ -72,6 +72,7 @@ export default function EnrollmentModal({
   const [formData, setFormData] = useState({
     studentName: "",
     studentBirthDate: "",
+    studentCPF: "",
     guardianName: "",
     guardianEmail: "",
     guardianCPF: "",
@@ -151,6 +152,7 @@ export default function EnrollmentModal({
       Dados do Aluno:
       Nome: ${formData.studentName}
       Data de Nascimento: ${formData.studentBirthDate}
+      CPF: ${formData.studentCPF}
       Celular: ${formData.studentPhone}
       
       Dados do Responsável:
@@ -232,6 +234,7 @@ export default function EnrollmentModal({
       await createStudent({
         nome: formData.studentName,
         data_nascimento: formData.studentBirthDate,
+        cpf_aluno: formData.studentCPF,
         responsavel: formData.guardianName,
         email_responsavel: formData.guardianEmail,
         cpf_responsavel: formData.guardianCPF,
@@ -327,8 +330,21 @@ export default function EnrollmentModal({
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="studentCPF">{modalT("student.cpf")}</Label>
+                  <Input
+                    id="studentCPF"
+                    required
+                    value={formData.studentCPF}
+                    onChange={(e) =>
+                      setFormData({ ...formData, studentCPF: e.target.value })
+                    }
+                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="studentPhone">
-                    {modalT("student.phone")} <span>*</span>
+                    {modalT("student.phone")}
                   </Label>
                   <Input
                     id="studentPhone"

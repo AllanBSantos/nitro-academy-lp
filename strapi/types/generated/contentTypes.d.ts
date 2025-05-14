@@ -386,6 +386,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
   };
   attributes: {
     cidade: Schema.Attribute.String & Schema.Attribute.Required;
+    cpf_aluno: Schema.Attribute.String & Schema.Attribute.Required;
     cpf_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

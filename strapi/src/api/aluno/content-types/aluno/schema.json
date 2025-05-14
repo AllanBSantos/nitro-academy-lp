@@ -61,6 +61,10 @@
     },
     "turma": {
       "type": "integer"
+    },
+    "cpf_aluno": {
+      "type": "string",
+      "required": true
     }
   }
 }

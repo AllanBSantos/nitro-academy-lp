@@ -265,12 +265,13 @@
     "student": {
       "name": "Student's full name*",
       "birthDate": "Student's birth date*",
+      "cpf": "Student's document number*",
       "phone": "Student's phone number"
     },
     "guardian": {
       "name": "Guardian's full name*",
       "email": "Guardian's email*",
-      "cpf": "Guardian's CPF*",
+      "cpf": "Guardian's document number*",
       "phone": "Guardian's phone number*"
     },
     "location": {

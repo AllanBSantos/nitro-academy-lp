@@ -66,6 +66,7 @@ export interface Student {
   documentId?: string;
   nome: string;
   data_nascimento: string;
+  cpf_aluno: string;
   responsavel: string;
   email_responsavel: string;
   cpf_responsavel: string;
@@ -93,6 +94,7 @@ export async function createStudent(
       responsavel: student.responsavel,
       email_responsavel: student.email_responsavel,
       cpf_responsavel: student.cpf_responsavel,
+      cpf_aluno: student.cpf_aluno,
       telefone_responsavel: student.telefone_responsavel,
       pais: student.pais,
       estado: student.estado,
