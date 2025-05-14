@@ -290,6 +290,12 @@ export default function EnrollmentModal({
     router.push(`/${locale}`);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -308,7 +314,11 @@ export default function EnrollmentModal({
               {modalT("title")}
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-6 p-4">
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={handleKeyDown}
+            className="space-y-6 p-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Student Information */}
               <div className="space-y-4">
