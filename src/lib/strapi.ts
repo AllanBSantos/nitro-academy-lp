@@ -84,17 +84,75 @@ export interface Student {
   publishedAt?: string;
 }
 
+export async function findStudentByCPF(cpf: string): Promise<Student | null> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&populate[cursos][fields][0]=id`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch student");
+    }
+
+    const data = await response.json();
+    return data.data[0] || null;
+  } catch (error) {
+    console.error("Error finding student:", error);
+    return null;
+  }
+}
+
+export async function updateStudentCourses(
+  studentId: number,
+  courseId: number,
+  documentId: string
+): Promise<void> {
+  try {
+    const response = await fetch(`${STRAPI_API_URL}/api/alunos/${documentId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: {
+          cursos: {
+            connect: [{ id: courseId }],
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update student courses");
+    }
+  } catch (error) {
+    console.error("Error updating student courses:", error);
+    throw error;
+  }
+}
+
 export async function createStudent(
   student: Omit<Student, "id">
 ): Promise<Student> {
+  const existingStudent = await findStudentByCPF(student.cpf_aluno);
+
+  if (existingStudent) {
+    await updateStudentCourses(
+      existingStudent.id!,
+      parseInt(student.cursos[0].id.toString()),
+      existingStudent.documentId!
+    );
+    return existingStudent;
+  }
+
   const payload = {
     data: {
       nome: student.nome,
       data_nascimento: student.data_nascimento,
+      cpf_aluno: student.cpf_aluno,
       responsavel: student.responsavel,
       email_responsavel: student.email_responsavel,
       cpf_responsavel: student.cpf_responsavel,
-      cpf_aluno: student.cpf_aluno,
       telefone_responsavel: student.telefone_responsavel,
       pais: student.pais,
       estado: student.estado,
@@ -107,8 +165,6 @@ export async function createStudent(
       turma: student.turma,
     },
   };
-
-  console.log("Payload:", JSON.stringify(payload, null, 2));
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos`,
