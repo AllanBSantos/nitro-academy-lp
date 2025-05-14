@@ -7,18 +7,14 @@ import { CSSProperties } from "react";
 const containerStyle: CSSProperties = {
   position: "relative",
   width: "100%",
-  height: "100%",
-  overflow: "hidden",
+  maxWidth: "1200px",
+  margin: "0 auto",
 };
 
-const backdropStyle: CSSProperties = {
-  WebkitBackdropFilter: "blur(5px)",
-  backdropFilter: "blur(5px)",
-  position: "absolute",
-  top: 0,
-  height: "100%",
+const videoContainerStyle: CSSProperties = {
+  position: "relative",
   width: "100%",
-  borderRadius: "12px",
+  paddingTop: "56.25%", // 16:9 aspect ratio
 };
 
 const playerWrapperStyle: CSSProperties = {
@@ -28,23 +24,23 @@ const playerWrapperStyle: CSSProperties = {
   width: "100%",
   height: "100%",
   borderRadius: "12px",
-  overflow: "hidden",
 };
 
 export default function VturbVideo() {
   return (
-    <div className="h-full">
-      <div id="vid_67dabe7b49c4b7bf82565f10" style={containerStyle}>
+    <div style={containerStyle}>
+      <div id="vid_67dabe7b49c4b7bf82565f10" style={videoContainerStyle}>
         <div style={playerWrapperStyle}>
           <Image
             id="thumb_67dabe7b49c4b7bf82565f10"
             src="https://images.converteai.net/3a4fbb06-ca28-4858-9d27-5208e40d8e6d/players/67dabe7b49c4b7bf82565f10/thumbnail.jpg"
             alt="thumbnail"
             fill
-            className="object-cover rounded-xl"
+            quality={100}
+            className="object-contain rounded-xl"
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
           />
-          <div id="backdrop_67dabe7b49c4b7bf82565f10" style={backdropStyle} />
         </div>
       </div>
 
