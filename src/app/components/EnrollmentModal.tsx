@@ -163,8 +163,32 @@ export default function EnrollmentModal({
       Cidade: ${formData.city}
     `;
 
+    const welcomeEmailBody = `
+      Olá ${formData.studentName}, tudo bem?
+
+      Parabéns por garantir sua vaga no curso ${courseName}!
+      Estamos muito felizes em ter você conosco nesta experiência transformadora.
+
+      ✨ Boas-vindas ao curso "${courseName}"
+      Prepare-se para vivências práticas, envolventes e cheias de propósito — pensadas especialmente para ajudar adolescentes a se comunicarem com mais segurança, lidarem com suas emoções, descobrirem seu talento único e desenvolverem habilidades essenciais para a vida.
+
+      📲 Como vai funcionar:
+
+      Toda a nossa comunicação será feita pelo ClassApp, onde organizamos grupos por turma para facilitar o acompanhamento, lembretes e avisos importantes. Fique de olho!
+
+      Se tiver qualquer dúvida, estamos por aqui para ajudar.
+
+      Seja muito bem-vindo(a) à Nitro Academy — estamos animados para começar essa jornada com você! 🚀
+
+      Com carinho,
+      Equipe Nitro
+
+      📲 Instagram: @nitroacademybr
+      ➡️Site: Nitro.academy
+    `;
+
     try {
-      // Enviar email
+      // Enviar email de notificação para a equipe
       const emailResponse = await fetch("/api/send-email", {
         method: "POST",
         headers: {
@@ -178,7 +202,26 @@ export default function EnrollmentModal({
       });
 
       if (!emailResponse.ok) {
-        throw new Error("Failed to send email");
+        throw new Error("Failed to send notification email");
+      }
+
+      const welcomeEmailResponse = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: formData.guardianEmail,
+          subject:
+            "🎉 Seja bem-vindo(a)! Sua jornada com a Nitro começa agora!",
+          text: welcomeEmailBody,
+        }),
+      });
+
+      if (!welcomeEmailResponse.ok) {
+        console.error(
+          "Failed to send welcome email, but enrollment was successful"
+        );
       }
 
       const schoolName = appliedCoupon?.voucher_gratuito
