@@ -236,7 +236,10 @@
       "comment": "Comentário (opcional)",
       "comment_placeholder": "Por que você sugere este horário?",
       "sending": "Enviando...",
-      "submit": "Enviar sugestão"
+      "submit": "Enviar sugestão",
+      "morning": "Manhã",
+      "afternoon": "Tarde",
+      "select_time": "Selecione um horário"
     }
   },
   "EnrollmentModal": {

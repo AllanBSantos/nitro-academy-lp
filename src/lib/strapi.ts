@@ -178,3 +178,54 @@ export function getStudentsByCourseAndClass(
   );
   return studentsInClass;
 }
+
+export interface Suggestion {
+  dias_da_semana: Array<{ dia_da_semana: string }>;
+  horario: string;
+  comentario?: string;
+}
+
+export async function createSuggestion(suggestion: Suggestion): Promise<void> {
+  console.log("Suggestion data being sent:", {
+    dias_da_semana: suggestion.dias_da_semana,
+    horario: suggestion.horario,
+    comentario: suggestion.comentario,
+  });
+
+  const payload = {
+    data: {
+      dias_da_semana: suggestion.dias_da_semana.map((dia) => ({
+        dia_da_semana: dia.dia_da_semana,
+      })),
+      horario: suggestion.horario,
+      comentario: suggestion.comentario || "",
+    },
+  };
+
+  console.log(
+    "Full payload being sent to Strapi:",
+    JSON.stringify(payload, null, 2)
+  );
+
+  try {
+    const response = await fetch(`${STRAPI_API_URL}/api/sugestoes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Strapi Error Response:", errorData);
+      throw new Error("Failed to create suggestion");
+    }
+
+    const responseData = await response.json();
+    console.log("Strapi Success Response:", responseData);
+  } catch (error) {
+    console.error("Error creating suggestion:", error);
+    throw error;
+  }
+}

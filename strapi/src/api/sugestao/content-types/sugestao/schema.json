@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sugestoes",
+  "info": {
+    "singularName": "sugestao",
+    "pluralName": "sugestoes",
+    "displayName": "sugestao",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "horario": {
+      "type": "string",
+      "required": true
+    },
+    "comentario": {
+      "type": "text"
+    },
+    "dias_da_semana": {
+      "displayName": "dias_da_semana",
+      "type": "component",
+      "repeatable": true,
+      "component": "componentes.dias-da-semana"
+    }
+  }
+}

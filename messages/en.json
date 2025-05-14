@@ -236,7 +236,10 @@
       "comment": "Comment (optional)",
       "comment_placeholder": "Why do you suggest this time?",
       "sending": "Sending...",
-      "submit": "Submit suggestion"
+      "submit": "Submit suggestion",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "select_time": "Select a time"
     }
   },
   "EnrollmentModal": {

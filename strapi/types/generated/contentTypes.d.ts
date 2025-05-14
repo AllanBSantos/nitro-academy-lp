@@ -769,6 +769,40 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSugestaoSugestao extends Struct.CollectionTypeSchema {
+  collectionName: 'sugestoes';
+  info: {
+    description: '';
+    displayName: 'sugestao';
+    pluralName: 'sugestoes';
+    singularName: 'sugestao';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    comentario: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    dias_da_semana: Schema.Attribute.Component<
+      'componentes.dias-da-semana',
+      true
+    >;
+    horario: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sugestao.sugestao'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1284,6 +1318,7 @@ declare module '@strapi/strapi' {
       'api::curso.curso': ApiCursoCurso;
       'api::escola.escola': ApiEscolaEscola;
       'api::mentor.mentor': ApiMentorMentor;
+      'api::sugestao.sugestao': ApiSugestaoSugestao;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

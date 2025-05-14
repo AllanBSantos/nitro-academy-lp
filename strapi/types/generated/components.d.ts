@@ -1,5 +1,15 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ComponentesDiasDaSemana extends Struct.ComponentSchema {
+  collectionName: 'components_componentes_dias_da_semanas';
+  info: {
+    displayName: 'dias_da_semana';
+  };
+  attributes: {
+    dia_da_semana: Schema.Attribute.String;
+  };
+}
+
 export interface ComponentesEmendaResumida extends Struct.ComponentSchema {
   collectionName: 'components_componentes_emenda_resumidas';
   info: {
@@ -64,6 +74,7 @@ export interface VideosVideos extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'componentes.dias-da-semana': ComponentesDiasDaSemana;
       'componentes.emenda-resumida': ComponentesEmendaResumida;
       'componentes.resumo-aulas': ComponentesResumoAulas;
       'cronograma.cronograma': CronogramaCronograma;

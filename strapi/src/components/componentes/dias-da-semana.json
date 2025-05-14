@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_componentes_dias_da_semanas",
+  "info": {
+    "displayName": "dias_da_semana"
+  },
+  "options": {},
+  "attributes": {
+    "dia_da_semana": {
+      "type": "string"
+    }
+  }
+}
