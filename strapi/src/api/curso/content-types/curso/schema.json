@@ -231,6 +231,10 @@
     },
     "ideal_para": {
       "type": "text"
+    },
+    "sugestao_horario": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

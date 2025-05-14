@@ -15,6 +15,15 @@ export interface Schedule {
   faixa_etaria: string;
 }
 
+export interface Turma {
+  id: string;
+  horario: string;
+  vagas_disponiveis: number;
+  faixa_etaria: string;
+  data_inicio: string;
+  data_fim?: string;
+}
+
 export interface CardProps {
   id: string;
   slug: string;
@@ -71,4 +80,6 @@ export interface CardProps {
     nome_aula: string;
     descricao_aula: string;
   }>;
+  sugestao_horario?: boolean;
+  turmas?: Turma[];
 }

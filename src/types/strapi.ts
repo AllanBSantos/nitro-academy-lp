@@ -116,6 +116,7 @@ export interface Course {
   badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
   competencias: string | null;
   ideal_para: string | null;
+  sugestao_horario: boolean | null;
   imagem: {
     url: string;
   } | null;
