@@ -14,8 +14,8 @@
     "student": {
       "name": "Nome do Aluno",
       "birthDate": "Data de Nascimento",
-      "cpf": "CPF do Aluno",
-      "phone": "Celular do Aluno"
+      "cpf": "CPF do Aluno*",
+      "phone": "Celular do Aluno*"
     },
     "guardian": {
       "name": "Nome do Responsável",

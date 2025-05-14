@@ -14,7 +14,7 @@
     "student": {
       "name": "Student Name",
       "birthDate": "Birth Date",
-      "cpf": "Student CPF",
+      "cpf": "Student CPF*",
       "phone": "Student Phone"
     },
     "guardian": {

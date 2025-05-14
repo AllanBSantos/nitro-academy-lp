@@ -273,7 +273,7 @@
       "name": "Student's full name*",
       "birthDate": "Student's birth date*",
       "cpf": "Student's document number*",
-      "phone": "Student's phone number"
+      "phone": "Student's phone number*"
     },
     "guardian": {
       "name": "Guardian's full name*",
