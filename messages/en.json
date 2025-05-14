@@ -175,17 +175,14 @@
         "name": "Samareh Sherafat",
         "desc": "Graduated in International Relations from Facamp and has previous experience as a teacher, headhunter and human resources leader. She was a volunteer in Gambia, Guinea Bissau and Israel in social projects."
       },
-      "odecio": {
-        "name": "Odecio Pompeo Neto",
-        "desc": "Graduated in business administration from Unicamp, has more than 5 years of experience working with customer service and operations in technology and education companies."
-      },
+
       "barbara": {
         "name": "Bárbara de Padua",
         "desc": "Publicity and Advertising student at Uninter, has previous experience with customer service and development of new projects."
       },
-      "maiara": {
-        "name": "Maiara Matos de Assunção",
-        "desc": "Environmental and Sanitary Engineering student at UFS, with experience in various digital schools as a teacher, operations manager, commercial manager, and marketing advisor."
+      "allan": {
+        "name": "Allan Santos",
+        "desc": "Computer Engineer with a degree from Unimetrocamp, possessing experience in software development and web and mobile technology solutions."
       }
     }
   },

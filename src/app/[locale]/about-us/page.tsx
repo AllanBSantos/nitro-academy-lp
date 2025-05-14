@@ -15,14 +15,14 @@ export default function AboutUs({
   return (
     <div className="bg-white text-gray-800 font-sans">
       <Header />
-      <section className="bg-blue-950 py-16 px-4 md:px-20">
+      <section className="bg-white py-16 px-4 md:px-20">
         <div className="max-w-4xl mx-auto">
           <h1 className="py-10 text-4xl font-gilroy-extrabold sm:text-6xl text-theme-orange text-center">
             {t("title")}
           </h1>
-          <p className="mb-6 text-lg text-white">{t("foundation")}</p>
-          <p className="mb-6 text-lg text-white">{t("inspiration")}</p>
-          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
+          <p className="mb-6 text-lg text-[#1C1C1C]">{t("foundation")}</p>
+          <p className="mb-6 text-lg text-[#1C1C1C]">{t("inspiration")}</p>
+          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-[#1C1C1C]">
             &ldquo;{t("quote1")}&rdquo;
             <span
               style={{ fontSize: "0.7em", verticalAlign: "super" }}
@@ -31,8 +31,8 @@ export default function AboutUs({
               ¹
             </span>
           </blockquote>
-          <p className="mb-6 text-lg text-white">{t("nobleCreation")}</p>
-          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
+          <p className="mb-6 text-lg text-[#1C1C1C]">{t("nobleCreation")}</p>
+          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-[#1C1C1C]">
             &ldquo;{t("quote2")}&rdquo;
             <span
               style={{ fontSize: "0.7em", verticalAlign: "super" }}
@@ -41,8 +41,10 @@ export default function AboutUs({
               ¹
             </span>
           </blockquote>
-          <p className="mb-6 text-lg text-white">{t("internationalSchool")}</p>
-          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
+          <p className="mb-6 text-lg text-[#1C1C1C]">
+            {t("internationalSchool")}
+          </p>
+          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-[#1C1C1C]">
             &ldquo;{t("quote3")}&rdquo;
             <span
               style={{ fontSize: "0.7em", verticalAlign: "super" }}
@@ -51,8 +53,10 @@ export default function AboutUs({
               ¹
             </span>
           </blockquote>
-          <p className="mb-6 text-lg text-white">{t("professionalJourney")}</p>
-          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-white">
+          <p className="mb-6 text-lg text-[#1C1C1C]">
+            {t("professionalJourney")}
+          </p>
+          <blockquote className="italic border-l-4 border-[#03A9F4] pl-4 mb-4 text-[#1C1C1C]">
             &ldquo;{t("quote4")}&rdquo;
             <span
               style={{ fontSize: "0.7em", verticalAlign: "super" }}
@@ -61,16 +65,18 @@ export default function AboutUs({
               ¹
             </span>
           </blockquote>
-          <p className="mb-6 text-lg text-white">
+          <p className="mb-6 text-lg text-[#1C1C1C]">
             {t("civilizationAdvancement")}
           </p>
-          <p className="mb-6 text-lg text-white">{t("dailyDedication")}</p>
-          <p className="mt-8 mb-6 text-lg text-white">
+          <p className="mb-6 text-lg text-[#1C1C1C]">{t("dailyDedication")}</p>
+          <p className="mt-8 mb-6 text-lg text-[#1C1C1C]">
             {t("sincerely")}
             <br />
             <strong>Samareh e Vahid</strong>
           </p>
-          <p className="mt-2 text-[11px] text-white">{t("bahaiReference")}</p>
+          <p className="mt-2 text-[11px] text-[#1C1C1C]">
+            {t("bahaiReference")}
+          </p>
         </div>
       </section>
 
@@ -94,12 +100,7 @@ export default function AboutUs({
                 desc: t("teamMembers.samareh.desc"),
                 image: `/${locale}/samareh.png`,
               },
-              {
-                name: t("teamMembers.odecio.name"),
-                linkedin: "https://www.linkedin.com/in/odecio-pompeo-neto/",
-                desc: t("teamMembers.odecio.desc"),
-                image: `/${locale}/odecio.jpeg`,
-              },
+
               {
                 name: t("teamMembers.barbara.name"),
                 linkedin:
@@ -108,10 +109,10 @@ export default function AboutUs({
                 image: `/${locale}/barbara.jpeg`,
               },
               {
-                name: t("teamMembers.maiara.name"),
-                linkedin: "https://www.linkedin.com/in/maiara-matos/",
-                desc: t("teamMembers.maiara.desc"),
-                image: `/${locale}/maiara.png`,
+                name: t("teamMembers.allan.name"),
+                linkedin: "https://www.linkedin.com/in/allan/",
+                desc: t("teamMembers.allan.desc"),
+                image: `/${locale}/allan.jpeg`,
               },
             ].map((person, i) => (
               <div

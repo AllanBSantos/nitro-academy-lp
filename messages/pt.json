@@ -175,17 +175,13 @@
         "name": "Samareh Sherafat",
         "desc": "Formada em Relações Internacionais pela Facamp e possui experiência anterior como professora, headhunter e líder de recursos humanos. Foi voluntária na Gâmbia, Guiné Bissau e Israel em projetos sociais."
       },
-      "odecio": {
-        "name": "Odecio Pompeo Neto",
-        "desc": "Formado em administração de empresas pela Unicamp, possui mais de 5 anos de experiência trabalhando com atendimento e operações em empresas de tecnologia e educação."
-      },
       "barbara": {
         "name": "Bárbara de Padua",
         "desc": "Estudante de Publicidade e Propaganda pela Uninter, possui experiência anterior com atendimento e desenvolvimento de novos projetos."
       },
-      "maiara": {
-        "name": "Maiara Matos de Assunção",
-        "desc": "Estudante de Engenharia Ambiental e Sanitária pela UFS, possui experiência em diferentes escolas digitais como professora, gerente de operação, gerente comercial e assessora de marketing."
+      "allan": {
+        "name": "Allan Santos",
+        "desc": "Engenheiro da computação formado pela Unimetrocamp, possui experiência com desenvolvimento de software e soluções de tecnologia web e mobile."
       }
     }
   },
