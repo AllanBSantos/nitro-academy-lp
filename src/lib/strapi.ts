@@ -82,6 +82,7 @@ export interface Student {
   }>;
   turma: number;
   publishedAt?: string;
+  usou_voucher?: boolean;
 }
 
 export async function findStudentByCPF(cpf: string): Promise<Student | null> {
@@ -105,20 +106,30 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
 export async function updateStudentCourses(
   studentId: number,
   courseId: number,
-  documentId: string
+  documentId: string,
+  usedVoucher: boolean = false
 ): Promise<void> {
   try {
+    const updateData: {
+      cursos: { connect: Array<{ id: number }> };
+      usou_voucher?: boolean;
+    } = {
+      cursos: {
+        connect: [{ id: courseId }],
+      },
+    };
+
+    if (usedVoucher) {
+      updateData.usou_voucher = true;
+    }
+
     const response = await fetch(`${STRAPI_API_URL}/api/alunos/${documentId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        data: {
-          cursos: {
-            connect: [{ id: courseId }],
-          },
-        },
+        data: updateData,
       }),
     });
 
@@ -132,15 +143,18 @@ export async function updateStudentCourses(
 }
 
 export async function createStudent(
-  student: Omit<Student, "id">
+  student: Omit<Student, "id">,
+  couponCode?: string
 ): Promise<Student> {
   const existingStudent = await findStudentByCPF(student.cpf_aluno);
+  const isVoucher100 = couponCode?.toLowerCase() === "voucher100";
 
   if (existingStudent) {
     await updateStudentCourses(
       existingStudent.id!,
       parseInt(student.cursos[0].id.toString()),
-      existingStudent.documentId!
+      existingStudent.documentId!,
+      isVoucher100
     );
     return existingStudent;
   }
@@ -163,6 +177,7 @@ export async function createStudent(
       })),
       escola_parceira: student.escola_parceira,
       turma: student.turma,
+      usou_voucher: isVoucher100, // Só marca como true se for voucher100
     },
   };
 

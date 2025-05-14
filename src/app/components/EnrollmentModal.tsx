@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { createStudent, fetchSchools } from "@/lib/strapi";
+import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -93,7 +93,7 @@ export default function EnrollmentModal({
     loadSchools();
   }, []);
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     setCouponError("");
     const coupon = cupons.find(
       (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
@@ -115,6 +115,18 @@ export default function EnrollmentModal({
     if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
       setCouponError(modalT("errors.expired_coupon"));
       return;
+    }
+
+    if (couponCode.toLowerCase() === "voucher100") {
+      try {
+        const existingStudent = await findStudentByCPF(formData.studentCPF);
+        if (existingStudent?.usou_voucher) {
+          setCouponError(modalT("coupon.voucher_used"));
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking voucher usage:", error);
+      }
     }
 
     if (!coupon.url && !link_desconto && !coupon.voucher_gratuito) {
@@ -231,23 +243,26 @@ export default function EnrollmentModal({
         : undefined;
 
       // Criar aluno no Strapi
-      await createStudent({
-        nome: formData.studentName,
-        data_nascimento: formData.studentBirthDate,
-        cpf_aluno: formData.studentCPF,
-        responsavel: formData.guardianName,
-        email_responsavel: formData.guardianEmail,
-        cpf_responsavel: formData.guardianCPF,
-        telefone_responsavel: formData.guardianPhone,
-        pais: formData.country,
-        estado: formData.state,
-        cidade: formData.city,
-        telefone_aluno: formData.studentPhone,
-        cursos: [{ id: courseId, documentId: courseId.toString() }],
-        escola_parceira: schoolName,
-        turma: scheduleIndex + 1,
-        publishedAt: new Date().toISOString(),
-      });
+      await createStudent(
+        {
+          nome: formData.studentName,
+          data_nascimento: formData.studentBirthDate,
+          cpf_aluno: formData.studentCPF,
+          responsavel: formData.guardianName,
+          email_responsavel: formData.guardianEmail,
+          cpf_responsavel: formData.guardianCPF,
+          telefone_responsavel: formData.guardianPhone,
+          pais: formData.country,
+          estado: formData.state,
+          cidade: formData.city,
+          telefone_aluno: formData.studentPhone,
+          cursos: [{ id: courseId, documentId: courseId.toString() }],
+          escola_parceira: schoolName,
+          turma: scheduleIndex + 1,
+          publishedAt: new Date().toISOString(),
+        },
+        appliedCoupon?.nome
+      );
 
       setIsOpen(false);
       if (appliedCoupon) {
@@ -488,11 +503,17 @@ export default function EnrollmentModal({
                   <Button
                     type="button"
                     onClick={handleApplyCoupon}
-                    className="bg-orange-600 text-white hover:bg-orange-500"
+                    className="bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!formData.studentCPF}
                   >
                     {modalT("coupon.apply")}
                   </Button>
                 </div>
+                {!formData.studentCPF && (
+                  <p className="text-sm text-gray-500">
+                    {modalT("coupon.cpf_required")}
+                  </p>
+                )}
                 {couponError && (
                   <p className="text-red-500 text-sm">{couponError}</p>
                 )}

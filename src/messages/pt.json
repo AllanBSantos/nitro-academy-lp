@@ -8,5 +8,47 @@
     "Faça sua matrícula": "Faça sua matrícula",
     "Receba o link das aulas": "Receba o link das aulas",
     "Você só paga pelas matérias que escolher": "Você só paga pelas matérias que escolher"
+  },
+  "EnrollmentModal": {
+    "title": "Matrícula",
+    "student": {
+      "name": "Nome do Aluno",
+      "birthDate": "Data de Nascimento",
+      "cpf": "CPF do Aluno",
+      "phone": "Celular do Aluno"
+    },
+    "guardian": {
+      "name": "Nome do Responsável",
+      "email": "E-mail do Responsável",
+      "cpf": "CPF do Responsável",
+      "phone": "Celular do Responsável"
+    },
+    "location": {
+      "country": "País",
+      "state": "Estado",
+      "city": "Cidade"
+    },
+    "coupon": {
+      "label": "Cupom de Desconto",
+      "placeholder": "Digite seu cupom",
+      "apply": "Aplicar",
+      "voucher_used": "Voucher 100% já utilizado"
+    },
+    "partner_school": {
+      "label": "Escola Parceira",
+      "placeholder": "Selecione sua escola"
+    },
+    "enroll": "Matricular",
+    "loading": "Processando...",
+    "success": {
+      "title": "Matrícula Realizada!",
+      "message": "Sua matrícula para o curso {courseName} foi realizada com sucesso!",
+      "ok": "OK"
+    },
+    "errors": {
+      "invalid_coupon": "Cupom inválido",
+      "expired_coupon": "Cupom expirado",
+      "submit": "Erro ao processar matrícula. Por favor, tente novamente."
+    }
   }
 }

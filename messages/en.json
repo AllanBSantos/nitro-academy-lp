@@ -107,7 +107,12 @@
     "choose_course": "Choose your course",
     "enroll": "Enroll",
     "receive_link": "Receive the class link",
-    "payment_info": "You only pay for the subjects you choose"
+    "payment_info": "You only pay for the subjects you choose",
+    "Como funciona?": "How does it work?",
+    "Escolha seu curso": "Choose your course",
+    "Faça sua matrícula": "Enroll now",
+    "Receba o link das aulas": "Receive your class link",
+    "Você só paga pelas matérias que escolher": "You only pay for the subjects you choose"
   },
   "ChildGuy": {
     "+ Autonomia, criatividade e preparo para o futuro": "+ Autonomy, creativity, and future readiness"
@@ -260,7 +265,9 @@
     "coupon": {
       "label": "Discount coupon",
       "placeholder": "Enter your coupon",
-      "apply": "Apply"
+      "apply": "Apply",
+      "voucher_used": "100% Voucher already used",
+      "cpf_required": "Please enter the student's CPF first"
     },
     "student": {
       "name": "Student's full name*",

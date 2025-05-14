@@ -65,6 +65,10 @@
     "cpf_aluno": {
       "type": "string",
       "required": true
+    },
+    "usou_voucher": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

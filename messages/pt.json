@@ -259,7 +259,9 @@
     "coupon": {
       "label": "Cupom de desconto",
       "placeholder": "Digite seu cupom",
-      "apply": "Aplicar"
+      "apply": "Aplicar",
+      "voucher_used": "Voucher 100% já utilizado",
+      "cpf_required": "Por favor, preencha o CPF do aluno primeiro"
     },
     "student": {
       "name": "Nome completo do aluno*",

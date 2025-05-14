@@ -8,5 +8,47 @@
     "Faça sua matrícula": "Enroll now",
     "Receba o link das aulas": "Receive your class link",
     "Você só paga pelas matérias que escolher": "You only pay for the subjects you choose"
+  },
+  "EnrollmentModal": {
+    "title": "Enrollment",
+    "student": {
+      "name": "Student Name",
+      "birthDate": "Birth Date",
+      "cpf": "Student CPF",
+      "phone": "Student Phone"
+    },
+    "guardian": {
+      "name": "Guardian Name",
+      "email": "Guardian Email",
+      "cpf": "Guardian CPF",
+      "phone": "Guardian Phone"
+    },
+    "location": {
+      "country": "Country",
+      "state": "State",
+      "city": "City"
+    },
+    "coupon": {
+      "label": "Discount Coupon",
+      "placeholder": "Enter your coupon",
+      "apply": "Apply",
+      "voucher_used": "100% Voucher already used"
+    },
+    "partner_school": {
+      "label": "Partner School",
+      "placeholder": "Select your school"
+    },
+    "enroll": "Enroll",
+    "loading": "Processing...",
+    "success": {
+      "title": "Enrollment Successful!",
+      "message": "Your enrollment for the course {courseName} was successful!",
+      "ok": "OK"
+    },
+    "errors": {
+      "invalid_coupon": "Invalid coupon",
+      "expired_coupon": "Expired coupon",
+      "submit": "Error processing enrollment. Please try again."
+    }
   }
 }
