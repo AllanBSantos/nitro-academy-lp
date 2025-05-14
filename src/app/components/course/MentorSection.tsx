@@ -20,7 +20,7 @@ export default function MentorSection({ course }: MentorSectionProps) {
         <div className="bg-white rounded-xl p-8 shadow-md border border-gray-200">
           <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-shrink-0">
-              <div className="w-40 h-40 rounded-full overflow-hidden">
+              <div className="w-40 h-40 rounded-lg overflow-hidden">
                 <Image
                   src={course.mentor.image}
                   alt={course.mentor.name}
