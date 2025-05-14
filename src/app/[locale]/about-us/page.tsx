@@ -110,7 +110,7 @@ export default function AboutUs({
               },
               {
                 name: t("teamMembers.allan.name"),
-                linkedin: "https://www.linkedin.com/in/allan/",
+                linkedin: "https://www.linkedin.com/in/allan-barros-santos",
                 desc: t("teamMembers.allan.desc"),
                 image: `/${locale}/allan.jpeg`,
               },
