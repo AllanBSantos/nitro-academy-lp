@@ -307,3 +307,72 @@ export async function createSuggestion(suggestion: Suggestion): Promise<void> {
     throw error;
   }
 }
+
+export interface CourseStudentsCount {
+  courseId: number;
+  courseTitle: string;
+  studentCount: number;
+}
+
+interface CourseData {
+  id: number;
+  attributes: {
+    titulo: string;
+  };
+}
+
+export async function getStudentsPerCourse(): Promise<CourseStudentsCount[]> {
+  try {
+    // Fetch all courses to get their titles
+    const coursesResponse = await fetch(
+      `${STRAPI_API_URL}/api/cursos?fields[0]=id&fields[1]=titulo&locale=pt-BR`
+    );
+
+    if (!coursesResponse.ok) {
+      throw new Error("Failed to fetch courses");
+    }
+
+    const coursesData = await coursesResponse.json();
+    const courses = coursesData.data as CourseData[];
+
+    // Fetch all students with their courses
+    const studentsResponse = await fetch(
+      `${STRAPI_API_URL}/api/alunos?populate[cursos][fields][0]=id`
+    );
+
+    if (!studentsResponse.ok) {
+      throw new Error("Failed to fetch students");
+    }
+
+    const studentsData = await studentsResponse.json();
+    const students = studentsData.data;
+
+    // Create a map to store student counts for each course
+    const courseStudentCounts = new Map<number, CourseStudentsCount>();
+
+    // Initialize counts for each course
+    courses.forEach((course: CourseData) => {
+      courseStudentCounts.set(course.id, {
+        courseId: course.id,
+        courseTitle: course.attributes?.titulo || "",
+        studentCount: 0,
+      });
+    });
+
+    // Count students in each course
+    students.forEach((student: Student) => {
+      student.cursos?.forEach((course) => {
+        const courseStats = courseStudentCounts.get(course.id);
+        if (courseStats) {
+          courseStats.studentCount++;
+        }
+      });
+    });
+
+    // Convert map to array
+    return Array.from(courseStudentCounts.values());
+  } catch (error) {
+    console.error("Error fetching course student counts:", error);
+    throw error;
+  }
+}

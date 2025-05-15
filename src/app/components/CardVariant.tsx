@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CardProps } from "@/types/card";
+import { useEffect, useState } from "react";
+import { getStudentsPerCourse } from "@/lib/strapi";
 
 export default function Card({
   slug,
@@ -17,11 +19,30 @@ export default function Card({
   price,
   moeda,
   badge,
+  id,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
+  const [studentCount, setStudentCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const loadStudentCount = async () => {
+      try {
+        const courseStats = await getStudentsPerCourse();
+        const courseStat = courseStats.find(
+          (stat) => stat.courseId === parseInt(id)
+        );
+        if (courseStat) {
+          setStudentCount(courseStat.studentCount);
+        }
+      } catch (error) {
+        console.error("Error loading student count:", error);
+      }
+    };
+    loadStudentCount();
+  }, [id]);
 
   const renderStars = (rating: number) => {
     if (!rating) return null;
@@ -58,6 +79,7 @@ export default function Card({
     return stars;
   };
   const CLASSES_PER_COURSE = 6;
+  const MAX_STUDENTS_PER_CLASS = 12;
   const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
   const priceClass = (price.total / CLASSES_PER_COURSE)
     .toFixed(2)
@@ -126,9 +148,13 @@ export default function Card({
       poucas_vagas: commonT("few_spots"),
     };
 
+    const totalStudentsAccepted = cronograma?.length * MAX_STUDENTS_PER_CLASS;
+    const availableSpots = totalStudentsAccepted - (studentCount || 0);
     return (
       <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
-        {badgeText[badge]}
+        {availableSpots > 7
+          ? badgeText[badge]
+          : `${availableSpots} vagas restantes`}
       </span>
     );
   };
