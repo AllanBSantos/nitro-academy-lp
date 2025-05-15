@@ -202,21 +202,31 @@ export default function EnrollmentModal({
     `;
 
     try {
-      // Enviar email de notificação para a equipe
-      const emailResponse = await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL,
-          subject: `Nova matrícula - ${courseName}`,
-          text: emailBody,
-        }),
-      });
+      const emailRecipients =
+        process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL?.split(",").map((email) =>
+          email.trim()
+        ) || [];
 
-      if (!emailResponse.ok) {
-        throw new Error("Failed to send notification email");
+      const emailPromises = emailRecipients.map((recipient) =>
+        fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: recipient,
+            subject: `Nova matrícula - ${courseName}`,
+            text: emailBody,
+          }),
+        })
+      );
+
+      const emailResponses = await Promise.all(emailPromises);
+
+      const failedEmails = emailResponses.filter((response) => !response.ok);
+      if (failedEmails.length > 0) {
+        console.error("Failed to send notification emails to some recipients");
+        throw new Error("Failed to send notification emails");
       }
 
       const welcomeEmailResponse = await fetch("/api/send-email", {
@@ -242,7 +252,6 @@ export default function EnrollmentModal({
         ? schools.find((s) => s.id === formData.partnerSchool)?.nome
         : undefined;
 
-      // Criar aluno no Strapi
       await createStudent(
         {
           nome: formData.studentName,

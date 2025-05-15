@@ -177,7 +177,7 @@ export async function createStudent(
       })),
       escola_parceira: student.escola_parceira,
       turma: student.turma,
-      usou_voucher: isVoucher100, // Só marca como true se for voucher100
+      usou_voucher: isVoucher100,
     },
   };
 
