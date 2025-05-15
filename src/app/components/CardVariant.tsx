@@ -79,7 +79,9 @@ export default function Card({
     return stars;
   };
   const CLASSES_PER_COURSE = 6;
-  const MAX_STUDENTS_PER_CLASS = 12;
+  const maxStudentsPerClass = parseInt(
+    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
+  );
   const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
   const priceClass = (price.total / CLASSES_PER_COURSE)
     .toFixed(2)
@@ -148,7 +150,7 @@ export default function Card({
       poucas_vagas: commonT("few_spots"),
     };
 
-    const totalStudentsAccepted = cronograma?.length * MAX_STUDENTS_PER_CLASS;
+    const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
     const availableSpots = totalStudentsAccepted - (studentCount || 0);
     return (
       <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">

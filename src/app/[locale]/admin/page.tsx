@@ -12,8 +12,6 @@ interface CourseStats {
   availableSpots: number;
 }
 
-const MAX_STUDENTS_PER_CLASS = 12;
-
 function LoginForm({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -78,12 +76,16 @@ function StudentsByCourse() {
           getStudentsPerCourse(),
         ]);
 
+        const maxStudentsPerClass = parseInt(
+          process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
+        );
+
         const stats = courses.map((course) => {
           const studentCount =
             studentStats.find((stat) => stat.courseId === course.id)
               ?.studentCount || 0;
           const totalSpots =
-            course.cronograma?.length * MAX_STUDENTS_PER_CLASS || 0;
+            course.cronograma?.length * maxStudentsPerClass || 0;
           const availableSpots = totalSpots - studentCount;
 
           return {

@@ -32,7 +32,9 @@ export default function CourseContent({ course }: CourseContentProps) {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
-  const MAX_STUDENTS_PER_CLASS = 12;
+  const maxStudentsPerClass = parseInt(
+    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -64,7 +66,7 @@ export default function CourseContent({ course }: CourseContentProps) {
 
   const isClassFull = (classNumber: string) => {
     const studentsInClass = getStudentsInClass(classNumber);
-    return studentsInClass.length >= MAX_STUDENTS_PER_CLASS;
+    return studentsInClass.length >= maxStudentsPerClass;
   };
 
   const handleEnrollClick = (classNumber: string) => {
@@ -142,7 +144,7 @@ export default function CourseContent({ course }: CourseContentProps) {
           course={course}
           isCourseFull={false}
           currentStudents={0}
-          maxStudents={MAX_STUDENTS_PER_CLASS}
+          maxStudents={maxStudentsPerClass}
           onScheduleClick={handleEnrollClick}
           isScheduleFull={isClassFull}
         />
