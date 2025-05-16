@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getStudentsPerCourse, fetchCourses } from "@/lib/strapi";
+import { fetchCourses } from "@/lib/strapi";
 import { Users, BarChart2, Menu, X } from "lucide-react";
 
 interface CourseStats {
@@ -71,21 +71,19 @@ function StudentsByCourse() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [courses, studentStats] = await Promise.all([
-          fetchCourses(),
-          getStudentsPerCourse(),
-        ]);
+        const courses = await fetchCourses();
 
         const maxStudentsPerClass = parseInt(
           process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
         );
 
         const stats = courses.map((course) => {
-          const studentCount =
-            studentStats.find((stat) => stat.courseId === course.id)
-              ?.studentCount || 0;
-          const totalSpots =
-            course.cronograma?.length * maxStudentsPerClass || 0;
+          const studentCount = Array.isArray(course.alunos)
+            ? course.alunos.length
+            : 0;
+          const totalSpots = Array.isArray(course.cronograma)
+            ? course.cronograma.length * maxStudentsPerClass
+            : 0;
           const availableSpots = totalSpots - studentCount;
 
           return {

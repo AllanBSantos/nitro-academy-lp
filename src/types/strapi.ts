@@ -91,6 +91,7 @@ export interface Review {
 
 export interface Course {
   id: number;
+  alunos: { id: number }[];
   titulo: string;
   descricao: string;
   nota: number | null;
