@@ -132,6 +132,7 @@ export default function Card({
 
     const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
     const availableSpots = totalStudentsAccepted - studentCount;
+    if (availableSpots === 0) return null;
     return (
       <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
         {availableSpots > 7

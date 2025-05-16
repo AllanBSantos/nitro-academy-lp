@@ -21,8 +21,11 @@ interface Schedule {
 interface TimeSelectionSectionProps {
   course: CardProps;
   isCourseFull: boolean;
-  currentStudents: number;
-  maxStudents: number;
+  getClassAvailability: (classNumber: string) => {
+    isFull: boolean;
+    currentStudents: number;
+    maxStudents: number;
+  };
   onScheduleClick: (classNumber: string) => void;
   isScheduleFull: (classNumber: string) => boolean;
 }
@@ -30,6 +33,7 @@ interface TimeSelectionSectionProps {
 export default function TimeSelectionSection({
   course,
   isCourseFull,
+  getClassAvailability,
   onScheduleClick,
   isScheduleFull,
 }: TimeSelectionSectionProps) {
@@ -121,7 +125,7 @@ export default function TimeSelectionSection({
             <div className="space-y-4 max-w-md mx-auto mb-8">
               {schedules.map((schedule, index) => {
                 const classNumber = (index + 1).toString();
-                const isFull = isScheduleFull(classNumber);
+                const { isFull } = getClassAvailability(classNumber);
                 const isSelected =
                   selectedTime === `${schedule.dia}-${schedule.horario}`;
 
@@ -258,7 +262,8 @@ export default function TimeSelectionSection({
               <div className="space-y-4 max-w-md mx-auto mb-8">
                 {schedules.map((schedule, index) => {
                   const classNumber = (index + 1).toString();
-                  const isFull = isScheduleFull(classNumber);
+                  const { isFull, currentStudents, maxStudents } =
+                    getClassAvailability(classNumber);
                   const isSelected =
                     selectedTime === `${schedule.dia}-${schedule.horario}`;
 
@@ -284,6 +289,12 @@ export default function TimeSelectionSection({
                           )}
                           <div className="text-sm text-gray-600 mb-2">
                             {t("class")} {classNumber} - {schedule.faixa_etaria}
+                            {!isFull && (
+                              <span className="ml-2 text-gray-500">
+                                ({currentStudents}/{maxStudents} {t("students")}
+                                )
+                              </span>
+                            )}
                           </div>
                           <div className="flex flex-col items-center">
                             <div className="text-[#3B82F6] text-lg font-medium">

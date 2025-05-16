@@ -91,7 +91,10 @@ export interface Review {
 
 export interface Course {
   id: number;
-  alunos: { id: number }[];
+  alunos: Array<{
+    id: number;
+    turma: number;
+  }>;
   titulo: string;
   descricao: string;
   nota: number | null;

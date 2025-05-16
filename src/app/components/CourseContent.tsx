@@ -14,8 +14,6 @@ import RelatedTopics from "./course/RelatedTopics";
 import MentorSection from "./course/MentorSection";
 import RelatedCourses from "./course/RelatedCourses";
 import CourseSummaryCard from "./CourseSummaryCard";
-import { fetchAllStudents, getStudentsByCourseAndClass } from "@/lib/strapi";
-import type { Student } from "@/lib/strapi";
 import EnrollmentModal from "./EnrollmentModal";
 
 interface CourseContentProps {
@@ -27,7 +25,6 @@ export default function CourseContent({ course }: CourseContentProps) {
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const [relatedCourses, setRelatedCourses] = useState<CardProps[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,6 +32,8 @@ export default function CourseContent({ course }: CourseContentProps) {
   const maxStudentsPerClass = parseInt(
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
   );
+  const alunos = Array.isArray(course.alunos) ? course.alunos : [];
+  const turmas = Array.isArray(course.cronograma) ? course.cronograma : [];
 
   useEffect(() => {
     async function fetchData() {
@@ -42,10 +41,6 @@ export default function CourseContent({ course }: CourseContentProps) {
         // Fetch related courses
         const courses = await getCardsContent(locale);
         setRelatedCourses(courses.filter((c) => c.id !== course.id));
-
-        // Fetch and count students for this course
-        const allStudents = await fetchAllStudents();
-        setStudents(allStudents);
       } catch (err) {
         setError("Failed to load students");
         console.error(err);
@@ -56,17 +51,39 @@ export default function CourseContent({ course }: CourseContentProps) {
     fetchData();
   }, [course.id, locale]);
 
-  const getStudentsInClass = (classNumber: string) => {
-    return getStudentsByCourseAndClass(
-      students,
-      parseInt(course.id),
-      classNumber
-    );
+  function getStudentsInClass(classNumber: number) {
+    return alunos.filter((aluno) => aluno.turma === classNumber);
+  }
+
+  const getClassAvailability = (classNumber: string) => {
+    const studentsInClass = getStudentsInClass(parseInt(classNumber));
+    const turma = course.turmas?.find((t) => String(t.id) === classNumber);
+
+    if (turma) {
+      return {
+        isFull: turma.vagas_disponiveis === 0,
+        currentStudents: maxStudentsPerClass - turma.vagas_disponiveis,
+        maxStudents: maxStudentsPerClass,
+      };
+    }
+
+    return {
+      isFull: studentsInClass.length >= maxStudentsPerClass,
+      currentStudents: studentsInClass.length,
+      maxStudents: maxStudentsPerClass,
+    };
   };
 
+  const isCourseFull =
+    turmas.length > 0 &&
+    turmas.every((_, idx) => {
+      const { isFull } = getClassAvailability((idx + 1).toString());
+      return isFull;
+    });
+
   const isClassFull = (classNumber: string) => {
-    const studentsInClass = getStudentsInClass(classNumber);
-    return studentsInClass.length >= maxStudentsPerClass;
+    const { isFull } = getClassAvailability(classNumber);
+    return isFull;
   };
 
   const handleEnrollClick = (classNumber: string) => {
@@ -142,9 +159,8 @@ export default function CourseContent({ course }: CourseContentProps) {
       <div id="time-selection">
         <TimeSelectionSection
           course={course}
-          isCourseFull={false}
-          currentStudents={0}
-          maxStudents={maxStudentsPerClass}
+          isCourseFull={isCourseFull}
+          getClassAvailability={getClassAvailability}
           onScheduleClick={handleEnrollClick}
           isScheduleFull={isClassFull}
         />
