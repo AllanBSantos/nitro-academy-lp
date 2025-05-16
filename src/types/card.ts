@@ -82,4 +82,5 @@ export interface CardProps {
   }>;
   sugestao_horario?: boolean;
   turmas?: Turma[];
+  alunos?: { id: number }[];
 }

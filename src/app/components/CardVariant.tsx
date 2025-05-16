@@ -6,8 +6,6 @@ import Link from "next/link";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CardProps } from "@/types/card";
-import { useEffect, useState } from "react";
-import { getStudentsPerCourse } from "@/lib/strapi";
 
 export default function Card({
   slug,
@@ -19,31 +17,13 @@ export default function Card({
   price,
   moeda,
   badge,
-  id,
+  alunos,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
-  const [studentCount, setStudentCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    const loadStudentCount = async () => {
-      try {
-        const courseStats = await getStudentsPerCourse();
-        const courseStat = courseStats.find(
-          (stat) => stat.courseId === parseInt(id)
-        );
-        if (courseStat) {
-          setStudentCount(courseStat.studentCount);
-        }
-      } catch (error) {
-        console.error("Error loading student count:", error);
-      }
-    };
-    loadStudentCount();
-  }, [id]);
-
+  const studentCount = Array.isArray(alunos) ? alunos.length : 0;
   const renderStars = (rating: number) => {
     if (!rating) return null;
 
@@ -151,11 +131,13 @@ export default function Card({
     };
 
     const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
-    const availableSpots = totalStudentsAccepted - (studentCount || 0);
+    const availableSpots = totalStudentsAccepted - studentCount;
     return (
       <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
         {availableSpots > 7
           ? badgeText[badge]
+          : availableSpots === 1
+          ? "1 vaga restante"
           : `${availableSpots} vagas restantes`}
       </span>
     );

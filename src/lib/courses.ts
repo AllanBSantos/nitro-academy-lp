@@ -77,6 +77,7 @@ export async function getCardsContent(
       competencias: course.competencias || "",
       ideal_para: course.ideal_para || "",
       sugestao_horario: course.sugestao_horario ?? true,
+      alunos: course.alunos || [],
     };
     return mappedCourse;
   });
