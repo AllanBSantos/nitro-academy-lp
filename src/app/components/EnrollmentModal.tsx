@@ -348,48 +348,19 @@ export default function EnrollmentModal({
                   <Label htmlFor="studentBirthDate">
                     {modalT("student.birthDate")}
                   </Label>
-                  <div className="relative">
-                    <Input
-                      id="studentBirthDate"
-                      type="date"
-                      required
-                      value={formData.studentBirthDate || ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setFormData({
-                          ...formData,
-                          studentBirthDate: value,
-                        });
-                      }}
-                      onKeyDown={(e) => {
-                        // Allow manual input of numbers and formatting characters
-                        if (
-                          e.key === "Backspace" ||
-                          e.key === "Delete" ||
-                          e.key === "Tab" ||
-                          e.key === "ArrowLeft" ||
-                          e.key === "ArrowRight"
-                        ) {
-                          return;
-                        }
-                        if (!/[\d-]/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] [&::-webkit-calendar-picker-indicator]:hover:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
-                      style={
-                        {
-                          // Custom styles to make the calendar icon more visible
-                          "--tw-ring-offset-shadow":
-                            "var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)",
-                          "--tw-ring-shadow":
-                            "var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color)",
-                          "--tw-ring-color": "#3B82F6",
-                          "--tw-ring-opacity": "0.5",
-                        } as React.CSSProperties
-                      }
-                    />
-                  </div>
+                  <Input
+                    id="studentBirthDate"
+                    type="date"
+                    required
+                    value={formData.studentBirthDate}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        studentBirthDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                  />
                 </div>
 
                 <div className="space-y-2">
