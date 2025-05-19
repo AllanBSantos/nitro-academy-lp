@@ -156,7 +156,7 @@ export default function TermsPTBR() {
       <h2 className="text-2xl font-bold mt-8 mb-4">11. CONTATO</h2>
       <p className="mb-8">
         Para dúvidas, suporte ou solicitações, entre em contato com nossa equipe
-        em: maiara@nitro.academy
+        em: barbara@nitro.academy
       </p>
 
       <h1 className="text-4xl font-bold mt-16 mb-8">
@@ -190,7 +190,7 @@ export default function TermsPTBR() {
         <br />
         CNPJ: 45.506.720/0001-61
         <br />
-        Contato: maiara@nitro.academy
+        Contato: barbara@nitro.academy
       </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">2. Dados Coletados</h2>
@@ -291,7 +291,7 @@ export default function TermsPTBR() {
       </ul>
       <p className="mb-8">
         Para exercer estes direitos, entre em contato conosco em:
-        maiara@nitro.academy
+        barbara@nitro.academy
       </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">
@@ -326,7 +326,7 @@ export default function TermsPTBR() {
         Para dúvidas sobre esta Política de Privacidade ou tratamento de dados,
         entre em contato com nosso Encarregado de Proteção de Dados (DPO):
       </p>
-      <p className="mb-8">E-mail: maiara@nitro.academy</p>
+      <p className="mb-8">E-mail: barbara@nitro.academy</p>
     </div>
   );
 }

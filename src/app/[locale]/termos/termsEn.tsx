@@ -151,7 +151,7 @@ export default function TermsEN() {
       <h2 className="text-2xl font-bold mt-8 mb-4">11. CONTACT</h2>
       <p className="mb-8">
         For questions, support, or requests, contact our team at:
-        maiara@nitro.academy
+        barbara@nitro.academy
       </p>
 
       <h1 className="text-4xl font-bold mt-16 mb-8">
@@ -184,7 +184,7 @@ export default function TermsEN() {
         <br />
         CNPJ: 45.506.720/0001-61
         <br />
-        Contact: maiara@nitro.academy
+        Contact: barbara@nitro.academy
       </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">2. Data Collected</h2>
@@ -273,7 +273,7 @@ export default function TermsEN() {
         <li>Request data portability.</li>
       </ul>
       <p className="mb-8">
-        To exercise these rights, contact us at: maiara@nitro.academy
+        To exercise these rights, contact us at: barbara@nitro.academy
       </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">
@@ -309,7 +309,7 @@ export default function TermsEN() {
         For questions about this Privacy Policy or data processing, contact our
         Data Protection Officer (DPO):
       </p>
-      <p className="mb-8">Email: maiara@nitro.academy</p>
+      <p className="mb-8">Email: barbara@nitro.academy</p>
     </div>
   );
 }
