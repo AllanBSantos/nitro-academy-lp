@@ -350,15 +350,78 @@ export default function EnrollmentModal({
                   </Label>
                   <Input
                     id="studentBirthDate"
-                    type="date"
+                    type="text"
                     required
-                    value={formData.studentBirthDate}
-                    onChange={(e) =>
+                    placeholder="DD/MM/AAAA"
+                    value={
+                      formData.studentBirthDate
+                        ? formData.studentBirthDate
+                            .split("-")
+                            .reverse()
+                            .join("/")
+                        : ""
+                    }
+                    onChange={(e) => {
+                      let value = e.target.value;
+
+                      // Remove any non-digit characters
+                      value = value.replace(/\D/g, "");
+
+                      // Add forward slashes automatically
+                      if (value.length > 2) {
+                        value = value.slice(0, 2) + "/" + value.slice(2);
+                      }
+                      if (value.length > 5) {
+                        value = value.slice(0, 5) + "/" + value.slice(5);
+                      }
+
+                      // Limit the total length to 10 characters (DD/MM/AAAA)
+                      value = value.slice(0, 10);
+
                       setFormData({
                         ...formData,
-                        studentBirthDate: e.target.value,
-                      })
-                    }
+                        studentBirthDate: value,
+                      });
+                    }}
+                    onBlur={(e) => {
+                      const value = e.target.value;
+                      const parts = value.split("/");
+
+                      // Check if we have all parts of the date
+                      if (parts.length === 3) {
+                        const [day, month, year] = parts.map(Number);
+
+                        // Validate the date
+                        if (day && month && year) {
+                          const date = new Date(year, month - 1, day);
+                          const isValidDate =
+                            date.getDate() === day &&
+                            date.getMonth() === month - 1 &&
+                            date.getFullYear() === year &&
+                            year >= 1900 &&
+                            year <= new Date().getFullYear();
+
+                          if (isValidDate) {
+                            // Convert to YYYY-MM-DD for storage
+                            const isoDate = `${year}-${String(month).padStart(
+                              2,
+                              "0"
+                            )}-${String(day).padStart(2, "0")}`;
+                            setFormData({
+                              ...formData,
+                              studentBirthDate: isoDate,
+                            });
+                          } else {
+                            // Invalid date, clear the field
+                            e.target.value = "";
+                            setFormData({
+                              ...formData,
+                              studentBirthDate: "",
+                            });
+                          }
+                        }
+                      }
+                    }}
                     className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
                   />
                 </div>
