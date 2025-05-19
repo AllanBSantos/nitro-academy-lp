@@ -24,6 +24,8 @@ export default function Card({
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const studentCount = Array.isArray(alunos) ? alunos.length : 0;
+  const isEnglishCourse = moeda === "Dólar";
+  const showEnglishLabel = locale === "pt" && isEnglishCourse;
   const renderStars = (rating: number) => {
     if (!rating) return null;
 
@@ -117,31 +119,58 @@ export default function Card({
   };
 
   const renderBadge = () => {
-    if (!badge) return null;
+    const badges = [];
 
-    const daysRemaining = getDaysRemaining(dataInicio);
-    if (badge === "dias_faltantes" && daysRemaining < 0) return null;
+    // Add English course badge if applicable
+    if (showEnglishLabel) {
+      badges.push(
+        <span
+          key="english"
+          className="text-xs px-2 py-1 bg-[#3B82F6] text-white rounded-full font-medium"
+        >
+          {commonT("course_in_english")}
+        </span>
+      );
+    } else {
+      badges.push(
+        <span key="empty" className="text-xs px-2 py-1 opacity-0">
+          {commonT("course_in_english")}
+        </span>
+      );
+    }
 
-    const badgeText = {
-      dias_faltantes: commonT("days_remaining", {
-        days: daysRemaining.toString(),
-      }),
-      poucos_dias: commonT("few_days"),
-      poucas_vagas: commonT("few_spots"),
-    };
+    // Add other badges if they exist
+    if (badge) {
+      const daysRemaining = getDaysRemaining(dataInicio);
+      if (badge === "dias_faltantes" && daysRemaining < 0) return badges;
 
-    const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
-    const availableSpots = totalStudentsAccepted - studentCount;
-    if (availableSpots === 0) return null;
-    return (
-      <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
-        {availableSpots > 7
-          ? badgeText[badge]
-          : availableSpots === 1
-          ? "1 vaga restante"
-          : `${availableSpots} vagas restantes`}
-      </span>
-    );
+      const badgeText = {
+        dias_faltantes: commonT("days_remaining", {
+          days: daysRemaining.toString(),
+        }),
+        poucos_dias: commonT("few_days"),
+        poucas_vagas: commonT("few_spots"),
+      };
+
+      const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
+      const availableSpots = totalStudentsAccepted - studentCount;
+      if (availableSpots > 0) {
+        badges.push(
+          <span
+            key="spots"
+            className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium"
+          >
+            {availableSpots > 7
+              ? badgeText[badge]
+              : availableSpots === 1
+              ? "1 vaga restante"
+              : `${availableSpots} vagas restantes`}
+          </span>
+        );
+      }
+    }
+
+    return badges.length > 0 ? badges : null;
   };
 
   return (
@@ -178,7 +207,7 @@ export default function Card({
                 <h2 className="text-lg font-bold text-gray-800 min-h-[3.5rem] line-clamp-2 mb-2">
                   {title}
                 </h2>
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2">
                   <div className="relative w-8 h-8 rounded-full overflow-hidden">
                     <Image
                       src={mentor.image}
