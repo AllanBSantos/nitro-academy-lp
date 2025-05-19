@@ -103,6 +103,18 @@ export default function TermsPTBR() {
         6.2. Os responsáveis legais autorizam a coleta e processamento de dados
         dos menores para fins de acesso aos cursos e suporte.
       </p>
+      <h2 className="text-2xl font-bold mt-8 mb-4">
+        6.3. AUTORIZAÇÃO DE USO DE IMAGEM
+      </h2>
+      <p className="mb-8">
+        Os responsáveis legais autorizam, de forma gratuita, não exclusiva e por
+        prazo indeterminado, o uso de fotografias, gravações de vídeo e/ou áudio
+        dos menores para divulgação institucional da Nitro Academy em mídias
+        sociais, materiais promocionais, website e demais canais de comunicação.
+        Esta autorização poderá ser revogada a qualquer momento mediante
+        solicitação por escrito ao Encarregado de Proteção de Dados (DPO) da
+        Nitro Academy.
+      </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">
         7. LIMITAÇÃO DE RESPONSABILIDADE

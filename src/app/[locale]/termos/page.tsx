@@ -20,8 +20,8 @@ export default async function TermsPage({
         </h1>
         <p className="text-lg mb-8">
           {locale === "pt"
-            ? "Última atualização: 7 de abril 2025"
-            : "Last update: April 7, 2025"}
+            ? "Última atualização: 19 de maio 2025"
+            : "Last update: May 19, 2025"}
         </p>
 
         {locale === "pt" ? <TermsPTBR /> : <TermsEN />}

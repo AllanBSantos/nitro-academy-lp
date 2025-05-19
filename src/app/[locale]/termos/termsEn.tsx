@@ -101,6 +101,17 @@ export default function TermsEN() {
         6.2. Legal guardians authorize the collection and processing of
         minors&apos; data for course access and support purposes.
       </p>
+      <h2 className="text-2xl font-bold mt-8 mb-4">
+        6.3. IMAGE USE AUTHORIZATION
+      </h2>
+      <p className="mb-8">
+        The legal guardians grant, free of charge, a non-exclusive, indefinite
+        authorization for the use of photographs, video recordings, and/or audio
+        recordings of the minors for Nitro Academy’s institutional promotion on
+        social media, marketing materials, the website, and other communication
+        channels. This authorization may be revoked at any time by submitting a
+        written request to Nitro Academy’s Data Protection Officer (DPO).
+      </p>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">
         7. LIMITATION OF LIABILITY
