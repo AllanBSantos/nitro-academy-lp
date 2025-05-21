@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { fetchFAQs, FAQ } from "@/lib/strapi";
-import Footer from "./Footer";
+import Footer from "@/app/components/Footer";
 
 export default function FAQContent() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
