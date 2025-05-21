@@ -376,3 +376,32 @@ export async function getStudentsPerCourse(): Promise<CourseStudentsCount[]> {
     throw error;
   }
 }
+
+export interface FAQ {
+  id: number;
+  documentId: string;
+  pergunta: string;
+  resposta: string;
+  ordem?: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export async function fetchFAQs(locale: string = "pt-BR"): Promise<FAQ[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/perguntas-frequentes?locale=${locale}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch FAQs");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching FAQs:", error);
+    return [];
+  }
+}

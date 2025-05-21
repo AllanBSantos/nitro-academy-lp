@@ -773,6 +773,51 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPerguntaFrequentePerguntaFrequente
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'perguntas_frequentes';
+  info: {
+    description: '';
+    displayName: 'pergunta_frequente';
+    pluralName: 'perguntas-frequentes';
+    singularName: 'pergunta-frequente';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::pergunta-frequente.pergunta-frequente'
+    >;
+    pergunta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    resposta: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiSugestaoSugestao extends Struct.CollectionTypeSchema {
   collectionName: 'sugestoes';
   info: {
@@ -1323,6 +1368,7 @@ declare module '@strapi/strapi' {
       'api::curso.curso': ApiCursoCurso;
       'api::escola.escola': ApiEscolaEscola;
       'api::mentor.mentor': ApiMentorMentor;
+      'api::pergunta-frequente.pergunta-frequente': ApiPerguntaFrequentePerguntaFrequente;
       'api::sugestao.sugestao': ApiSugestaoSugestao;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

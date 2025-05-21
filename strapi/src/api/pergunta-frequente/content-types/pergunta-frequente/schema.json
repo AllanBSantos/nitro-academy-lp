@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "perguntas_frequentes",
+  "info": {
+    "singularName": "pergunta-frequente",
+    "pluralName": "perguntas-frequentes",
+    "displayName": "pergunta_frequente",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "pergunta": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "resposta": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

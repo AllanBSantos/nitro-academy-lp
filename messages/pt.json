@@ -317,8 +317,9 @@
     }
   },
   "Footer": {
-    "home": "Home",
-    "about_us": "Sobre Nós"
+    "home": "Início",
+    "about_us": "Sobre nós",
+    "faq": "Perguntas Frequentes"
   },
   "CourseContent": {
     "title": "Conteúdo do curso",
@@ -381,5 +382,9 @@
     "language": "Idioma",
     "see_classes": "Veja todas as turmas",
     "see_classes_mobile": "Ver turmas"
+  },
+  "FAQ": {
+    "title": "Perguntas Frequentes",
+    "subtitle": "Encontre respostas para as dúvidas mais comuns sobre nossos cursos e metodologia"
   }
 }

@@ -73,6 +73,12 @@ export default function Footer() {
             >
               {t("about_us")}
             </Link>
+            <Link
+              href={`/${locale}/faq`}
+              className="text-white hover:text-[#03A9F4] transition-colors"
+            >
+              {t("faq")}
+            </Link>
           </div>
         </div>
       </footer>

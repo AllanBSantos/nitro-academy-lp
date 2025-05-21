@@ -323,7 +323,8 @@
   },
   "Footer": {
     "home": "Home",
-    "about_us": "About Us"
+    "about_us": "About Us",
+    "faq": "FAQ"
   },
   "CourseContent": {
     "title": "Course Content",
@@ -386,5 +387,9 @@
     "language": "Language",
     "see_classes": "See all classes",
     "see_classes_mobile": "View classes"
+  },
+  "FAQ": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to the most common questions about our courses and methodology"
   }
 }
