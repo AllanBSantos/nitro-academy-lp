@@ -177,11 +177,11 @@ export default function Card({
     <Link
       id="card-link"
       href={`/${locale}/curso/${slug}`}
-      className="block h-full transition-transform hover:scale-[1.02] duration-200"
+      className="block h-[420px] transition-transform hover:scale-[1.02] duration-200"
     >
-      <div className="relative group">
-        <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
-          <div className="relative h-[140px] w-full">
+      <div className="relative group h-full">
+        <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+          <div className="relative h-[140px] w-full flex-shrink-0">
             {image ? (
               <Image
                 src={image}
@@ -201,14 +201,14 @@ export default function Card({
             )}
           </div>
 
-          <div className="p-4 flex flex-col gap-3">
+          <div className="p-4 flex flex-col gap-3 flex-grow">
             <div className="flex items-start justify-between">
               <div className="flex-grow">
-                <h2 className="text-lg font-bold text-gray-800 min-h-[3.5rem] line-clamp-2 mb-2">
+                <h2 className="text-lg font-bold text-gray-800 h-[3.5rem] line-clamp-2 mb-2">
                   {title}
                 </h2>
-                <div className="flex items-center gap-2">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                <div className="flex items-center gap-2 h-8">
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
                     <Image
                       src={mentor.image}
                       alt={mentor.name}
@@ -216,23 +216,25 @@ export default function Card({
                       className="object-cover"
                     />
                   </div>
-                  <span className="text-sm text-gray-600">{mentor.name}</span>
+                  <span className="text-sm text-gray-600 truncate">
+                    {mentor.name}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
-              {renderStars(rating || 0)}
+            <div className="flex items-center gap-1 h-5">
+              {renderStars(rating || 0) || <div className="h-5"></div>}
             </div>
 
-            <div className="flex flex-wrap gap-2 mt-1">
+            <div className="flex flex-wrap gap-2 h-7">
               <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
                 {faixaEtaria}
               </span>
-              {renderBadge()}
+              {renderBadge() || <div className="h-7"></div>}
             </div>
 
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-auto flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-xs text-gray-500">{t("start_date")}</span>
                 <span className="text-base font-bold text-theme-orange">
