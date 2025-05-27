@@ -207,6 +207,7 @@
     "badge": {
       "type": "enumeration",
       "enum": [
+        "nenhum",
         "poucos_dias",
         "poucas_vagas",
         "dias_faltantes"

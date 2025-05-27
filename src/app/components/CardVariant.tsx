@@ -121,7 +121,6 @@ export default function Card({
   const renderBadge = () => {
     const badges = [];
 
-    // Add English course badge if applicable
     if (showEnglishLabel) {
       badges.push(
         <span
@@ -131,18 +130,12 @@ export default function Card({
           {commonT("course_in_english")}
         </span>
       );
-    } else {
-      badges.push(
-        <span key="empty" className="text-xs px-2 py-1 opacity-0">
-          {commonT("course_in_english")}
-        </span>
-      );
     }
 
-    // Add other badges if they exist
-    if (badge) {
+    if (badge && badge !== "nenhum") {
       const daysRemaining = getDaysRemaining(dataInicio);
-      if (badge === "dias_faltantes" && daysRemaining < 0) return badges;
+      if (badge === "dias_faltantes" && daysRemaining < 0)
+        return badges.length > 0 ? badges : null;
 
       const badgeText = {
         dias_faltantes: commonT("days_remaining", {
@@ -227,11 +220,11 @@ export default function Card({
               {renderStars(rating || 0) || <div className="h-5"></div>}
             </div>
 
-            <div className="flex flex-wrap gap-2 h-7">
+            <div className="flex flex-wrap gap-2">
               <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
                 {faixaEtaria}
               </span>
-              {renderBadge() || <div className="h-7"></div>}
+              {renderBadge()}
             </div>
 
             <div className="mt-auto flex items-center justify-between">

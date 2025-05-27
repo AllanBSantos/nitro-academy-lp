@@ -526,7 +526,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       'api::avaliacao.avaliacao'
     >;
     badge: Schema.Attribute.Enumeration<
-      ['poucos_dias', 'poucas_vagas', 'dias_faltantes']
+      ['nenhum', 'poucos_dias', 'poucas_vagas', 'dias_faltantes']
     >;
     competencias: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
