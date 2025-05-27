@@ -118,6 +118,12 @@ export default function Card({
     return diffDays;
   };
 
+  const isCourseStarted = (startDate: string) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    return today > start;
+  };
+
   const renderBadge = () => {
     const badges = [];
 
@@ -231,7 +237,11 @@ export default function Card({
               <div className="flex flex-col">
                 <span className="text-xs text-gray-500">{t("start_date")}</span>
                 <span className="text-base font-bold text-theme-orange">
-                  {formatDate(dataInicio)}
+                  {isCourseStarted(dataInicio)
+                    ? locale === "pt"
+                      ? "Aulas em andamento"
+                      : "Classes in progress"
+                    : formatDate(dataInicio)}
                 </span>
               </div>
               <div className="flex flex-col items-end">
