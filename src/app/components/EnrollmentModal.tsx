@@ -15,6 +15,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
+import { createOrUpdateClassappStudent } from "@/lib/classapp";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -202,6 +203,51 @@ export default function EnrollmentModal({
     `;
 
     try {
+      const schoolName = appliedCoupon?.voucher_gratuito
+        ? schools.find((s) => s.id === formData.partnerSchool)?.nome
+        : undefined;
+
+  
+      const classappResponse = await createOrUpdateClassappStudent({
+        nome: formData.studentName,
+        telefone_aluno: formData.studentPhone,
+        email_responsavel: formData.guardianEmail,
+        telefone_responsavel: formData.guardianPhone,
+        curso: {
+          titulo: courseName,
+        },
+        turma: scheduleIndex + 1,
+        locale: locale,
+        cpf_aluno: formData.studentCPF?.trim() || "",
+      });
+
+      if (!classappResponse.success) {
+        throw new Error(
+          classappResponse.error || "Failed to create student in ClassApp"
+        );
+      }
+
+      await createStudent(
+        {
+          nome: formData.studentName,
+          data_nascimento: formData.studentBirthDate,
+          cpf_aluno: formData.studentCPF,
+          responsavel: formData.guardianName,
+          email_responsavel: formData.guardianEmail,
+          cpf_responsavel: formData.guardianCPF,
+          telefone_responsavel: formData.guardianPhone,
+          pais: formData.country,
+          estado: formData.state,
+          cidade: formData.city,
+          telefone_aluno: formData.studentPhone,
+          cursos: [{ id: courseId, documentId: courseId.toString() }],
+          escola_parceira: schoolName,
+          turma: scheduleIndex + 1,
+          publishedAt: new Date().toISOString(),
+        },
+        appliedCoupon?.nome
+      );
+
       const emailRecipients =
         process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL?.split(",").map((email) =>
           email.trim()
@@ -226,7 +272,6 @@ export default function EnrollmentModal({
       const failedEmails = emailResponses.filter((response) => !response.ok);
       if (failedEmails.length > 0) {
         console.error("Failed to send notification emails to some recipients");
-        throw new Error("Failed to send notification emails");
       }
 
       const welcomeEmailResponse = await fetch("/api/send-email", {
@@ -248,31 +293,6 @@ export default function EnrollmentModal({
         );
       }
 
-      const schoolName = appliedCoupon?.voucher_gratuito
-        ? schools.find((s) => s.id === formData.partnerSchool)?.nome
-        : undefined;
-
-      await createStudent(
-        {
-          nome: formData.studentName,
-          data_nascimento: formData.studentBirthDate,
-          cpf_aluno: formData.studentCPF,
-          responsavel: formData.guardianName,
-          email_responsavel: formData.guardianEmail,
-          cpf_responsavel: formData.guardianCPF,
-          telefone_responsavel: formData.guardianPhone,
-          pais: formData.country,
-          estado: formData.state,
-          cidade: formData.city,
-          telefone_aluno: formData.studentPhone,
-          cursos: [{ id: courseId, documentId: courseId.toString() }],
-          escola_parceira: schoolName,
-          turma: scheduleIndex + 1,
-          publishedAt: new Date().toISOString(),
-        },
-        appliedCoupon?.nome
-      );
-
       setIsOpen(false);
       if (appliedCoupon) {
         if (appliedCoupon.voucher_gratuito) {
@@ -288,7 +308,6 @@ export default function EnrollmentModal({
       }
     } catch (error) {
       console.error("Error in enrollment process:", error);
-      alert(modalT("errors.submit"));
     } finally {
       setIsLoading(false);
     }
