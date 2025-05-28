@@ -69,6 +69,17 @@
     "usou_voucher": {
       "type": "boolean",
       "default": false
+    },
+    "onboarding_status": {
+      "type": "enumeration",
+      "enum": [
+        "NULL",
+        "INIT",
+        "ASK_INSTALLED",
+        "ASK_DEVICE",
+        "WAIT_CODE",
+        "COMPLETED"
+      ]
     }
   }
 }

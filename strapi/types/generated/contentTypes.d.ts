@@ -400,6 +400,9 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'> &
       Schema.Attribute.Private;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
+    onboarding_status: Schema.Attribute.Enumeration<
+      ['NULL', 'INIT', 'ASK_INSTALLED', 'ASK_DEVICE', 'WAIT_CODE', 'COMPLETED']
+    >;
     pais: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     responsavel: Schema.Attribute.String & Schema.Attribute.Required;
