@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
 import { createOrUpdateClassappStudent } from "@/lib/classapp";
+import { startOnboarding } from "@/lib/zazu";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -207,7 +208,6 @@ export default function EnrollmentModal({
         ? schools.find((s) => s.id === formData.partnerSchool)?.nome
         : undefined;
 
-  
       const classappResponse = await createOrUpdateClassappStudent({
         nome: formData.studentName,
         telefone_aluno: formData.studentPhone,
@@ -247,6 +247,19 @@ export default function EnrollmentModal({
         },
         appliedCoupon?.nome
       );
+
+
+      const onboardingResponse = await startOnboarding({
+        studentName: formData.studentName,
+        guardianName: formData.guardianName,
+        studentPhone: formData.studentPhone,
+        guardianPhone: formData.guardianPhone,
+        studentCPF: formData.studentCPF,
+      });
+
+      if (!onboardingResponse.success) {
+        console.error("Failed to start onboarding:", onboardingResponse.error);
+      }
 
       const emailRecipients =
         process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL?.split(",").map((email) =>
