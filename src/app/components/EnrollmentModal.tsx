@@ -227,6 +227,14 @@ export default function EnrollmentModal({
         );
       }
 
+      const studentPhone =
+        formData.country === "Brasil"
+          ? `55${formData.studentPhone}`
+          : formData.studentPhone;
+      const guardianPhone =
+        formData.country === "Brasil"
+          ? `55${formData.guardianPhone}`
+          : formData.guardianPhone;
       await createStudent(
         {
           nome: formData.studentName,
@@ -235,11 +243,11 @@ export default function EnrollmentModal({
           responsavel: formData.guardianName,
           email_responsavel: formData.guardianEmail,
           cpf_responsavel: formData.guardianCPF,
-          telefone_responsavel: formData.guardianPhone,
+          telefone_responsavel: guardianPhone,
           pais: formData.country,
           estado: formData.state,
           cidade: formData.city,
-          telefone_aluno: formData.studentPhone,
+          telefone_aluno: studentPhone,
           cursos: [{ id: courseId, documentId: courseId.toString() }],
           escola_parceira: schoolName,
           turma: scheduleIndex + 1,
@@ -248,14 +256,15 @@ export default function EnrollmentModal({
         appliedCoupon?.nome
       );
 
-
-      const onboardingResponse = await startOnboarding({
+      const payload = {
         studentName: formData.studentName,
         guardianName: formData.guardianName,
-        studentPhone: formData.studentPhone,
-        guardianPhone: formData.guardianPhone,
+        studentPhone: studentPhone,
+        guardianPhone: guardianPhone,
         studentCPF: formData.studentCPF,
-      });
+      };
+
+      const onboardingResponse = await startOnboarding(payload);
 
       if (!onboardingResponse.success) {
         console.error("Failed to start onboarding:", onboardingResponse.error);
