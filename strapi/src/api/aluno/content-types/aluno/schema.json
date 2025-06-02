@@ -70,7 +70,18 @@
       "type": "boolean",
       "default": false
     },
-    "onboarding_status": {
+    "onboarding_status_aluno": {
+      "type": "enumeration",
+      "enum": [
+        "NULL",
+        "INIT",
+        "ASK_INSTALLED",
+        "ASK_DEVICE",
+        "WAIT_CODE",
+        "COMPLETED"
+      ]
+    },
+    "onboarding_status_responsavel": {
       "type": "enumeration",
       "enum": [
         "NULL",

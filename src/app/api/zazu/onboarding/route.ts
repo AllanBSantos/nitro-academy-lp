@@ -12,7 +12,10 @@ export async function POST(request: Request) {
   try {
     const data: OnboardingRequest = await request.json();
 
-    const ZAZU_API_URL = process.env.ZAZU_API_URL?.replace(/\/$/, ""); 
+    const ZAZU_API_URL = process.env.NEXT_PUBLIC_ZAZU_API_URL?.replace(
+      /\/$/,
+      ""
+    );
     const ZAZU_API_TOKEN = process.env.ZAZU_API_TOKEN;
 
     if (!ZAZU_API_URL || !ZAZU_API_TOKEN) {
