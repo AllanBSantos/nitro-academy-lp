@@ -401,7 +401,19 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
     onboarding_status_aluno: Schema.Attribute.Enumeration<
-      ['NULL', 'INIT', 'ASK_INSTALLED', 'ASK_DEVICE', 'WAIT_CODE', 'COMPLETED']
+      [
+        'NULL',
+        'START',
+        'ASK_INSTALLED',
+        'INSTALLED_VIDEO',
+        'INSTALLED_WAIT_INVITE',
+        'GENERATE_CODE',
+        'WAIT_CODE',
+        'SUCCESS',
+        'NOT_INSTALLED_OS',
+        'NOT_INSTALLED_DOWNLOAD',
+        'NOT_INSTALLED_WAIT_INVITE',
+      ]
     >;
     onboarding_status_responsavel: Schema.Attribute.Enumeration<
       [

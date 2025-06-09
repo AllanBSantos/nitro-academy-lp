@@ -74,11 +74,16 @@
       "type": "enumeration",
       "enum": [
         "NULL",
-        "INIT",
+        "START",
         "ASK_INSTALLED",
-        "ASK_DEVICE",
+        "INSTALLED_VIDEO",
+        "INSTALLED_WAIT_INVITE",
+        "GENERATE_CODE",
         "WAIT_CODE",
-        "COMPLETED"
+        "SUCCESS",
+        "NOT_INSTALLED_OS",
+        "NOT_INSTALLED_DOWNLOAD",
+        "NOT_INSTALLED_WAIT_INVITE"
       ]
     },
     "onboarding_status_responsavel": {
