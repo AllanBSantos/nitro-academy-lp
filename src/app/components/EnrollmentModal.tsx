@@ -32,6 +32,7 @@ interface EnrollmentModalProps {
   }>;
   courseId: number;
   scheduleIndex: number;
+  disabled?: boolean;
 }
 
 interface School {
@@ -47,6 +48,7 @@ export default function EnrollmentModal({
   cupons = [],
   courseId,
   scheduleIndex,
+  disabled = false,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -311,8 +313,8 @@ export default function EnrollmentModal({
         <DialogTrigger asChild>
           <Button
             id="enrollment-button"
-            className="bg-orange-600 text-[#1e1b4b] text-xl font-bold py-4 px-8 rounded-[24px] hover:bg-orange-500 transition-colors duration-300 w-full max-w-md"
-            disabled={!selectedTime}
+            className="bg-orange-600 text-[#1e1b4b] text-xl font-bold py-4 px-8 rounded-[24px] hover:bg-orange-500 transition-colors duration-300 w-full max-w-md disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={disabled || !selectedTime}
           >
             {t("enroll")}
           </Button>

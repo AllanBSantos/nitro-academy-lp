@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -20,7 +20,6 @@ interface Schedule {
 
 interface TimeSelectionSectionProps {
   course: CardProps;
-  isCourseFull: boolean;
   getClassAvailability: (classNumber: string) => {
     isFull: boolean;
     currentStudents: number;
@@ -32,62 +31,31 @@ interface TimeSelectionSectionProps {
 
 export default function TimeSelectionSection({
   course,
-  isCourseFull,
   getClassAvailability,
   onScheduleClick,
   isScheduleFull,
 }: TimeSelectionSectionProps) {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
-  const [isInitialRender, setIsInitialRender] = useState(true);
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
 
-  useEffect(() => {
-    if (
-      isInitialRender &&
-      !isCourseFull &&
-      course.cronograma &&
-      course.cronograma.length > 0
-    ) {
-      // Find the first schedule that is not full
-      const firstValidSchedule = course.cronograma.find(
-        (_, index) => !isScheduleFull((index + 1).toString())
-      );
-      if (firstValidSchedule) {
-        const scheduleIndex = course.cronograma.indexOf(firstValidSchedule);
-        setSelectedTime(
-          `${firstValidSchedule.dia}-${firstValidSchedule.horario}`
-        );
-        onScheduleClick((scheduleIndex + 1).toString());
-      } else {
-        // Only set to suggestion if no valid schedules are found
-        setSelectedTime("suggestion");
-      }
-      setIsInitialRender(false);
+  const handleTimeSelect = (schedule: Schedule, index: number) => {
+    const classNumber = (index + 1).toString();
+    if (!isScheduleFull(classNumber)) {
+      setSelectedTime(`${schedule.dia}-${schedule.horario}`);
+      setSelectedClass(classNumber);
+      onScheduleClick(classNumber);
     }
-  }, [
-    isCourseFull,
-    course.cronograma,
-    isScheduleFull,
-    onScheduleClick,
-    isInitialRender,
-  ]);
+  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
     const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year.slice(-2)}`;
-  };
-
-  const handleTimeSelect = (schedule: Schedule, index: number) => {
-    const classNumber = (index + 1).toString();
-    if (!isScheduleFull(classNumber)) {
-      setSelectedTime(`${schedule.dia}-${schedule.horario}`);
-      onScheduleClick(classNumber);
-    }
   };
 
   const schedules = course.cronograma || [];
@@ -202,14 +170,15 @@ export default function TimeSelectionSection({
               ) : (
                 <EnrollmentModal
                   courseName={course.title || t("selected_course")}
-                  selectedTime={selectedTime}
+                  selectedTime={selectedTime || ""}
                   paymentLink={course.link_pagamento}
                   link_desconto={course.link_desconto}
                   cupons={course.cupons}
                   courseId={parseInt(course.id)}
-                  scheduleIndex={schedules.findIndex(
-                    (s) => `${s.dia}-${s.horario}` === selectedTime
-                  )}
+                  scheduleIndex={
+                    selectedClass ? parseInt(selectedClass) - 1 : 0
+                  }
+                  disabled={!selectedTime || !selectedClass}
                 />
               )}
             </div>

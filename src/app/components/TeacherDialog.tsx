@@ -13,9 +13,7 @@ export default function TeacherDialog({ children }: PropsWithChildren) {
   const t = useTranslations("Faq");
   return (
     <Dialog>
-      <DialogTrigger className="hover:bg-theme-orange">
-        {children}
-      </DialogTrigger>
+      <DialogTrigger>{children}</DialogTrigger>
       <DialogContent className="bg-white text-black">
         <DialogHeader>
           <DialogTitle>

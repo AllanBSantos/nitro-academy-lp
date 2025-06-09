@@ -14,7 +14,6 @@ import RelatedTopics from "./course/RelatedTopics";
 import MentorSection from "./course/MentorSection";
 import RelatedCourses from "./course/RelatedCourses";
 import CourseSummaryCard from "./CourseSummaryCard";
-import EnrollmentModal from "./EnrollmentModal";
 
 interface CourseContentProps {
   course: CardProps;
@@ -171,19 +170,6 @@ export default function CourseContent({ course }: CourseContentProps) {
       <section className="bg-background">
         <Footer />
       </section>
-
-      {isModalOpen && selectedClass && (
-        <EnrollmentModal
-          courseName={course.title}
-          selectedTime={
-            course.cronograma[parseInt(selectedClass) - 1]?.horario || null
-          }
-          courseId={parseInt(course.id)}
-          scheduleIndex={parseInt(selectedClass) - 1}
-          link_desconto={course.link_desconto}
-          cupons={course.cupons}
-        />
-      )}
     </>
   );
 }
