@@ -83,7 +83,8 @@
         "SUCCESS",
         "NOT_INSTALLED_OS",
         "NOT_INSTALLED_DOWNLOAD",
-        "NOT_INSTALLED_WAIT_INVITE"
+        "NOT_INSTALLED_WAIT_INVITE",
+        "ERROR"
       ]
     },
     "onboarding_status_responsavel": {
@@ -99,7 +100,8 @@
         "SUCCESS",
         "NOT_INSTALLED_OS",
         "NOT_INSTALLED_DOWNLOAD",
-        "NOT_INSTALLED_WAIT_INVITE"
+        "NOT_INSTALLED_WAIT_INVITE",
+        "ERROR"
       ]
     }
   }
