@@ -413,6 +413,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
         'NOT_INSTALLED_OS',
         'NOT_INSTALLED_DOWNLOAD',
         'NOT_INSTALLED_WAIT_INVITE',
+        'ERROR',
       ]
     >;
     onboarding_status_responsavel: Schema.Attribute.Enumeration<
@@ -428,6 +429,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
         'NOT_INSTALLED_OS',
         'NOT_INSTALLED_DOWNLOAD',
         'NOT_INSTALLED_WAIT_INVITE',
+        'ERROR',
       ]
     >;
     pais: Schema.Attribute.String & Schema.Attribute.Required;
