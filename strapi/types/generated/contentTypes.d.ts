@@ -404,7 +404,19 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
       ['NULL', 'INIT', 'ASK_INSTALLED', 'ASK_DEVICE', 'WAIT_CODE', 'COMPLETED']
     >;
     onboarding_status_responsavel: Schema.Attribute.Enumeration<
-      ['NULL', 'INIT', 'ASK_INSTALLED', 'ASK_DEVICE', 'WAIT_CODE', 'COMPLETED']
+      [
+        'NULL',
+        'START',
+        'ASK_INSTALLED',
+        'INSTALLED_VIDEO',
+        'INSTALLED_WAIT_INVITE',
+        'GENERATE_CODE',
+        'WAIT_CODE',
+        'SUCCESS',
+        'NOT_INSTALLED_OS',
+        'NOT_INSTALLED_DOWNLOAD',
+        'NOT_INSTALLED_WAIT_INVITE',
+      ]
     >;
     pais: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
