@@ -145,13 +145,15 @@
     "Se os pais acreditam que o filho consiga participar de uma aula online concentrada, criar projetos ou resolver desafios, fique à vontade para inscrever o seu filho": "If parents believe their child can participate in a focused online class, create projects, or solve challenges, feel free to enroll your child.",
     "Saiba mais": "Find out more",
     "Seja um professor Nitro Academy!": "Become a Nitro Academy teacher!",
-    "Vamos juntos transformar o aprendizado!": "Let's transform learning together!",
-    "Você se lembra de quando era adolescente e tinha tempo e energia, e talvez até vontade de experimentar diversas profissões, mas nem sempre boas oportunidades de fazer isso?": "Do you remember when you were a teenager and had time and energy, and maybe even the desire to try out various professions, but didn't always have good opportunities to do so?",
+    "Convite para Educadores - Faça Parte da Nitro Academy": "Invitation to Educators - Join Nitro Academy",
+    "teacher_dialog": {
+      "description": "At Nitro Academy, we believe that preparing young people for the future goes far beyond guaranteeing a livelihood. We are building a school where learning is a journey of discovering vocations, talents and purpose - not just for individual benefit, but as a true service to society."
+    },
     "É algo que a Nitro Academy veio solucionar, transformando o tempo livre dos adolescentes (11-15 anos) em talento": "This is something Nitro Academy came to solve, transforming adolescents' (11-15 years) free time into talent.",
     "Exemplos de projetos já estruturados na Nitro Academy:": "Examples of established projects at Nitro Academy:",
     "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico": "Interning as a Youtuber, Making your First Online Sale, Creating your Own Perfume, Creating a Cinematic Script",
     "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores": "We are an online vocational initiation project school and we are looking for professionals passionate about education who have practical experience in their professional fields to act as mentors.",
-    "Se essa proposta ressoou com você, venha fazer parte da Nitro Academy O primeiro passo é preencher este formulário:": "If this proposal appeals to you, come and be part of Nitro Academy. The first step is to complete this form:",
+    "Faça parte do nosso time.": "If this proposal appeals to you, come and be part of Nitro Academy. The first step is to complete this form:",
     "Faça parte do nosso time": "Become part of our team"
   },
   "AboutUs": {
