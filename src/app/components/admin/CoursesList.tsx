@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 interface CourseStats {
   courseId: number;
   courseTitle: string;
+  documentId: string;
   studentCount: number;
   totalSpots: number;
   availableSpots: number;
@@ -42,6 +43,7 @@ export function CoursesList() {
           return {
             courseId: course.id,
             courseTitle: course.titulo || "",
+            documentId: course.documentId || "",
             studentCount,
             totalSpots,
             availableSpots,
@@ -60,8 +62,8 @@ export function CoursesList() {
     loadData();
   }, [t]);
 
-  const handleCourseClick = (courseId: number) => {
-    router.push(`/${params.locale}/admin/courses/${courseId}`);
+  const handleCourseClick = (courseId: number, documentId: string) => {
+    router.push(`/${params.locale}/admin/courses/${documentId}`);
   };
 
   if (loading) {
@@ -109,7 +111,9 @@ export function CoursesList() {
                 <tr
                   key={course.courseId}
                   className="hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => handleCourseClick(course.courseId)}
+                  onClick={() =>
+                    handleCourseClick(course.courseId, course.documentId)
+                  }
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {course.courseTitle}

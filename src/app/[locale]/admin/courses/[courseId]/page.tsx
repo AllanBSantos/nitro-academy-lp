@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { fetchCourses } from "@/lib/strapi";
+import { fetchCourse } from "@/lib/strapi";
 import {
   ArrowLeft,
   Users,
@@ -13,8 +13,8 @@ import {
   Plus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Course } from "@/types/strapi";
 import { useTranslations } from "next-intl";
+import CourseEditForm from "../../../../components/admin/CourseEditForm";
 
 interface StudentDetails {
   nome: string;
@@ -33,16 +33,7 @@ interface Student extends RawStudent {
   nome: string;
 }
 
-interface CourseDetails {
-  id: number;
-  titulo: string;
-  alunos: Student[];
-  cronograma: Aula[];
-  totalSpots: number;
-  availableSpots: number;
-}
-
-interface Aula {
+interface CronogramaAula {
   dia: string;
   horario: string;
   data_inicio?: string;
@@ -50,7 +41,42 @@ interface Aula {
   faixa_etaria?: string;
 }
 
-type Tab = "alunos" | "aulas";
+interface CourseDetails {
+  id: number;
+  titulo: string;
+  descricao: string;
+  descricaoMentor: string;
+  nivel: string;
+  modelo: string;
+  objetivo: string;
+  pre_requisitos: string;
+  projetos: string;
+  tarefa_de_casa: string;
+  destaques: string;
+  competencias: string;
+  ideal_para: string;
+  videos: Array<{
+    titulo: string;
+    video_url: string;
+  }>;
+  turmas: Array<{
+    id: number;
+    faixa_etaria: string;
+  }>;
+  ementa_resumida: Array<{
+    descricao: string;
+  }>;
+  resumo_aulas: Array<{
+    nome_aula: string;
+    descricao_aula: string;
+  }>;
+  alunos: Student[];
+  cronograma: CronogramaAula[];
+  totalSpots: number;
+  availableSpots: number;
+}
+
+type Tab = "alunos" | "aulas" | "pagina";
 
 export default function CourseDashboard() {
   const t = useTranslations("Admin.panel");
@@ -65,10 +91,8 @@ export default function CourseDashboard() {
   useEffect(() => {
     const loadCourseData = async () => {
       try {
-        const courses = await fetchCourses();
-
-        const courseId = parseInt(params.courseId as string);
-        const courseData = courses.find((c) => c.id === courseId);
+        const documentId = params.courseId as string;
+        const courseData = await fetchCourse(documentId);
 
         if (!courseData) {
           throw new Error(t("error.course_not_found"));
@@ -77,11 +101,9 @@ export default function CourseDashboard() {
         const maxStudentsPerClass = parseInt(
           process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
         );
-
         const totalSpots = Array.isArray(courseData.cronograma)
           ? courseData.cronograma.length * maxStudentsPerClass
           : 0;
-
         const studentCount = Array.isArray(courseData.alunos)
           ? courseData.alunos.length
           : 0;
@@ -89,30 +111,58 @@ export default function CourseDashboard() {
         const transformedCourse: CourseDetails = {
           id: courseData.id,
           titulo: courseData.titulo,
-          alunos: (courseData.alunos || []).map(
-            (aluno: Course["alunos"][0]) => ({
-              id: aluno.id,
-              turma: aluno.turma,
-              documentId: aluno.documentId || "",
-              nome: aluno.nome || "",
-            })
-          ),
+          descricao: courseData.descricao,
+          descricaoMentor: courseData.mentor?.descricao || "",
+          nivel: courseData.nivel,
+          modelo: courseData.modelo,
+          objetivo: courseData.objetivo,
+          pre_requisitos: courseData.pre_requisitos,
+          projetos: courseData.projetos,
+          tarefa_de_casa: courseData.tarefa_de_casa,
+          destaques: courseData.destaques || "",
+          competencias: courseData.competencias || "",
+          ideal_para: courseData.ideal_para || "",
+          videos: (courseData.videos || []).map((video) => ({
+            titulo: video.titulo || "",
+            video_url: video.video_url || "",
+          })),
+          turmas: Array.isArray(courseData.cronograma)
+            ? courseData.cronograma.map(
+                (aula: CronogramaAula, index: number) => ({
+                  id: index + 1,
+                  faixa_etaria: aula.faixa_etaria || "",
+                })
+              )
+            : [],
+          ementa_resumida: courseData.ementa_resumida || [],
+          resumo_aulas: courseData.resumo_aulas || [],
+          alunos: (courseData.alunos || []).map((aluno) => ({
+            id: aluno.id,
+            turma: aluno.turma,
+            documentId: aluno.documentId || "",
+            nome: aluno.nome || "",
+          })),
           cronograma: Array.isArray(courseData.cronograma)
             ? courseData.cronograma
             : [],
           totalSpots,
           availableSpots: totalSpots - studentCount,
         };
-
         setCourse(transformedCourse);
       } catch (err) {
         console.error("Error loading course data:", err);
+        if (err instanceof Error) {
+          console.error("Error details:", {
+            message: err.message,
+            stack: err.stack,
+            name: err.name,
+          });
+        }
         setError(t("error.loading_error"));
       } finally {
         setLoading(false);
       }
     };
-
     loadCourseData();
   }, [params.courseId, t]);
 
@@ -285,6 +335,12 @@ export default function CourseDashboard() {
             </div>
           </div>
         );
+      case "pagina":
+        return (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-8">
+            <CourseEditForm course={course} />
+          </div>
+        );
     }
   };
 
@@ -362,25 +418,33 @@ export default function CourseDashboard() {
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab("alunos")}
-              className={`${
+              className={`$${
                 activeTab === "alunos"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
-              <Users className="w-5 h-5 mr-2" />
               {t("tabs.students")}
             </button>
             <button
               onClick={() => setActiveTab("aulas")}
-              className={`${
+              className={`$${
                 activeTab === "aulas"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
             >
-              <BookOpen className="w-5 h-5 mr-2" />
               {t("tabs.classes")}
+            </button>
+            <button
+              onClick={() => setActiveTab("pagina")}
+              className={`$${
+                activeTab === "pagina"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+            >
+              Detalhes do curso
             </button>
           </nav>
         </div>

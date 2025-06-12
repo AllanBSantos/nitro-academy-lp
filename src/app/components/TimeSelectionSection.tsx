@@ -68,20 +68,20 @@ export default function TimeSelectionSection({
             <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
             <div className="text-[#3B82F6] text-4xl font-bold mb-4">
               {course.moeda === "Real" ? "R$" : "USD"}{" "}
-              {course.price.installments
-                ? course.price.installment.toFixed(2).replace(".", ",")
-                : course.price.total.toFixed(2).replace(".", ",")}
+              {course.price?.installments
+                ? course.price?.installment.toFixed(2).replace(".", ",")
+                : course.price?.total.toFixed(2).replace(".", ",")}
             </div>
-            {course.price.installments ? (
+            {course.price?.installments ? (
               <p className="text-gray-600 text-md mb-8">
                 {t("payment_options", {
                   installment: `${
                     course.moeda === "Real" ? "R$" : "USD"
-                  } ${course.price.installment.toFixed(2).replace(".", ",")}`,
+                  } ${course.price?.installment.toFixed(2).replace(".", ",")}`,
                   total: `${
                     course.moeda === "Real" ? "R$" : "USD"
-                  } ${course.price.total.toFixed(2).replace(".", ",")}`,
-                  installments: course.price.installments,
+                  } ${course.price?.total.toFixed(2).replace(".", ",")}`,
+                  installments: course.price?.installments,
                 })}
               </p>
             ) : null}

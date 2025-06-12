@@ -22,17 +22,33 @@ export async function fetchCourses(
   }
 }
 
-export async function fetchCourse(id: string): Promise<Course> {
-  const response = await fetch(
-    `${STRAPI_API_URL}/api/cursos/${id}?populate=*&locale=pt-BR`
-  );
+export async function fetchCourse(documentId: string): Promise<Course> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&locale=pt-BR`
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch course");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("API Error Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        errorData,
+      });
+      throw new Error(
+        `Failed to fetch course: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const { data } = await response.json();
+    if (!data || !data[0]) {
+      throw new Error("No course data received from API");
+    }
+    return data[0];
+  } catch (error) {
+    console.error("Error in fetchCourse:", error);
+    throw error;
   }
-
-  const { data } = await response.json();
-  return data;
 }
 
 export async function fetchMentor(id: number): Promise<Mentor> {
@@ -260,13 +276,6 @@ export interface Suggestion {
 }
 
 export async function createSuggestion(suggestion: Suggestion): Promise<void> {
-  console.log("Suggestion data being sent:", {
-    dias_da_semana: suggestion.dias_da_semana,
-    horario: suggestion.horario,
-    comentario: suggestion.comentario,
-    curso: suggestion.curso,
-  });
-
   const payload = {
     data: {
       dias_da_semana: suggestion.dias_da_semana.map((dia) => ({
