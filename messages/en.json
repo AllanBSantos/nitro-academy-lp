@@ -393,5 +393,52 @@
   "FAQ": {
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to the most common questions about our courses and methodology"
+  },
+  "Admin": {
+    "panel": {
+      "title": "Admin Panel",
+      "courses": "Courses",
+      "back": "Back",
+      "loading": "Loading...",
+      "error": {
+        "course_not_found": "Course not found",
+        "loading_error": "Error loading course data"
+      },
+      "stats": {
+        "total_spots": "Total Spots",
+        "enrolled_students": "Enrolled Students",
+        "available_spots": "Available Spots"
+      },
+      "tabs": {
+        "students": "Students",
+        "classes": "Classes"
+      },
+      "students": {
+        "title": "Student List",
+        "all_classes": "All Classes",
+        "class": "Class {number}",
+        "student_count": "{count} students",
+        "table": {
+          "name": "Name",
+          "class": "Class"
+        }
+      },
+      "classes": {
+        "title": "Classes",
+        "register_new": "Register new class",
+        "no_classes": "No classes registered",
+        "start_registering": "Start by registering a new class."
+      },
+      "courses_list": {
+        "title": "Courses",
+        "table": {
+          "course_name": "Course Name",
+          "total_spots": "Total Spots",
+          "enrolled_students": "Enrolled Students",
+          "available_spots": "Available Spots"
+        },
+        "error": "Error loading courses data"
+      }
+    }
   }
 }

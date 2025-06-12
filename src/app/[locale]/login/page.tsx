@@ -52,7 +52,6 @@ export default function LoginPage() {
         }
       );
 
-      console.log("Response:", data);
 
       if (!data.success || !data.data?.token) {
         throw new Error(data.message || "Failed to login");

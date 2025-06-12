@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { fetchCourses } from "@/lib/strapi";
+import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface CourseStats {
   courseId: number;
@@ -11,7 +13,10 @@ interface CourseStats {
   availableSpots: number;
 }
 
-export function StudentsByCourse() {
+export function CoursesList() {
+  const t = useTranslations("Admin.panel.courses_list");
+  const router = useRouter();
+  const params = useParams();
   const [courseStats, setCourseStats] = useState<CourseStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +50,7 @@ export function StudentsByCourse() {
 
         setCourseStats(stats);
       } catch (err) {
-        setError("Erro ao carregar dados dos cursos");
+        setError(t("error"));
         console.error(err);
       } finally {
         setLoading(false);
@@ -53,7 +58,11 @@ export function StudentsByCourse() {
     };
 
     loadData();
-  }, []);
+  }, [t]);
+
+  const handleCourseClick = (courseId: number) => {
+    router.push(`/${params.locale}/admin/courses/${courseId}`);
+  };
 
   if (loading) {
     return (
@@ -74,9 +83,7 @@ export function StudentsByCourse() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">
-        Alunos por Curso
-      </h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">{t("title")}</h1>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
@@ -84,22 +91,26 @@ export function StudentsByCourse() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nome do Curso
+                  {t("table.course_name")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total de Vagas
+                  {t("table.total_spots")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Alunos Matriculados
+                  {t("table.enrolled_students")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Vagas Disponíveis
+                  {t("table.available_spots")}
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {courseStats.map((course) => (
-                <tr key={course.courseId} className="hover:bg-gray-50">
+                <tr
+                  key={course.courseId}
+                  className="hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={() => handleCourseClick(course.courseId)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {course.courseTitle}
                   </td>

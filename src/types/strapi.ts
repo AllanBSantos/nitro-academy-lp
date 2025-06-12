@@ -94,6 +94,10 @@ export interface Course {
   alunos: Array<{
     id: number;
     turma: number;
+    documentId: string;
+    nome: string;
+    email_responsavel: string;
+    telefone_responsavel: string;
   }>;
   titulo: string;
   descricao: string;

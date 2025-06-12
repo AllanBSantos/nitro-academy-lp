@@ -387,5 +387,52 @@
   "FAQ": {
     "title": "Perguntas Frequentes",
     "subtitle": "Encontre respostas para as dúvidas mais comuns sobre nossos cursos e metodologia"
+  },
+  "Admin": {
+    "panel": {
+      "title": "Painel Admin",
+      "courses": "Cursos",
+      "back": "Voltar",
+      "loading": "Carregando...",
+      "error": {
+        "course_not_found": "Curso não encontrado",
+        "loading_error": "Erro ao carregar dados do curso"
+      },
+      "stats": {
+        "total_spots": "Total de Vagas",
+        "enrolled_students": "Alunos Matriculados",
+        "available_spots": "Vagas Disponíveis"
+      },
+      "tabs": {
+        "students": "Alunos",
+        "classes": "Aulas"
+      },
+      "students": {
+        "title": "Lista de Alunos",
+        "all_classes": "Todas as Turmas",
+        "class": "Turma {number}",
+        "student_count": "{count} alunos",
+        "table": {
+          "name": "Nome",
+          "class": "Turma"
+        }
+      },
+      "classes": {
+        "title": "Aulas",
+        "register_new": "Registrar nova aula",
+        "no_classes": "Nenhuma aula registrada",
+        "start_registering": "Comece registrando uma nova aula."
+      },
+      "courses_list": {
+        "title": "Cursos",
+        "table": {
+          "course_name": "Nome do Curso",
+          "total_spots": "Total de Vagas",
+          "enrolled_students": "Alunos Matriculados",
+          "available_spots": "Vagas Disponíveis"
+        },
+        "error": "Erro ao carregar dados dos cursos"
+      }
+    }
   }
 }
