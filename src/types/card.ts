@@ -43,7 +43,7 @@ export interface CardProps {
     instagram_label: string;
   };
   rating: number | null;
-  price: {
+  price?: {
     installment: number;
     total: number;
     installments: number;
@@ -62,7 +62,7 @@ export interface CardProps {
   topicosRelacionados: string[];
   videos: Video[];
   cronograma: Schedule[];
-  moeda: "Real" | "Dólar";
+  moeda?: "Real" | "Dólar";
   badge?: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | "nenhum";
   cupons: Array<{
     id: number;

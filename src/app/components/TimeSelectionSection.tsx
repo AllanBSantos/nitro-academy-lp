@@ -44,6 +44,7 @@ export default function TimeSelectionSection({
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
+  const CLASSES_PER_COURSE = 6;
 
   const handleTimeSelect = (schedule: Schedule, index: number) => {
     const classNumber = (index + 1).toString();
@@ -67,26 +68,32 @@ export default function TimeSelectionSection({
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white rounded-[32px] p-8 shadow-md border-2 border-gray-200 relative">
           <div className="text-center">
-            <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
-            <div className="text-[#3B82F6] text-4xl font-bold mb-4">
-              {course.moeda === "Real" ? "R$" : "USD"}{" "}
-              {course.price?.installments
-                ? course.price?.installment.toFixed(2).replace(".", ",")
-                : course.price?.total.toFixed(2).replace(".", ",")}
-            </div>
-            {course.price?.installments ? (
-              <p className="text-gray-600 text-md mb-8">
-                {t("payment_options", {
-                  installment: `${
-                    course.moeda === "Real" ? "R$" : "USD"
-                  } ${course.price?.installment.toFixed(2).replace(".", ",")}`,
-                  total: `${
-                    course.moeda === "Real" ? "R$" : "USD"
-                  } ${course.price?.total.toFixed(2).replace(".", ",")}`,
-                  installments: course.price?.installments,
-                })}
-              </p>
-            ) : null}
+            {course.price && course.moeda && course.price.total > 0 && (
+              <>
+                <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
+                <div className="text-[#3B82F6] text-4xl font-bold mb-4">
+                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                  {course.price.installments
+                    ? course.price.installment.toFixed(2).replace(".", ",")
+                    : course.price.total.toFixed(2).replace(".", ",")}
+                </div>
+                {course.price.installments ? (
+                  <p className="text-gray-600 text-md mb-8">
+                    {t("payment_options", {
+                      installment: `${
+                        course.moeda === "Real" ? "R$" : "USD"
+                      } ${course.price?.installment
+                        .toFixed(2)
+                        .replace(".", ",")}`,
+                      total: `${
+                        course.moeda === "Real" ? "R$" : "USD"
+                      } ${course.price?.total.toFixed(2).replace(".", ",")}`,
+                      installments: course.price?.installments,
+                    })}
+                  </p>
+                ) : null}
+              </>
+            )}
 
             {inscricoes_abertas && (
               <p className="text-gray-800 text-lg mb-6">
@@ -127,6 +134,20 @@ export default function TimeSelectionSection({
                             <div className="text-[#3B82F6] text-lg font-medium">
                               {schedule.dia} {schedule.horario}
                             </div>
+                            {course.price && course.moeda && (
+                              <div className="text-sm mt-1 text-gray-500">
+                                <span className="block mb-1">
+                                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                                  {(course.price.total / CLASSES_PER_COURSE)
+                                    .toFixed(2)
+                                    .replace(
+                                      ".",
+                                      course.moeda === "Real" ? "," : "."
+                                    )}{" "}
+                                  {t("per_class")}
+                                </span>
+                              </div>
+                            )}
                             <div className="text-sm mt-1 text-gray-500">
                               {t("start_date")}:{" "}
                               {schedule.data_inicio
@@ -277,16 +298,20 @@ export default function TimeSelectionSection({
                             <div className="text-[#3B82F6] text-lg font-medium">
                               {schedule.dia} {schedule.horario}
                             </div>
-                            <div className="text-sm mt-1 text-gray-500">
-                              {t("start_date")}:{" "}
-                              {schedule.data_inicio
-                                ? formatDate(schedule.data_inicio)
-                                : ""}
-                              {schedule.data_fim &&
-                                ` • ${t("end_date")}: ${formatDate(
-                                  schedule.data_fim
-                                )}`}
-                            </div>
+                            {course.price && course.moeda && (
+                              <div className="text-sm mt-1 text-gray-500">
+                                <span className="block mb-1">
+                                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                                  {(course.price.total / CLASSES_PER_COURSE)
+                                    .toFixed(2)
+                                    .replace(
+                                      ".",
+                                      course.moeda === "Real" ? "," : "."
+                                    )}{" "}
+                                  {t("per_class")}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </button>

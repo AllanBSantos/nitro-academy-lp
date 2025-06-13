@@ -142,7 +142,7 @@
           "localized": true
         }
       },
-      "required": true
+      "required": false
     },
     "parcelas": {
       "type": "integer",

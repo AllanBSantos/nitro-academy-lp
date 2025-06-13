@@ -613,7 +613,6 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     preco: Schema.Attribute.Decimal &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

@@ -66,9 +66,12 @@ export default function Card({
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
   );
   const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
-  const priceClass = (price.total / CLASSES_PER_COURSE)
-    .toFixed(2)
-    .replace(".", moeda === "Real" ? "," : ".");
+  const priceClass =
+    price && moeda
+      ? (price.total / CLASSES_PER_COURSE)
+          .toFixed(2)
+          .replace(".", moeda === "Real" ? "," : ".")
+      : null;
   const dataInicioText = data_inicio_curso || null;
   const dataInicio = data_inicio_curso || cronograma?.[0]?.data_inicio || "";
 
@@ -248,12 +251,16 @@ export default function Card({
                 </span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-xs text-gray-500">
-                  {commonT("per_class")}
-                </span>
-                <span className="text-base font-bold text-theme-orange">
-                  {moeda === "Real" ? "R$" : "USD"} {priceClass}
-                </span>
+                {price && moeda && price.total > 0 && (
+                  <>
+                    <span className="text-xs text-gray-500">
+                      {commonT("per_class")}
+                    </span>
+                    <span className="text-base font-bold text-theme-orange">
+                      {moeda === "Real" ? "R$" : "USD"} {priceClass}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
