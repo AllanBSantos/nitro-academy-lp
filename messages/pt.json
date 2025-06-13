@@ -432,6 +432,11 @@
           "available_spots": "Vagas Disponíveis"
         },
         "error": "Erro ao carregar dados dos cursos"
+      },
+      "course_edit": {
+        "saving": "Salvando...",
+        "save": "Salvar alterações",
+        "success": "Alterações salvas com sucesso!"
       }
     }
   }

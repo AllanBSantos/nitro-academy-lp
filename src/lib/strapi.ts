@@ -409,3 +409,102 @@ export async function fetchFAQs(locale: string = "pt-BR"): Promise<FAQ[]> {
     return [];
   }
 }
+
+export async function updateCourse(
+  documentId: string,
+  courseData: {
+    titulo?: string;
+    descricao?: string;
+    nivel?: string;
+    modelo?: string;
+    objetivo?: string;
+    pre_requisitos?: string;
+    projetos?: string;
+    tarefa_de_casa?: string;
+    destaques?: string;
+    competencias?: string;
+    ideal_para?: string;
+    videos?: Array<{
+      titulo: string;
+      video_url: string;
+    }>;
+    cronograma?: Array<{
+      dia: string;
+      horario: string;
+      data_inicio?: string;
+      data_fim?: string;
+      faixa_etaria?: string;
+    }>;
+    ementa_resumida?: Array<{
+      descricao: string;
+    }>;
+    resumo_aulas?: Array<{
+      nome_aula: string;
+      descricao_aula: string;
+    }>;
+  }
+): Promise<void> {
+  try {
+    console.log("Finding course with documentId:", documentId);
+
+    // First, find the course ID using the documentId
+    const findResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}`
+      /*     {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      } */
+    );
+
+    if (!findResponse.ok) {
+      console.error("Find course response not ok:", {
+        status: findResponse.status,
+        statusText: findResponse.statusText,
+      });
+      throw new Error(`Failed to find course: ${findResponse.statusText}`);
+    }
+
+    const findData = await findResponse.json();
+    console.log("Find course response:", findData);
+
+    if (!findData.data || findData.data.length === 0) {
+      console.error("No course found with documentId:", documentId);
+      throw new Error("Course not found");
+    }
+
+    const courseId = findData.data[0].id;
+    console.log("Found course ID:", courseId);
+
+    // Now update the course using its ID
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos/${courseId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+        body: JSON.stringify({ data: courseData }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("API Error Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        errorData,
+      });
+      throw new Error(
+        `Failed to update course: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    console.log("Course updated successfully:", data);
+  } catch (error) {
+    console.error("Error updating course:", error);
+    throw error;
+  }
+}

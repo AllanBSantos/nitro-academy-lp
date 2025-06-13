@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { updateCourse } from "@/lib/strapi";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface Video {
   titulo: string;
@@ -24,12 +27,24 @@ interface ResumoAula {
   descricao_aula: string;
 }
 
+interface CronogramaAula {
+  titulo: string;
+  descricao: string;
+  faixa_etaria?: string;
+}
+
 interface CourseEditFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   course: any;
 }
 
 export default function CourseEditForm({ course }: CourseEditFormProps) {
+  const t = useTranslations("Admin.panel");
+  const params = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   const [titulo, setTitulo] = useState(course.titulo || course.title || "");
   const [descricao, setDescricao] = useState(
     course.descricao || course.description || ""
@@ -107,14 +122,68 @@ export default function CourseEditForm({ course }: CourseEditFormProps) {
   const removeResumoAula = (idx: number) =>
     setResumoAulas((prev) => prev.filter((_, i) => i !== idx));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode implementar o envio para o Strapi futuramente
-    alert("Alterações salvas localmente! (Integração com Strapi em breve)");
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      const documentId = params.courseId as string;
+
+      // Transform cronograma data to include faixa_etaria from turmas
+      const cronograma = course.cronograma?.map(
+        (aula: CronogramaAula, index: number) => ({
+          ...aula,
+          faixa_etaria: turmas[index]?.faixa_etaria || "",
+        })
+      );
+
+      // Map frontend camelCase to backend snake_case
+      await updateCourse(documentId, {
+        titulo,
+        descricao,
+        nivel,
+        modelo,
+        objetivo,
+        pre_requisitos: preRequisitos,
+        projetos,
+        tarefa_de_casa: tarefaDeCasa,
+        destaques,
+        competencias,
+        ideal_para: idealPara,
+        videos,
+        cronograma,
+        ementa_resumida: ementaResumida,
+        resumo_aulas: resumoAulas,
+      });
+
+      setSubmitSuccess(true);
+      // Reset success message after 3 seconds
+      setTimeout(() => setSubmitSuccess(false), 3000);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      setSubmitError(
+        error instanceof Error ? error.message : "Erro ao atualizar o curso"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <form className="space-y-8" onSubmit={handleSubmit}>
+      {submitError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {submitError}
+        </div>
+      )}
+      {submitSuccess && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          {t("course_edit.success")}
+        </div>
+      )}
+
       <div>
         <label className="block font-semibold mb-1 text-gray-800">Título</label>
         <input
@@ -368,9 +437,12 @@ export default function CourseEditForm({ course }: CourseEditFormProps) {
       <div className="pt-4">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition"
+          disabled={isSubmitting}
+          className={`bg-blue-600 text-white px-6 py-2 rounded font-semibold transition ${
+            isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+          }`}
         >
-          Salvar alterações
+          {isSubmitting ? t("course_edit.saving") : t("course_edit.save")}
         </button>
       </div>
     </form>
