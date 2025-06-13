@@ -540,6 +540,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     cupons: Schema.Attribute.Relation<'oneToMany', 'api::cupom.cupom'>;
+    data_inicio_curso: Schema.Attribute.String;
     descricao: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -561,6 +562,8 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     informacoes_adicionais: Schema.Attribute.Text;
+    inscricoes_abertas: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     link_desconto: Schema.Attribute.String;
     link_pagamento: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String;

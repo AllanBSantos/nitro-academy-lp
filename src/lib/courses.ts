@@ -26,6 +26,7 @@ export async function getCardsContent(
 
     const mappedCourse = {
       id: course.id.toString(),
+      documentId: course.documentId,
       slug: course.slug,
       title: course.titulo || "",
       description: course.descricao || "",
@@ -58,6 +59,7 @@ export async function getCardsContent(
       informacoes_adicionais: course.informacoes_adicionais || "",
       link_pagamento: course.link_pagamento || "",
       link_desconto: course.link_desconto || null,
+      inscricoes_abertas: course.inscricoes_abertas,
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
@@ -78,6 +80,7 @@ export async function getCardsContent(
       ideal_para: course.ideal_para || "",
       sugestao_horario: course.sugestao_horario ?? true,
       alunos: course.alunos || [],
+      data_inicio_curso: course.data_inicio_curso || "",
     };
     return mappedCourse;
   });

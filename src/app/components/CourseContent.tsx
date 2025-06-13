@@ -151,6 +151,7 @@ export default function CourseContent({ course }: CourseContentProps) {
 
       <div id="time-selection">
         <TimeSelectionSection
+          inscricoes_abertas={course.inscricoes_abertas}
           course={course}
           getClassAvailability={getClassAvailability}
           onScheduleClick={handleEnrollClick}

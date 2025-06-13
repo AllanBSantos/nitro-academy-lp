@@ -236,6 +236,13 @@
     "sugestao_horario": {
       "type": "boolean",
       "default": true
+    },
+    "inscricoes_abertas": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_inicio_curso": {
+      "type": "string"
     }
   }
 }

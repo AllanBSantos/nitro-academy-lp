@@ -18,6 +18,7 @@ export default function Card({
   moeda,
   badge,
   alunos,
+  data_inicio_curso,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
@@ -68,7 +69,8 @@ export default function Card({
   const priceClass = (price.total / CLASSES_PER_COURSE)
     .toFixed(2)
     .replace(".", moeda === "Real" ? "," : ".");
-  const dataInicio = cronograma?.[0]?.data_inicio || "";
+  const dataInicioText = data_inicio_curso || null;
+  const dataInicio = data_inicio_curso || cronograma?.[0]?.data_inicio || "";
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -237,11 +239,12 @@ export default function Card({
               <div className="flex flex-col">
                 <span className="text-xs text-gray-500">{t("start_date")}</span>
                 <span className="text-base font-bold text-theme-orange">
-                  {isCourseStarted(dataInicio)
-                    ? locale === "pt"
+                  {dataInicioText ||
+                    (!isCourseStarted(dataInicio)
+                      ? formatDate(dataInicio)
+                      : locale === "pt"
                       ? "Aulas em andamento"
-                      : "Classes in progress"
-                    : formatDate(dataInicio)}
+                      : "Classes in progress")}
                 </span>
               </div>
               <div className="flex flex-col items-end">
