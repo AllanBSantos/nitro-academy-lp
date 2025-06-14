@@ -28,10 +28,28 @@ export default function LocaleSwitch() {
 
   return (
     <Select onValueChange={onChange} defaultValue={currentLocale}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-10 h-10 p-0 flex items-center justify-center border-transparent">
         <SelectValue
           placeholder={languages[currentLocale as keyof typeof languages]}
-        />
+        >
+          {currentLocale === "pt" ? (
+            <Image
+              src="/pt/brasil-flag.png"
+              alt="bandeira do brasil"
+              width={24}
+              height={24}
+              className="w-8 h-8"
+            />
+          ) : (
+            <Image
+              src="/en/usa-flag.png"
+              alt="bandeira dos estados unidos"
+              width={24}
+              height={24}
+              className="w-8 h-8"
+            />
+          )}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="pt">
