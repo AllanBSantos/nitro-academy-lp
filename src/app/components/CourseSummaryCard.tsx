@@ -8,8 +8,8 @@ interface CourseSummaryCardProps {
   modelo: string;
   nivel: string;
   idioma: string;
-  priceTotal: number;
-  moeda: "Real" | "Dólar";
+  priceTotal?: number;
+  moeda?: "Real" | "Dólar";
   onEnrollClick: () => void;
   isMobile?: boolean;
 }
@@ -27,7 +27,7 @@ export default function CourseSummaryCard({
 }: CourseSummaryCardProps) {
   const t = useTranslations("CourseSummaryCard");
   const CLASSES_PER_COURSE = 6;
-  const pricePerClass = priceTotal / CLASSES_PER_COURSE;
+  const pricePerClass = priceTotal ? priceTotal / CLASSES_PER_COURSE : 0;
 
   const formatPrice = (price: number) => {
     if (moeda === "Dólar") {
@@ -74,10 +74,14 @@ export default function CourseSummaryCard({
 
         <div className="mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-[#1e1b4b]">
-              {formatPrice(pricePerClass)}
-            </span>
-            <span className="text-sm text-gray-600">{t("per_class")}</span>
+            {priceTotal && moeda && (
+              <>
+                <span className="text-2xl font-bold text-[#1e1b4b]">
+                  {formatPrice(pricePerClass)}
+                </span>
+                <span className="text-sm text-gray-600">{t("per_class")}</span>
+              </>
+            )}
           </div>
         </div>
 

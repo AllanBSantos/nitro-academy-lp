@@ -13,12 +13,13 @@ import { Button } from "@/components/ui/button";
 interface Schedule {
   dia: string;
   horario: string;
-  faixa_etaria: string;
-  data_inicio: string;
+  data_inicio?: string;
   data_fim?: string;
+  faixa_etaria?: string;
 }
 
 interface TimeSelectionSectionProps {
+  inscricoes_abertas: boolean;
   course: CardProps;
   getClassAvailability: (classNumber: string) => {
     isFull: boolean;
@@ -30,6 +31,7 @@ interface TimeSelectionSectionProps {
 }
 
 export default function TimeSelectionSection({
+  inscricoes_abertas,
   course,
   getClassAvailability,
   onScheduleClick,
@@ -42,6 +44,7 @@ export default function TimeSelectionSection({
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
+  const CLASSES_PER_COURSE = 6;
 
   const handleTimeSelect = (schedule: Schedule, index: number) => {
     const classNumber = (index + 1).toString();
@@ -65,79 +68,107 @@ export default function TimeSelectionSection({
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white rounded-[32px] p-8 shadow-md border-2 border-gray-200 relative">
           <div className="text-center">
-            <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
-            <div className="text-[#3B82F6] text-4xl font-bold mb-4">
-              {course.moeda === "Real" ? "R$" : "USD"}{" "}
-              {course.price.installments
-                ? course.price.installment.toFixed(2).replace(".", ",")
-                : course.price.total.toFixed(2).replace(".", ",")}
-            </div>
-            {course.price.installments ? (
-              <p className="text-gray-600 text-md mb-8">
-                {t("payment_options", {
-                  installment: `${
-                    course.moeda === "Real" ? "R$" : "USD"
-                  } ${course.price.installment.toFixed(2).replace(".", ",")}`,
-                  total: `${
-                    course.moeda === "Real" ? "R$" : "USD"
-                  } ${course.price.total.toFixed(2).replace(".", ",")}`,
-                  installments: course.price.installments,
-                })}
-              </p>
-            ) : null}
+            {course.price && course.moeda && course.price.total > 0 && (
+              <>
+                <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
+                <div className="text-[#3B82F6] text-4xl font-bold mb-4">
+                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                  {course.price.installments
+                    ? course.price.installment.toFixed(2).replace(".", ",")
+                    : course.price.total.toFixed(2).replace(".", ",")}
+                </div>
+                {course.price.installments ? (
+                  <p className="text-gray-600 text-md mb-8">
+                    {t("payment_options", {
+                      installment: `${
+                        course.moeda === "Real" ? "R$" : "USD"
+                      } ${course.price?.installment
+                        .toFixed(2)
+                        .replace(".", ",")}`,
+                      total: `${
+                        course.moeda === "Real" ? "R$" : "USD"
+                      } ${course.price?.total.toFixed(2).replace(".", ",")}`,
+                      installments: course.price?.installments,
+                    })}
+                  </p>
+                ) : null}
+              </>
+            )}
 
-            <p className="text-gray-800 text-lg mb-6">
-              {t("select")} {t("best_time")} {t("enroll")}
-            </p>
+            {inscricoes_abertas && (
+              <p className="text-gray-800 text-lg mb-6">
+                {t("select")} {t("best_time")} {t("enroll")}
+              </p>
+            )}
 
             <div className="space-y-4 max-w-md mx-auto mb-8">
-              {schedules.map((schedule, index) => {
-                const classNumber = (index + 1).toString();
-                const { isFull } = getClassAvailability(classNumber);
-                const isSelected =
-                  selectedTime === `${schedule.dia}-${schedule.horario}`;
+              {inscricoes_abertas ? (
+                schedules.map((schedule, index) => {
+                  const classNumber = (index + 1).toString();
+                  const { isFull } = getClassAvailability(classNumber);
+                  const isSelected =
+                    selectedTime === `${schedule.dia}-${schedule.horario}`;
 
-                return (
-                  <div key={`${schedule.dia}-${schedule.horario}`}>
-                    <button
-                      type="button"
-                      onClick={() => handleTimeSelect(schedule, index)}
-                      disabled={isFull}
-                      className={`w-full py-4 px-6 rounded-xl transition-colors duration-300 ${
-                        isFull
-                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
-                          : isSelected
-                          ? "border-2 border-orange-500 bg-orange-50"
-                          : "border-2 border-gray-300 hover:border-[#3B82F6]"
-                      }`}
-                    >
-                      <div className="flex flex-col items-center">
-                        {isFull && (
-                          <span className="text-sm text-red-500 font-medium mb-2">
-                            {t("class_full")}
-                          </span>
-                        )}
-                        <div className="text-sm text-gray-600 mb-2">
-                          {t("class")} {classNumber} - {schedule.faixa_etaria}
-                        </div>
+                  return (
+                    <div key={index} className="mb-4">
+                      <button
+                        onClick={() => handleTimeSelect(schedule, index)}
+                        className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
+                          isFull
+                            ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
+                            : isSelected
+                            ? "border-2 border-orange-500 bg-orange-50"
+                            : "border-2 border-gray-300 hover:border-[#3B82F6]"
+                        }`}
+                      >
                         <div className="flex flex-col items-center">
-                          <div className="text-[#3B82F6] text-lg font-medium">
-                            {schedule.dia} {schedule.horario}
+                          {isFull && (
+                            <span className="text-sm text-red-500 font-medium mb-2">
+                              {t("class_full")}
+                            </span>
+                          )}
+                          <div className="text-sm text-gray-600 mb-2">
+                            {t("class")} {classNumber} - {schedule.faixa_etaria}
                           </div>
-                          <div className="text-sm mt-1 text-gray-500">
-                            {t("start_date")}:{" "}
-                            {formatDate(schedule.data_inicio)}
-                            {schedule.data_fim &&
-                              ` • ${t("end_date")}: ${formatDate(
-                                schedule.data_fim
-                              )}`}
+                          <div className="flex flex-col items-center">
+                            <div className="text-[#3B82F6] text-lg font-medium">
+                              {schedule.dia} {schedule.horario}
+                            </div>
+                            {course.price && course.moeda && (
+                              <div className="text-sm mt-1 text-gray-500">
+                                <span className="block mb-1">
+                                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                                  {(course.price.total / CLASSES_PER_COURSE)
+                                    .toFixed(2)
+                                    .replace(
+                                      ".",
+                                      course.moeda === "Real" ? "," : "."
+                                    )}{" "}
+                                  {t("per_class")}
+                                </span>
+                              </div>
+                            )}
+                            <div className="text-sm mt-1 text-gray-500">
+                              {t("start_date")}:{" "}
+                              {schedule.data_inicio
+                                ? formatDate(schedule.data_inicio)
+                                : ""}
+                              {schedule.data_fim &&
+                                ` • ${t("end_date")}: ${formatDate(
+                                  schedule.data_fim
+                                )}`}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </button>
-                  </div>
-                );
-              })}
+                      </button>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-red-500 text-lg mb-6 text-center">
+                  {t("inscricoes_fechadas")}
+                </p>
+              )}
 
               {course.sugestao_horario !== false && (
                 <button
@@ -237,12 +268,10 @@ export default function TimeSelectionSection({
                     selectedTime === `${schedule.dia}-${schedule.horario}`;
 
                   return (
-                    <div key={`${schedule.dia}-${schedule.horario}`}>
+                    <div key={index} className="mb-4">
                       <button
-                        type="button"
                         onClick={() => handleTimeSelect(schedule, index)}
-                        disabled={isFull}
-                        className={`w-full py-4 px-6 rounded-xl transition-colors duration-300 ${
+                        className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
                           isFull
                             ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
                             : isSelected
@@ -269,14 +298,20 @@ export default function TimeSelectionSection({
                             <div className="text-[#3B82F6] text-lg font-medium">
                               {schedule.dia} {schedule.horario}
                             </div>
-                            <div className="text-sm mt-1 text-gray-500">
-                              {t("start_date")}:{" "}
-                              {formatDate(schedule.data_inicio)}
-                              {schedule.data_fim &&
-                                ` • ${t("end_date")}: ${formatDate(
-                                  schedule.data_fim
-                                )}`}
-                            </div>
+                            {course.price && course.moeda && (
+                              <div className="text-sm mt-1 text-gray-500">
+                                <span className="block mb-1">
+                                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                                  {(course.price.total / CLASSES_PER_COURSE)
+                                    .toFixed(2)
+                                    .replace(
+                                      ".",
+                                      course.moeda === "Real" ? "," : "."
+                                    )}{" "}
+                                  {t("per_class")}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </button>

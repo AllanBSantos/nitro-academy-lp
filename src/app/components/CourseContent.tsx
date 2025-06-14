@@ -26,13 +26,14 @@ export default function CourseContent({ course }: CourseContentProps) {
   const [relatedCourses, setRelatedCourses] = useState<CardProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const maxStudentsPerClass = parseInt(
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
   );
   const alunos = Array.isArray(course.alunos) ? course.alunos : [];
-  const turmas = Array.isArray(course.cronograma) ? course.cronograma : [];
 
   useEffect(() => {
     async function fetchData() {
@@ -72,13 +73,6 @@ export default function CourseContent({ course }: CourseContentProps) {
       maxStudents: maxStudentsPerClass,
     };
   };
-
-  const isCourseFull =
-    turmas.length > 0 &&
-    turmas.every((_, idx) => {
-      const { isFull } = getClassAvailability((idx + 1).toString());
-      return isFull;
-    });
 
   const isClassFull = (classNumber: string) => {
     const { isFull } = getClassAvailability(classNumber);
@@ -157,8 +151,8 @@ export default function CourseContent({ course }: CourseContentProps) {
 
       <div id="time-selection">
         <TimeSelectionSection
+          inscricoes_abertas={course.inscricoes_abertas}
           course={course}
-          isCourseFull={isCourseFull}
           getClassAvailability={getClassAvailability}
           onScheduleClick={handleEnrollClick}
           isScheduleFull={isClassFull}

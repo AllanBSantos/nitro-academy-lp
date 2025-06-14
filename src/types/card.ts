@@ -26,6 +26,7 @@ export interface Turma {
 
 export interface CardProps {
   id: string;
+  documentId: string;
   slug: string;
   title: string;
   description: string;
@@ -42,7 +43,7 @@ export interface CardProps {
     instagram_label: string;
   };
   rating: number | null;
-  price: {
+  price?: {
     installment: number;
     total: number;
     installments: number;
@@ -57,10 +58,11 @@ export interface CardProps {
   informacoes_adicionais: string;
   link_pagamento: string;
   link_desconto: string | null;
+  inscricoes_abertas: boolean;
   topicosRelacionados: string[];
   videos: Video[];
   cronograma: Schedule[];
-  moeda: "Real" | "Dólar";
+  moeda?: "Real" | "Dólar";
   badge?: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | "nenhum";
   cupons: Array<{
     id: number;
@@ -83,4 +85,5 @@ export interface CardProps {
   sugestao_horario?: boolean;
   turmas?: Turma[];
   alunos?: { id: number; turma?: number }[];
+  data_inicio_curso?: string;
 }

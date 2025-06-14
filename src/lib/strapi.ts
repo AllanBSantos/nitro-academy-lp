@@ -7,7 +7,12 @@ export async function fetchCourses(
 ): Promise<Course[]> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&locale=${locale}&_=${Date.now()}`
+      `${STRAPI_API_URL}/api/cursos?fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&fields[22]=inscricoes_abertas&fields[23]=data_inicio_curso&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&locale=${locale}`
+      /* {
+        headers: {
+          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+        },
+      } */
     );
 
     if (!response.ok) {
@@ -22,17 +27,38 @@ export async function fetchCourses(
   }
 }
 
-export async function fetchCourse(id: string): Promise<Course> {
-  const response = await fetch(
-    `${STRAPI_API_URL}/api/cursos/${id}?populate=*&locale=pt-BR`
-  );
+export async function fetchCourse(documentId: string): Promise<Course> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&fields[22]=inscricoes_abertas&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&locale=pt-BR&fields[14]=data_inicio_curso`
+      /* {
+        headers: {
+          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+        },
+      } */
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch course");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("API Error Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        errorData,
+      });
+      throw new Error(
+        `Failed to fetch course: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const { data } = await response.json();
+    if (!data || !data[0]) {
+      throw new Error("No course data received from API");
+    }
+    return data[0];
+  } catch (error) {
+    console.error("Error in fetchCourse:", error);
+    throw error;
   }
-
-  const { data } = await response.json();
-  return data;
 }
 
 export async function fetchMentor(id: number): Promise<Mentor> {
@@ -260,13 +286,6 @@ export interface Suggestion {
 }
 
 export async function createSuggestion(suggestion: Suggestion): Promise<void> {
-  console.log("Suggestion data being sent:", {
-    dias_da_semana: suggestion.dias_da_semana,
-    horario: suggestion.horario,
-    comentario: suggestion.comentario,
-    curso: suggestion.curso,
-  });
-
   const payload = {
     data: {
       dias_da_semana: suggestion.dias_da_semana.map((dia) => ({
@@ -279,11 +298,6 @@ export async function createSuggestion(suggestion: Suggestion): Promise<void> {
       },
     },
   };
-
-  console.log(
-    "Full payload being sent to Strapi:",
-    JSON.stringify(payload, null, 2)
-  );
 
   try {
     const response = await fetch(`${STRAPI_API_URL}/api/sugestoes`, {
@@ -403,5 +417,105 @@ export async function fetchFAQs(locale: string = "pt-BR"): Promise<FAQ[]> {
   } catch (error) {
     console.error("Error fetching FAQs:", error);
     return [];
+  }
+}
+
+export async function updateCourse(
+  documentId: string,
+  courseData: {
+    titulo?: string;
+    descricao?: string;
+    nivel?: string;
+    modelo?: string;
+    objetivo?: string;
+    pre_requisitos?: string;
+    projetos?: string;
+    tarefa_de_casa?: string;
+    destaques?: string;
+    competencias?: string;
+    ideal_para?: string;
+    inscricoes_abertas?: boolean;
+    videos?: Array<{
+      titulo: string;
+      video_url: string;
+    }>;
+    cronograma?: Array<{
+      dia: string;
+      horario: string;
+      data_inicio?: string;
+      data_fim?: string;
+      faixa_etaria?: string;
+    }>;
+    ementa_resumida?: Array<{
+      descricao: string;
+    }>;
+    resumo_aulas?: Array<{
+      nome_aula: string;
+      descricao_aula: string;
+    }>;
+  }
+): Promise<void> {
+  try {
+    console.log("Finding course with documentId:", documentId);
+
+    // First, find the course ID using the documentId
+    const findResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}`
+      /*     {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      } */
+    );
+
+    if (!findResponse.ok) {
+      console.error("Find course response not ok:", {
+        status: findResponse.status,
+        statusText: findResponse.statusText,
+      });
+      throw new Error(`Failed to find course: ${findResponse.statusText}`);
+    }
+
+    const findData = await findResponse.json();
+    console.log("Find course response:", findData);
+
+    if (!findData.data || findData.data.length === 0) {
+      console.error("No course found with documentId:", documentId);
+      throw new Error("Course not found");
+    }
+
+    const courseId = findData.data[0].id;
+    console.log("Found course ID:", courseId);
+
+    // Now update the course using its ID
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos/${courseId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+        body: JSON.stringify({ data: courseData }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("API Error Response:", {
+        status: response.status,
+        statusText: response.statusText,
+        errorData,
+      });
+      throw new Error(
+        `Failed to update course: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    console.log("Course updated successfully:", data);
+  } catch (error) {
+    console.error("Error updating course:", error);
+    throw error;
   }
 }

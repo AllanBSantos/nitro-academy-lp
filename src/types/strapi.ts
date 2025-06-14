@@ -91,12 +91,18 @@ export interface Review {
 
 export interface Course {
   id: number;
+  documentId: string;
   alunos: Array<{
     id: number;
     turma: number;
+    documentId: string;
+    nome: string;
+    email_responsavel: string;
+    telefone_responsavel: string;
   }>;
   titulo: string;
   descricao: string;
+  descricaoMentor: string;
   nota: number | null;
   nivel: string;
   modelo: string;
@@ -109,6 +115,8 @@ export interface Course {
   parcelas: number;
   destaques: string | null;
   informacoes_adicionais: string | null;
+  inscricoes_abertas: boolean;
+  data_inicio_curso?: string;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
