@@ -75,9 +75,9 @@ export default function Reviews({ locale }: ReviewsProps) {
   };
 
   return (
-    <section className="w-full bg-[#1e1b4b] py-16">
+    <section className="w-full bg-gray-100 py-16">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-white mb-8 text-center">
+        <h2 className="text-3xl font-bold text-black mb-8 text-center drop-shadow">
           {t("title")}
         </h2>
         <div className="relative">
@@ -97,9 +97,9 @@ export default function Reviews({ locale }: ReviewsProps) {
                   key={review.id}
                   className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"
                 >
-                  <div className="bg-white rounded-xl p-6 shadow-lg h-full">
+                  <div className="bg-white rounded-xl p-6 shadow h-full transition-shadow duration-200 hover:shadow-xl">
                     <div className="flex flex-col items-center text-center">
-                      <div className="w-20 h-20 rounded-full overflow-hidden mb-2 bg-gray-200 flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full overflow-hidden mb-2 bg-gray-200 flex items-center justify-center border-4 border-theme-orange">
                         {renderAvatar(review)}
                       </div>
                       <span className="font-semibold text-gray-800 mb-2">
@@ -115,8 +115,8 @@ export default function Reviews({ locale }: ReviewsProps) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute -left-4 lg:-left-12 top-1/2 bg-white shadow-md hover:bg-gray-100 text-[#1e1b4b]" />
-            <CarouselNext className="absolute -right-4 lg:-right-12 top-1/2 bg-white shadow-md hover:bg-gray-100 text-[#1e1b4b]" />
+            <CarouselPrevious className="absolute -left-4 lg:-left-12 top-1/2 bg-white shadow-md hover:bg-theme-orange hover:text-white text-[#1e1b4b] transition-colors" />
+            <CarouselNext className="absolute -right-4 lg:-right-12 top-1/2 bg-white shadow-md hover:bg-theme-orange hover:text-white text-[#1e1b4b] transition-colors" />
           </Carousel>
         </div>
       </div>

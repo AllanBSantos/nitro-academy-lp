@@ -18,15 +18,15 @@ const titles = [
 export default function WhyChooseNitro({ locale }: WhyChooseNitroProps) {
   const t = useTranslations("WhyChooseNitro");
   return (
-    <div className="p-12 md:p-0 md:py-12">
-      <h1 className="text-theme-orange font-gilroy-extrabold text-6xl pl-4 pr-6 md:pl-16 md:pr-18">
+    <div className="py-12 px-4 md:px-0">
+      <h1 className="text-theme-orange font-gilroy-extrabold text-4xl md:text-6xl text-center mb-10">
         {t("Por que escolher a Nitro?")}
       </h1>
-      <div className="md:flex md:flex-wrap md:justify-between md:items-center md:w-full md:mt-10">
+      <div className="md:flex md:flex-wrap md:justify-between md:items-center md:w-full md:mt-10 gap-8">
         {titles.map((title) => (
           <div
             key={title}
-            className="md:w-1/3 md:flex md:flex-col md:items-center"
+            className="md:w-1/3 md:flex md:flex-col md:items-center bg-white rounded-xl shadow-md p-6 mb-8"
           >
             <div>
               <Image
@@ -34,10 +34,10 @@ export default function WhyChooseNitro({ locale }: WhyChooseNitroProps) {
                 alt="Logo Nitro"
                 width={64}
                 height={64}
-                className="pt-10"
+                className="mb-4"
                 unoptimized
               />
-              <p className="font-montserrat-regular text-2xl pl-1 pr-5 pt-4 w-64">
+              <p className="font-montserrat-regular text-xl md:text-2xl text-center">
                 {t(title)}
               </p>
             </div>

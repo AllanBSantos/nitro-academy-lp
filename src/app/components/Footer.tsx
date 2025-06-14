@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
   const params = useParams();
-  const locale = (params?.locale as string) || "pt"; // Default to 'pt' if no locale
+  const locale = (params?.locale as string) || "pt";
+  const t = useTranslations("Footer");
 
   return (
     <>
@@ -14,7 +16,7 @@ export default function Footer() {
         <div className="flex flex-col items-center px-4 pt-8">
           <Image
             src={`/${locale}/logo-frase-azul.png`}
-            alt="logo nitro academy com frase"
+            alt={t("logo_alt")}
             width={330}
             height={91}
             className="h-24 w-80"
@@ -28,7 +30,7 @@ export default function Footer() {
             >
               <Image
                 src={`/${locale}/instagram.svg`}
-                alt="link para conta do instagram"
+                alt={t("instagram_alt")}
                 width={30}
                 height={30}
               />
@@ -40,7 +42,7 @@ export default function Footer() {
             >
               <Image
                 src={`/${locale}/facebook.svg`}
-                alt="link para conta do facebook"
+                alt={t("facebook_alt")}
                 width={30}
                 height={30}
               />
@@ -52,7 +54,7 @@ export default function Footer() {
             >
               <Image
                 src={`/${locale}/youtube.svg`}
-                alt="link para canal do youtube"
+                alt={t("youtube_alt")}
                 width={30}
                 height={30}
               />
@@ -62,9 +64,9 @@ export default function Footer() {
         </div>
       </footer>
       <div className="w-full flex flex-col items-center justify-center gap-1 mt-4 px-8 py-1 text-xs text-white bg-background text-center">
-        <span>© 2025 Nitro Academy. Todos os direitos reservados.</span>
+        <span>{t("copyright")}</span>
         <Link href="/termos" className="hover:underline text-white">
-          Termos de uso e política de privacidade
+          {t("terms_link")}
         </Link>
       </div>
       <Link href="https://wa.me/5511975809082?text=Visitei%20o%20site%20da%20Nitro%20Academy%20e%20queria%20saber%20mais%21">
@@ -73,7 +75,7 @@ export default function Footer() {
             src={`/${locale}/whatsapp.svg`}
             width={45}
             height={45}
-            alt="whatsapp"
+            alt={t("whatsapp_alt")}
             className="w-9 h-9"
           />
         </div>

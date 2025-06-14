@@ -3,11 +3,12 @@
 import Script from "next/script";
 import Image from "next/image";
 import { CSSProperties } from "react";
+import { useTranslations } from "next-intl";
 
 const containerStyle: CSSProperties = {
   position: "relative",
   width: "100%",
-  maxWidth: "1200px",
+  maxWidth: "800px",
   margin: "0 auto",
 };
 
@@ -27,9 +28,20 @@ const playerWrapperStyle: CSSProperties = {
 };
 
 export default function VturbVideo() {
+  const t = useTranslations("VturbVideo");
+
   return (
     <div style={containerStyle}>
-      <div id="vid_67dabe7b49c4b7bf82565f10" style={videoContainerStyle}>
+      <h2 className="text-3xl font-bold text-black mb-8 text-center drop-shadow">
+        {t("title")}
+      </h2>
+      <div
+        id="vid_67dabe7b49c4b7bf82565f10"
+        style={{
+          ...videoContainerStyle,
+          boxShadow: "0 8px 32px 0 rgba(30,27,75,0.15)",
+        }}
+      >
         <div style={playerWrapperStyle}>
           <Image
             id="thumb_67dabe7b49c4b7bf82565f10"

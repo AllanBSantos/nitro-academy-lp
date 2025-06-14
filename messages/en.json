@@ -2,7 +2,10 @@
   "TeenGuy": {
     "Transforme": "Turn",
     "tempo livre": "free time",
-    "em talento": "into talent"
+    "em talento": "into talent",
+    "title": "Turn free time into talent!",
+    "subtitle": "A Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 17 through practical and stimulating projects guided by experienced mentors.",
+    "cta": "Check out our courses"
   },
   "Introduction": {
     "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes": "Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 15 through practical and stimulating projects guided by experienced mentors"
@@ -206,7 +209,11 @@
     "per_class": "per class",
     "days_remaining": "{days} days remaining",
     "few_days": "Last days",
-    "few_spots": "Few spots"
+    "few_spots": "Few spots",
+    "course_in_english": "Course in English",
+    "load_more": "Load more",
+    "search_courses": "Search courses...",
+    "no_courses_found": "No courses found"
   },
   "TimeSelection": {
     "only": "Only",
@@ -327,7 +334,14 @@
   "Footer": {
     "home": "Home",
     "about_us": "About Us",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "logo_alt": "nitro academy logo with tagline",
+    "instagram_alt": "link to instagram account",
+    "facebook_alt": "link to facebook account",
+    "youtube_alt": "link to youtube channel",
+    "whatsapp_alt": "whatsapp",
+    "copyright": "© 2025 Nitro Academy. All rights reserved.",
+    "terms_link": "Terms of use and privacy policy"
   },
   "CourseContent": {
     "title": "Course Content",
@@ -446,5 +460,13 @@
         "success": "Changes saved successfully!"
       }
     }
+  },
+  "VturbVideo": {
+    "title": "Get to know Nitro Academy"
+  },
+  "InternationalSection": {
+    "title": "An international school where cultures meet",
+    "description": "At Nitro Academy, cultural exchange takes place between mentors from various countries and students from all over the world",
+    "quote": "We know that adolescence is a phase of choices. At Nitro, our children use their free time to explore interests, away from the distractions of social media. We offer a safe environment with monitoring and progress reports."
   }
 }

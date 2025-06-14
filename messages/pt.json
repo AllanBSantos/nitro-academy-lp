@@ -2,7 +2,10 @@
   "TeenGuy": {
     "Transforme": "Transforme",
     "tempo livre": "tempo livre",
-    "em talento": "em talento"
+    "em talento": "em talento",
+    "title": "Transforme tempo livre em talento!",
+    "subtitle": "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes.",
+    "cta": "Conheça os nossos cursos"
   },
   "Introduction": {
     "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes": "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes"
@@ -200,7 +203,10 @@
     "days_remaining": "Faltam {days} dias",
     "few_days": "Últimos dias",
     "few_spots": "Poucas vagas",
-    "course_in_english": "Curso em Inglês"
+    "course_in_english": "Curso em Inglês",
+    "load_more": "Carregar mais",
+    "search_courses": "Buscar cursos...",
+    "no_courses_found": "Nenhum curso encontrado"
   },
   "TimeSelection": {
     "only": "Apenas",
@@ -321,7 +327,14 @@
   "Footer": {
     "home": "Início",
     "about_us": "Sobre nós",
-    "faq": "Perguntas Frequentes"
+    "faq": "Perguntas Frequentes",
+    "logo_alt": "logo nitro academy com frase",
+    "instagram_alt": "link para conta do instagram",
+    "facebook_alt": "link para conta do facebook",
+    "youtube_alt": "link para canal do youtube",
+    "whatsapp_alt": "whatsapp",
+    "copyright": "© 2025 Nitro Academy. Todos os direitos reservados.",
+    "terms_link": "Termos de uso e política de privacidade"
   },
   "CourseContent": {
     "title": "Conteúdo do curso",
@@ -440,5 +453,13 @@
         "success": "Alterações salvas com sucesso!"
       }
     }
+  },
+  "VturbVideo": {
+    "title": "Conheça a Nitro Academy"
+  },
+  "InternationalSection": {
+    "title": "Uma escola internacional onde culturas se encontram",
+    "description": "Na Nitro Academy, o intercâmbio cultural acontece entre mentores de vários países e alunos do mundo todo",
+    "quote": "Sabemos que a adolescência é uma fase de escolhas. Na Nitro, nossos filhos usam o tempo livre para explorar interesses, longe das distrações das redes sociais. Oferecemos um ambiente seguro, com acompanhamentos e relatórios de progresso."
   }
 }
