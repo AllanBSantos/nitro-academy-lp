@@ -39,7 +39,7 @@ export function CarouselContentWrapper({
   };
 
   return (
-    <div className="flex flex-col items-center sm:py-8">
+    <div className="flex flex-col items-center sm:py-8 py-4">
       <section className="w-full max-w-[1400px] mx-auto">
         <div className="container px-4 sm:px-6 mx-auto">
           <div className="flex flex-col items-start gap-4 sm:gap-8 mb-8">
