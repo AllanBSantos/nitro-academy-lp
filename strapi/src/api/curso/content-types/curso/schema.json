@@ -243,6 +243,9 @@
     },
     "data_inicio_curso": {
       "type": "string"
+    },
+    "material_complementar": {
+      "type": "boolean"
     }
   }
 }

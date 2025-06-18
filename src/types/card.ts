@@ -59,6 +59,7 @@ export interface CardProps {
   link_pagamento: string;
   link_desconto: string | null;
   inscricoes_abertas: boolean;
+  material_complementar?: boolean;
   topicosRelacionados: string[];
   videos: Video[];
   cronograma: Schedule[];

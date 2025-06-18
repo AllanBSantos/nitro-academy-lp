@@ -293,6 +293,12 @@
       "submit": "Error sending enrollment. Please try again.",
       "invalid_coupon": "Invalid coupon",
       "expired_coupon": "Coupon expired or invalid"
+    },
+    "material_complementar": {
+      "title": "Required Complementary Material",
+      "message_link": "This course requires mandatory complementary material during classes. It must be purchased through the link:",
+      "message_phone": "This course requires mandatory complementary material during classes. The kit must be purchased through this phone number:",
+      "acknowledge": "I understand"
     }
   },
   "Terms": {

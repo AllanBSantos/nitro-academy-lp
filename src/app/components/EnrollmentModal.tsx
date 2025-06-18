@@ -33,6 +33,8 @@ interface EnrollmentModalProps {
   courseId: number;
   scheduleIndex: number;
   disabled?: boolean;
+  material_complementar?: boolean;
+  pre_requisitos?: string;
 }
 
 interface School {
@@ -49,9 +51,13 @@ export default function EnrollmentModal({
   courseId,
   scheduleIndex,
   disabled = false,
+  material_complementar,
+  pre_requisitos,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isMaterialComplementarModalOpen, setIsMaterialComplementarModalOpen] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [schools, setSchools] = useState<School[]>([]);
@@ -70,6 +76,29 @@ export default function EnrollmentModal({
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const modalT = useTranslations("EnrollmentModal");
+
+  const extractContactFromPrerequisites = (
+    text: string
+  ): { type: "link" | "phone"; value: string } | null => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urlMatch = text.match(urlRegex);
+    const phoneRegex = /(\+55\s?)?(\(?\d{2}\)?\s?)?(\d{4,5}-?\d{4})/g;
+    const phoneMatch = text.match(phoneRegex);
+
+    if (urlMatch && urlMatch[0]) {
+      return { type: "link", value: urlMatch[0] };
+    }
+
+    if (phoneMatch && phoneMatch[0]) {
+      return { type: "phone", value: phoneMatch[0] };
+    }
+
+    return null;
+  };
+
+  const contactInfo = pre_requisitos
+    ? extractContactFromPrerequisites(pre_requisitos)
+    : null;
 
   const [formData, setFormData] = useState({
     studentName: "",
@@ -147,6 +176,16 @@ export default function EnrollmentModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (material_complementar && contactInfo) {
+      setIsMaterialComplementarModalOpen(true);
+      return;
+    }
+
+    await processEnrollment();
+  };
+
+  const processEnrollment = async () => {
     setIsLoading(true);
 
     const emailBody = `
@@ -301,6 +340,11 @@ export default function EnrollmentModal({
     router.push(`/${locale}`);
   };
 
+  const handleMaterialComplementarAcknowledge = () => {
+    setIsMaterialComplementarModalOpen(false);
+    processEnrollment();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -366,10 +410,8 @@ export default function EnrollmentModal({
                     onChange={(e) => {
                       let value = e.target.value;
 
-                      // Remove any non-digit characters
                       value = value.replace(/\D/g, "");
 
-                      // Add forward slashes automatically
                       if (value.length > 2) {
                         value = value.slice(0, 2) + "/" + value.slice(2);
                       }
@@ -377,7 +419,6 @@ export default function EnrollmentModal({
                         value = value.slice(0, 5) + "/" + value.slice(5);
                       }
 
-                      // Limit the total length to 10 characters (DD/MM/AAAA)
                       value = value.slice(0, 10);
 
                       setFormData({
@@ -389,11 +430,9 @@ export default function EnrollmentModal({
                       const value = e.target.value;
                       const parts = value.split("/");
 
-                      // Check if we have all parts of the date
                       if (parts.length === 3) {
                         const [day, month, year] = parts.map(Number);
 
-                        // Validate the date
                         if (day && month && year) {
                           const date = new Date(year, month - 1, day);
                           const isValidDate =
@@ -404,7 +443,6 @@ export default function EnrollmentModal({
                             year <= new Date().getFullYear();
 
                           if (isValidDate) {
-                            // Convert to YYYY-MM-DD for storage
                             const isoDate = `${year}-${String(month).padStart(
                               2,
                               "0"
@@ -414,7 +452,6 @@ export default function EnrollmentModal({
                               studentBirthDate: isoDate,
                             });
                           } else {
-                            // Invalid date, clear the field
                             e.target.value = "";
                             setFormData({
                               ...formData,
@@ -674,6 +711,47 @@ export default function EnrollmentModal({
               className="bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold w-full"
             >
               {modalT("success.ok")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isMaterialComplementarModalOpen}
+        onOpenChange={setIsMaterialComplementarModalOpen}
+      >
+        <DialogContent className="sm:max-w-[425px] bg-white text-[#1e1b4b] border-none rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center mb-6 text-[#1e1b4b]">
+              {modalT("material_complementar.title")}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center space-y-6">
+            <p className="text-lg text-gray-700">
+              {contactInfo?.type === "link"
+                ? modalT("material_complementar.message_link")
+                : modalT("material_complementar.message_phone")}{" "}
+              {contactInfo && contactInfo.type === "link" && (
+                <a
+                  href={contactInfo.value}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#3B82F6] hover:underline font-medium"
+                >
+                  {contactInfo.value}
+                </a>
+              )}
+              {contactInfo && contactInfo.type === "phone" && (
+                <span className="text-[#3B82F6] font-medium">
+                  {contactInfo.value}
+                </span>
+              )}
+            </p>
+            <Button
+              onClick={handleMaterialComplementarAcknowledge}
+              className="bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold w-full"
+            >
+              {modalT("material_complementar.acknowledge")}
             </Button>
           </div>
         </DialogContent>

@@ -210,6 +210,8 @@ export default function TimeSelectionSection({
                     selectedClass ? parseInt(selectedClass) - 1 : 0
                   }
                   disabled={!selectedTime || !selectedClass}
+                  material_complementar={course.material_complementar}
+                  pre_requisitos={course.pre_requisitos}
                 />
               )}
             </div>

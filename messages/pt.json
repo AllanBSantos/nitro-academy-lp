@@ -287,6 +287,12 @@
       "submit": "Erro ao enviar matrícula. Por favor, tente novamente.",
       "invalid_coupon": "Cupom inválido",
       "expired_coupon": "Cupom expirado ou inválido"
+    },
+    "material_complementar": {
+      "title": "Material Complementar Obrigatório",
+      "message_link": "Esse curso necessita de material complementar obrigatório durante as aulas. Deve ser adquirido através do link:",
+      "message_phone": "Esse curso necessita de material complementar obrigatório durante as aulas. O kit deverá ser adquirido através desse telefone:",
+      "acknowledge": "Estou ciente"
     }
   },
   "Terms": {

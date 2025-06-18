@@ -117,6 +117,7 @@ export interface Course {
   informacoes_adicionais: string | null;
   inscricoes_abertas: boolean;
   data_inicio_curso?: string;
+  material_complementar?: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;

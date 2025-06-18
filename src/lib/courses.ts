@@ -60,6 +60,7 @@ export async function getCardsContent(
       link_pagamento: course.link_pagamento || "",
       link_desconto: course.link_desconto || null,
       inscricoes_abertas: course.inscricoes_abertas,
+      material_complementar: course.material_complementar || false,
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
