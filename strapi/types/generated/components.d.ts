@@ -44,6 +44,7 @@ export interface CronogramaCronograma extends Struct.ComponentSchema {
     dia: Schema.Attribute.String;
     faixa_etaria: Schema.Attribute.String;
     horario: Schema.Attribute.String;
+    link_aula: Schema.Attribute.String;
   };
 }
 
