@@ -244,6 +244,13 @@
         "message": "Sua sugestão de horário para o curso {courseName} foi enviada com sucesso. Entraremos em contato em breve!",
         "ok": "Entendi"
       }
+    },
+    "per_class": "por aula",
+    "price": {
+      "classes_per_week": {
+        "one": "aula por semana",
+        "other": "aulas por semana"
+      }
     }
   },
   "EnrollmentModal": {

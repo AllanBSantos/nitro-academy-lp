@@ -102,39 +102,43 @@ export default function TimeSelectionSection({
             )}
 
             <div className="space-y-4 max-w-md mx-auto mb-8">
-              {inscricoes_abertas ? (
-                schedules.map((schedule, index) => {
-                  const classNumber = (index + 1).toString();
-                  const { isFull } = getClassAvailability(classNumber);
-                  const isSelected =
-                    selectedTime === `${schedule.dia}-${schedule.horario}`;
+              {schedules.map((schedule, index) => {
+                const classNumber = (index + 1).toString();
+                const { isFull } = getClassAvailability(classNumber);
+                const isSelected =
+                  selectedTime === `${schedule.dia}-${schedule.horario}`;
 
-                  return (
-                    <div key={index} className="mb-4">
-                      <button
-                        onClick={() => handleTimeSelect(schedule, index)}
-                        className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
-                          isFull
-                            ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
-                            : isSelected
-                            ? "border-2 border-orange-500 bg-orange-50"
-                            : "border-2 border-gray-300 hover:border-[#3B82F6]"
-                        }`}
-                      >
+                return (
+                  <div key={index} className="mb-4">
+                    <button
+                      onClick={() => handleTimeSelect(schedule, index)}
+                      disabled={!inscricoes_abertas}
+                      className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
+                        !inscricoes_abertas
+                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
+                          : isFull
+                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
+                          : isSelected
+                          ? "border-2 border-orange-500 bg-orange-50"
+                          : "border-2 border-gray-300 hover:border-[#3B82F6]"
+                      }`}
+                    >
+                      <div className="flex flex-col items-center">
+                        {isFull && inscricoes_abertas && (
+                          <span className="text-sm text-red-500 font-medium mb-2">
+                            {t("class_full")}
+                          </span>
+                        )}
+                        <div className="text-sm text-gray-600 mb-2">
+                          {t("class")} {classNumber} - {schedule.faixa_etaria}
+                        </div>
                         <div className="flex flex-col items-center">
-                          {isFull && (
-                            <span className="text-sm text-red-500 font-medium mb-2">
-                              {t("class_full")}
-                            </span>
-                          )}
-                          <div className="text-sm text-gray-600 mb-2">
-                            {t("class")} {classNumber} - {schedule.faixa_etaria}
+                          <div className="text-[#3B82F6] text-lg font-medium">
+                            {schedule.dia} {schedule.horario}
                           </div>
-                          <div className="flex flex-col items-center">
-                            <div className="text-[#3B82F6] text-lg font-medium">
-                              {schedule.dia} {schedule.horario}
-                            </div>
-                            {course.price && course.moeda && (
+                          {course.price &&
+                            course.moeda &&
+                            course.price.total > 0 && (
                               <div className="text-sm mt-1 text-gray-500">
                                 <span className="block mb-1">
                                   {course.moeda === "Real" ? "R$" : "USD"}{" "}
@@ -148,27 +152,22 @@ export default function TimeSelectionSection({
                                 </span>
                               </div>
                             )}
-                            <div className="text-sm mt-1 text-gray-500">
-                              {t("start_date")}:{" "}
-                              {schedule.data_inicio
-                                ? formatDate(schedule.data_inicio)
-                                : ""}
-                              {schedule.data_fim &&
-                                ` • ${t("end_date")}: ${formatDate(
-                                  schedule.data_fim
-                                )}`}
-                            </div>
+                          <div className="text-sm mt-1 text-gray-500">
+                            {t("start_date")}:{" "}
+                            {schedule.data_inicio
+                              ? formatDate(schedule.data_inicio)
+                              : ""}
+                            {schedule.data_fim &&
+                              ` • ${t("end_date")}: ${formatDate(
+                                schedule.data_fim
+                              )}`}
                           </div>
                         </div>
-                      </button>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-red-500 text-lg mb-6 text-center">
-                  {t("inscricoes_fechadas")}
-                </p>
-              )}
+                      </div>
+                    </button>
+                  </div>
+                );
+              })}
 
               {course.sugestao_horario !== false && (
                 <button
@@ -187,6 +186,12 @@ export default function TimeSelectionSection({
                     </div>
                   </div>
                 </button>
+              )}
+
+              {!inscricoes_abertas && (
+                <p className="text-red-500 text-lg mb-6 text-center">
+                  {t("inscricoes_fechadas")}
+                </p>
               )}
             </div>
 
@@ -209,7 +214,9 @@ export default function TimeSelectionSection({
                   scheduleIndex={
                     selectedClass ? parseInt(selectedClass) - 1 : 0
                   }
-                  disabled={!selectedTime || !selectedClass}
+                  disabled={
+                    !selectedTime || !selectedClass || !inscricoes_abertas
+                  }
                   material_complementar={course.material_complementar}
                   pre_requisitos={course.pre_requisitos}
                 />
@@ -300,20 +307,22 @@ export default function TimeSelectionSection({
                             <div className="text-[#3B82F6] text-lg font-medium">
                               {schedule.dia} {schedule.horario}
                             </div>
-                            {course.price && course.moeda && (
-                              <div className="text-sm mt-1 text-gray-500">
-                                <span className="block mb-1">
-                                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
-                                  {(course.price.total / CLASSES_PER_COURSE)
-                                    .toFixed(2)
-                                    .replace(
-                                      ".",
-                                      course.moeda === "Real" ? "," : "."
-                                    )}{" "}
-                                  {t("per_class")}
-                                </span>
-                              </div>
-                            )}
+                            {course.price &&
+                              course.moeda &&
+                              course.price.total > 0 && (
+                                <div className="text-sm mt-1 text-gray-500">
+                                  <span className="block mb-1">
+                                    {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                                    {(course.price.total / CLASSES_PER_COURSE)
+                                      .toFixed(2)
+                                      .replace(
+                                        ".",
+                                        course.moeda === "Real" ? "," : "."
+                                      )}{" "}
+                                    {t("per_class")}
+                                  </span>
+                                </div>
+                              )}
                           </div>
                         </div>
                       </button>
