@@ -21,6 +21,8 @@ export default async function middleware(request: NextRequest) {
     if (!token) {
       const locale = pathname.split("/")[1];
       const loginUrl = new URL(`/${locale}/login`, request.url);
+      // Add the current URL as a redirect parameter for better UX
+      loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
   }

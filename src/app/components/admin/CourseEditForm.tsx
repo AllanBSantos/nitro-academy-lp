@@ -36,9 +36,13 @@ interface CronogramaAula {
 interface CourseEditFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   course: any;
+  onUpdateSuccess?: () => void;
 }
 
-export default function CourseEditForm({ course }: CourseEditFormProps) {
+export default function CourseEditForm({
+  course,
+  onUpdateSuccess,
+}: CourseEditFormProps) {
   const t = useTranslations("Admin.panel");
   const params = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,7 +144,7 @@ export default function CourseEditForm({ course }: CourseEditFormProps) {
       );
 
       // Map frontend camelCase to backend snake_case
-      await updateCourse(documentId, {
+      const updateData = {
         titulo,
         descricao,
         nivel,
@@ -156,11 +160,17 @@ export default function CourseEditForm({ course }: CourseEditFormProps) {
         cronograma,
         ementa_resumida: ementaResumida,
         resumo_aulas: resumoAulas,
-      });
+      };
+
+      await updateCourse(documentId, updateData);
 
       setSubmitSuccess(true);
       // Reset success message after 3 seconds
       setTimeout(() => setSubmitSuccess(false), 3000);
+
+      if (onUpdateSuccess) {
+        onUpdateSuccess();
+      }
     } catch (error) {
       console.error("Error updating course:", error);
       setSubmitError(

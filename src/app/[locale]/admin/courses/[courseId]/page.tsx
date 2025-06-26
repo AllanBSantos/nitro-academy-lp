@@ -88,81 +88,82 @@ export default function CourseDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>("alunos");
   const [selectedTurma, setSelectedTurma] = useState<number | "all">("all");
 
-  useEffect(() => {
-    const loadCourseData = async () => {
-      try {
-        const documentId = params.courseId as string;
-        const courseData = await fetchCourse(documentId);
+  const loadCourseData = async () => {
+    try {
+      const documentId = params.courseId as string;
+      const courseData = await fetchCourse(documentId);
 
-        if (!courseData) {
-          throw new Error(t("error.course_not_found"));
-        }
-
-        const maxStudentsPerClass = parseInt(
-          process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
-        );
-        const totalSpots = Array.isArray(courseData.cronograma)
-          ? courseData.cronograma.length * maxStudentsPerClass
-          : 0;
-        const studentCount = Array.isArray(courseData.alunos)
-          ? courseData.alunos.length
-          : 0;
-
-        const transformedCourse: CourseDetails = {
-          id: courseData.id,
-          titulo: courseData.titulo,
-          descricao: courseData.descricao,
-          descricaoMentor: courseData.mentor?.descricao || "",
-          nivel: courseData.nivel,
-          modelo: courseData.modelo,
-          objetivo: courseData.objetivo,
-          pre_requisitos: courseData.pre_requisitos,
-          projetos: courseData.projetos,
-          tarefa_de_casa: courseData.tarefa_de_casa,
-          destaques: courseData.destaques || "",
-          competencias: courseData.competencias || "",
-          ideal_para: courseData.ideal_para || "",
-          videos: (courseData.videos || []).map((video) => ({
-            titulo: video.titulo || "",
-            video_url: video.video_url || "",
-          })),
-          turmas: Array.isArray(courseData.cronograma)
-            ? courseData.cronograma.map(
-                (aula: CronogramaAula, index: number) => ({
-                  id: index + 1,
-                  faixa_etaria: aula.faixa_etaria || "",
-                })
-              )
-            : [],
-          ementa_resumida: courseData.ementa_resumida || [],
-          resumo_aulas: courseData.resumo_aulas || [],
-          alunos: (courseData.alunos || []).map((aluno) => ({
-            id: aluno.id,
-            turma: aluno.turma,
-            documentId: aluno.documentId || "",
-            nome: aluno.nome || "",
-          })),
-          cronograma: Array.isArray(courseData.cronograma)
-            ? courseData.cronograma
-            : [],
-          totalSpots,
-          availableSpots: totalSpots - studentCount,
-        };
-        setCourse(transformedCourse);
-      } catch (err) {
-        console.error("Error loading course data:", err);
-        if (err instanceof Error) {
-          console.error("Error details:", {
-            message: err.message,
-            stack: err.stack,
-            name: err.name,
-          });
-        }
-        setError(t("error.loading_error"));
-      } finally {
-        setLoading(false);
+      if (!courseData) {
+        throw new Error(t("error.course_not_found"));
       }
-    };
+
+      const maxStudentsPerClass = parseInt(
+        process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
+      );
+      const totalSpots = Array.isArray(courseData.cronograma)
+        ? courseData.cronograma.length * maxStudentsPerClass
+        : 0;
+      const studentCount = Array.isArray(courseData.alunos)
+        ? courseData.alunos.length
+        : 0;
+
+      const transformedCourse: CourseDetails = {
+        id: courseData.id,
+        titulo: courseData.titulo,
+        descricao: courseData.descricao,
+        descricaoMentor: courseData.mentor?.descricao || "",
+        nivel: courseData.nivel,
+        modelo: courseData.modelo,
+        objetivo: courseData.objetivo,
+        pre_requisitos: courseData.pre_requisitos,
+        projetos: courseData.projetos,
+        tarefa_de_casa: courseData.tarefa_de_casa,
+        destaques: courseData.destaques || "",
+        competencias: courseData.competencias || "",
+        ideal_para: courseData.ideal_para || "",
+        videos: (courseData.videos || []).map((video) => ({
+          titulo: video.titulo || "",
+          video_url: video.video_url || "",
+        })),
+        turmas: Array.isArray(courseData.cronograma)
+          ? courseData.cronograma.map(
+              (aula: CronogramaAula, index: number) => ({
+                id: index + 1,
+                faixa_etaria: aula.faixa_etaria || "",
+              })
+            )
+          : [],
+        ementa_resumida: courseData.ementa_resumida || [],
+        resumo_aulas: courseData.resumo_aulas || [],
+        alunos: (courseData.alunos || []).map((aluno) => ({
+          id: aluno.id,
+          turma: aluno.turma,
+          documentId: aluno.documentId || "",
+          nome: aluno.nome || "",
+        })),
+        cronograma: Array.isArray(courseData.cronograma)
+          ? courseData.cronograma
+          : [],
+        totalSpots,
+        availableSpots: totalSpots - studentCount,
+      };
+      setCourse(transformedCourse);
+    } catch (err) {
+      console.error("Error loading course data:", err);
+      if (err instanceof Error) {
+        console.error("Error details:", {
+          message: err.message,
+          stack: err.stack,
+          name: err.name,
+        });
+      }
+      setError(t("error.loading_error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadCourseData();
   }, [params.courseId, t]);
 
@@ -338,7 +339,7 @@ export default function CourseDashboard() {
       case "pagina":
         return (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-8">
-            <CourseEditForm course={course} />
+            <CourseEditForm course={course} onUpdateSuccess={loadCourseData} />
           </div>
         );
     }
