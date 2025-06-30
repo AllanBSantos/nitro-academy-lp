@@ -7,7 +7,7 @@ export async function fetchCourses(
 ): Promise<Course[]> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&fields[22]=inscricoes_abertas&fields[23]=data_inicio_curso&fields[24]=material_complementar&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&locale=${locale}`
+      `${STRAPI_API_URL}/api/cursos?fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&fields[22]=inscricoes_abertas&fields[23]=data_inicio_curso&fields[24]=material_complementar&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=${locale}`
       /* {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
@@ -30,7 +30,7 @@ export async function fetchCourses(
 export async function fetchCourse(documentId: string): Promise<Course> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&fields[22]=inscricoes_abertas&fields[23]=material_complementar&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&locale=pt-BR&fields[24]=data_inicio_curso`
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=objetivo&fields[7]=pre_requisitos&fields[8]=projetos&fields[9]=tarefa_de_casa&fields[10]=preco&fields[11]=parcelas&fields[12]=destaques&fields[13]=slug&fields[14]=link_pagamento&fields[15]=moeda&fields[16]=informacoes_adicionais&fields[17]=badge&fields[18]=link_desconto&fields[19]=competencias&fields[20]=ideal_para&fields[21]=sugestao_horario&fields[22]=inscricoes_abertas&fields[23]=material_complementar&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=nota&populate[mentor][fields][4]=avaliacoes&populate[mentor][fields][5]=alunos&populate[mentor][fields][6]=cursos&populate[mentor][fields][7]=instagram&populate[mentor][fields][8]=instagram_label&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia&populate[cronograma][fields][3]=horario&populate[cronograma][fields][4]=faixa_etaria&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=pt-BR&fields[24]=data_inicio_curso`
       /* {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
@@ -313,9 +313,7 @@ export async function createSuggestion(suggestion: Suggestion): Promise<void> {
       console.error("Strapi Error Response:", errorData);
       throw new Error("Failed to create suggestion");
     }
-
-    const responseData = await response.json();
-    console.log("Strapi Success Response:", responseData);
+    return response.json();
   } catch (error) {
     console.error("Error creating suggestion:", error);
     throw error;
@@ -510,9 +508,6 @@ export async function updateCourse(
     const course = findData.data[0];
     const currentData = course.attributes || course;
 
-    console.log("Original currentData.cronograma:", currentData.cronograma);
-    console.log("Original currentData.resumo_aulas:", currentData.resumo_aulas);
-
     const cleanData = {
       ...(cleanDataRecursively(currentData) as Record<string, unknown>),
       titulo: courseData.titulo || currentData.titulo,
@@ -540,13 +535,7 @@ export async function updateCourse(
       ),
     };
 
-    console.log("Final cleanData.cronograma:", cleanData.cronograma);
-    console.log("Final cleanData.resumo_aulas:", cleanData.resumo_aulas);
-    console.log("Final cleanData:", cleanData);
-
     const requestBody = { data: cleanData };
-
-    console.log("Request body:", JSON.stringify(requestBody, null, 2));
 
     const response = await fetch(
       `${STRAPI_API_URL}/api/cursos/${documentId}?locale=pt-BR`,

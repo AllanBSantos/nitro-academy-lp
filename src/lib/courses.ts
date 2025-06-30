@@ -82,6 +82,21 @@ export async function getCardsContent(
       sugestao_horario: course.sugestao_horario ?? true,
       alunos: course.alunos || [],
       data_inicio_curso: course.data_inicio_curso || "",
+      reviews: (() => {
+        if (Array.isArray(course.review)) {
+          const mappedReviews = course.review.map((review) => {
+            return {
+              id: review.id,
+              studentName: review.nome || "",
+              rating: Number(review.nota ?? 0),
+              comment: review.descricao || "",
+            };
+          });
+
+          return mappedReviews;
+        }
+        return [];
+      })(),
     };
     return mappedCourse;
   });

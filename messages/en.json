@@ -205,8 +205,7 @@
     "more_info": "+ information",
     "per_class": "per class",
     "days_remaining": "{days} days remaining",
-    "few_days": "Last days",
-    "few_spots": "Few spots"
+    "not_found": "Course not found"
   },
   "TimeSelection": {
     "only": "Only",
@@ -452,5 +451,14 @@
         "success": "Changes saved successfully!"
       }
     }
+  },
+  "CourseRating": {
+    "title": "Course Ratings",
+    "based_on": "Based on {count} reviews"
+  },
+  "CourseReviews": {
+    "title": "Student Reviews",
+    "view_all_reviews": "View all reviews",
+    "no_comments": "No comments yet"
   }
 }

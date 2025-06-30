@@ -87,4 +87,10 @@ export interface CardProps {
   turmas?: Turma[];
   alunos?: { id: number; turma?: number }[];
   data_inicio_curso?: string;
+  reviews?: Array<{
+    id: number;
+    studentName: string;
+    rating: number;
+    comment: string;
+  }>;
 }

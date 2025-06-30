@@ -174,4 +174,11 @@ export interface Course {
     nome_aula: string;
     descricao_aula: string;
   }> | null;
+  review: Array<{
+    id: number;
+    nota: number;
+    descricao: string;
+    nome: string;
+    data: string;
+  }> | null;
 }

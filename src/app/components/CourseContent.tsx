@@ -14,6 +14,8 @@ import RelatedTopics from "./course/RelatedTopics";
 import MentorSection from "./course/MentorSection";
 import RelatedCourses from "./course/RelatedCourses";
 import CourseSummaryCard from "./CourseSummaryCard";
+import CourseRatingSection, { Review } from "./course/CourseRatingSection";
+import CourseReviewsSection from "./course/CourseReviewsSection";
 
 interface CourseContentProps {
   course: CardProps;
@@ -86,6 +88,8 @@ export default function CourseContent({ course }: CourseContentProps) {
     }
   };
 
+  const reviews: Review[] = course.reviews || [];
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -99,6 +103,8 @@ export default function CourseContent({ course }: CourseContentProps) {
           <CourseContentSection course={course} />
           <RelatedTopics course={course} />
           <MentorSection course={course} />
+          <CourseRatingSection reviews={reviews} />
+          <CourseReviewsSection reviews={reviews} />
         </div>
 
         <div className="hidden lg:block">
