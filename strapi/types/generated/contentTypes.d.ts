@@ -628,6 +628,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       }>;
     publishedAt: Schema.Attribute.DateTime;
     resumo_aulas: Schema.Attribute.Component<'componentes.resumo-aulas', true>;
+    review: Schema.Attribute.Component<'review.review', true>;
     slug: Schema.Attribute.String & Schema.Attribute.Required;
     sugestao_horario: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<true>;

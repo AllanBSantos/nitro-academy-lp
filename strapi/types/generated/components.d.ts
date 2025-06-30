@@ -48,6 +48,18 @@ export interface CronogramaCronograma extends Struct.ComponentSchema {
   };
 }
 
+export interface ReviewReview extends Struct.ComponentSchema {
+  collectionName: 'components_review_reviews';
+  info: {
+    displayName: 'review';
+  };
+  attributes: {
+    descricao: Schema.Attribute.Text;
+    nome: Schema.Attribute.String;
+    nota: Schema.Attribute.Integer;
+  };
+}
+
 export interface TagsTags extends Struct.ComponentSchema {
   collectionName: 'components_tags_tags';
   info: {
@@ -79,6 +91,7 @@ declare module '@strapi/strapi' {
       'componentes.emenda-resumida': ComponentesEmendaResumida;
       'componentes.resumo-aulas': ComponentesResumoAulas;
       'cronograma.cronograma': CronogramaCronograma;
+      'review.review': ReviewReview;
       'tags.tags': TagsTags;
       'videos.videos': VideosVideos;
     }

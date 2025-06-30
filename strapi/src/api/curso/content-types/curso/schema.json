@@ -246,6 +246,12 @@
     },
     "material_complementar": {
       "type": "boolean"
+    },
+    "review": {
+      "displayName": "review",
+      "type": "component",
+      "repeatable": true,
+      "component": "review.review"
     }
   }
 }
