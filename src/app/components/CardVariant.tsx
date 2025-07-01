@@ -238,6 +238,11 @@ export default function Card({
 
             <div className="flex items-center gap-1 h-5">
               {renderStars(calculatedRating) || <div className="h-5"></div>}
+              {calculatedRating > 0 && (
+                <span className="text-sm text-gray-600 ml-1">
+                  {calculatedRating.toFixed(1)}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-2">
