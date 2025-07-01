@@ -11,7 +11,6 @@ export default function Card({
   slug,
   title,
   mentor,
-  rating,
   image,
   cronograma,
   price,
@@ -19,6 +18,7 @@ export default function Card({
   badge,
   alunos,
   data_inicio_curso,
+  reviews,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
@@ -27,6 +27,15 @@ export default function Card({
   const studentCount = Array.isArray(alunos) ? alunos.length : 0;
   const isEnglishCourse = moeda === "Dólar";
   const showEnglishLabel = locale === "pt" && isEnglishCourse;
+  const calculatedRating =
+    reviews && reviews.length > 0
+      ? Number(
+          (
+            reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+          ).toFixed(1)
+        )
+      : 0;
+
   const renderStars = (rating: number) => {
     if (!rating) return null;
 
@@ -228,7 +237,7 @@ export default function Card({
             </div>
 
             <div className="flex items-center gap-1 h-5">
-              {renderStars(rating || 0) || <div className="h-5"></div>}
+              {renderStars(calculatedRating) || <div className="h-5"></div>}
             </div>
 
             <div className="flex flex-wrap gap-2">
