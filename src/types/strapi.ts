@@ -126,6 +126,7 @@ export interface Course {
   link_pagamento: string | null;
   link_desconto: string | null;
   moeda: "Real" | "Dólar";
+  lingua?: "portugues" | "ingles";
   badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
   competencias: string | null;
   ideal_para: string | null;

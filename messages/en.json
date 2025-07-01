@@ -205,7 +205,8 @@
     "more_info": "+ information",
     "per_class": "per class",
     "days_remaining": "{days} days remaining",
-    "not_found": "Course not found"
+    "not_found": "Course not found",
+    "course_in_english": "Course in English"
   },
   "TimeSelection": {
     "only": "Only",

@@ -564,6 +564,8 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     informacoes_adicionais: Schema.Attribute.Text;
     inscricoes_abertas: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
+    lingua: Schema.Attribute.Enumeration<['portugues', 'ingles']> &
+      Schema.Attribute.DefaultTo<'portugues'>;
     link_desconto: Schema.Attribute.String;
     link_pagamento: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String;

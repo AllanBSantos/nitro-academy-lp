@@ -19,13 +19,14 @@ export default function Card({
   alunos,
   data_inicio_curso,
   reviews,
+  lingua,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const studentCount = Array.isArray(alunos) ? alunos.length : 0;
-  const isEnglishCourse = moeda === "Dólar";
+  const isEnglishCourse = lingua === "ingles";
   const showEnglishLabel = locale === "pt" && isEnglishCourse;
   const calculatedRating =
     reviews && reviews.length > 0

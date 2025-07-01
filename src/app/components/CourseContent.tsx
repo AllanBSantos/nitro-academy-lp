@@ -115,7 +115,7 @@ export default function CourseContent({ course }: CourseContentProps) {
               modelo={course.modelo}
               nivel={course.nivel}
               idioma={
-                course.moeda === "Dólar"
+                course.lingua === "ingles"
                   ? t("language.english")
                   : t("language.portuguese")
               }
@@ -138,7 +138,7 @@ export default function CourseContent({ course }: CourseContentProps) {
               modelo={course.modelo}
               nivel={course.nivel}
               idioma={
-                course.moeda === "Dólar"
+                course.lingua === "ingles"
                   ? t("language.english")
                   : t("language.portuguese")
               }

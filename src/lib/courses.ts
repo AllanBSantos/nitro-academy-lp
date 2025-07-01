@@ -65,6 +65,7 @@ export async function getCardsContent(
       videos,
       cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
       moeda: course.moeda || "Real",
+      lingua: course.lingua || "portugues",
       cupons: (course.cupons || []).map((coupon, index) => ({
         id: index + 1,
         documentId: `coupon_${index + 1}`,
