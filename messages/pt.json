@@ -199,7 +199,8 @@
     "per_class": "por aula",
     "days_remaining": "Faltam {days} dias",
     "not_found": "Curso não encontrado",
-    "course_in_english": "Curso em Inglês"
+    "course_in_english": "Curso em Inglês",
+    "new_course": "Curso novo"
   },
   "TimeSelection": {
     "only": "Apenas",
@@ -378,12 +379,14 @@
     }
   },
   "MentorSection": {
-    "title": "Mentor",
+    "title": "Conheça seu Mentor",
     "stats": {
-      "rating": "Nota",
+      "rating": "Avaliação",
       "reviews": "Avaliações",
-      "students": "Alunos",
-      "courses": "Cursos"
+      "students": "Estudantes",
+      "courses": "Cursos",
+      "status": "Status",
+      "new_mentor": "Mentor novo"
     }
   },
   "CourseSummaryCard": {

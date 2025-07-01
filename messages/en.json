@@ -206,7 +206,8 @@
     "per_class": "per class",
     "days_remaining": "{days} days remaining",
     "not_found": "Course not found",
-    "course_in_english": "Course in English"
+    "course_in_english": "Course in English",
+    "new_course": "New course"
   },
   "TimeSelection": {
     "only": "Only",
@@ -378,12 +379,14 @@
     }
   },
   "MentorSection": {
-    "title": "Mentor",
+    "title": "Meet your Mentor",
     "stats": {
       "rating": "Rating",
       "reviews": "Reviews",
       "students": "Students",
-      "courses": "Courses"
+      "courses": "Courses",
+      "status": "Status",
+      "new_mentor": "New mentor"
     }
   },
   "CourseSummaryCard": {

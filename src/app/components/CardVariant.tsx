@@ -153,6 +153,17 @@ export default function Card({
       );
     }
 
+    if (calculatedRating === 0) {
+      badges.push(
+        <span
+          key="new"
+          className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium"
+        >
+          {commonT("new_course")}
+        </span>
+      );
+    }
+
     if (badge && badge !== "nenhum") {
       const daysRemaining = getDaysRemaining(dataInicio);
       if (badge === "dias_faltantes" && daysRemaining < 0)

@@ -69,7 +69,7 @@ export default function MentorSection({ course }: MentorSectionProps) {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {course.mentor.nota !== undefined && course.mentor.nota > 0 && (
+                {course.mentor.nota !== undefined && course.mentor.nota > 0 ? (
                   <div className="flex items-center gap-2">
                     <span className="text-[#3B82F6] text-xl">★</span>
                     <div>
@@ -78,6 +78,14 @@ export default function MentorSection({ course }: MentorSectionProps) {
                       </p>
                       <p className="font-semibold text-[#1e1b4b]">
                         {course.mentor.nota}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div>
+                      <p className="font-semibold text-green-600">
+                        {t("stats.new_mentor")}
                       </p>
                     </div>
                   </div>
