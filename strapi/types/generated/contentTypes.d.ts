@@ -766,6 +766,10 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    pais: Schema.Attribute.Enumeration<
+      ['Brasil', 'Estados Unidos', 'Canad\u00E1', 'Fran\u00E7a']
+    > &
+      Schema.Attribute.DefaultTo<'Brasil'>;
     profissao: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -773,6 +777,7 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    reviews: Schema.Attribute.Component<'review.review', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

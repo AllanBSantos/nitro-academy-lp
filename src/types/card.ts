@@ -36,11 +36,17 @@ export interface CardProps {
     students: number;
     courses: number;
     profissao: string;
-    nota: number;
-    avaliacoes: number;
     descricao: string;
     instagram: string;
     instagram_label: string;
+    pais?: string;
+    reviews: Array<{
+      id: number;
+      nota: number;
+      descricao: string;
+      nome: string;
+      data: string;
+    }> | null;
   };
   rating: number | null;
   price?: {

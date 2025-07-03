@@ -102,6 +102,21 @@
     },
     "instagram_label": {
       "type": "string"
+    },
+    "reviews": {
+      "type": "component",
+      "repeatable": true,
+      "component": "review.review"
+    },
+    "pais": {
+      "type": "enumeration",
+      "enum": [
+        "Brasil",
+        "Estados Unidos",
+        "Canadá",
+        "França"
+      ],
+      "default": "Brasil"
     }
   }
 }

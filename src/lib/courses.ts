@@ -36,11 +36,11 @@ export async function getCardsContent(
         students: mentor?.alunos || 0,
         courses: mentor?.cursos || 0,
         profissao: mentor?.profissao || "",
-        nota: mentor?.nota || 0,
-        avaliacoes: mentor?.avaliacoes || 0,
         descricao: mentor?.descricao || "",
         instagram: mentor?.instagram || "",
         instagram_label: mentor?.instagram_label || "",
+        pais: mentor?.pais || "Brasil",
+        reviews: mentor?.reviews || null,
       },
       rating: course.nota || null,
       price: {

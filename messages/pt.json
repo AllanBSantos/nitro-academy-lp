@@ -200,7 +200,8 @@
     "days_remaining": "Faltam {days} dias",
     "not_found": "Curso não encontrado",
     "course_in_english": "Curso em Inglês",
-    "new_course": "Curso novo"
+    "new_course": "Curso novo",
+    "new_mentor": "Mentor novo"
   },
   "TimeSelection": {
     "only": "Apenas",
@@ -386,7 +387,9 @@
       "students": "Estudantes",
       "courses": "Cursos",
       "status": "Status",
-      "new_mentor": "Mentor novo"
+      "new_mentor": "Mentor novo",
+      "based_on": "Baseado em {count} avaliações",
+      "no_reviews": "Sem avaliações ainda"
     }
   },
   "CourseSummaryCard": {

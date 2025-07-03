@@ -18,7 +18,6 @@ export default function Card({
   badge,
   alunos,
   data_inicio_curso,
-  reviews,
   lingua,
 }: CardProps) {
   const commonT = useTranslations("common");
@@ -28,14 +27,18 @@ export default function Card({
   const studentCount = Array.isArray(alunos) ? alunos.length : 0;
   const isEnglishCourse = lingua === "ingles";
   const showEnglishLabel = locale === "pt" && isEnglishCourse;
-  const calculatedRating =
-    reviews && reviews.length > 0
+
+  const mentorReviews = mentor.reviews || [];
+  const mentorRating =
+    mentorReviews.length > 0
       ? Number(
           (
-            reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            mentorReviews.reduce((sum, r) => sum + r.nota, 0) /
+            mentorReviews.length
           ).toFixed(1)
         )
       : 0;
+  const mentorReviewCount = mentorReviews.length;
 
   const renderStars = (rating: number) => {
     if (!rating) return null;
@@ -153,17 +156,6 @@ export default function Card({
       );
     }
 
-    if (calculatedRating === 0) {
-      badges.push(
-        <span
-          key="new"
-          className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium"
-        >
-          {commonT("new_course")}
-        </span>
-      );
-    }
-
     if (badge && badge !== "nenhum") {
       const daysRemaining = getDaysRemaining(dataInicio);
       if (badge === "dias_faltantes" && daysRemaining < 0)
@@ -196,6 +188,26 @@ export default function Card({
     }
 
     return badges.length > 0 ? badges : null;
+  };
+
+  const getFlagSrc = (pais?: string) => {
+    const brazilFlag = "/en/brasil-flag.png";
+    const usaFlag = "/en/usa-flag.png";
+    const canadaFlag = "/en/canada-flag.png";
+    const franceFlag = "/en/france-flag.png";
+    switch ((pais || "Brasil").toLowerCase()) {
+      case "brasil":
+        return brazilFlag;
+      case "estados unidos":
+        return usaFlag;
+      case "canadá":
+      case "canada":
+        return canadaFlag;
+      case "frança":
+        return franceFlag;
+      default:
+        return brazilFlag;
+    }
   };
 
   return (
@@ -244,15 +256,33 @@ export default function Card({
                   <span className="text-sm text-gray-600 truncate">
                     {mentor.name}
                   </span>
+                  <Image
+                    src={getFlagSrc(mentor.pais)}
+                    alt={mentor.pais || "Brasil"}
+                    width={20}
+                    height={20}
+                    className="inline w-5 h-5 rounded-sm ml-1"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-1 h-5">
-              {renderStars(calculatedRating) || <div className="h-5"></div>}
-              {calculatedRating > 0 && (
-                <span className="text-sm text-gray-600 ml-1">
-                  {calculatedRating.toFixed(1)}
+              {mentorRating > 0 ? (
+                <>
+                  <span className="text-sm text-gray-600 mr-1">
+                    {mentorRating.toFixed(1)}
+                  </span>
+                  {renderStars(mentorRating)}
+                  {mentorReviewCount > 0 && (
+                    <span className="text-xs text-gray-500 ml-1">
+                      ({mentorReviewCount})
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                  {commonT("new_mentor")}
                 </span>
               )}
             </div>

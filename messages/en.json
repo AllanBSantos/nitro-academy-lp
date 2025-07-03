@@ -207,7 +207,8 @@
     "days_remaining": "{days} days remaining",
     "not_found": "Course not found",
     "course_in_english": "Course in English",
-    "new_course": "New course"
+    "new_course": "New course",
+    "new_mentor": "New mentor"
   },
   "TimeSelection": {
     "only": "Only",
@@ -386,7 +387,9 @@
       "students": "Students",
       "courses": "Courses",
       "status": "Status",
-      "new_mentor": "New mentor"
+      "new_mentor": "New mentor",
+      "based_on": "Based on {count} reviews",
+      "no_reviews": "No reviews yet"
     }
   },
   "CourseSummaryCard": {

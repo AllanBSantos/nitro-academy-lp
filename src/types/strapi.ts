@@ -62,12 +62,17 @@ export interface Mentor {
     nome: string;
     profissao: string;
     descricao: string;
-    nota: number;
-    avaliacoes: number;
     alunos: number;
     cursos: number;
     instagram: string;
     imagem: StrapiImage;
+    reviews: Array<{
+      id: number;
+      nota: number;
+      descricao: string;
+      nome: string;
+      data: string;
+    }> | null;
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
@@ -138,8 +143,6 @@ export interface Course {
     nome: string;
     profissao: string | null;
     descricao: string;
-    nota: number | null;
-    avaliacoes: number | null;
     alunos: number | null;
     cursos: number | null;
     instagram: string;
@@ -147,6 +150,14 @@ export interface Course {
     imagem: {
       url: string;
     } | null;
+    pais?: string;
+    reviews: Array<{
+      id: number;
+      nota: number;
+      descricao: string;
+      nome: string;
+      data: string;
+    }> | null;
   } | null;
   tags: Array<{
     nome: string;
