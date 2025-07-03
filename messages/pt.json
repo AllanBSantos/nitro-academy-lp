@@ -200,6 +200,7 @@
     "days_remaining": "Faltam {days} dias",
     "not_found": "Curso não encontrado",
     "course_in_english": "Curso em Inglês",
+    "course_in_portuguese": "Curso em Português",
     "new_course": "Curso novo",
     "new_mentor": "Mentor novo"
   },
@@ -349,6 +350,12 @@
   "CourseInformation": {
     "title": "Informações do curso",
     "categories": {
+      "language": {
+        "title": "Idioma",
+        "default": "Português",
+        "english": "Inglês",
+        "portuguese": "Português"
+      },
       "level": {
         "title": "Nível",
         "default": "Aberto a todos"

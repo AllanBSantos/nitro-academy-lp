@@ -26,7 +26,6 @@ export default function Card({
   const locale = (params?.locale as string) || "pt";
   const studentCount = Array.isArray(alunos) ? alunos.length : 0;
   const isEnglishCourse = lingua === "ingles";
-  const showEnglishLabel = locale === "pt" && isEnglishCourse;
 
   const mentorReviews = mentor.reviews || [];
   const mentorRating =
@@ -143,18 +142,7 @@ export default function Card({
   };
 
   const renderBadge = () => {
-    const badges = [];
-
-    if (showEnglishLabel) {
-      badges.push(
-        <span
-          key="english"
-          className="text-xs px-2 py-1 bg-[#3B82F6] text-white rounded-full font-medium"
-        >
-          {commonT("course_in_english")}
-        </span>
-      );
-    }
+    const badges: JSX.Element[] = [];
 
     if (badge && badge !== "nenhum") {
       const daysRemaining = getDaysRemaining(dataInicio);
@@ -236,6 +224,26 @@ export default function Card({
                 <span className="text-gray-500">No image available</span>
               </div>
             )}
+
+            {/* Language label */}
+            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 shadow-sm">
+              <svg
+                className="w-3 h-3 text-[#3B82F6]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+                />
+              </svg>
+              <span className="text-xs font-medium text-[#1e1b4b]">
+                {isEnglishCourse ? "EN" : "PT-BR"}
+              </span>
+            </div>
           </div>
 
           <div className="p-4 flex flex-col gap-3 flex-grow">

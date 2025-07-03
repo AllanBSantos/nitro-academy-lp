@@ -207,6 +207,7 @@
     "days_remaining": "{days} days remaining",
     "not_found": "Course not found",
     "course_in_english": "Course in English",
+    "course_in_portuguese": "Course in Portuguese",
     "new_course": "New course",
     "new_mentor": "New mentor"
   },
@@ -349,6 +350,12 @@
   "CourseInformation": {
     "title": "Course Information",
     "categories": {
+      "language": {
+        "title": "Language",
+        "default": "Portuguese",
+        "english": "English",
+        "portuguese": "Portuguese"
+      },
       "level": {
         "title": "Level",
         "default": "Open to all"
