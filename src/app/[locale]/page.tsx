@@ -9,7 +9,6 @@ import OurApproach from "@/components/text-cards/OurApproach";
 import WhyChooseNitro from "@/components/text-cards/WhyChooseNitro";
 import ChildGuy from "@/components/image-cards/ChildGuy";
 import OurGoal from "@/components/text-cards/OurGoal";
-import Parents from "@/components/image-cards/Parents";
 import Reviews from "@/components/Reviews";
 import Faq from "@/components/Faq";
 import CarouselClient from "@/components/CarouselClient";
@@ -36,7 +35,6 @@ export default function Home({ params }: { params: { locale: string } }) {
       </div>
       <ChildGuy locale={params.locale} />
       <OurGoal />
-      <Parents locale={params.locale} />
       <Reviews locale={params.locale} />
       <Faq />
       <Footer />
