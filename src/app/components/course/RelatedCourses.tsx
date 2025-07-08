@@ -24,7 +24,7 @@ export default function RelatedCourses({
 
   return (
     <div className="bg-[#1e1b4b]">
-      <section className="w-full bg-gray-50 py-16 rounded-[24px] rounded-t-none">
+      <section className="w-full bg-theme-orange py-16 rounded-[24px] rounded-t-none">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-[#1e1b4b] mb-8">
             {t("you_may_also_like")}
