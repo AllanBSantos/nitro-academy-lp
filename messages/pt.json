@@ -60,7 +60,7 @@
       "label": "Pré-requisitos"
     },
     "projects": {
-      "label": "Projeto Final"
+      "label": "Projetos"
     },
     "homework": {
       "label": "Atividades Semanais"
@@ -370,7 +370,7 @@
         "default": "Criatividade, pensamento crítico, resolução de problemas"
       },
       "final_project": {
-        "title": "Projeto Final",
+        "title": "Projetos",
         "default": "Projeto prático aplicando os conhecimentos adquiridos"
       },
       "class_model": {
