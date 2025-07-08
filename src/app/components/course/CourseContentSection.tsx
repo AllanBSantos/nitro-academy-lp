@@ -9,7 +9,9 @@ interface CourseContentSectionProps {
 export default function CourseContentSection({
   course,
 }: CourseContentSectionProps) {
-  const [activeModule, setActiveModule] = useState<string | null>("ementa");
+  const [activeModules, setActiveModules] = useState<Set<string>>(
+    new Set(["ementa", "aulas"])
+  );
   const t = useTranslations("CourseContent");
 
   const hasEmenta =
@@ -31,17 +33,23 @@ export default function CourseContentSection({
           {hasEmenta && (
             <div className="border rounded-lg overflow-hidden">
               <button
-                onClick={() =>
-                  setActiveModule(activeModule === "ementa" ? null : "ementa")
-                }
+                onClick={() => {
+                  const newActiveModules = new Set(activeModules);
+                  if (newActiveModules.has("ementa")) {
+                    newActiveModules.delete("ementa");
+                  } else {
+                    newActiveModules.add("ementa");
+                  }
+                  setActiveModules(newActiveModules);
+                }}
                 className="w-full flex items-center justify-between p-6 bg-[#1e1b4b] text-white"
               >
                 <h3 className="text-xl font-semibold">{t("syllabus.title")}</h3>
                 <span className="text-2xl">
-                  {activeModule === "ementa" ? "−" : "+"}
+                  {activeModules.has("ementa") ? "−" : "+"}
                 </span>
               </button>
-              {activeModule === "ementa" && (
+              {activeModules.has("ementa") && (
                 <div className="p-6 bg-white">
                   <ul className="space-y-3">
                     {course.ementa_resumida!.map((item, index) => (
@@ -59,17 +67,23 @@ export default function CourseContentSection({
           {hasAulas && (
             <div className="border rounded-lg overflow-hidden">
               <button
-                onClick={() =>
-                  setActiveModule(activeModule === "aulas" ? null : "aulas")
-                }
+                onClick={() => {
+                  const newActiveModules = new Set(activeModules);
+                  if (newActiveModules.has("aulas")) {
+                    newActiveModules.delete("aulas");
+                  } else {
+                    newActiveModules.add("aulas");
+                  }
+                  setActiveModules(newActiveModules);
+                }}
                 className="w-full flex items-center justify-between p-6 bg-[#1e1b4b] text-white"
               >
                 <h3 className="text-xl font-semibold">{t("classes.title")}</h3>
                 <span className="text-2xl">
-                  {activeModule === "aulas" ? "−" : "+"}
+                  {activeModules.has("aulas") ? "−" : "+"}
                 </span>
               </button>
-              {activeModule === "aulas" && (
+              {activeModules.has("aulas") && (
                 <div className="p-6 bg-white">
                   <div className="space-y-4">
                     {course.resumo_aulas!.map((aula, index) => (

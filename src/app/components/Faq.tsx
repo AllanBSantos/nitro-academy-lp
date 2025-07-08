@@ -15,7 +15,7 @@ const getQuestions = (t: (value: string) => string): FaqItem[] => [
   {
     question: "O que é a Nitro Academy?",
     answer:
-      "A Nitro Academy é uma escola online para alunos de 11 a 17 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!",
+      "A Nitro Academy é uma escola online para alunos de 13 a 16 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!",
   },
   {
     question: "Por que a Nitro é diferente?",

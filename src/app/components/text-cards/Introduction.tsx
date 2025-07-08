@@ -20,7 +20,7 @@ export default function Introduction({ locale }: IntroductionProps) {
       />
       <p className="font-montserrat-regular text-left text-[1.5rem] pt-6 md:text-3xl">
         {t(
-          "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 11 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes"
+          "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 13 a 16 anos através de projetos práticos e estimulantes orientados por mentores experientes"
         )}
         .
       </p>
