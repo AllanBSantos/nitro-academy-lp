@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +10,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Review {
   id: number;
@@ -16,33 +23,95 @@ interface Review {
   image?: string;
 }
 
-interface ReviewsProps {
-  locale: string;
-}
-
-export default function Reviews({ locale }: ReviewsProps) {
+export default function Reviews() {
   const t = useTranslations("Reviews");
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const reviews: Review[] = [
     {
       id: 1,
       key: "cecilia",
-      image: `/${locale}/cecilia.jpg`,
+      image: `/pt/cecilia.jpg`,
     },
     {
       id: 2,
       key: "giovana",
-      image: `/${locale}/giovana.jpg`,
+      image: `/pt/giovana.jpg`,
     },
     {
       id: 3,
       key: "alessandra",
-      image: `/${locale}/alessandra.jpg`,
+      image: `/pt/alessandra.jpg`,
     },
     {
       id: 4,
       key: "valdecir",
-      image: `/${locale}/valdecir.jpg`,
+      image: `/pt/valdecir.jpg`,
+    },
+    {
+      id: 5,
+      key: "alice",
+      image: `/pt/Alice.jpg`,
+    },
+    {
+      id: 6,
+      key: "ana",
+      image: `/pt/Ana.png`,
+    },
+    {
+      id: 7,
+      key: "anne",
+      image: `/pt/Anne.png`,
+    },
+    {
+      id: 8,
+      key: "gabrielle",
+      image: `/pt/Gabrielle.png`,
+    },
+    {
+      id: 9,
+      key: "julia",
+      image: `/pt/Julia.png`,
+    },
+    {
+      id: 10,
+      key: "leonardo",
+      image: `/pt/Leonardo.png`,
+    },
+    {
+      id: 11,
+      key: "marina",
+      image: `/pt/Marina.png`,
+    },
+    {
+      id: 12,
+      key: "miguel",
+      image: `/pt/Miguel.png`,
+    },
+    {
+      id: 13,
+      key: "karina",
+    },
+    {
+      id: 14,
+      key: "livia",
+    },
+    {
+      id: 15,
+      key: "waldemar",
+    },
+    {
+      id: 16,
+      key: "claudiana",
+    },
+    {
+      id: 17,
+      key: "ricardo",
+    },
+    {
+      id: 18,
+      key: "jamila",
     },
   ];
 
@@ -74,6 +143,16 @@ export default function Reviews({ locale }: ReviewsProps) {
     );
   };
 
+  const handleReviewClick = (review: Review) => {
+    setSelectedReview(review);
+    setIsModalOpen(true);
+  };
+
+  const truncateText = (text: string, maxLength: number = 120) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
   return (
     <section className="w-full bg-[#1e1b4b] py-16">
       <div className="max-w-7xl mx-auto px-4">
@@ -97,8 +176,19 @@ export default function Reviews({ locale }: ReviewsProps) {
                   key={review.id}
                   className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"
                 >
-                  <div className="bg-white rounded-xl p-6 shadow-lg h-full">
-                    <div className="flex flex-col items-center text-center">
+                  <div
+                    className={`bg-white rounded-xl p-6 shadow-lg h-80 transition-shadow duration-200 ${
+                      t(`reviews.${review.key}.comment`).length > 120
+                        ? "cursor-pointer hover:shadow-xl"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      if (t(`reviews.${review.key}.comment`).length > 120) {
+                        handleReviewClick(review);
+                      }
+                    }}
+                  >
+                    <div className="flex flex-col items-center text-center h-full">
                       <div className="w-20 h-20 rounded-full overflow-hidden mb-2 bg-gray-200 flex items-center justify-center">
                         {renderAvatar(review)}
                       </div>
@@ -106,10 +196,14 @@ export default function Reviews({ locale }: ReviewsProps) {
                         {t(`reviews.${review.key}.name`)} -{" "}
                         {t(`reviews.${review.key}.description`)}
                       </span>
-                      <p className="text-gray-600 mb-4">
-                        {t(`reviews.${review.key}.comment`)}
+                      <p className="text-gray-600 mb-4 flex-1">
+                        {truncateText(t(`reviews.${review.key}.comment`))}
                       </p>
-                      <div className="flex flex-col items-center"></div>
+                      {t(`reviews.${review.key}.comment`).length > 120 && (
+                        <div className="text-orange-600 text-sm font-medium">
+                          {t("click_to_see_more")}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CarouselItem>
@@ -120,6 +214,43 @@ export default function Reviews({ locale }: ReviewsProps) {
           </Carousel>
         </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-md bg-white border-gray-200 [&>button]:text-gray-800 [&>button]:hover:text-gray-600 [&>button]:hover:bg-gray-100">
+          <DialogHeader>
+            <DialogTitle className="text-center">
+              {selectedReview && (
+                <>
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                      {selectedReview.image ? (
+                        <Image
+                          src={selectedReview.image}
+                          alt={t(`reviews.${selectedReview.key}.name`)}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-orange-600 text-white text-xl font-bold">
+                          {getInitials(t(`reviews.${selectedReview.key}.name`))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-lg font-semibold text-gray-800 mb-2">
+                    {t(`reviews.${selectedReview.key}.name`)} -{" "}
+                    {t(`reviews.${selectedReview.key}.description`)}
+                  </div>
+                </>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-gray-600 text-center">
+            {selectedReview && t(`reviews.${selectedReview.key}.comment`)}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

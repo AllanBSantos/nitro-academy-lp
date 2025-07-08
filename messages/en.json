@@ -311,6 +311,7 @@
   "Reviews": {
     "title": "What our students and parents are saying",
     "years": "years",
+    "click_to_see_more": "Click to see more",
     "reviews": {
       "cecilia": {
         "name": "Cecilia",
@@ -331,6 +332,76 @@
         "name": "Valdecir",
         "comment": "This work is wonderful, very good! It will help many teenagers.",
         "description": "Giovana's father"
+      },
+      "alice": {
+        "name": "Alice",
+        "comment": "It was an experience I never had before, very good",
+        "description": "1st year of High School"
+      },
+      "ana": {
+        "name": "Ana Clara",
+        "comment": "A great learning experience, not just for entrepreneurship, but for life.",
+        "description": "1st year of High School"
+      },
+      "anne": {
+        "name": "Anne",
+        "comment": "It was a very interesting experience that I highly recommend.",
+        "description": "8th grade"
+      },
+      "gabrielle": {
+        "name": "Gabrielle",
+        "comment": "It will definitely meet your expectations!! If you are curious and want to know how things happen, here you will find all of this and more.",
+        "description": "8th grade"
+      },
+      "julia": {
+        "name": "Julia",
+        "comment": "It's a very good course for those who want to learn more about self-care, whether through better habits or homemade recipes.",
+        "description": "1st year of High School"
+      },
+      "leonardo": {
+        "name": "Leonardo",
+        "comment": "Initially I thought the course wouldn't have great effects, however, from the first class I realized that if you are willing to listen to the teacher, the course will fulfill its objective. My studies, organization and mindset changed very positively. So I thank Nitro for offering this course to my school.",
+        "description": "1st year of High School"
+      },
+      "marina": {
+        "name": "Marina",
+        "comment": "The Cooking and Nutrition course has an incredible mentor who shows students the versatility of food, how our body processes work when ingesting food and how to use this knowledge in everyday life. Very cool!",
+        "description": "1st year of High School"
+      },
+      "miguel": {
+        "name": "Miguel",
+        "comment": "Do it without thinking, it will be worth it in the future.",
+        "description": "1st year of High School"
+      },
+      "karina": {
+        "name": "Karina",
+        "comment": "She felt more responsible in doing the classes and activities. And she matured in this sense",
+        "description": "Mother"
+      },
+      "livia": {
+        "name": "Livia",
+        "comment": "Ability to awaken new competencies in our young people; practical activity applied to reality and job market. It stimulated entrepreneurial and critical thinking in real situations",
+        "description": "Mother"
+      },
+      "waldemar": {
+        "name": "Waldemar",
+        "comment": "Improvement in task organization and studies",
+        "description": "Father"
+      },
+      "claudiana": {
+        "name": "Claudiana",
+        "comment": "My daughter felt extremely happy and gained more knowledge when taking Professor Carol Viesi's course, she always ventures much more in the kitchen!",
+        "description": "Mother"
+      },
+      "ricardo": {
+        "name": "Ricardo",
+        "comment": "Improvement in argument articulation when defending an idea.",
+        "description": "Father"
+      },
+      "jamila": {
+        "name": "Jamila",
+        "comment": "Excellent, every class he comes to tell me a little about what he learned, how well the teacher explains and how he is managing to apply the learning in everyday life.",
+        "description": "Mother"
       }
     }
   },

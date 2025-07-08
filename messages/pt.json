@@ -311,6 +311,7 @@
   "Reviews": {
     "title": "O que nossos alunos e pais estão dizendo",
     "years": "anos",
+    "click_to_see_more": "Clique para ver mais",
     "reviews": {
       "cecilia": {
         "name": "Cecília",
@@ -331,6 +332,76 @@
         "name": "Valdecir",
         "comment": "Esse trabalho é maravilhoso, muito bom! Vai ajudar muitos adolescentes.",
         "description": "Pai da Giovana"
+      },
+      "alice": {
+        "name": "Alice",
+        "comment": "Foi uma experiência que eu nunca tive, muito bom",
+        "description": "1º ano do Ensino médio"
+      },
+      "ana": {
+        "name": "Ana Clara",
+        "comment": "Uma ótima experiência em aprendizado, não só para o empreendedorismo, mas para a vida.",
+        "description": "1º ano do Ensino médio"
+      },
+      "anne": {
+        "name": "Anne",
+        "comment": "Foi uma experiência muito interessante, que eu super recomendo.",
+        "description": "8º ano"
+      },
+      "gabrielle": {
+        "name": "Gabrielle",
+        "comment": "Com certeza vai atender suas expectativas!! Se você for curioso e quiser saber como as coisas acontecem, aqui você encontra tudo isso e mais um pouco.",
+        "description": "8º ano"
+      },
+      "julia": {
+        "name": "Julia",
+        "comment": "É um curso muito bom para quem quer aprender mais sobre autocuidado, seja por meio de melhores hábitos, seja por receitas caseiras.",
+        "description": "1º ano do Ensino médio"
+      },
+      "leonardo": {
+        "name": "Leonardo",
+        "comment": "Inicialmente eu pensei que o curso não surtiria grandes efeitos, porém, desde a primeira aula eu percebi que caso você esteja disposto a ouvir o professor, o curso cumprirá seu objetivo. Meus estudos, organização e mentalidade alteraram muito positivamente. Então agradeço à Nitro por oferecer esse curso à minha escola.",
+        "description": "1º ano do Ensino médio"
+      },
+      "marina": {
+        "name": "Marina",
+        "comment": "O curso de Culinária e Nutrição conta com uma mentora incrível que mostra aos alunos a versatilidade dos alimentos, como funcionam processos do nosso corpo ao ingerir alimentos e como utilizar esses conhecimentos no dia a dia. Muito legal!",
+        "description": "1º ano do Ensino médio"
+      },
+      "miguel": {
+        "name": "Miguel",
+        "comment": "Faça sem pensar, irá valer muito a pena no futuro.",
+        "description": "1º ano do Ensino médio"
+      },
+      "karina": {
+        "name": "Karina",
+        "comment": "Ela se sentiu mais responsável em fazer as aulas e atividades. E amadureceu neste sentido",
+        "description": "Mãe"
+      },
+      "livia": {
+        "name": "Livia",
+        "comment": "Capacidade de despertar novas competências em nossos jovens; atividade prática e aplicada a realidade e mercado de trabalho. Estimulou o pensamento empreendendor e crítico em situação real",
+        "description": "Mãe"
+      },
+      "waldemar": {
+        "name": "Waldemar",
+        "comment": "Melhoria na organização das tarefas e estudos",
+        "description": "Pai"
+      },
+      "claudiana": {
+        "name": "Claudiana",
+        "comment": "Minha filha se sentiu extremamente feliz e adquiriu mais conhecimentos ao realizar o curso da professora Carol Viesi, sempre se aventura muito mais na cozinha!",
+        "description": "Mãe"
+      },
+      "ricardo": {
+        "name": "Ricardo",
+        "comment": "Melhora na articulação dos argumentos, quando defende uma ideia.",
+        "description": "Pai"
+      },
+      "jamila": {
+        "name": "Jamila",
+        "comment": "Excelente, toda aula ele vem me contando um pouco do que aprendeu, como o professor explica bem e como está conseguindo aplicar o aprendizado no dia a dia.",
+        "description": "Mãe"
       }
     }
   },
