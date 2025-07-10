@@ -10,11 +10,11 @@ export default function Faq() {
       <p className="font-montserrat-black text-4xl text-background text-center pb-14">
         {t("Dúvidas?")}
       </p>
-      <div className="flex justify-center">
-        <Link href={`/${locale}/faq/`}>
+      <div className="flex justify-center w-full">
+        <Link href={`/${locale}/faq/`} className="w-full flex justify-center">
           <Button
             size="lg"
-            className="bg-background text-white hover:bg-background/90 font-bold text-lg px-8 py-4"
+            className="w-full max-w-[340px] sm:max-w-xl bg-background text-white hover:bg-background/90 font-bold text-base sm:text-lg px-8 py-7 rounded-2xl text-center break-words whitespace-normal sm:whitespace-nowrap shadow-md"
           >
             {t("Acesse a nossa página de dúvidas frequentes")}
           </Button>
