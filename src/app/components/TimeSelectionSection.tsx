@@ -43,13 +43,22 @@ export default function TimeSelectionSection({
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
+  const tDay = useTranslations("CourseFilters");
   const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
   const CLASSES_PER_COURSE = 6;
+
+  const DAY_LABELS: Record<string, string> = {
+    "Segunda-Feira": tDay("monday"),
+    "Terça-Feira": tDay("tuesday"),
+    "Quarta-Feira": tDay("wednesday"),
+    "Quinta-Feira": tDay("thursday"),
+    "Sexta-Feira": tDay("friday"),
+  };
 
   const handleTimeSelect = (schedule: Schedule, index: number) => {
     const classNumber = (index + 1).toString();
     if (!isScheduleFull(classNumber)) {
-      setSelectedTime(`${schedule.dia}-${schedule.horario}`);
+      setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
       setSelectedClass(classNumber);
       onScheduleClick(classNumber);
     }
@@ -106,7 +115,8 @@ export default function TimeSelectionSection({
                 const classNumber = (index + 1).toString();
                 const { isFull } = getClassAvailability(classNumber);
                 const isSelected =
-                  selectedTime === `${schedule.dia}-${schedule.horario}`;
+                  selectedTime ===
+                  `${schedule.dia_semana}-${schedule.horario_aula}`;
 
                 return (
                   <div key={index} className="mb-4">
@@ -134,7 +144,9 @@ export default function TimeSelectionSection({
                         </div>
                         <div className="flex flex-col items-center">
                           <div className="text-[#3B82F6] text-lg font-medium">
-                            {schedule.dia} {schedule.horario}
+                            {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
+                              schedule.dia_semana}{" "}
+                            {schedule.horario_aula}
                           </div>
                           {course.price &&
                             course.moeda &&
@@ -274,7 +286,8 @@ export default function TimeSelectionSection({
                   const { isFull, currentStudents, maxStudents } =
                     getClassAvailability(classNumber);
                   const isSelected =
-                    selectedTime === `${schedule.dia}-${schedule.horario}`;
+                    selectedTime ===
+                    `${schedule.dia_semana}-${schedule.horario_aula}`;
 
                   return (
                     <div key={index} className="mb-4">
@@ -305,7 +318,9 @@ export default function TimeSelectionSection({
                           </div>
                           <div className="flex flex-col items-center">
                             <div className="text-[#3B82F6] text-lg font-medium">
-                              {schedule.dia} {schedule.horario}
+                              {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
+                                schedule.dia_semana}{" "}
+                              {schedule.horario_aula}
                             </div>
                             {course.price &&
                               course.moeda &&

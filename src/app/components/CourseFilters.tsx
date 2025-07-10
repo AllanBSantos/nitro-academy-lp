@@ -4,20 +4,38 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { CardProps } from "@/types/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Search, X } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 interface CourseFiltersProps {
   courses: CardProps[];
   onFilterChange: (filteredCourses: CardProps[]) => void;
 }
+
+const ALL_DAYS = [
+  "Segunda-Feira",
+  "Terça-Feira",
+  "Quarta-Feira",
+  "Quinta-Feira",
+  "Sexta-Feira",
+];
+
+const ALL_TIMES = [
+  "BRT 14:00",
+  "BRT 15:00",
+  "BRT 16:00",
+  "BRT 17:00",
+  "BRT 18:00",
+  "BRT 19:00",
+  "BRT 20:00",
+];
 
 export default function CourseFilters({
   courses,
@@ -26,21 +44,12 @@ export default function CourseFilters({
   const t = useTranslations("CourseFilters");
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDay, setSelectedDay] = useState("all");
-  const [selectedLanguage, setSelectedLanguage] = useState("all");
-  const [selectedMentor, setSelectedMentor] = useState("all");
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedMentors, setSelectedMentors] = useState<string[]>([]);
 
   // Get unique values for filters
-  const uniqueDays = useMemo(() => {
-    const days = new Set<string>();
-    courses.forEach((course) => {
-      course.cronograma?.forEach((schedule) => {
-        days.add(schedule.dia);
-      });
-    });
-    return Array.from(days).sort();
-  }, [courses]);
-
   const uniqueLanguages = useMemo(() => {
     const languages = new Set<string>();
     courses.forEach((course) => {
@@ -71,20 +80,47 @@ export default function CourseFilters({
 
       // Filter by day
       const matchesDay =
-        selectedDay === "all" ||
-        course.cronograma?.some((schedule) => schedule.dia === selectedDay);
+        selectedDays.length === 0 ||
+        course.cronograma?.some(
+          (schedule) =>
+            schedule.dia_semana && selectedDays.includes(schedule.dia_semana)
+        );
+
+      // Filter by time
+      const matchesTime =
+        selectedTimes.length === 0 ||
+        course.cronograma?.some(
+          (schedule) =>
+            schedule.horario_aula &&
+            selectedTimes.includes(schedule.horario_aula)
+        );
 
       // Filter by language
       const matchesLanguage =
-        selectedLanguage === "all" || course.lingua === selectedLanguage;
+        selectedLanguages.length === 0 ||
+        (course.lingua && selectedLanguages.includes(course.lingua));
 
       // Filter by mentor
       const matchesMentor =
-        selectedMentor === "all" || course.mentor?.name === selectedMentor;
+        selectedMentors.length === 0 ||
+        (course.mentor?.name && selectedMentors.includes(course.mentor.name));
 
-      return matchesSearch && matchesDay && matchesLanguage && matchesMentor;
+      return (
+        matchesSearch &&
+        matchesDay &&
+        matchesTime &&
+        matchesLanguage &&
+        matchesMentor
+      );
     });
-  }, [courses, searchTerm, selectedDay, selectedLanguage, selectedMentor]);
+  }, [
+    courses,
+    searchTerm,
+    selectedDays,
+    selectedTimes,
+    selectedLanguages,
+    selectedMentors,
+  ]);
 
   // Update parent component when filters change
   useMemo(() => {
@@ -93,23 +129,66 @@ export default function CourseFilters({
 
   const clearFilters = () => {
     setSearchTerm("");
-    setSelectedDay("all");
-    setSelectedLanguage("all");
-    setSelectedMentor("all");
+    setSelectedDays([]);
+    setSelectedTimes([]);
+    setSelectedLanguages([]);
+    setSelectedMentors([]);
   };
 
   const hasActiveFilters =
     searchTerm ||
-    selectedDay !== "all" ||
-    selectedLanguage !== "all" ||
-    selectedMentor !== "all";
+    selectedDays.length > 0 ||
+    selectedTimes.length > 0 ||
+    selectedLanguages.length > 0 ||
+    selectedMentors.length > 0;
+
+  const handleDayChange = (day: string, checked: boolean) => {
+    if (checked) {
+      setSelectedDays((prev) => [...prev, day]);
+    } else {
+      setSelectedDays((prev) => prev.filter((d) => d !== day));
+    }
+  };
+
+  const handleTimeChange = (time: string, checked: boolean) => {
+    if (checked) {
+      setSelectedTimes((prev) => [...prev, time]);
+    } else {
+      setSelectedTimes((prev) => prev.filter((t) => t !== time));
+    }
+  };
+
+  const handleLanguageChange = (language: string, checked: boolean) => {
+    if (checked) {
+      setSelectedLanguages((prev) => [...prev, language]);
+    } else {
+      setSelectedLanguages((prev) => prev.filter((l) => l !== language));
+    }
+  };
+
+  const handleMentorChange = (mentor: string, checked: boolean) => {
+    if (checked) {
+      setSelectedMentors((prev) => [...prev, mentor]);
+    } else {
+      setSelectedMentors((prev) => prev.filter((m) => m !== mentor));
+    }
+  };
+
+  // Adicione um objeto de mapeamento:
+  const DAY_LABELS: Record<string, string> = {
+    "Segunda-Feira": t("monday"),
+    "Terça-Feira": t("tuesday"),
+    "Quarta-Feira": t("wednesday"),
+    "Quinta-Feira": t("thursday"),
+    "Sexta-Feira": t("friday"),
+  };
 
   return (
     <div className="w-full mb-8">
       <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-lg">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search by name */}
-          <div className="flex-1">
+          <div className="lg:w-96">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
               <Input
@@ -122,73 +201,215 @@ export default function CourseFilters({
           </div>
 
           {/* Day filter */}
-          <div className="lg:w-48">
-            <Select value={selectedDay} onValueChange={setSelectedDay}>
-              <SelectTrigger className="bg-white/20 border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 transition-all duration-200 rounded-xl py-3">
-                <SelectValue placeholder={t("day_placeholder")} />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200">
-                <SelectItem value="all">{t("all_days")}</SelectItem>
-                {uniqueDays.map((day) => (
-                  <SelectItem key={day} value={day}>
-                    {day}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="lg:w-60">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 rounded-xl py-3"
+                >
+                  {selectedDays.length === 0 ? (
+                    t("day_placeholder")
+                  ) : (
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <Badge variant="secondary" className="text-xs">
+                        {selectedDays[0]}
+                      </Badge>
+                      {selectedDays.length > 1 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{selectedDays.length - 1}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 bg-white border-gray-200">
+                <div className="space-y-2">
+                  {ALL_DAYS.map((day) => (
+                    <div key={day} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`day-${day}`}
+                        checked={selectedDays.includes(day)}
+                        onCheckedChange={(checked) =>
+                          handleDayChange(day, checked as boolean)
+                        }
+                      />
+                      <label
+                        htmlFor={`day-${day}`}
+                        className="text-sm font-medium"
+                      >
+                        {DAY_LABELS[day] || day}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Time filter */}
+          <div className="lg:w-40">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 rounded-xl py-3"
+                >
+                  {selectedTimes.length === 0 ? (
+                    t("time_placeholder")
+                  ) : (
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <Badge variant="secondary" className="text-xs">
+                        {selectedTimes[0].replace(/^BRT\s*/, "")}
+                      </Badge>
+                      {selectedTimes.length > 1 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{selectedTimes.length - 1}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 bg-white border-gray-200">
+                <div className="space-y-2">
+                  {ALL_TIMES.map((time) => (
+                    <div key={time} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`time-${time}`}
+                        checked={selectedTimes.includes(time)}
+                        onCheckedChange={(checked) =>
+                          handleTimeChange(time, checked as boolean)
+                        }
+                      />
+                      <label
+                        htmlFor={`time-${time}`}
+                        className="text-sm font-medium"
+                      >
+                        {time.replace(/^BRT\s*/, "")}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Language filter */}
           <div className="lg:w-48">
-            <Select
-              value={selectedLanguage}
-              onValueChange={setSelectedLanguage}
-            >
-              <SelectTrigger className="bg-white/20 border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 transition-all duration-200 rounded-xl py-3">
-                <SelectValue placeholder={t("language_placeholder")} />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200">
-                <SelectItem value="all">{t("all_languages")}</SelectItem>
-                {uniqueLanguages.map((language) => (
-                  <SelectItem key={language} value={language}>
-                    {language === "portugues" ? t("portuguese") : t("english")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 rounded-xl py-3"
+                >
+                  {selectedLanguages.length === 0 ? (
+                    t("language_placeholder")
+                  ) : (
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <Badge variant="secondary" className="text-xs">
+                        {selectedLanguages[0] === "portugues"
+                          ? t("portuguese")
+                          : t("english")}
+                      </Badge>
+                      {selectedLanguages.length > 1 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{selectedLanguages.length - 1}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 bg-white border-gray-200">
+                <div className="space-y-2">
+                  {uniqueLanguages.map((language) => (
+                    <div key={language} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`language-${language}`}
+                        checked={selectedLanguages.includes(language)}
+                        onCheckedChange={(checked) =>
+                          handleLanguageChange(language, checked as boolean)
+                        }
+                      />
+                      <label
+                        htmlFor={`language-${language}`}
+                        className="text-sm font-medium"
+                      >
+                        {language === "portugues"
+                          ? t("portuguese")
+                          : t("english")}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Mentor filter */}
-          <div className="lg:w-48">
-            <Select value={selectedMentor} onValueChange={setSelectedMentor}>
-              <SelectTrigger className="bg-white/20 border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 transition-all duration-200 rounded-xl py-3">
-                <SelectValue placeholder={t("mentor_placeholder")} />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200">
-                <SelectItem value="all">{t("all_mentors")}</SelectItem>
-                {uniqueMentors.map((mentor) => (
-                  <SelectItem key={mentor} value={mentor}>
-                    {mentor}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="lg:w-72">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 rounded-xl py-3"
+                >
+                  {selectedMentors.length === 0 ? (
+                    t("mentor_placeholder")
+                  ) : (
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <Badge variant="secondary" className="text-xs">
+                        {selectedMentors[0]}
+                      </Badge>
+                      {selectedMentors.length > 1 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{selectedMentors.length - 1}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 bg-white border-gray-200">
+                <div className="space-y-2">
+                  {uniqueMentors.map((mentor) => (
+                    <div key={mentor} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`mentor-${mentor}`}
+                        checked={selectedMentors.includes(mentor)}
+                        onCheckedChange={(checked) =>
+                          handleMentorChange(mentor, checked as boolean)
+                        }
+                      />
+                      <label
+                        htmlFor={`mentor-${mentor}`}
+                        className="text-sm font-medium"
+                      >
+                        {mentor}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
-
-          {/* Clear filters button */}
-          {hasActiveFilters && (
-            <div className="lg:w-auto">
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                className="w-full lg:w-auto bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 rounded-xl py-3"
-              >
-                <X className="w-4 h-4 mr-2" />
-                {t("clear_filters")}
-              </Button>
-            </div>
-          )}
         </div>
+
+        {/* Clear filters button - now below and centered */}
+        {hasActiveFilters && (
+          <div className="flex justify-start mt-6">
+            <Button
+              variant="outline"
+              onClick={clearFilters}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 rounded-xl py-3"
+            >
+              <X className="w-4 h-4 mr-2" />
+              {t("clear_filters")}
+            </Button>
+          </div>
+        )}
 
         {/* Results count */}
         <div className="mt-6 text-sm text-white/80 font-medium">

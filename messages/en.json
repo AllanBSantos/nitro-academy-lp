@@ -45,15 +45,23 @@
   "CourseFilters": {
     "search_placeholder": "Search by course name...",
     "day_placeholder": "Day of week",
+    "time_placeholder": "Time",
     "language_placeholder": "Language",
     "mentor_placeholder": "Mentor",
     "all_days": "All days",
+    "all_times": "All times",
     "all_languages": "All languages",
     "all_mentors": "All mentors",
     "portuguese": "Portuguese",
     "english": "English",
     "clear_filters": "Clear filters",
-    "results_count": "{count} of {total} courses found"
+    "results_count": "{count} of {total} courses found",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
   },
   "Course": {
     "understand_more": "Learn more about the course",

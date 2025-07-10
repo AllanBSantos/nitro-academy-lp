@@ -10,6 +10,8 @@ export interface Video {
 export interface Schedule {
   dia: string;
   horario: string;
+  dia_semana?: "Segunda-Feira" | "Terça-Feira" | "Quarta-Feira" | "Quinta-Feira" | "Sexta-Feira";
+  horario_aula?: "BRT 14:00" | "BRT 15:00" | "BRT 16:00" | "BRT 17:00" | "BRT 18:00" | "BRT 19:00" | "BRT 20:00";
   data_inicio: string;
   data_fim?: string;
   faixa_etaria: string;

@@ -42,8 +42,28 @@ export interface CronogramaCronograma extends Struct.ComponentSchema {
     data_fim: Schema.Attribute.Date;
     data_inicio: Schema.Attribute.Date;
     dia: Schema.Attribute.String;
+    dia_semana: Schema.Attribute.Enumeration<
+      [
+        'Segunda-Feira',
+        'Ter\u00E7a-Feira',
+        'Quarta-Feira',
+        'Quinta-Feira',
+        'Sexta-Feira',
+      ]
+    >;
     faixa_etaria: Schema.Attribute.String;
     horario: Schema.Attribute.String;
+    horario_aula: Schema.Attribute.Enumeration<
+      [
+        'BRT 14:00',
+        'BRT 15:00',
+        'BRT 16:00',
+        'BRT 17:00',
+        'BRT 18:00',
+        'BRT 19:00',
+        'BRT 20:00',
+      ]
+    >;
     link_aula: Schema.Attribute.String;
   };
 }
