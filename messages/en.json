@@ -42,6 +42,19 @@
     "realestate_title": "Exploring the Real Estate Market",
     "realestate_desc": "Have you ever imagined helping your family find their dream home or making smart real estate deals? In this course, you will learn how to research properties and evaluate prices!"
   },
+  "CourseFilters": {
+    "search_placeholder": "Search by course name...",
+    "day_placeholder": "Day of week",
+    "language_placeholder": "Language",
+    "mentor_placeholder": "Mentor",
+    "all_days": "All days",
+    "all_languages": "All languages",
+    "all_mentors": "All mentors",
+    "portuguese": "Portuguese",
+    "english": "English",
+    "clear_filters": "Clear filters",
+    "results_count": "{count} of {total} courses found"
+  },
   "Course": {
     "understand_more": "Learn more about the course",
     "you_may_also_like": "You may also like",

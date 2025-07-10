@@ -42,6 +42,19 @@
     "realestate_title": "Explorando o Mercado Imobiliário",
     "realestate_desc": "Já imaginou ajudar sua família a encontrar a casa dos sonhos ou fazer negócios inteligentes no mercado imobiliário? Neste curso, você aprenderá como pesquisar imóveis e avaliar preços!"
   },
+  "CourseFilters": {
+    "search_placeholder": "Buscar por nome do curso...",
+    "day_placeholder": "Dia da semana",
+    "language_placeholder": "Idioma",
+    "mentor_placeholder": "Mentor",
+    "all_days": "Todos os dias",
+    "all_languages": "Todos os idiomas",
+    "all_mentors": "Todos os mentores",
+    "portuguese": "Português",
+    "english": "Inglês",
+    "clear_filters": "Limpar filtros",
+    "results_count": "{count} de {total} cursos encontrados"
+  },
   "Course": {
     "understand_more": "Entenda mais sobre o curso",
     "you_may_also_like": "Você também pode se interessar por",

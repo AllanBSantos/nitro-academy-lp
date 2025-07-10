@@ -27,7 +27,6 @@ export default function CarouselClient({ locale }: { locale: string }) {
     <CarouselContentWrapper
       cardsContent={cardsContent}
       learnMoreLabel={t("learn_more")}
-      chooseProjectLabel={t("choose_project")}
     />
   );
 }
