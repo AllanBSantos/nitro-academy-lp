@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 interface Schedule {
   dia: string;
   horario: string;
+  dia_semana?: string;
+  horario_aula?: string;
   data_inicio?: string;
   data_fim?: string;
   faixa_etaria?: string;
