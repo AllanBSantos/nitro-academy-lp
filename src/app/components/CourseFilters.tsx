@@ -6,7 +6,7 @@ import { CardProps } from "@/types/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, X, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, X, Filter, ChevronUp } from "lucide-react";
 import {
   Popover,
   PopoverContent,
