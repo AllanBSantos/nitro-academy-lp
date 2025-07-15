@@ -43,6 +43,7 @@
     "realestate_desc": "Have you ever imagined helping your family find their dream home or making smart real estate deals? In this course, you will learn how to research properties and evaluate prices!"
   },
   "CourseFilters": {
+    "filters": "Filters",
     "search_placeholder": "Search by course name...",
     "day_placeholder": "Day of week",
     "time_placeholder": "Time",

@@ -43,6 +43,7 @@
     "realestate_desc": "Já imaginou ajudar sua família a encontrar a casa dos sonhos ou fazer negócios inteligentes no mercado imobiliário? Neste curso, você aprenderá como pesquisar imóveis e avaliar preços!"
   },
   "CourseFilters": {
+    "filters": "Filtros",
     "search_placeholder": "Buscar por nome do curso...",
     "day_placeholder": "Dia da semana",
     "time_placeholder": "Horário",
