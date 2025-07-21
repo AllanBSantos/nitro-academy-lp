@@ -396,6 +396,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     email_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
     escola_parceira: Schema.Attribute.String;
     estado: Schema.Attribute.String & Schema.Attribute.Required;
+    habilitado: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'> &
       Schema.Attribute.Private;
