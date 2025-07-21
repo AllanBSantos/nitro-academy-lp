@@ -557,7 +557,10 @@
         "saving": "Salvando...",
         "save": "Salvar alterações",
         "success": "Alterações salvas com sucesso!"
-      }
+      },
+      "logout": "Sair",
+      "logout_confirm": "Deseja sair?",
+      "logout_action": "Deslogar"
     }
   },
   "CourseRating": {

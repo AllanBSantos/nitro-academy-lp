@@ -1,14 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Menu, X } from "lucide-react";
+import { Users, Menu, X, LogOut } from "lucide-react";
 import { CoursesList } from "@/components/admin/CoursesList";
 import { useTranslations } from "next-intl";
+import Cookies from "js-cookie";
+import { useRouter, useParams } from "next/navigation";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/app/components/ui/popover";
 
 function AdminLayout() {
   const t = useTranslations("Admin.panel");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeMenu, setActiveMenu] = useState("students");
+  const router = useRouter();
+  const params = useParams();
+
+  const handleLogout = () => {
+    Cookies.remove("auth_token");
+    router.push(`/${params.locale}/login`);
+  };
 
   const menuItems = [
     {
@@ -38,8 +52,30 @@ function AdminLayout() {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="h-16 flex items-center justify-center border-b">
+        <div className="h-16 flex items-center justify-between border-b px-4">
           <h1 className="text-xl font-bold text-gray-900">{t("title")}</h1>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className="p-2 rounded-full hover:bg-gray-100 transition"
+                title={t("logout")}
+                aria-label={t("logout")}
+              >
+                <LogOut className="w-6 h-6 text-red-600" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-44 text-center">
+              <div className="mb-2 text-sm text-gray-700">
+                {t("logout_confirm")}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-500 text-white rounded px-3 py-2 hover:bg-red-600 transition font-semibold"
+              >
+                {t("logout_action")}
+              </button>
+            </PopoverContent>
+          </Popover>
         </div>
         <nav className="mt-6">
           {menuItems.map((item) => (
