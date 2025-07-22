@@ -572,5 +572,23 @@
     "title": "Comentários",
     "view_all_reviews": "Ver todas as avaliações",
     "no_comments": "Sem comentários ainda"
+  },
+  "Login": {
+    "title": "Login",
+    "description": "Digite suas credenciais para acessar sua conta",
+    "email_label": "Email",
+    "email_placeholder": "Digite seu email",
+    "password_label": "Senha",
+    "password_placeholder": "Digite sua senha",
+    "show_password": "Mostrar senha",
+    "hide_password": "Ocultar senha",
+    "sign_in": "Entrar",
+    "signing_in": "Entrando...",
+    "login_failed": "Falha no login",
+    "connection_error": "Não foi possível conectar ao servidor. Verifique se o servidor está rodando.",
+    "credentials_error": "Login falhou. Verifique suas credenciais.",
+    "no_response_error": "Sem resposta do servidor. Verifique sua conexão.",
+    "request_error": "Ocorreu um erro ao configurar a requisição.",
+    "unexpected_error": "Ocorreu um erro inesperado durante o login"
   }
 }

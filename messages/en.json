@@ -572,5 +572,23 @@
     "title": "Student Reviews",
     "view_all_reviews": "View all reviews",
     "no_comments": "No comments yet"
+  },
+  "Login": {
+    "title": "Login",
+    "description": "Enter your credentials to access your account",
+    "email_label": "Email",
+    "email_placeholder": "Enter your email",
+    "password_label": "Password",
+    "password_placeholder": "Enter your password",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "sign_in": "Sign in",
+    "signing_in": "Signing in...",
+    "login_failed": "Failed to login",
+    "connection_error": "Unable to connect to the server. Please check if the server is running.",
+    "credentials_error": "Login failed. Please check your credentials.",
+    "no_response_error": "No response from server. Please check your connection.",
+    "request_error": "An error occurred while setting up the request.",
+    "unexpected_error": "An unexpected error occurred during login"
   }
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -31,6 +32,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("Login");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +54,8 @@ export default function LoginPage() {
         }
       );
 
-
       if (!data.success || !data.data?.token) {
-        throw new Error(data.message || "Failed to login");
+        throw new Error(data.message || t("login_failed"));
       }
 
       // Store the token in a secure cookie
@@ -70,24 +71,19 @@ export default function LoginPage() {
       console.error("Login error:", err);
       if (axios.isAxiosError(err)) {
         if (err.code === "ECONNREFUSED") {
-          setError(
-            "Unable to connect to the server. Please check if the server is running."
-          );
+          setError(t("connection_error"));
         } else if (err.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          setError(
-            err.response.data?.message ||
-              "Login failed. Please check your credentials."
-          );
+          setError(err.response.data?.message || t("credentials_error"));
         } else if (err.request) {
           // The request was made but no response was received
-          setError("No response from server. Please check your connection.");
+          setError(t("no_response_error"));
         } else {
-          setError("An error occurred while setting up the request.");
+          setError(t("request_error"));
         }
       } else {
-        setError("An unexpected error occurred during login");
+        setError(t("unexpected_error"));
       }
     } finally {
       setIsLoading(false);
@@ -99,10 +95,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            Login
+            {t("title")}
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access your account
+            {t("description")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -113,23 +109,23 @@ export default function LoginPage() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email_label")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t("email_placeholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("password_label")}</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder={t("password_placeholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -148,7 +144,7 @@ export default function LoginPage() {
                     <Eye className="h-4 w-4 text-gray-500" />
                   )}
                   <span className="sr-only">
-                    {showPassword ? "Hide password" : "Show password"}
+                    {showPassword ? t("hide_password") : t("show_password")}
                   </span>
                 </Button>
               </div>
@@ -156,7 +152,7 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? t("signing_in") : t("sign_in")}
             </Button>
           </CardFooter>
         </form>

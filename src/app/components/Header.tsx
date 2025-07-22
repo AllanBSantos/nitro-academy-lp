@@ -5,15 +5,17 @@ import LocaleSwitch from "@/components/LocaleSwitch";
 import TeacherDialog from "@/components/TeacherDialog";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function Header() {
   const t = useTranslations("Faq");
   const footerT = useTranslations("Footer");
   const params = useParams();
   const locale = (params?.locale as string) || "pt"; // Default to 'pt' if no locale
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const navLinks = [
     { href: `/${locale}`, label: footerT("home") },
@@ -56,6 +58,24 @@ export default function Header() {
               {t("Seja um professor Nitro Academy!")}
             </button>
           </TeacherDialog>
+          <div className="relative">
+            <Link href={`/${locale}/login`}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/10"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+            {showTooltip && (
+              <div className="absolute top-full right-0 mt-2 px-3 py-1 bg-black text-white text-sm rounded-md whitespace-nowrap z-50">
+                Área Logada
+              </div>
+            )}
+          </div>
           <LocaleSwitch />
         </div>
 
@@ -84,6 +104,14 @@ export default function Header() {
                       {t("Seja um professor Nitro Academy!")}
                     </button>
                   </TeacherDialog>
+                </div>
+                <div className="mt-4">
+                  <Link href={`/${locale}/login`}>
+                    <button className="w-full font-bold px-4 py-2 border border-white bg-transparent text-white hover:bg-white hover:text-background transition-colors rounded flex items-center justify-center gap-2">
+                      <User className="h-5 w-5" />
+                      Login
+                    </button>
+                  </Link>
                 </div>
                 <div className="mt-4">
                   <LocaleSwitch />
