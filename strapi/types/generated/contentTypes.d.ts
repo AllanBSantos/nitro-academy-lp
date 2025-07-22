@@ -373,6 +373,38 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAlunoEscolaParceiraAlunoEscolaParceira
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'alunos_escola_parceira';
+  info: {
+    displayName: 'aluno_escola_parceira';
+    pluralName: 'alunos-escola-parceira';
+    singularName: 'aluno-escola-parceira';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    cpf: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    escola: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::aluno-escola-parceira.aluno-escola-parceira'
+    > &
+      Schema.Attribute.Private;
+    nome: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    turma: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
   collectionName: 'alunos';
   info: {
@@ -1374,6 +1406,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::aluno-escola-parceira.aluno-escola-parceira': ApiAlunoEscolaParceiraAlunoEscolaParceira;
       'api::aluno.aluno': ApiAlunoAluno;
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::cupom.cupom': ApiCupomCupom;

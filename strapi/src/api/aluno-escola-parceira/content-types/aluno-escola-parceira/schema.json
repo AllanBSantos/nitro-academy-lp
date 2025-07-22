@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "alunos_escola_parceira",
+  "info": {
+    "singularName": "aluno-escola-parceira",
+    "pluralName": "alunos-escola-parceira",
+    "displayName": "aluno_escola_parceira"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "nome": {
+      "type": "string",
+      "required": true
+    },
+    "cpf": {
+      "type": "string"
+    },
+    "turma": {
+      "type": "string"
+    },
+    "escola": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
