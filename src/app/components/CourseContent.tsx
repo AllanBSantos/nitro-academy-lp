@@ -159,7 +159,6 @@ export default function CourseContent({ course }: CourseContentProps) {
         <TimeSelectionSection
           inscricoes_abertas={course.inscricoes_abertas}
           course={course}
-          getClassAvailability={getClassAvailability}
           onScheduleClick={handleEnrollClick}
           isScheduleFull={isClassFull}
         />
