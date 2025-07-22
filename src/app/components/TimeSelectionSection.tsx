@@ -8,7 +8,6 @@ import EnrollmentModal from "./EnrollmentModal";
 import SuggestionModal from "./SuggestionModal";
 import { useTranslations } from "next-intl";
 import { CardProps, Turma } from "@/types/card";
-import { Button } from "@/components/ui/button";
 
 interface Schedule {
   dia: string;
@@ -23,11 +22,6 @@ interface Schedule {
 interface TimeSelectionSectionProps {
   inscricoes_abertas: boolean;
   course: CardProps;
-  getClassAvailability: (classNumber: string) => {
-    isFull: boolean;
-    currentStudents: number;
-    maxStudents: number;
-  };
   onScheduleClick: (classNumber: string) => void;
   isScheduleFull: (classNumber: string) => boolean;
 }
@@ -35,7 +29,6 @@ interface TimeSelectionSectionProps {
 export default function TimeSelectionSection({
   inscricoes_abertas,
   course,
-  getClassAvailability,
   onScheduleClick,
   isScheduleFull,
 }: TimeSelectionSectionProps) {
@@ -46,7 +39,7 @@ export default function TimeSelectionSection({
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const tDay = useTranslations("CourseFilters");
-  const [selectedTurma, setSelectedTurma] = useState<Turma | null>(null);
+
   const CLASSES_PER_COURSE = 6;
 
   const DAY_LABELS: Record<string, string> = {
@@ -112,10 +105,15 @@ export default function TimeSelectionSection({
               </p>
             )}
 
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-blue-800 text-sm text-center">
+                {t("seats_warning")}
+              </p>
+            </div>
+
             <div className="space-y-4 max-w-md mx-auto mb-8">
               {schedules.map((schedule, index) => {
                 const classNumber = (index + 1).toString();
-                const { isFull } = getClassAvailability(classNumber);
                 const isSelected =
                   selectedTime ===
                   `${schedule.dia_semana}-${schedule.horario_aula}`;
@@ -128,19 +126,12 @@ export default function TimeSelectionSection({
                       className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
                         !inscricoes_abertas
                           ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
-                          : isFull
-                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
                           : isSelected
                           ? "border-2 border-orange-500 bg-orange-50"
                           : "border-2 border-gray-300 hover:border-[#3B82F6]"
                       }`}
                     >
                       <div className="flex flex-col items-center">
-                        {isFull && inscricoes_abertas && (
-                          <span className="text-sm text-red-500 font-medium mb-2">
-                            {t("class_full")}
-                          </span>
-                        )}
                         <div className="text-sm text-gray-600 mb-2">
                           {t("class")} {classNumber} - {schedule.faixa_etaria}
                         </div>
@@ -264,103 +255,61 @@ export default function TimeSelectionSection({
 
         {course.turmas?.map((turma: Turma) => (
           <div key={turma.id} className="mb-8">
-            {turma.vagas_disponiveis === 0 ? (
-              <div className="mt-4">
-                <p className="text-red-600 font-semibold mb-4">
-                  {t("class_full")}
-                </p>
-                {course.sugestao_horario !== false && (
-                  <Button
-                    onClick={() => {
-                      setSelectedTurma(turma);
-                      setIsSuggestionModalOpen(true);
-                    }}
-                    className="bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold w-full"
-                  >
-                    {t("suggest_new_time")}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4 max-w-md mx-auto mb-8">
-                {schedules.map((schedule, index) => {
-                  const classNumber = (index + 1).toString();
-                  const { isFull, currentStudents, maxStudents } =
-                    getClassAvailability(classNumber);
-                  const isSelected =
-                    selectedTime ===
-                    `${schedule.dia_semana}-${schedule.horario_aula}`;
+            <div className="space-y-4 max-w-md mx-auto mb-8">
+              {schedules.map((schedule, index) => {
+                const classNumber = (index + 1).toString();
 
-                  return (
-                    <div key={index} className="mb-4">
-                      <button
-                        onClick={() => handleTimeSelect(schedule, index)}
-                        className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
-                          isFull
-                            ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
-                            : isSelected
-                            ? "border-2 border-orange-500 bg-orange-50"
-                            : "border-2 border-gray-300 hover:border-[#3B82F6]"
-                        }`}
-                      >
-                        <div className="flex flex-col items-center">
-                          {isFull && (
-                            <span className="text-sm text-red-500 font-medium mb-2">
-                              {t("class_full")}
-                            </span>
-                          )}
-                          <div className="text-sm text-gray-600 mb-2">
-                            {t("class")} {classNumber} - {schedule.faixa_etaria}
-                            {!isFull && (
-                              <span className="ml-2 text-gray-500">
-                                ({currentStudents}/{maxStudents} {t("students")}
-                                )
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <div className="text-[#3B82F6] text-lg font-medium">
-                              {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
-                                schedule.dia_semana}{" "}
-                              {schedule.horario_aula}
-                            </div>
-                            {course.price &&
-                              course.moeda &&
-                              course.price.total > 0 && (
-                                <div className="text-sm mt-1 text-gray-500">
-                                  <span className="block mb-1">
-                                    {course.moeda === "Real" ? "R$" : "USD"}{" "}
-                                    {(course.price.total / CLASSES_PER_COURSE)
-                                      .toFixed(2)
-                                      .replace(
-                                        ".",
-                                        course.moeda === "Real" ? "," : "."
-                                      )}{" "}
-                                    {t("per_class")}
-                                  </span>
-                                </div>
-                              )}
-                          </div>
+                const isSelected =
+                  selectedTime ===
+                  `${schedule.dia_semana}-${schedule.horario_aula}`;
+
+                return (
+                  <div key={index} className="mb-4">
+                    <button
+                      onClick={() => handleTimeSelect(schedule, index)}
+                      className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
+                        isSelected
+                          ? "border-2 border-orange-500 bg-orange-50"
+                          : "border-2 border-gray-300 hover:border-[#3B82F6]"
+                      }`}
+                    >
+                      <div className="flex flex-col items-center">
+                        <div className="text-sm text-gray-600 mb-2">
+                          {t("class")} {classNumber} - {schedule.faixa_etaria}
                         </div>
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                        <div className="flex flex-col items-center">
+                          <div className="text-[#3B82F6] text-lg font-medium">
+                            {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
+                              schedule.dia_semana}{" "}
+                            {schedule.horario_aula}
+                          </div>
+                          {course.price &&
+                            course.moeda &&
+                            course.price.total > 0 && (
+                              <div className="text-sm mt-1 text-gray-500">
+                                <span className="block mb-1">
+                                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
+                                  {(course.price.total / CLASSES_PER_COURSE)
+                                    .toFixed(2)
+                                    .replace(
+                                      ".",
+                                      course.moeda === "Real" ? "," : "."
+                                    )}{" "}
+                                  {t("per_class")}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ))}
 
-        {selectedTurma && (
-          <SuggestionModal
-            isOpen={isSuggestionModalOpen}
-            onOpenChange={setIsSuggestionModalOpen}
-            courseName={course.title}
-            courseId={parseInt(course.id)}
-          />
-        )}
-
-        {!selectedTurma && selectedTime === "suggestion" && (
+        {selectedTime === "suggestion" && (
           <SuggestionModal
             isOpen={isSuggestionModalOpen}
             onOpenChange={setIsSuggestionModalOpen}

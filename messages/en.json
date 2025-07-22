@@ -239,8 +239,9 @@
     "payment_options": "in {installments}x interest-free or {total} in cash",
     "select": "Select",
     "best_time": "the best time and click",
-    "enroll": "ENROLL NOW",
+    "enroll": "Apply for a spot",
     "inscricoes_fechadas": "Enrollment for this course is temporarily closed",
+    "seats_warning": "Seats are allocated on a first-come, first-served basis. Once we reach capacity, we'll guide any additional applicants in choosing another course.",
     "days": {
       "sunday": "Sunday",
       "monday": "Monday",
@@ -280,7 +281,7 @@
   },
   "EnrollmentModal": {
     "title": "Enrollment Form",
-    "enroll": "ENROLL NOW",
+    "enroll": "Apply for a spot",
     "loading": "Sending...",
     "success": {
       "title": "Enrollment Successful!",

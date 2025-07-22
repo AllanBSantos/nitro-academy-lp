@@ -232,8 +232,9 @@
     "payment_options": "em {installments}x sem juros ou {total} à vista",
     "select": "Selecione",
     "best_time": "o melhor horário e clique em",
-    "enroll": "REALIZAR MATRÍCULA",
+    "enroll": "Candidatar-se a vaga",
     "inscricoes_fechadas": "As inscrições para este curso estão temporariamente fechadas",
+    "seats_warning": "As vagas são preenchidas por ordem de inscrição. Quando o número máximo for atingido, orientaremos os inscritos excedentes na escolha de outro curso.",
     "days": {
       "sunday": "Domingo",
       "monday": "Segunda-feira",
@@ -280,7 +281,7 @@
   },
   "EnrollmentModal": {
     "title": "Formulário de Matrícula",
-    "enroll": "MATRICULAR AGORA",
+    "enroll": "Candidatar-se a vaga",
     "loading": "Enviando...",
     "success": {
       "title": "Matrícula Realizada!",
