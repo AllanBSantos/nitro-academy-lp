@@ -22,11 +22,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       <Header />
       <TeenGuy locale={params.locale} />
       <Introduction locale={params.locale} />
-      <div className="bg-theme-orange py-12 sm:py-20 px-4 sm:px-10">
-        <div className="max-w-[1200px] mx-auto aspect-video w-full">
-          <VturbVideo />
-        </div>
-      </div>
+
       <OurApproach />
       <CarouselClient locale={params.locale} />
       <WhyChooseNitro locale={params.locale} />
