@@ -34,6 +34,10 @@ interface PartnerStudent {
 export default function PartnerStudentsList() {
   const t = useTranslations("Admin.partnerStudents");
   const [students, setStudents] = useState<PartnerStudent[]>([]);
+
+  // Função auxiliar para delay
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState("");
@@ -110,31 +114,17 @@ export default function PartnerStudentsList() {
     });
   };
 
-  const startProgressSimulation = (totalStudents: number) => {
+  const startProgressSimulation = () => {
     setImportProgress(0);
     setImportStatus(t("import_status_starting"));
 
-    // Calcula número de lotes baseado no BATCH_SIZE do backend
-    const BATCH_SIZE = 5; // Deve ser igual ao backend
-    const totalBatches = Math.ceil(totalStudents / BATCH_SIZE);
-
-    // Simula progresso baseado nos lotes (mais realista)
-    let currentBatch = 0;
-
+    // Progresso inicial simples - será atualizado pelo backend
     progressIntervalRef.current = setInterval(() => {
-      currentBatch++;
-      const progress = Math.round((currentBatch / totalBatches) * 95); // Para em 95%
-
-      setImportProgress(progress);
-
-      if (currentBatch >= totalBatches) {
-        // Para a simulação quando todos os lotes foram "processados"
-        if (progressIntervalRef.current) {
-          clearInterval(progressIntervalRef.current);
-          progressIntervalRef.current = null;
-        }
-      }
-    }, 2000); // Atualiza a cada 2 segundos (igual ao BATCH_DELAY do backend)
+      setImportProgress((prev) => {
+        if (prev >= 90) return 90; // Para em 90% até receber progresso real
+        return prev + 5;
+      });
+    }, 3000); // Atualiza a cada 3 segundos
   };
 
   const stopProgressSimulation = () => {
@@ -151,68 +141,93 @@ export default function PartnerStudentsList() {
     setImportProgress(0);
     setImportStatus("");
 
-    startProgressSimulation(csvData.length);
+    startProgressSimulation();
 
     try {
       setImportStatus(t("import_status_processing"));
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutos de timeout
+      let offset = 0;
+      let totalImported = 0;
+      const allErrors: string[] = [];
 
-      const response = await fetch("/api/partner-students/import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: csvData }),
-        signal: controller.signal,
-      });
+      // Importação incremental
+      while (true) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutos por parte
 
-      clearTimeout(timeoutId);
+        const response = await fetch("/api/partner-students/import", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data: csvData, offset }),
+          signal: controller.signal,
+        });
 
-      let result;
-      try {
-        result = await response.json();
-      } catch (parseError) {
-        console.error("Erro ao parsear resposta:", parseError);
+        clearTimeout(timeoutId);
 
-        if (response.status === 504) {
-          setImportProgress(100);
-          setImportStatus(t("import_status_completed"));
+        let result;
+        try {
+          result = await response.json();
+        } catch (parseError) {
+          console.error("Erro ao parsear resposta:", parseError);
 
-          setTimeout(() => {
-            setError(t("import_timeout_partial"));
-            fetchStudents();
-          }, 500);
-          return;
+          if (response.status === 504) {
+            setImportProgress(100);
+            setImportStatus(t("import_status_completed"));
+
+            setTimeout(() => {
+              setError(t("import_timeout_partial"));
+              fetchStudents();
+            }, 500);
+            return;
+          }
+
+          throw new Error(t("import_invalid_response"));
         }
 
-        throw new Error(t("import_invalid_response"));
-      }
+        if (!response.ok) {
+          throw new Error(
+            result.error ||
+              result.message ||
+              `Erro ${response.status}: ${response.statusText}`
+          );
+        }
 
-      if (!response.ok) {
-        throw new Error(
-          result.error ||
-            result.message ||
-            `Erro ${response.status}: ${response.statusText}`
-        );
-      }
+        if (result.success) {
+          totalImported += result.imported;
+          allErrors.push(...(result.errors || []));
 
-      if (result.success) {
-        setImportProgress(100);
-        setImportStatus(t("import_status_completed"));
-
-        setTimeout(() => {
-          setSuccess(t("import_success", { count: result.imported }));
-          if (result.errors && result.errors.length > 0) {
-            setError(
-              t("import_warnings", { errors: result.errors.join(", ") })
-            );
+          // Atualiza progresso baseado no progresso real
+          if (result.details?.progress) {
+            setImportProgress(result.details.progress);
           }
-          fetchStudents();
-        }, 500);
-      } else {
-        setError(result.message || t("import_error"));
+
+          if (result.hasMore && result.nextOffset !== null) {
+            // Continua com a próxima parte
+            offset = result.nextOffset;
+            setImportStatus(t("import_status_processing"));
+            await delay(1000); // Pequena pausa entre partes
+          } else {
+            // Importação concluída
+            setImportProgress(100);
+            setImportStatus(t("import_status_completed"));
+
+            setTimeout(() => {
+              setSuccess(t("import_success", { count: totalImported }));
+              if (allErrors.length > 0) {
+                setError(
+                  t("import_warnings", { errors: allErrors.join(", ") })
+                );
+              }
+              fetchStudents();
+            }, 500);
+            break;
+          }
+        } else {
+          setError(result.message || t("import_error"));
+          break;
+        }
       }
     } catch (err: any) {
       console.error("Import error:", err);

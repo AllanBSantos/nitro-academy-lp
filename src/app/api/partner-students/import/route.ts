@@ -7,6 +7,7 @@ const BATCH_SIZE = 5;
 const BATCH_DELAY = 2000;
 const REQUEST_TIMEOUT = 15000;
 const MAX_RETRIES = 3;
+const MAX_STUDENTS_PER_REQUEST = 50; // Limite para evitar timeout do servidor
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -103,7 +104,7 @@ async function processBatch(
 
 export async function POST(request: NextRequest) {
   try {
-    const { data } = await request.json();
+    const { data, offset = 0 } = await request.json();
 
     if (!data || !Array.isArray(data)) {
       return NextResponse.json(
@@ -114,7 +115,6 @@ export async function POST(request: NextRequest) {
 
     const validatedData = [];
     const errors = [];
-    let totalImported = 0;
 
     for (const row of data) {
       if (!row.nome || !row.escola) {
@@ -149,6 +149,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Remove duplicatas
     const uniqueData = [];
     const seen = new Set();
 
@@ -167,10 +168,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Processa apenas uma parte dos dados para evitar timeout
+    const startIndex = offset;
+    const endIndex = Math.min(
+      startIndex + MAX_STUDENTS_PER_REQUEST,
+      uniqueData.length
+    );
+    const dataToProcess = uniqueData.slice(startIndex, endIndex);
+
     const batches = [];
-    for (let i = 0; i < uniqueData.length; i += BATCH_SIZE) {
-      batches.push(uniqueData.slice(i, i + BATCH_SIZE));
+    for (let i = 0; i < dataToProcess.length; i += BATCH_SIZE) {
+      batches.push(dataToProcess.slice(i, i + BATCH_SIZE));
     }
+
+    let totalImported = 0;
 
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
@@ -184,16 +195,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const hasMore = endIndex < uniqueData.length;
+    const nextOffset = hasMore ? endIndex : null;
+
     return NextResponse.json({
       success: true,
       imported: totalImported,
       errors: errors,
-      message: `Importação concluída. ${totalImported} alunos importados com sucesso.`,
+      hasMore: hasMore,
+      nextOffset: nextOffset,
+      totalProcessed: endIndex,
+      totalStudents: uniqueData.length,
+      message: hasMore
+        ? `Importação parcial: ${totalImported} alunos importados. Continuando...`
+        : `Importação concluída. ${totalImported} alunos importados com sucesso.`,
       details: {
         totalProcessed: uniqueData.length,
         batchesProcessed: batches.length,
         batchSize: BATCH_SIZE,
-        progress: 100,
+        progress: Math.round((endIndex / uniqueData.length) * 100),
         duplicatesRemoved: validatedData.length - uniqueData.length,
       },
     });
