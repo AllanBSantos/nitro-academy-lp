@@ -38,7 +38,7 @@ export function CoursesList() {
           const totalSpots = Array.isArray(course.cronograma)
             ? course.cronograma.length * maxStudentsPerClass
             : 0;
-          const availableSpots = totalSpots - studentCount;
+          const availableSpots = Math.max(0, totalSpots - studentCount);
 
           return {
             courseId: course.id,

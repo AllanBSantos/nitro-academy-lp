@@ -511,12 +511,59 @@
   },
   "Admin": {
     "panel": {
+      "title": "Admin Panel",
+      "courses": "Courses",
+      "back": "Back",
+      "loading": "Loading...",
+      "error": {
+        "course_not_found": "Course not found",
+        "loading_error": "Error loading course data"
+      },
+      "stats": {
+        "total_spots": "Total Spots",
+        "enrolled_students": "Enrolled Students",
+        "available_spots": "Available Spots"
+      },
+      "tabs": {
+        "students": "Students",
+        "classes": "Classes"
+      },
+      "students": {
+        "title": "Students List",
+        "all_classes": "All Classes",
+        "class": "Class {number}",
+        "student_count": "{count} students",
+        "table": {
+          "name": "Name",
+          "class": "Class"
+        }
+      },
+      "classes": {
+        "title": "Classes",
+        "register_new": "Register new class",
+        "no_classes": "No classes registered",
+        "start_registering": "Start by registering a new class.",
+        "feature_development": "Feature under development"
+      },
+      "courses_list": {
+        "title": "Courses",
+        "table": {
+          "course_name": "Course Name",
+          "total_spots": "Total Spots",
+          "enrolled_students": "Enrolled Students",
+          "available_spots": "Available Spots"
+        },
+        "error": "Error loading course data"
+      },
+      "course_edit": {
+        "saving": "Saving...",
+        "save": "Save changes",
+        "success": "Changes saved successfully!"
+      },
       "logout": "Logout",
       "logout_confirm": "Do you want to logout?",
       "logout_action": "Logout",
-      "title": "Admin Panel",
       "dashboard": "Dashboard",
-      "courses": "Courses",
       "partner_students": "Partner School Students List"
     },
     "partnerStudents": {
@@ -528,6 +575,7 @@
       "importing": "Importing...",
       "download_template": "Download Template",
       "required_columns": "Required columns",
+      "optional_columns": "Optional columns",
       "file_format": "File format",
       "invalid_file_type": "Invalid file type. Use only CSV files.",
       "csv_parse_error": "Error processing CSV file",
@@ -549,7 +597,12 @@
       "status": "Status",
       "import_date": "Import Date",
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "pagination": {
+        "showing": "Showing {start} to {end} of {total} students",
+        "previous": "Previous",
+        "next": "Next"
+      }
     }
   },
   "CourseRating": {

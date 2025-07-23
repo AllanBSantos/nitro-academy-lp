@@ -542,7 +542,8 @@
         "title": "Aulas",
         "register_new": "Registrar nova aula",
         "no_classes": "Nenhuma aula registrada",
-        "start_registering": "Comece registrando uma nova aula."
+        "start_registering": "Comece registrando uma nova aula.",
+        "feature_development": "Funcionalidade em desenvolvimento"
       },
       "courses_list": {
         "title": "Cursos",
@@ -593,7 +594,12 @@
       "name": "Nome",
       "cpf": "CPF",
       "school": "Escola",
-      "class": "Turma"
+      "class": "Turma",
+      "pagination": {
+        "showing": "Mostrando {start} a {end} de {total} alunos",
+        "previous": "Anterior",
+        "next": "Próximo"
+      }
     }
   },
   "CourseRating": {

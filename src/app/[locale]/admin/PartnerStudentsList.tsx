@@ -325,8 +325,11 @@ export default function PartnerStudentsList() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-6">
                   <div className="text-sm text-gray-700">
-                    Mostrando {startIndex} a {endIndex} de {totalStudents}{" "}
-                    alunos
+                    {t("pagination.showing", {
+                      start: startIndex,
+                      end: endIndex,
+                      total: totalStudents,
+                    })}
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -336,7 +339,7 @@ export default function PartnerStudentsList() {
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="w-4 h-4" />
-                      Anterior
+                      {t("pagination.previous")}
                     </Button>
 
                     <div className="flex items-center gap-1">
@@ -363,7 +366,7 @@ export default function PartnerStudentsList() {
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                     >
-                      Próximo
+                      {t("pagination.next")}
                       <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>

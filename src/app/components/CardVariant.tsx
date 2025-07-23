@@ -158,7 +158,7 @@ export default function Card({
       };
 
       const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
-      const availableSpots = totalStudentsAccepted - studentCount;
+      const availableSpots = Math.max(0, totalStudentsAccepted - studentCount);
       if (availableSpots > 0) {
         badges.push(
           <span

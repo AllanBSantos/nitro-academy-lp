@@ -62,9 +62,10 @@ export default function CourseContent({ course }: CourseContentProps) {
     const turma = course.turmas?.find((t) => String(t.id) === classNumber);
 
     if (turma) {
+      const availableSpots = Math.max(0, turma.vagas_disponiveis || 0);
       return {
-        isFull: turma.vagas_disponiveis === 0,
-        currentStudents: maxStudentsPerClass - turma.vagas_disponiveis,
+        isFull: availableSpots === 0,
+        currentStudents: maxStudentsPerClass - availableSpots,
         maxStudents: maxStudentsPerClass,
       };
     }
