@@ -45,10 +45,22 @@ export default function PartnerStudentsList() {
   const [totalStudents, setTotalStudents] = useState(0);
   const studentsPerPage = 100;
 
+  const [importProgress, setImportProgress] = useState(0);
+  const [importStatus, setImportStatus] = useState("");
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -65,8 +77,6 @@ export default function PartnerStudentsList() {
       complete: (results) => {
         const { data, errors } = results;
 
-        console.log("CSV parse results:", { data, errors });
-
         if (errors.length > 0) {
           setError(t("csv_parse_error"));
           return;
@@ -74,9 +84,6 @@ export default function PartnerStudentsList() {
 
         const requiredColumns = ["Nome", "Escola"];
         const firstRow = data[0] as any;
-
-        console.log("Primeira linha do CSV:", firstRow);
-        console.log("Colunas encontradas:", Object.keys(firstRow || {}));
 
         for (const column of requiredColumns) {
           if (!(column in firstRow)) {
@@ -94,7 +101,6 @@ export default function PartnerStudentsList() {
           turma: row.Turma || "",
         }));
 
-        console.log("Dados preparados para envio:", csvData);
         importStudents(csvData);
       },
       error: (error) => {
@@ -104,12 +110,44 @@ export default function PartnerStudentsList() {
     });
   };
 
+  const startProgressSimulation = (totalStudents: number) => {
+    setImportProgress(0);
+    setImportStatus(t("import_status_starting"));
+
+    const estimatedTimeMs = totalStudents * 200;
+    const updateInterval = 100;
+    const progressIncrement = (updateInterval / estimatedTimeMs) * 100;
+
+    progressIntervalRef.current = setInterval(() => {
+      setImportProgress((prev) => {
+        const newProgress = prev + progressIncrement;
+        if (newProgress >= 95) {
+          return 95;
+        }
+        return newProgress;
+      });
+    }, updateInterval);
+  };
+
+  const stopProgressSimulation = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+  };
+
   const importStudents = async (csvData: any[]) => {
     setImporting(true);
     setError("");
     setSuccess("");
+    setImportProgress(0);
+    setImportStatus("");
+
+    startProgressSimulation(csvData.length);
 
     try {
+      setImportStatus(t("import_status_processing"));
+
       const response = await fetch("/api/partner-students/import", {
         method: "POST",
         headers: {
@@ -118,30 +156,56 @@ export default function PartnerStudentsList() {
         body: JSON.stringify({ data: csvData }),
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error("Erro ao parsear resposta:", parseError);
+        throw new Error(t("import_invalid_response"));
+      }
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log("Erro detalhado:", errorData);
         throw new Error(
-          errorData.error || errorData.message || t("import_error")
+          result.error ||
+            result.message ||
+            `Erro ${response.status}: ${response.statusText}`
         );
       }
 
       if (result.success) {
-        setSuccess(t("import_success", { count: result.imported }));
-        if (result.errors && result.errors.length > 0) {
-          setError(t("import_warnings", { errors: result.errors.join(", ") }));
-        }
-        fetchStudents();
+        setImportProgress(100);
+        setImportStatus(t("import_status_completed"));
+
+        setTimeout(() => {
+          setSuccess(t("import_success", { count: result.imported }));
+          if (result.errors && result.errors.length > 0) {
+            setError(
+              t("import_warnings", { errors: result.errors.join(", ") })
+            );
+          }
+          fetchStudents();
+        }, 500);
       } else {
         setError(result.message || t("import_error"));
       }
     } catch (err: any) {
       console.error("Import error:", err);
-      setError(t("import_error"));
+
+      if (err.name === "TypeError" && err.message.includes("fetch")) {
+        setError(t("import_connection_error"));
+      } else if (
+        err.message.includes("timeout") ||
+        err.message.includes("504")
+      ) {
+        setError(t("import_timeout"));
+      } else {
+        setError(err.message || t("import_error"));
+      }
     } finally {
+      stopProgressSimulation();
       setImporting(false);
+      setImportProgress(0);
+      setImportStatus("");
     }
   };
 
@@ -234,6 +298,22 @@ export default function PartnerStudentsList() {
               {t("download_template")}
             </Button>
           </div>
+
+          {/* Barra de Progresso */}
+          {importing && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>{importStatus}</span>
+                <span>{Math.round(importProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${importProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
 
           <input
             ref={fileInputRef}
