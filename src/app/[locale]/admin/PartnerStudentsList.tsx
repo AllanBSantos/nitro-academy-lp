@@ -114,19 +114,27 @@ export default function PartnerStudentsList() {
     setImportProgress(0);
     setImportStatus(t("import_status_starting"));
 
-    const estimatedTimeMs = totalStudents * 200;
-    const updateInterval = 100;
-    const progressIncrement = (updateInterval / estimatedTimeMs) * 100;
+    // Calcula número de lotes baseado no BATCH_SIZE do backend
+    const BATCH_SIZE = 5; // Deve ser igual ao backend
+    const totalBatches = Math.ceil(totalStudents / BATCH_SIZE);
+
+    // Simula progresso baseado nos lotes (mais realista)
+    let currentBatch = 0;
 
     progressIntervalRef.current = setInterval(() => {
-      setImportProgress((prev) => {
-        const newProgress = prev + progressIncrement;
-        if (newProgress >= 95) {
-          return 95;
+      currentBatch++;
+      const progress = Math.round((currentBatch / totalBatches) * 95); // Para em 95%
+
+      setImportProgress(progress);
+
+      if (currentBatch >= totalBatches) {
+        // Para a simulação quando todos os lotes foram "processados"
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
         }
-        return newProgress;
-      });
-    }, updateInterval);
+      }
+    }, 2000); // Atualiza a cada 2 segundos (igual ao BATCH_DELAY do backend)
   };
 
   const stopProgressSimulation = () => {
@@ -148,13 +156,19 @@ export default function PartnerStudentsList() {
     try {
       setImportStatus(t("import_status_processing"));
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutos de timeout
+
       const response = await fetch("/api/partner-students/import", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ data: csvData }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       let result;
       try {
