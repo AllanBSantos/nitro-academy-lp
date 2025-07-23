@@ -31,13 +31,15 @@ interface PartnerStudent {
   data_importacao?: string;
 }
 
+// ========= NOVO: tamanho de lote para importação ========= //
+const BATCH_SIZE = 40; // ajuste conforme performance do backend
+// ========================================================= //
+
 export default function PartnerStudentsList() {
   const t = useTranslations("Admin.partnerStudents");
   const [students, setStudents] = useState<PartnerStudent[]>([]);
 
-  // Função auxiliar para delay
-  const delay = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState("");
@@ -91,9 +93,7 @@ export default function PartnerStudentsList() {
 
         for (const column of requiredColumns) {
           if (!(column in firstRow)) {
-            setError(
-              t("missing_columns", { columns: requiredColumns.join(", ") })
-            );
+            setError(t("missing_columns", { columns: requiredColumns.join(", ") }));
             return;
           }
         }
@@ -118,13 +118,12 @@ export default function PartnerStudentsList() {
     setImportProgress(0);
     setImportStatus(t("import_status_starting"));
 
-    // Progresso inicial simples - será atualizado pelo backend
     progressIntervalRef.current = setInterval(() => {
       setImportProgress((prev) => {
-        if (prev >= 90) return 90; // Para em 90% até receber progresso real
+        if (prev >= 90) return 90; // deixamos 10% para finalizar
         return prev + 5;
       });
-    }, 3000); // Atualiza a cada 3 segundos
+    }, 3000);
   };
 
   const stopProgressSimulation = () => {
@@ -134,6 +133,9 @@ export default function PartnerStudentsList() {
     }
   };
 
+  // ==============================
+  // NOVO: importação em lotes
+  // ==============================
   const importStudents = async (csvData: any[]) => {
     setImporting(true);
     setError("");
@@ -146,103 +148,77 @@ export default function PartnerStudentsList() {
     try {
       setImportStatus(t("import_status_processing"));
 
-      let offset = 0;
+      let index = 0;
       let totalImported = 0;
       const allErrors: string[] = [];
 
-      // Importação incremental
-      while (true) {
+      while (index < csvData.length) {
+        const batch = csvData.slice(index, index + BATCH_SIZE);
+
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutos por parte
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min safety
 
         const response = await fetch("/api/partner-students/import", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ data: csvData, offset }),
+          body: JSON.stringify({ data: batch }),
           signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
 
-        let result;
-        try {
-          result = await response.json();
-        } catch (parseError) {
-          console.error("Erro ao parsear resposta:", parseError);
-
-          if (response.status === 504) {
-            setImportProgress(100);
-            setImportStatus(t("import_status_completed"));
-
-            setTimeout(() => {
-              setError(t("import_timeout_partial"));
-              fetchStudents();
-            }, 500);
-            return;
-          }
-
+        // Garantimos que a resposta realmente seja JSON
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
           throw new Error(t("import_invalid_response"));
         }
 
-        if (!response.ok) {
-          throw new Error(
-            result.error ||
-              result.message ||
-              `Erro ${response.status}: ${response.statusText}`
-          );
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || result.message || t("import_error"));
         }
 
-        if (result.success) {
-          totalImported += result.imported;
-          allErrors.push(...(result.errors || []));
+        totalImported += result.imported;
+        allErrors.push(...(result.errors || []));
 
-          // Atualiza progresso baseado no progresso real
-          if (result.details?.progress) {
-            setImportProgress(result.details.progress);
-          }
+        index += BATCH_SIZE;
 
-          if (result.hasMore && result.nextOffset !== null) {
-            // Continua com a próxima parte
-            offset = result.nextOffset;
-            setImportStatus(t("import_status_processing"));
-            await delay(1000); // Pequena pausa entre partes
-          } else {
-            // Importação concluída
-            setImportProgress(100);
-            setImportStatus(t("import_status_completed"));
+        // Avança progress bar proporcional até 90%
+        setImportProgress(Math.min(90, Math.round((index / csvData.length) * 90)));
+        setImportStatus(
+          t("import_status_progress", {
+            current: totalImported,
+            total: csvData.length,
+          })
+        );
 
-            setTimeout(() => {
-              setSuccess(t("import_success", { count: totalImported }));
-              if (allErrors.length > 0) {
-                setError(
-                  t("import_warnings", { errors: allErrors.join(", ") })
-                );
-              }
-              fetchStudents();
-            }, 500);
-            break;
-          }
-        } else {
-          setError(result.message || t("import_error"));
-          break;
-        }
+        // Pequeno delay para evitar sobrecarga no backend
+        await delay(500);
       }
+
+      // Finalização
+      setImportProgress(100);
+      setImportStatus(t("import_status_completed"));
+
+      setTimeout(() => {
+        setSuccess(t("import_success", { count: totalImported }));
+        if (allErrors.length > 0) {
+          setError(t("import_warnings", { errors: allErrors.join(", ") }));
+        }
+        fetchStudents();
+      }, 500);
     } catch (err: any) {
       console.error("Import error:", err);
 
-      if (err.name === "TypeError" && err.message.includes("fetch")) {
-        setError(t("import_connection_error"));
-      } else if (
-        err.message.includes("timeout") ||
-        err.message.includes("504")
-      ) {
+      if (err.name === "AbortError") {
         setError(t("import_timeout"));
-        fetchStudents();
       } else {
         setError(err.message || t("import_error"));
       }
+      fetchStudents();
     } finally {
       stopProgressSimulation();
       setImporting(false);
@@ -300,6 +276,7 @@ export default function PartnerStudentsList() {
         </div>
       </div>
 
+      {/* ==================== Seção de Importação ==================== */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -377,6 +354,7 @@ export default function PartnerStudentsList() {
         </CardContent>
       </Card>
 
+      {/* ==================== Lista de Alunos ==================== */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -395,9 +373,7 @@ export default function PartnerStudentsList() {
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">{t("no_students")}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                {t("import_to_get_started")}
-              </p>
+              <p className="text-sm text-gray-500 mt-2">{t("import_to_get_started")}</p>
             </div>
           ) : (
             <>
@@ -422,18 +398,10 @@ export default function PartnerStudentsList() {
                   <tbody>
                     {students.map((student) => (
                       <tr key={student.id} className="hover:bg-gray-50">
-                        <td className="border border-gray-200 px-4 py-2">
-                          {student.nome}
-                        </td>
-                        <td className="border border-gray-200 px-4 py-2">
-                          {student.cpf || "-"}
-                        </td>
-                        <td className="border border-gray-200 px-4 py-2">
-                          {student.escola}
-                        </td>
-                        <td className="border border-gray-200 px-4 py-2">
-                          {student.turma || "-"}
-                        </td>
+                        <td className="border border-gray-200 px-4 py-2">{student.nome}</td>
+                        <td className="border border-gray-200 px-4 py-2">{student.cpf || "-"}</td>
+                        <td className="border border-gray-200 px-4 py-2">{student.escola}</td>
+                        <td className="border border-gray-200 px-4 py-2">{student.turma || "-"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -461,21 +429,17 @@ export default function PartnerStudentsList() {
                     </Button>
 
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        (page) => (
-                          <Button
-                            key={page}
-                            variant={
-                              currentPage === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => handlePageChange(page)}
-                            className="w-8 h-8 p-0"
-                          >
-                            {page}
-                          </Button>
-                        )
-                      )}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page)}
+                          className="w-8 h-8 p-0"
+                        >
+                          {page}
+                        </Button>
+                      ))}
                     </div>
 
                     <Button
