@@ -31,15 +31,15 @@ interface PartnerStudent {
   data_importacao?: string;
 }
 
-// ========= NOVO: tamanho de lote para importação ========= //
-const BATCH_SIZE = 40; // ajuste conforme performance do backend
-// ========================================================= //
+// Tamanho de lote ajustado para 20 registros, pois o Strapi trava acima disso
+const BATCH_SIZE = 20;
 
 export default function PartnerStudentsList() {
   const t = useTranslations("Admin.partnerStudents");
   const [students, setStudents] = useState<PartnerStudent[]>([]);
 
-  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState("");
@@ -93,7 +93,9 @@ export default function PartnerStudentsList() {
 
         for (const column of requiredColumns) {
           if (!(column in firstRow)) {
-            setError(t("missing_columns", { columns: requiredColumns.join(", ") }));
+            setError(
+              t("missing_columns", { columns: requiredColumns.join(", ") })
+            );
             return;
           }
         }
@@ -120,7 +122,7 @@ export default function PartnerStudentsList() {
 
     progressIntervalRef.current = setInterval(() => {
       setImportProgress((prev) => {
-        if (prev >= 90) return 90; // deixamos 10% para finalizar
+        if (prev >= 90) return 90;
         return prev + 5;
       });
     }, 3000);
@@ -133,9 +135,6 @@ export default function PartnerStudentsList() {
     }
   };
 
-  // ==============================
-  // NOVO: importação em lotes
-  // ==============================
   const importStudents = async (csvData: any[]) => {
     setImporting(true);
     setError("");
@@ -156,7 +155,7 @@ export default function PartnerStudentsList() {
         const batch = csvData.slice(index, index + BATCH_SIZE);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min safety
+        const timeoutId = setTimeout(() => controller.abort(), 120000);
 
         const response = await fetch("/api/partner-students/import", {
           method: "POST",
@@ -169,7 +168,6 @@ export default function PartnerStudentsList() {
 
         clearTimeout(timeoutId);
 
-        // Garantimos que a resposta realmente seja JSON
         const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
           throw new Error(t("import_invalid_response"));
@@ -184,10 +182,11 @@ export default function PartnerStudentsList() {
         totalImported += result.imported;
         allErrors.push(...(result.errors || []));
 
-        index += BATCH_SIZE;
+        index += batch.length; // avança exatamente pelo tamanho real do lote
 
-        // Avança progress bar proporcional até 90%
-        setImportProgress(Math.min(90, Math.round((index / csvData.length) * 90)));
+        setImportProgress(
+          Math.min(90, Math.round((index / csvData.length) * 90))
+        );
         setImportStatus(
           t("import_status_progress", {
             current: totalImported,
@@ -195,11 +194,9 @@ export default function PartnerStudentsList() {
           })
         );
 
-        // Pequeno delay para evitar sobrecarga no backend
         await delay(500);
       }
 
-      // Finalização
       setImportProgress(100);
       setImportStatus(t("import_status_completed"));
 
@@ -266,7 +263,6 @@ export default function PartnerStudentsList() {
 
   const startIndex = (currentPage - 1) * studentsPerPage + 1;
   const endIndex = Math.min(currentPage * studentsPerPage, totalStudents);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -373,7 +369,9 @@ export default function PartnerStudentsList() {
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">{t("no_students")}</p>
-              <p className="text-sm text-gray-500 mt-2">{t("import_to_get_started")}</p>
+              <p className="text-sm text-gray-500 mt-2">
+                {t("import_to_get_started")}
+              </p>
             </div>
           ) : (
             <>
@@ -398,10 +396,18 @@ export default function PartnerStudentsList() {
                   <tbody>
                     {students.map((student) => (
                       <tr key={student.id} className="hover:bg-gray-50">
-                        <td className="border border-gray-200 px-4 py-2">{student.nome}</td>
-                        <td className="border border-gray-200 px-4 py-2">{student.cpf || "-"}</td>
-                        <td className="border border-gray-200 px-4 py-2">{student.escola}</td>
-                        <td className="border border-gray-200 px-4 py-2">{student.turma || "-"}</td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {student.nome}
+                        </td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {student.cpf || "-"}
+                        </td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {student.escola}
+                        </td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {student.turma || "-"}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -429,17 +435,21 @@ export default function PartnerStudentsList() {
                     </Button>
 
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handlePageChange(page)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {page}
-                        </Button>
-                      ))}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <Button
+                            key={page}
+                            variant={
+                              currentPage === page ? "default" : "outline"
+                            }
+                            size="sm"
+                            onClick={() => handlePageChange(page)}
+                            className="w-8 h-8 p-0"
+                          >
+                            {page}
+                          </Button>
+                        )
+                      )}
                     </div>
 
                     <Button
