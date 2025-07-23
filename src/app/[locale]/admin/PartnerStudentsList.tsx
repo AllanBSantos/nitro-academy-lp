@@ -161,6 +161,18 @@ export default function PartnerStudentsList() {
         result = await response.json();
       } catch (parseError) {
         console.error("Erro ao parsear resposta:", parseError);
+
+        if (response.status === 504) {
+          setImportProgress(100);
+          setImportStatus(t("import_status_completed"));
+
+          setTimeout(() => {
+            setError(t("import_timeout_partial"));
+            fetchStudents();
+          }, 500);
+          return;
+        }
+
         throw new Error(t("import_invalid_response"));
       }
 
@@ -198,6 +210,7 @@ export default function PartnerStudentsList() {
         err.message.includes("504")
       ) {
         setError(t("import_timeout"));
+        fetchStudents();
       } else {
         setError(err.message || t("import_error"));
       }
@@ -258,7 +271,6 @@ export default function PartnerStudentsList() {
         </div>
       </div>
 
-      {/* Import Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -299,7 +311,6 @@ export default function PartnerStudentsList() {
             </Button>
           </div>
 
-          {/* Barra de Progresso */}
           {importing && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
@@ -337,7 +348,6 @@ export default function PartnerStudentsList() {
         </CardContent>
       </Card>
 
-      {/* Students List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -401,7 +411,6 @@ export default function PartnerStudentsList() {
                 </table>
               </div>
 
-              {/* Paginação */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-6">
                   <div className="text-sm text-gray-700">

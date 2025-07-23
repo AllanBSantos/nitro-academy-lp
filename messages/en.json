@@ -585,6 +585,7 @@
       "import_success": "{count} students imported successfully",
       "import_warnings": "Warnings: {errors}",
       "import_timeout": "Timeout exceeded. Import may have been partially processed. Check the students list.",
+      "import_timeout_partial": "Timeout exceeded. Some students may have been imported. Check the students list.",
       "import_connection_error": "Connection error. Check your internet and try again.",
       "import_invalid_response": "Invalid server response. Try again.",
       "import_status_starting": "Starting import...",

@@ -3,11 +3,75 @@ import { NextRequest, NextResponse } from "next/server";
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
 
-const BATCH_SIZE = 10;
-const BATCH_DELAY = 1000;
-const REQUEST_TIMEOUT = 30000;
+const BATCH_SIZE = 5;
+const BATCH_DELAY = 2000;
+const REQUEST_TIMEOUT = 15000;
+const MAX_RETRIES = 3;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function processStudentWithRetry(
+  studentData: {
+    nome: string;
+    cpf: string;
+    escola: string;
+    turma: string;
+  },
+  retryCount = 0
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+    const strapiUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira`;
+
+    const response = await fetch(strapiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: studentData }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      await response.json();
+      return { success: true };
+    } else {
+      let errorMessage = `Erro ${response.status}`;
+      try {
+        const errorResult = await response.json();
+        errorMessage = errorResult.error?.message || errorMessage;
+      } catch {
+        errorMessage = `Erro ${response.status}: ${response.statusText}`;
+      }
+
+      if (
+        (response.status === 504 || response.status === 408) &&
+        retryCount < MAX_RETRIES
+      ) {
+        await delay(1000 * (retryCount + 1));
+        return processStudentWithRetry(studentData, retryCount + 1);
+      }
+
+      return { success: false, error: errorMessage };
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (
+      (errorMessage.includes("timeout") || errorMessage.includes("aborted")) &&
+      retryCount < MAX_RETRIES
+    ) {
+      await delay(1000 * (retryCount + 1));
+      return processStudentWithRetry(studentData, retryCount + 1);
+    }
+
+    return { success: false, error: errorMessage };
+  }
+}
 
 async function processBatch(
   students: Array<{
@@ -23,44 +87,13 @@ async function processBatch(
   };
 
   for (const studentData of students) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    const result = await processStudentWithRetry(studentData);
 
-      const strapiUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira`;
-
-      const response = await fetch(strapiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: studentData }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        await response.json();
-        batchResults.imported++;
-      } else {
-        let errorMessage = `Erro ${response.status}`;
-        try {
-          const errorResult = await response.json();
-          errorMessage = errorResult.error?.message || errorMessage;
-        } catch {
-          errorMessage = `Erro ${response.status}: ${response.statusText}`;
-        }
-
-        batchResults.errors.push(
-          `Erro ao importar ${studentData.nome}: ${errorMessage}`
-        );
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+    if (result.success) {
+      batchResults.imported++;
+    } else {
       batchResults.errors.push(
-        `Erro ao importar ${studentData.nome}: ${errorMessage}`
+        `Erro ao importar ${studentData.nome}: ${result.error}`
       );
     }
   }
@@ -116,9 +149,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const uniqueData = [];
+    const seen = new Set();
+
+    for (const student of validatedData) {
+      const key = `${student.nome.toLowerCase()}-${student.escola.toLowerCase()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueData.push(student);
+      }
+    }
+
+    if (uniqueData.length !== validatedData.length) {
+      const duplicates = validatedData.length - uniqueData.length;
+      errors.push(
+        `${duplicates} registros duplicados foram removidos automaticamente`
+      );
+    }
+
     const batches = [];
-    for (let i = 0; i < validatedData.length; i += BATCH_SIZE) {
-      batches.push(validatedData.slice(i, i + BATCH_SIZE));
+    for (let i = 0; i < uniqueData.length; i += BATCH_SIZE) {
+      batches.push(uniqueData.slice(i, i + BATCH_SIZE));
     }
 
     for (let i = 0; i < batches.length; i++) {
@@ -139,10 +190,11 @@ export async function POST(request: NextRequest) {
       errors: errors,
       message: `Importação concluída. ${totalImported} alunos importados com sucesso.`,
       details: {
-        totalProcessed: validatedData.length,
+        totalProcessed: uniqueData.length,
         batchesProcessed: batches.length,
         batchSize: BATCH_SIZE,
         progress: 100,
+        duplicatesRemoved: validatedData.length - uniqueData.length,
       },
     });
   } catch (error) {
