@@ -19,6 +19,8 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+  Filter,
+  X,
 } from "lucide-react";
 import Papa from "papaparse";
 
@@ -31,12 +33,19 @@ interface PartnerStudent {
   data_importacao?: string;
 }
 
-// Tamanho de lote ajustado para 20 registros, pois o Strapi trava acima disso
 const BATCH_SIZE = 20;
 
 export default function PartnerStudentsList() {
   const t = useTranslations("Admin.partnerStudents");
-  const [students, setStudents] = useState<PartnerStudent[]>([]);
+  const [allStudents, setAllStudents] = useState<PartnerStudent[]>([]);
+
+  // Filter states
+  const [selectedSchools, setSelectedSchools] = useState<string[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [availableSchools, setAvailableSchools] = useState<string[]>([]);
+  const [availableClasses, setAvailableClasses] = useState<string[]>([]);
+  const [allClasses, setAllClasses] = useState<string[]>([]);
 
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -47,8 +56,8 @@ export default function PartnerStudentsList() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [totalStudents, setTotalStudents] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const studentsPerPage = 100;
 
   const [importProgress, setImportProgress] = useState(0);
@@ -58,7 +67,37 @@ export default function PartnerStudentsList() {
   useEffect(() => {
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  }, [currentPage, selectedSchools, selectedClasses]);
+
+  useEffect(() => {
+    fetchAvailableFilters();
+  }, []);
+
+  // Filter available classes based on selected schools
+  useEffect(() => {
+    if (selectedSchools.length > 0) {
+      // Fetch classes for selected schools
+      fetchClassesForSchools();
+    } else {
+      // Show all classes when no schools are selected
+      setAvailableClasses(allClasses);
+    }
+  }, [selectedSchools, allClasses]);
+
+  // Clear selected classes when schools change to avoid inconsistencies
+  useEffect(() => {
+    if (selectedSchools.length > 0) {
+      // Remove classes that are no longer valid for selected schools
+      const validClasses = availableClasses;
+      const updatedClasses = selectedClasses.filter((classItem) =>
+        validClasses.includes(classItem)
+      );
+
+      if (updatedClasses.length !== selectedClasses.length) {
+        setSelectedClasses(updatedClasses);
+      }
+    }
+  }, [availableClasses, selectedClasses, selectedSchools]);
 
   useEffect(() => {
     return () => {
@@ -182,7 +221,7 @@ export default function PartnerStudentsList() {
         totalImported += result.imported;
         allErrors.push(...(result.errors || []));
 
-        index += batch.length; // avança exatamente pelo tamanho real do lote
+        index += batch.length;
 
         setImportProgress(
           Math.min(90, Math.round((index / csvData.length) * 90))
@@ -227,10 +266,32 @@ export default function PartnerStudentsList() {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/partner-students?page=${currentPage}`);
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        pageSize: studentsPerPage.toString(),
+      });
+
+      // Add school filters
+      if (selectedSchools.length > 0) {
+        selectedSchools.forEach((school) => {
+          params.append("escola", school);
+        });
+      }
+
+      // Add class filters
+      if (selectedClasses.length > 0) {
+        selectedClasses.forEach((classItem) => {
+          params.append("turma", classItem);
+        });
+      }
+
+      const response = await fetch(
+        `/api/partner-students?${params.toString()}`
+      );
       if (response.ok) {
         const data = await response.json();
-        setStudents(data.data || []);
+        setAllStudents(data.data || []);
         setTotalStudents(data.meta?.pagination?.total || 0);
         setTotalPages(data.meta?.pagination?.pageCount || 1);
       } else {
@@ -241,6 +302,59 @@ export default function PartnerStudentsList() {
       setError(t("fetch_error"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableFilters = async () => {
+    try {
+      const response = await fetch(
+        "/api/partner-students?page=1&pageSize=10000"
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const students = data.data || [];
+
+        // Extract unique schools and classes
+        const schools = Array.from(
+          new Set(students.map((s: any) => s.escola))
+        ).sort() as string[];
+        const allClasses = Array.from(
+          new Set(students.map((s: any) => s.turma).filter(Boolean))
+        ).sort() as string[];
+
+        setAvailableSchools(schools);
+        setAllClasses(allClasses);
+        setAvailableClasses(allClasses);
+      }
+    } catch (err) {
+      console.error("Error fetching available filters:", err);
+    }
+  };
+
+  const fetchClassesForSchools = async () => {
+    try {
+      // Build query parameters for selected schools
+      const params = new URLSearchParams();
+      selectedSchools.forEach((school) => {
+        params.append("escola", school);
+      });
+
+      const response = await fetch(
+        `/api/partner-students?${params.toString()}&page=1&pageSize=10000`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const students = data.data || [];
+
+        // Extract unique classes from students in selected schools
+        const classes = Array.from(
+          new Set(students.map((s: any) => s.turma).filter(Boolean))
+        ).sort() as string[];
+
+        setAvailableClasses(classes);
+      }
+    } catch (err) {
+      console.error("Error fetching classes for schools:", err);
     }
   };
 
@@ -261,8 +375,15 @@ export default function PartnerStudentsList() {
     setCurrentPage(newPage);
   };
 
-  const startIndex = (currentPage - 1) * studentsPerPage + 1;
-  const endIndex = Math.min(currentPage * studentsPerPage, totalStudents);
+  const clearFilters = () => {
+    setSelectedSchools([]);
+    setSelectedClasses([]);
+    setCurrentPage(1);
+  };
+
+  const hasActiveFilters =
+    selectedSchools.length > 0 || selectedClasses.length > 0;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -272,7 +393,6 @@ export default function PartnerStudentsList() {
         </div>
       </div>
 
-      {/* ==================== Seção de Importação ==================== */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -350,22 +470,120 @@ export default function PartnerStudentsList() {
         </CardContent>
       </Card>
 
-      {/* ==================== Lista de Alunos ==================== */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            {t("students_list")} ({totalStudents})
-          </CardTitle>
-          <CardDescription>{t("students_description")}</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                {t("students_list")} ({totalStudents})
+                {hasActiveFilters && (
+                  <span className="text-sm text-gray-500">filtrados</span>
+                )}
+              </CardTitle>
+              <CardDescription>{t("students_description")}</CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="w-4 h-4" />
+              {t("filters")}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
+          {/* Filters Section */}
+          {showFilters && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-gray-900">{t("filters")}</h3>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <X className="w-4 h-4" />
+                    {t("clear_filters")}
+                  </Button>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("school")}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {availableSchools.map((school) => (
+                      <button
+                        key={school}
+                        onClick={() => {
+                          setSelectedSchools((prev) =>
+                            prev.includes(school)
+                              ? prev.filter((s) => s !== school)
+                              : [...prev, school]
+                          );
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                          selectedSchools.includes(school)
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {school}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {t("class")}
+                    </label>
+                    {selectedSchools.length > 0 && (
+                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        {t("filtered_by_schools")}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {availableClasses.map((classItem) => (
+                      <button
+                        key={classItem}
+                        onClick={() => {
+                          setSelectedClasses((prev) =>
+                            prev.includes(classItem)
+                              ? prev.filter((c) => c !== classItem)
+                              : [...prev, classItem]
+                          );
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                          selectedClasses.includes(classItem)
+                            ? "bg-green-600 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {classItem}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
               <p className="mt-2 text-gray-600">{t("loading")}</p>
             </div>
-          ) : students.length === 0 ? (
+          ) : allStudents.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">{t("no_students")}</p>
@@ -394,7 +612,7 @@ export default function PartnerStudentsList() {
                     </tr>
                   </thead>
                   <tbody>
-                    {students.map((student) => (
+                    {allStudents.map((student) => (
                       <tr key={student.id} className="hover:bg-gray-50">
                         <td className="border border-gray-200 px-4 py-2">
                           {student.nome}
@@ -418,8 +636,11 @@ export default function PartnerStudentsList() {
                 <div className="flex items-center justify-between mt-6">
                   <div className="text-sm text-gray-700">
                     {t("pagination.showing", {
-                      start: startIndex,
-                      end: endIndex,
+                      start: (currentPage - 1) * studentsPerPage + 1,
+                      end: Math.min(
+                        currentPage * studentsPerPage,
+                        totalStudents
+                      ),
                       total: totalStudents,
                     })}
                   </div>

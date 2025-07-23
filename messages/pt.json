@@ -591,6 +591,7 @@
       "import_invalid_response": "Resposta inválida do servidor. Tente novamente.",
       "import_status_starting": "Iniciando importação...",
       "import_status_processing": "Processando alunos...",
+      "import_status_progress": "Importados {current} de {total} alunos...",
       "import_status_completed": "Importação concluída!",
       "fetch_error": "Erro ao carregar lista de alunos",
       "students_list": "Lista de Alunos",
@@ -606,7 +607,13 @@
         "showing": "Mostrando {start} a {end} de {total} alunos",
         "previous": "Anterior",
         "next": "Próximo"
-      }
+      },
+      "filters": "Filtros",
+      "clear_filters": "Limpar filtros",
+      "filtered_by_schools": "Filtrado por escolas",
+      "no_students_found": "Nenhum aluno encontrado com os filtros aplicados",
+      "try_different_filters": "Tente usar filtros diferentes",
+      "showing_records": "(mostrando {showing} de {total} registros)"
     }
   },
   "CourseRating": {

@@ -6,13 +6,35 @@ const STRAPI_API_URL =
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const escola = searchParams.get("escola");
+    const escolas = searchParams.getAll("escola");
+    const turmas = searchParams.getAll("turma");
     const page = searchParams.get("page") || "1";
+    const pageSize = searchParams.get("pageSize") || "100";
 
-    let url = `${STRAPI_API_URL}/api/alunos-escola-parceira?sort=nome:asc&pagination[pageSize]=100&pagination[page]=${page}`;
+    let url = `${STRAPI_API_URL}/api/alunos-escola-parceira?sort=nome:asc&pagination[pageSize]=${pageSize}&pagination[page]=${page}`;
 
-    if (escola) {
-      url += `&filters[escola][$eq]=${encodeURIComponent(escola)}`;
+    // Add school filters
+    if (escolas.length > 0) {
+      if (escolas.length === 1) {
+        url += `&filters[escola][$eq]=${encodeURIComponent(escolas[0])}`;
+      } else {
+        escolas.forEach((escola, index) => {
+          url += `&filters[escola][$in][${index}]=${encodeURIComponent(
+            escola
+          )}`;
+        });
+      }
+    }
+
+    // Add class filters
+    if (turmas.length > 0) {
+      if (turmas.length === 1) {
+        url += `&filters[turma][$eq]=${encodeURIComponent(turmas[0])}`;
+      } else {
+        turmas.forEach((turma, index) => {
+          url += `&filters[turma][$in][${index}]=${encodeURIComponent(turma)}`;
+        });
+      }
     }
 
     console.log("Buscando alunos em:", url);
@@ -22,7 +44,6 @@ export async function GET(request: NextRequest) {
         "Content-Type": "application/json",
       },
     });
-
 
     if (!response.ok) {
       const errorResult = await response.json();

@@ -590,6 +590,7 @@
       "import_invalid_response": "Invalid server response. Try again.",
       "import_status_starting": "Starting import...",
       "import_status_processing": "Processing students...",
+      "import_status_progress": "Imported {current} of {total} students...",
       "import_status_completed": "Import completed!",
       "fetch_error": "Error loading students list",
       "students_list": "Students List",
@@ -609,7 +610,13 @@
         "showing": "Showing {start} to {end} of {total} students",
         "previous": "Previous",
         "next": "Next"
-      }
+      },
+      "filters": "Filters",
+      "clear_filters": "Clear filters",
+      "filtered_by_schools": "Filtered by schools",
+      "no_students_found": "No students found with applied filters",
+      "try_different_filters": "Try using different filters",
+      "showing_records": "(showing {showing} of {total} records)"
     }
   },
   "CourseRating": {
