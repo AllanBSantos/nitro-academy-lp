@@ -511,57 +511,45 @@
   },
   "Admin": {
     "panel": {
-      "title": "Admin Panel",
-      "courses": "Courses",
-      "back": "Back",
-      "loading": "Loading...",
-      "error": {
-        "course_not_found": "Course not found",
-        "loading_error": "Error loading course data"
-      },
-      "stats": {
-        "total_spots": "Total Spots",
-        "enrolled_students": "Enrolled Students",
-        "available_spots": "Available Spots"
-      },
-      "tabs": {
-        "students": "Students",
-        "classes": "Classes"
-      },
-      "students": {
-        "title": "Student List",
-        "all_classes": "All Classes",
-        "class": "Class {number}",
-        "student_count": "{count} students",
-        "table": {
-          "name": "Name",
-          "class": "Class"
-        }
-      },
-      "classes": {
-        "title": "Classes",
-        "register_new": "Register new class",
-        "no_classes": "No classes registered",
-        "start_registering": "Start by registering a new class."
-      },
-      "courses_list": {
-        "title": "Courses",
-        "table": {
-          "course_name": "Course Name",
-          "total_spots": "Total Spots",
-          "enrolled_students": "Enrolled Students",
-          "available_spots": "Available Spots"
-        },
-        "error": "Error loading courses data"
-      },
-      "course_edit": {
-        "saving": "Saving...",
-        "save": "Save changes",
-        "success": "Changes saved successfully!"
-      },
       "logout": "Logout",
       "logout_confirm": "Do you want to logout?",
-      "logout_action": "Logout"
+      "logout_action": "Logout",
+      "title": "Admin Panel",
+      "dashboard": "Dashboard",
+      "courses": "Courses",
+      "partner_students": "Partner School Students List"
+    },
+    "partnerStudents": {
+      "title": "Partner School Students List",
+      "description": "Manage students imported from partner schools",
+      "import_section": "Import Students List",
+      "import_description": "Upload a CSV file with the students list",
+      "import_csv": "Import CSV",
+      "importing": "Importing...",
+      "download_template": "Download Template",
+      "required_columns": "Required columns",
+      "file_format": "File format",
+      "invalid_file_type": "Invalid file type. Use only CSV files.",
+      "csv_parse_error": "Error processing CSV file",
+      "missing_columns": "Missing required columns: {columns}",
+      "file_read_error": "Error reading file",
+      "import_error": "Error importing data",
+      "import_success": "{count} students imported successfully",
+      "import_warnings": "Warnings: {errors}",
+      "fetch_error": "Error loading students list",
+      "students_list": "Students List",
+      "students_description": "Students imported from partner schools",
+      "loading": "Loading...",
+      "no_students": "No students found",
+      "import_to_get_started": "Import a CSV file to get started",
+      "name": "Name",
+      "cpf": "CPF",
+      "school": "School",
+      "class": "Class",
+      "status": "Status",
+      "import_date": "Import Date",
+      "active": "Active",
+      "inactive": "Inactive"
     }
   },
   "CourseRating": {

@@ -1,21 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Menu, X, LogOut } from "lucide-react";
-import { CoursesList } from "@/components/admin/CoursesList";
 import { useTranslations } from "next-intl";
 import Cookies from "js-cookie";
 import { useRouter, useParams } from "next/navigation";
+import { Menu, X, LogOut } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/app/components/ui/popover";
+import { CoursesList } from "@/components/admin/CoursesList";
+import PartnerStudentsList from "./PartnerStudentsList";
 
 function AdminLayout() {
   const t = useTranslations("Admin.panel");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeMenu, setActiveMenu] = useState("students");
+  const [activeMenu, setActiveMenu] = useState("courses");
   const router = useRouter();
   const params = useParams();
 
@@ -24,13 +25,16 @@ function AdminLayout() {
     router.push(`/${params.locale}/login`);
   };
 
-  const menuItems = [
-    {
-      id: "students",
-      label: t("courses"),
-      icon: <Users className="w-5 h-5" />,
-    },
-  ];
+  const renderContent = () => {
+    switch (activeMenu) {
+      case "courses":
+        return <CoursesList />;
+      case "partner-students":
+        return <PartnerStudentsList />;
+      default:
+        return <CoursesList />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,21 +81,27 @@ function AdminLayout() {
             </PopoverContent>
           </Popover>
         </div>
-        <nav className="mt-6">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveMenu(item.id)}
-              className={`w-full flex items-center px-6 py-3 text-sm font-medium ${
-                activeMenu === item.id
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              {item.icon}
-              <span className="ml-3">{item.label}</span>
-            </button>
-          ))}
+        <nav className="flex-1 space-y-2 mt-8">
+          <button
+            onClick={() => setActiveMenu("courses")}
+            className={`w-full flex items-center justify-start px-4 py-2 text-sm font-medium rounded-md transition-colors text-left ${
+              activeMenu === "courses"
+                ? "bg-[#3B82F6] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <span className="whitespace-nowrap">{t("courses")}</span>
+          </button>
+          <button
+            onClick={() => setActiveMenu("partner-students")}
+            className={`w-full flex items-center justify-start px-4 py-2 text-sm font-medium rounded-md transition-colors text-left ${
+              activeMenu === "partner-students"
+                ? "bg-[#3B82F6] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <span className="whitespace-nowrap">{t("partner_students")}</span>
+          </button>
         </nav>
       </aside>
 
@@ -101,9 +111,7 @@ function AdminLayout() {
           isSidebarOpen ? "lg:ml-64" : ""
         }`}
       >
-        <div className="p-8">
-          {activeMenu === "students" && <CoursesList />}
-        </div>
+        <div className="p-8">{renderContent()}</div>
       </main>
     </div>
   );
