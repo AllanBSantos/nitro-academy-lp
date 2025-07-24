@@ -13,7 +13,6 @@ import Reviews from "@/components/Reviews";
 import Faq from "@/components/Faq";
 import CarouselClient from "@/components/CarouselClient";
 import Perks from "../components/text-cards/Perks";
-import VturbVideo from "@/components/VturbVideo";
 
 export default function Home({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
