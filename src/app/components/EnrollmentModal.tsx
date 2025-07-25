@@ -292,7 +292,7 @@ export default function EnrollmentModal({
 
       📲 Como vai funcionar:
 
-      Toda a nossa comunicação será feita pelo ClassApp, onde organizamos grupos por turma para facilitar o acompanhamento, lembretes e avisos importantes. Fique de olho!
+      Em breve entraremos em contato com os horários e links das aulas da sua turma. Fique atento às nossas mensagens!
 
       Se tiver qualquer dúvida, estamos por aqui para ajudar.
 
@@ -369,7 +369,7 @@ export default function EnrollmentModal({
         : undefined; */
 
       const schoolName = isPartnerStudent ? formData.partnerSchool : undefined;
-      
+
       await createStudent(
         {
           nome: formData.studentName,
