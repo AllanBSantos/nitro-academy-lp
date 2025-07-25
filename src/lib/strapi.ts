@@ -471,6 +471,7 @@ export async function updateCourse(
               "alunos",
               "cupons",
               "localizations",
+              "imagem",
             ].includes(key)
           ) {
             continue;
@@ -527,6 +528,7 @@ export async function updateCourse(
       resumo_aulas: cleanDataRecursively(
         courseData.resumo_aulas || currentData.resumo_aulas
       ),
+      imagem: currentData.imagem.id,
     };
 
     const requestBody = { data: cleanData };
