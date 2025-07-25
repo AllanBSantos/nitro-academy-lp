@@ -581,12 +581,10 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    destaques: Schema.Attribute.Text;
     ementa_resumida: Schema.Attribute.Component<
       'componentes.emenda-resumida',
       true
     >;
-    ideal_para: Schema.Attribute.Text;
     imagem: Schema.Attribute.Media<'images'> &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -623,13 +621,6 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
         };
       }>;
     nota: Schema.Attribute.Decimal &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    objetivo: Schema.Attribute.Text &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

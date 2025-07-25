@@ -31,6 +31,10 @@ interface CronogramaAula {
   titulo: string;
   descricao: string;
   faixa_etaria?: string;
+  data_inicio?: string;
+  data_fim?: string;
+  dia_semana?: string;
+  horario_aula?: string;
 }
 
 interface CourseEditFormProps {
@@ -58,15 +62,12 @@ export default function CourseEditForm({
   );
   const [nivel, setNivel] = useState(course.nivel || "");
   const [modelo, setModelo] = useState(course.modelo || "");
-  const [objetivo, setObjetivo] = useState(course.objetivo || "");
   const [preRequisitos, setPreRequisitos] = useState(
     course.pre_requisitos || ""
   );
   const [tarefaDeCasa, setTarefaDeCasa] = useState(course.tarefa_de_casa || "");
   const [competencias, setCompetencias] = useState(course.competencias || "");
   const [projetos, setProjetos] = useState(course.projetos || "");
-  const [destaques, setDestaques] = useState(course.destaques || "");
-  const [idealPara, setIdealPara] = useState(course.ideal_para || "");
 
   const [videos, setVideos] = useState<Video[]>(
     (course.videos || []).map((video: CourseVideo) => ({
@@ -149,13 +150,10 @@ export default function CourseEditForm({
         descricao,
         nivel,
         modelo,
-        objetivo,
         pre_requisitos: preRequisitos,
         projetos,
         tarefa_de_casa: tarefaDeCasa,
-        destaques,
         competencias,
-        ideal_para: idealPara,
         videos,
         cronograma,
         ementa_resumida: ementaResumida,
@@ -281,17 +279,7 @@ export default function CourseEditForm({
           />
         </div>
       </div>
-      <div>
-        <label className="block font-semibold mb-1 text-gray-800">
-          Objetivo
-        </label>
-        <textarea
-          className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-          rows={2}
-          value={objetivo}
-          onChange={(e) => setObjetivo(e.target.value)}
-        />
-      </div>
+
       <div>
         <label className="block font-semibold mb-1 text-gray-800">
           Pré-requisitos
@@ -336,28 +324,7 @@ export default function CourseEditForm({
           onChange={(e) => setProjetos(e.target.value)}
         />
       </div>
-      <div>
-        <label className="block font-semibold mb-1 text-gray-800">
-          Destaques
-        </label>
-        <textarea
-          className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-          rows={2}
-          value={destaques}
-          onChange={(e) => setDestaques(e.target.value)}
-        />
-      </div>
-      <div>
-        <label className="block font-semibold mb-1 text-gray-800">
-          Ideal para
-        </label>
-        <textarea
-          className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-          rows={2}
-          value={idealPara}
-          onChange={(e) => setIdealPara(e.target.value)}
-        />
-      </div>
+
       <div>
         <label className="block font-semibold mb-1 text-gray-800">
           Turmas (faixa etária)

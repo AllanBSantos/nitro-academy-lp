@@ -111,14 +111,12 @@ export interface Course {
   nota: number | null;
   nivel: string;
   modelo: string;
-  objetivo: string;
   pre_requisitos: string;
   cronograma: string;
   projetos: string;
   tarefa_de_casa: string;
   preco: number;
   parcelas: number;
-  destaques: string | null;
   informacoes_adicionais: string | null;
   inscricoes_abertas: boolean;
   data_inicio_curso?: string;
@@ -134,7 +132,6 @@ export interface Course {
   lingua?: "portugues" | "ingles";
   badge: "dias_faltantes" | "poucos_dias" | "poucas_vagas" | null;
   competencias: string | null;
-  ideal_para: string | null;
   sugestao_horario: boolean | null;
   imagem: {
     url: string;

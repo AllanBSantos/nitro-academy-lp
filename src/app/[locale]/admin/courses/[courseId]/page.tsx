@@ -34,11 +34,11 @@ interface Student extends RawStudent {
 }
 
 interface CronogramaAula {
-  dia: string;
-  horario: string;
   data_inicio?: string;
   data_fim?: string;
   faixa_etaria?: string;
+  dia_semana?: string;
+  horario_aula?: string;
 }
 
 interface CourseDetails {
@@ -48,13 +48,10 @@ interface CourseDetails {
   descricaoMentor: string;
   nivel: string;
   modelo: string;
-  objetivo: string;
   pre_requisitos: string;
   projetos: string;
   tarefa_de_casa: string;
-  destaques: string;
   competencias: string;
-  ideal_para: string;
   videos: Array<{
     titulo: string;
     video_url: string;
@@ -114,13 +111,10 @@ export default function CourseDashboard() {
         descricaoMentor: courseData.mentor?.descricao || "",
         nivel: courseData.nivel,
         modelo: courseData.modelo,
-        objetivo: courseData.objetivo,
         pre_requisitos: courseData.pre_requisitos,
         projetos: courseData.projetos,
         tarefa_de_casa: courseData.tarefa_de_casa,
-        destaques: courseData.destaques || "",
         competencias: courseData.competencias || "",
-        ideal_para: courseData.ideal_para || "",
         videos: (courseData.videos || []).map((video) => ({
           titulo: video.titulo || "",
           video_url: video.video_url || "",

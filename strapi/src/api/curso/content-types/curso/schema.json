@@ -100,15 +100,6 @@
       },
       "required": true
     },
-    "objetivo": {
-      "type": "text",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "required": true
-    },
     "pre_requisitos": {
       "type": "text",
       "pluginOptions": {
@@ -170,9 +161,6 @@
       "target": "api::avaliacao.avaliacao",
       "mappedBy": "curso"
     },
-    "destaques": {
-      "type": "text"
-    },
     "slug": {
       "type": "string",
       "required": true
@@ -228,9 +216,6 @@
       "type": "string"
     },
     "competencias": {
-      "type": "text"
-    },
-    "ideal_para": {
       "type": "text"
     },
     "sugestao_horario": {
