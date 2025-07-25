@@ -203,7 +203,7 @@ export async function createStudent(
       })),
       escola_parceira: student.escola_parceira,
       turma: student.turma,
-      usou_voucher: isVoucher100,
+      usou_voucher: student.usou_voucher || isVoucher100, // Use the field from student or fallback to voucher100 check
     },
   };
 

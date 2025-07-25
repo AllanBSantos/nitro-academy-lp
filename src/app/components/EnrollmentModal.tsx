@@ -45,8 +45,8 @@ export default function EnrollmentModal({
   courseName,
   selectedTime,
   paymentLink,
-  link_desconto,
-  cupons = [],
+  /*   link_desconto, */
+  /*   cupons = [], */
   courseId,
   scheduleIndex,
   disabled = false,
@@ -58,9 +58,9 @@ export default function EnrollmentModal({
   const [isMaterialComplementarModalOpen, setIsMaterialComplementarModalOpen] =
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
+  /*   const [couponCode, setCouponCode] = useState(""); */
   const [schools, setSchools] = useState<School[]>([]);
-  const [appliedCoupon, setAppliedCoupon] = useState<{
+  /*   const [appliedCoupon, setAppliedCoupon] = useState<{
     id: number;
     documentId: string;
     nome: string;
@@ -69,7 +69,7 @@ export default function EnrollmentModal({
     validade: string | null;
     voucher_gratuito: boolean;
   } | null>(null);
-  const [couponError, setCouponError] = useState("");
+  const [couponError, setCouponError] = useState(""); */
   const [isPartnerStudent, setIsPartnerStudent] = useState(false);
   const [isSearchingStudent, setIsSearchingStudent] = useState(false);
   const params = useParams();
@@ -125,7 +125,7 @@ export default function EnrollmentModal({
     loadSchools();
   }, []);
 
-  const handleApplyCoupon = async () => {
+  /* const handleApplyCoupon = async () => {
     setCouponError("");
     const coupon = cupons.find(
       (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
@@ -168,12 +168,12 @@ export default function EnrollmentModal({
 
     setAppliedCoupon(coupon);
     setCouponCode("");
-  };
+  }; */
 
-  const handleRemoveCoupon = () => {
+  /*   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponError("");
-  };
+  }; */
 
   const searchPartnerStudent = async (studentName: string) => {
     if (!studentName.trim()) {
@@ -194,13 +194,39 @@ export default function EnrollmentModal({
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.count > 0) {
-          setIsPartnerStudent(true);
           const student = data.data[0];
-          setFormData((prev) => ({
-            ...prev,
-            partnerSchool: student.escola || "",
-            classNumber: student.turma || "",
-          }));
+
+          // Check if student already used voucher by searching in existing students
+          try {
+            const existingStudent = await findStudentByCPF(formData.studentCPF);
+
+            if (existingStudent?.usou_voucher) {
+              // Student already used voucher, don't treat as partner student
+              setIsPartnerStudent(false);
+              setFormData((prev) => ({
+                ...prev,
+                partnerSchool: "",
+                classNumber: "",
+              }));
+            } else {
+              // Student found and hasn't used voucher yet
+              setIsPartnerStudent(true);
+              setFormData((prev) => ({
+                ...prev,
+                partnerSchool: student.escola || "",
+                classNumber: student.turma || "",
+              }));
+            }
+          } catch (error) {
+            console.error("Error checking voucher usage:", error);
+            // If error checking, treat as partner student (safer approach)
+            setIsPartnerStudent(true);
+            setFormData((prev) => ({
+              ...prev,
+              partnerSchool: student.escola || "",
+              classNumber: student.turma || "",
+            }));
+          }
         } else {
           setIsPartnerStudent(false);
           setFormData((prev) => ({
@@ -234,23 +260,11 @@ export default function EnrollmentModal({
     await processEnrollment();
   };
 
-  const processEnrollment = async () => {
-    setIsLoading(true);
-
+  const sendEnrollmentEmails = async () => {
     const emailBody = `
       Nova matrícula para o curso: ${courseName}
       Horário selecionado: ${selectedTime}
       Turma: ${formData.classNumber}
-      ${appliedCoupon ? `Cupom aplicado: ${appliedCoupon.nome}` : ""}
-      ${
-        appliedCoupon?.voucher_gratuito
-          ? `Escola parceira: ${
-              schools.find((s) => s.id === formData.partnerSchool)?.nome ||
-              "Não informada"
-            }`
-          : ""
-      }
-      
       Dados do Aluno:
       Nome: ${formData.studentName}
       Data de Nascimento: ${formData.studentBirthDate}
@@ -292,7 +306,7 @@ export default function EnrollmentModal({
     `;
 
     try {
-   /*    const emailRecipients =
+      const emailRecipients =
         process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL?.split(",").map((email) =>
           email.trim()
         ) || [];
@@ -337,13 +351,25 @@ export default function EnrollmentModal({
           "Failed to send welcome email, but enrollment was successful"
         );
       }
- */
-      const schoolName = appliedCoupon?.voucher_gratuito
+    } catch (error) {
+      console.error("Error sending emails:", error);
+    }
+  };
+
+  const processEnrollment = async () => {
+    setIsLoading(true);
+
+    try {
+      await sendEnrollmentEmails();
+
+      /*   const schoolName = appliedCoupon?.voucher_gratuito
         ? schools.find((s) => s.id === formData.partnerSchool)?.nome
         : isPartnerStudent
         ? formData.partnerSchool // Use the escola name directly
-        : undefined;
+        : undefined; */
 
+      const schoolName = isPartnerStudent ? formData.partnerSchool : undefined;
+      
       await createStudent(
         {
           nome: formData.studentName,
@@ -360,13 +386,14 @@ export default function EnrollmentModal({
           cursos: [{ id: courseId, documentId: courseId.toString() }],
           escola_parceira: schoolName,
           turma: scheduleIndex + 1,
+          usou_voucher: isPartnerStudent, // Set as true if partner student
           publishedAt: new Date().toISOString(),
-        },
-        appliedCoupon?.nome
+        }
+        /* appliedCoupon?.nome */
       );
 
       setIsOpen(false);
-      if (appliedCoupon) {
+      /*      if (appliedCoupon) {
         if (appliedCoupon.voucher_gratuito) {
           setIsSuccessModalOpen(true);
           return;
@@ -375,7 +402,8 @@ export default function EnrollmentModal({
         if (redirectUrl) {
           window.location.href = redirectUrl;
         }
-      } else if (isPartnerStudent) {
+      } else */
+      if (isPartnerStudent) {
         setIsSuccessModalOpen(true);
         return;
       } else if (paymentLink) {
@@ -722,7 +750,8 @@ export default function EnrollmentModal({
                 )}
               </div> */}
 
-              {(appliedCoupon?.voucher_gratuito || isPartnerStudent) && (
+              {/* {(appliedCoupon?.voucher_gratuito || isPartnerStudent) && ( */}
+              {isPartnerStudent && (
                 <div className="space-y-2">
                   <Label htmlFor="partnerSchool">
                     {modalT("partner_school.label")}

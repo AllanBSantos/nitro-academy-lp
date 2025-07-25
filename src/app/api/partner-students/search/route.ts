@@ -44,22 +44,43 @@ export async function GET(request: NextRequest) {
     };
 
     const searchName = normalizeString(name);
-    const matchingStudents = students.filter((student: any) => {
-      const studentName = normalizeString(
-        student.nome || student.attributes?.nome || ""
-      );
-      const matches = studentName.includes(searchName);
+    const matchingStudents = students.filter(
+      (student: {
+        nome?: string;
+        attributes?: {
+          nome?: string;
+        };
+      }) => {
+        const studentName = normalizeString(
+          student.nome || student.attributes?.nome || ""
+        );
+        const matches = studentName.includes(searchName);
 
-      return matches;
-    });
+        return matches;
+      }
+    );
 
-    const normalizedStudents = matchingStudents.map((student: any) => ({
-      id: student.id,
-      nome: student.nome || student.attributes?.nome,
-      cpf: student.cpf || student.attributes?.cpf,
-      escola: student.escola || student.attributes?.escola,
-      turma: student.turma || student.attributes?.turma,
-    }));
+    const normalizedStudents = matchingStudents.map(
+      (student: {
+        id?: string | number;
+        nome?: string;
+        attributes?: {
+          nome?: string;
+          cpf?: string;
+          escola?: string;
+          turma?: string;
+        };
+        cpf?: string;
+        escola?: string;
+        turma?: string;
+      }) => ({
+        id: student.id,
+        nome: student.nome || student.attributes?.nome,
+        cpf: student.cpf || student.attributes?.cpf,
+        escola: student.escola || student.attributes?.escola,
+        turma: student.turma || student.attributes?.turma,
+      })
+    );
 
     return NextResponse.json({
       success: true,
