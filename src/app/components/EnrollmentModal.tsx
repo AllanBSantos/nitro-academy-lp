@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
 import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
 
 interface EnrollmentModalProps {
@@ -71,6 +70,8 @@ export default function EnrollmentModal({
     voucher_gratuito: boolean;
   } | null>(null);
   const [couponError, setCouponError] = useState("");
+  const [isPartnerStudent, setIsPartnerStudent] = useState(false);
+  const [isSearchingStudent, setIsSearchingStudent] = useState(false);
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || "pt";
@@ -174,6 +175,54 @@ export default function EnrollmentModal({
     setCouponError("");
   };
 
+  const searchPartnerStudent = async (studentName: string) => {
+    if (!studentName.trim()) {
+      setIsPartnerStudent(false);
+      setFormData((prev) => ({
+        ...prev,
+        partnerSchool: "",
+        classNumber: "",
+      }));
+      return;
+    }
+
+    setIsSearchingStudent(true);
+    try {
+      const response = await fetch(
+        `/api/partner-students/search?name=${encodeURIComponent(studentName)}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.count > 0) {
+          setIsPartnerStudent(true);
+          const student = data.data[0];
+          setFormData((prev) => ({
+            ...prev,
+            partnerSchool: student.escola || "",
+            classNumber: student.turma || "",
+          }));
+        } else {
+          setIsPartnerStudent(false);
+          setFormData((prev) => ({
+            ...prev,
+            partnerSchool: "",
+            classNumber: "",
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error searching partner student:", error);
+      setIsPartnerStudent(false);
+      setFormData((prev) => ({
+        ...prev,
+        partnerSchool: "",
+        classNumber: "",
+      }));
+    } finally {
+      setIsSearchingStudent(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -243,7 +292,7 @@ export default function EnrollmentModal({
     `;
 
     try {
-      const emailRecipients =
+   /*    const emailRecipients =
         process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL?.split(",").map((email) =>
           email.trim()
         ) || [];
@@ -288,9 +337,11 @@ export default function EnrollmentModal({
           "Failed to send welcome email, but enrollment was successful"
         );
       }
-
+ */
       const schoolName = appliedCoupon?.voucher_gratuito
         ? schools.find((s) => s.id === formData.partnerSchool)?.nome
+        : isPartnerStudent
+        ? formData.partnerSchool // Use the escola name directly
         : undefined;
 
       await createStudent(
@@ -324,6 +375,9 @@ export default function EnrollmentModal({
         if (redirectUrl) {
           window.location.href = redirectUrl;
         }
+      } else if (isPartnerStudent) {
+        setIsSuccessModalOpen(true);
+        return;
       } else if (paymentLink) {
         window.location.href = paymentLink;
       }
@@ -379,15 +433,31 @@ export default function EnrollmentModal({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="studentName">{modalT("student.name")}</Label>
-                  <Input
-                    id="studentName"
-                    required
-                    value={formData.studentName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, studentName: e.target.value })
-                    }
-                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="studentName"
+                      required
+                      value={formData.studentName}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          studentName: e.target.value,
+                        })
+                      }
+                      onBlur={(e) => searchPartnerStudent(e.target.value)}
+                      className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                    />
+                    {isSearchingStudent && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      </div>
+                    )}
+                  </div>
+                  {isPartnerStudent && (
+                    <p className="text-sm text-green-600 bg-green-50 p-2 rounded">
+                      {modalT("student_found")}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -611,7 +681,7 @@ export default function EnrollmentModal({
 
             {/* Coupon Section */}
             <div className="space-y-4">
-              <div className="space-y-2">
+              {/*  <div className="space-y-2">
                 <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
                 <div className="flex gap-2">
                   <Input
@@ -650,35 +720,67 @@ export default function EnrollmentModal({
                     </button>
                   </div>
                 )}
-              </div>
+              </div> */}
 
-              {/* Partner School Selector - Only shown when free voucher is applied */}
-              {appliedCoupon?.voucher_gratuito && (
+              {(appliedCoupon?.voucher_gratuito || isPartnerStudent) && (
                 <div className="space-y-2">
                   <Label htmlFor="partnerSchool">
                     {modalT("partner_school.label")}
                   </Label>
-                  <select
-                    id="partnerSchool"
-                    required
-                    value={formData.partnerSchool}
+                  {isPartnerStudent ? (
+                    <input
+                      type="text"
+                      id="partnerSchool"
+                      value={formData.partnerSchool}
+                      readOnly
+                      className="w-full bg-gray-100 border-gray-200 rounded-md p-2 text-gray-600 cursor-not-allowed"
+                    />
+                  ) : (
+                    <select
+                      id="partnerSchool"
+                      required
+                      value={formData.partnerSchool}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          partnerSchool: e.target.value,
+                        })
+                      }
+                      className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
+                    >
+                      <option value="">
+                        {modalT("partner_school.placeholder")}
+                      </option>
+                      {schools.map((school) => (
+                        <option key={school.id} value={school.id}>
+                          {school.nome}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              )}
+
+              {isPartnerStudent && (
+                <div className="space-y-2">
+                  <Label htmlFor="classNumber">
+                    {modalT("class_number.label")}
+                  </Label>
+                  <Input
+                    id="classNumber"
+                    value={formData.classNumber}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        partnerSchool: e.target.value,
+                        classNumber: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
-                  >
-                    <option value="">
-                      {modalT("partner_school.placeholder")}
-                    </option>
-                    {schools.map((school) => (
-                      <option key={school.id} value={school.id}>
-                        {school.nome}
-                      </option>
-                    ))}
-                  </select>
+                    disabled={isPartnerStudent}
+                    className={`bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] ${
+                      isPartnerStudent ? "opacity-75 cursor-not-allowed" : ""
+                    }`}
+                    placeholder={modalT("class_number.placeholder")}
+                  />
                 </div>
               )}
             </div>

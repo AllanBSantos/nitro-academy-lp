@@ -292,6 +292,11 @@
       "label": "Partner School*",
       "placeholder": "Select your school"
     },
+    "class_number": {
+      "label": "Class",
+      "placeholder": "Ex: Class A"
+    },
+    "student_found": "✓ Student found in partner school list",
     "coupon": {
       "label": "Discount coupon",
       "placeholder": "Enter your coupon",

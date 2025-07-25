@@ -292,6 +292,11 @@
       "label": "Escola parceira*",
       "placeholder": "Selecione sua escola"
     },
+    "class_number": {
+      "label": "Turma",
+      "placeholder": "Ex: Turma A"
+    },
+    "student_found": "✓ Aluno encontrado na lista de escola parceira",
     "coupon": {
       "label": "Cupom de desconto",
       "placeholder": "Digite seu cupom",
