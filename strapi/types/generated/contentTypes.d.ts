@@ -558,6 +558,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::avaliacao.avaliacao'
     >;
+    aviso_matricula: Schema.Attribute.Text;
     badge: Schema.Attribute.Enumeration<
       ['nenhum', 'poucos_dias', 'poucas_vagas', 'dias_faltantes']
     >;

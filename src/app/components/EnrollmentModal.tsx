@@ -32,7 +32,7 @@ interface EnrollmentModalProps {
   courseId: number;
   scheduleIndex: number;
   disabled?: boolean;
-  material_complementar?: boolean;
+  aviso_matricula?: string;
   pre_requisitos?: string;
 }
 
@@ -50,8 +50,7 @@ export default function EnrollmentModal({
   courseId,
   scheduleIndex,
   disabled = false,
-  material_complementar,
-  pre_requisitos,
+  aviso_matricula,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -77,29 +76,6 @@ export default function EnrollmentModal({
   const locale = (params?.locale as string) || "pt";
   const t = useTranslations("TimeSelection");
   const modalT = useTranslations("EnrollmentModal");
-
-  const extractContactFromPrerequisites = (
-    text: string
-  ): { type: "link" | "phone"; value: string } | null => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const urlMatch = text.match(urlRegex);
-    const phoneRegex = /(\+55\s?)?(\(?\d{2}\)?\s?)?(\d{4,5}-?\d{4})/g;
-    const phoneMatch = text.match(phoneRegex);
-
-    if (urlMatch && urlMatch[0]) {
-      return { type: "link", value: urlMatch[0] };
-    }
-
-    if (phoneMatch && phoneMatch[0]) {
-      return { type: "phone", value: phoneMatch[0] };
-    }
-
-    return null;
-  };
-
-  const contactInfo = pre_requisitos
-    ? extractContactFromPrerequisites(pre_requisitos)
-    : null;
 
   const [formData, setFormData] = useState({
     studentName: "",
@@ -252,7 +228,7 @@ export default function EnrollmentModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (material_complementar && contactInfo) {
+    if (aviso_matricula) {
       setIsMaterialComplementarModalOpen(true);
       return;
     }
@@ -858,26 +834,7 @@ export default function EnrollmentModal({
             </DialogTitle>
           </DialogHeader>
           <div className="text-center space-y-6">
-            <p className="text-lg text-gray-700">
-              {contactInfo?.type === "link"
-                ? modalT("material_complementar.message_link")
-                : modalT("material_complementar.message_phone")}{" "}
-              {contactInfo && contactInfo.type === "link" && (
-                <a
-                  href={contactInfo.value}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#3B82F6] hover:underline font-medium"
-                >
-                  {contactInfo.value}
-                </a>
-              )}
-              {contactInfo && contactInfo.type === "phone" && (
-                <span className="text-[#3B82F6] font-medium">
-                  {contactInfo.value}
-                </span>
-              )}
-            </p>
+            <p className="text-lg text-gray-700">{aviso_matricula}</p>
             <Button
               onClick={handleMaterialComplementarAcknowledge}
               className="bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold w-full"

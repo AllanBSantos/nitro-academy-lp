@@ -222,7 +222,7 @@ export default function TimeSelectionSection({
                   disabled={
                     !selectedTime || !selectedClass || !inscricoes_abertas
                   }
-                  material_complementar={course.material_complementar}
+                  aviso_matricula={course.aviso_matricula}
                   pre_requisitos={course.pre_requisitos}
                 />
               )}

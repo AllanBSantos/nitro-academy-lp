@@ -327,9 +327,7 @@
       "expired_coupon": "Cupom expirado ou inválido"
     },
     "material_complementar": {
-      "title": "Material Complementar Obrigatório",
-      "message_link": "Esse curso necessita de material complementar obrigatório durante as aulas. Deve ser adquirido através do link:",
-      "message_phone": "Esse curso necessita de material complementar obrigatório durante as aulas. O kit deverá ser adquirido através desse telefone:",
+      "title": "Aviso Importante",
       "acknowledge": "Estou ciente"
     }
   },
