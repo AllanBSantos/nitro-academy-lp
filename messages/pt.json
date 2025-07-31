@@ -281,11 +281,11 @@
   },
   "EnrollmentModal": {
     "title": "Formulário de Matrícula",
-    "enroll": "Candidatar-se à vaga",
-    "loading": "Enviando...",
+    "enroll": "Matricular",
+    "loading": "Processando...",
     "success": {
       "title": "Matrícula Realizada!",
-      "message": "Matrícula realizada com sucesso para o curso {courseName}",
+      "message": "Sua matrícula para o curso {courseName} foi realizada com sucesso!",
       "ok": "OK"
     },
     "partner_school": {

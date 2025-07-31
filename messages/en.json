@@ -281,11 +281,11 @@
   },
   "EnrollmentModal": {
     "title": "Enrollment Form",
-    "enroll": "Apply for a spot",
-    "loading": "Sending...",
+    "enroll": "Enroll",
+    "loading": "Processing...",
     "success": {
       "title": "Enrollment Successful!",
-      "message": "Successfully enrolled in the course {courseName}",
+      "message": "Your enrollment for the course {courseName} was successful!",
       "ok": "OK"
     },
     "partner_school": {
