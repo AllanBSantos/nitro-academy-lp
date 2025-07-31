@@ -282,10 +282,10 @@
   "EnrollmentModal": {
     "title": "Enrollment Form",
     "enroll": "Enroll",
-    "loading": "Processing...",
+    "loading": "Sending...",
     "success": {
       "title": "Enrollment Successful!",
-      "message": "Your enrollment for the course {courseName} was successful!",
+      "message": "Successfully enrolled in the course {courseName}",
       "ok": "OK"
     },
     "partner_school": {

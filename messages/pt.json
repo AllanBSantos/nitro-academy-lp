@@ -130,6 +130,11 @@
     "enroll": "Faça sua matrícula",
     "receive_link": "Receba o link das aulas",
     "payment_info": "Você só paga pelas matérias que escolher"
+    "Como funciona?": "Como funciona?",
+    "Escolha seu curso": "Escolha seu curso",
+    "Faça sua matrícula": "Faça sua matrícula",
+    "Receba o link das aulas": "Receba o link das aulas",
+    "Você só paga pelas matérias que escolher": "Você só paga pelas matérias que escolher"
   },
   "ChildGuy": {
     "+ Autonomia, criatividade e preparo para o futuro": "+ Autonomia, criatividade e preparo para o futuro"
@@ -281,11 +286,11 @@
   },
   "EnrollmentModal": {
     "title": "Formulário de Matrícula",
-    "enroll": "Matricular",
-    "loading": "Processando...",
+    "enroll": "Candidatar-se à vaga",
+    "loading": "Enviando...",
     "success": {
       "title": "Matrícula Realizada!",
-      "message": "Sua matrícula para o curso {courseName} foi realizada com sucesso!",
+      "message": "Matrícula realizada com sucesso para o curso {courseName}",
       "ok": "OK"
     },
     "partner_school": {
