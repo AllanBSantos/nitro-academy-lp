@@ -1,4 +1,4 @@
-// redirect.js
+// useRedirect.ts
 import { useEffect } from 'react'
 import { useRouter } from 'next/compat/router'
 import lngDetector from '../lib/lngDetector'
