@@ -9,6 +9,12 @@ const REQUEST_TIMEOUT = 15000;
 const MAX_RETRIES = 3;
 const MAX_STUDENTS_PER_REQUEST = 50; // Limite para evitar timeout do servidor
 
+// Disable caching for this route
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+export const runtime = "nodejs";
+
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function processStudentWithRetry(
@@ -33,6 +39,7 @@ async function processStudentWithRetry(
       },
       body: JSON.stringify({ data: studentData }),
       signal: controller.signal,
+      cache: "no-store", // Disable fetch caching
     });
 
     clearTimeout(timeoutId);
@@ -198,7 +205,7 @@ export async function POST(request: NextRequest) {
     const hasMore = endIndex < uniqueData.length;
     const nextOffset = hasMore ? endIndex : null;
 
-    return NextResponse.json({
+    const responseData = NextResponse.json({
       success: true,
       imported: totalImported,
       errors: errors,
@@ -217,6 +224,16 @@ export async function POST(request: NextRequest) {
         duplicatesRemoved: validatedData.length - uniqueData.length,
       },
     });
+
+    // Add cache control headers
+    responseData.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    responseData.headers.set("Pragma", "no-cache");
+    responseData.headers.set("Expires", "0");
+
+    return responseData;
   } catch (error) {
     return NextResponse.json(
       {

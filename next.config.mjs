@@ -6,6 +6,11 @@ const zazuUrl = process.env.NEXT_PUBLIC_ZAZU_API_URL || 'http://localhost:3000';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable caching for API routes
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
+
   async rewrites() {
     return [
       {

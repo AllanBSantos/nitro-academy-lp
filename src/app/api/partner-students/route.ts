@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
 
+// Disable caching for this route
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+export const runtime = "nodejs";
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -43,6 +49,7 @@ export async function GET(request: NextRequest) {
       headers: {
         "Content-Type": "application/json",
       },
+      cache: "no-store", // Disable fetch caching
     });
 
     if (!response.ok) {
@@ -55,7 +62,17 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await response.json();
-    return NextResponse.json(result);
+
+    // Create response with cache control headers
+    const responseData = NextResponse.json(result);
+    responseData.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    responseData.headers.set("Pragma", "no-cache");
+    responseData.headers.set("Expires", "0");
+
+    return responseData;
   } catch (error) {
     console.error("Erro ao buscar alunos:", error);
     return NextResponse.json(

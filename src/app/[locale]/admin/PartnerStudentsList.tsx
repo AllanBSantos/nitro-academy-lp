@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Filter,
   X,
+  RefreshCw,
 } from "lucide-react";
 import Papa from "papaparse";
 
@@ -244,7 +245,9 @@ export default function PartnerStudentsList() {
         if (allErrors.length > 0) {
           setError(t("import_warnings", { errors: allErrors.join(", ") }));
         }
+        // Recarregar dados e filtros disponíveis
         fetchStudents();
+        fetchAvailableFilters();
       }, 500);
     } catch (err: any) {
       console.error("Import error:", err);
@@ -254,7 +257,9 @@ export default function PartnerStudentsList() {
       } else {
         setError(err.message || t("import_error"));
       }
+      // Recarregar dados mesmo em caso de erro
       fetchStudents();
+      fetchAvailableFilters();
     } finally {
       stopProgressSimulation();
       setImporting(false);
@@ -266,10 +271,11 @@ export default function PartnerStudentsList() {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      // Build query parameters
+      // Build query parameters with timestamp to prevent caching
       const params = new URLSearchParams({
         page: currentPage.toString(),
         pageSize: studentsPerPage.toString(),
+        _t: Date.now().toString(), // Add timestamp to prevent caching
       });
 
       // Add school filters
@@ -308,7 +314,7 @@ export default function PartnerStudentsList() {
   const fetchAvailableFilters = async () => {
     try {
       const response = await fetch(
-        "/api/partner-students?page=1&pageSize=10000"
+        `/api/partner-students?page=1&pageSize=10000&_t=${Date.now()}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -340,7 +346,7 @@ export default function PartnerStudentsList() {
       });
 
       const response = await fetch(
-        `/api/partner-students?${params.toString()}&page=1&pageSize=10000`
+        `/api/partner-students?${params.toString()}&page=1&pageSize=10000&_t=${Date.now()}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -379,6 +385,11 @@ export default function PartnerStudentsList() {
     setSelectedSchools([]);
     setSelectedClasses([]);
     setCurrentPage(1);
+  };
+
+  const refreshData = () => {
+    fetchStudents();
+    fetchAvailableFilters();
   };
 
   const hasActiveFilters =
@@ -483,15 +494,29 @@ export default function PartnerStudentsList() {
               </CardTitle>
               <CardDescription>{t("students_description")}</CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
-            >
-              <Filter className="w-4 h-4" />
-              {t("filters")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshData}
+                disabled={loading}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                />
+                {t("refresh")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="w-4 h-4" />
+                {t("filters")}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

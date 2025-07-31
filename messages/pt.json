@@ -607,6 +607,7 @@
       "loading": "Carregando...",
       "no_students": "Nenhum aluno encontrado",
       "import_to_get_started": "Importe um arquivo CSV para começar",
+      "refresh": "Atualizar",
       "name": "Nome",
       "cpf": "CPF",
       "school": "Escola",
