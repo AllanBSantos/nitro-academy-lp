@@ -281,7 +281,7 @@
   },
   "EnrollmentModal": {
     "title": "Enrollment Form",
-    "enroll": "Apply for a spot",
+    "enroll": "Enroll",
     "loading": "Sending...",
     "success": {
       "title": "Enrollment Successful!",
