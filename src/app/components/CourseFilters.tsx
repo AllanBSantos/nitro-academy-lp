@@ -28,13 +28,13 @@ const ALL_DAYS = [
 ];
 
 const ALL_TIMES = [
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-  "20:00",
+  "BRT 14:00",
+  "BRT 15:00",
+  "BRT 16:00",
+  "BRT 17:00",
+  "BRT 18:00",
+  "BRT 19:00",
+  "BRT 20:00",
 ];
 
 export default function CourseFilters({
@@ -311,7 +311,7 @@ export default function CourseFilters({
                       ) : (
                         <div className="flex flex-wrap gap-1 items-center">
                           <Badge variant="secondary" className="text-xs">
-                            {selectedTimes[0]}
+                            {selectedTimes[0].replace("BRT ", "")}
                           </Badge>
                           {selectedTimes.length > 1 && (
                             <Badge variant="secondary" className="text-xs">
@@ -337,7 +337,7 @@ export default function CourseFilters({
                             htmlFor={`time-${time}`}
                             className="text-sm font-medium"
                           >
-                            {time}
+                            {time.replace("BRT ", "")}
                           </label>
                         </div>
                       ))}

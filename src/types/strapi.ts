@@ -112,7 +112,26 @@ export interface Course {
   nivel: string;
   modelo: string;
   pre_requisitos: string;
-  cronograma: string;
+  cronograma: Array<{
+    data_inicio?: string;
+    data_fim?: string;
+    faixa_etaria?: string;
+    dia_semana?:
+      | "Segunda-Feira"
+      | "Terça-Feira"
+      | "Quarta-Feira"
+      | "Quinta-Feira"
+      | "Sexta-Feira";
+    horario_aula?:
+      | "BRT 14:00"
+      | "BRT 15:00"
+      | "BRT 16:00"
+      | "BRT 17:00"
+      | "BRT 18:00"
+      | "BRT 19:00"
+      | "BRT 20:00";
+    link_aula?: string;
+  }> | null;
   projetos: string;
   tarefa_de_casa: string;
   preco: number;
