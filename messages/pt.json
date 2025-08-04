@@ -226,6 +226,8 @@
     "more_info": "+ informações",
     "per_class": "por aula",
     "days_remaining": "Faltam {days} dias",
+    "few_days": "Poucos dias",
+    "few_spots": "Poucas vagas",
     "not_found": "Curso não encontrado",
     "course_in_english": "Curso em Inglês",
     "course_in_portuguese": "Curso em Português",
