@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { useTranslations } from "next-intl";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -22,6 +24,7 @@ import {
   Filter,
   X,
   RefreshCw,
+  FileDown,
 } from "lucide-react";
 import Papa from "papaparse";
 
@@ -32,6 +35,14 @@ interface PartnerStudent {
   escola: string;
   turma: string;
   data_importacao?: string;
+  isEnrolled?: boolean;
+  courseInfo?: {
+    courseName: string;
+    schedule: {
+      dia_semana?: string;
+      horario_aula?: string;
+    } | null;
+  } | null;
 }
 
 const BATCH_SIZE = 20;
@@ -43,6 +54,8 @@ export default function PartnerStudentsList() {
   // Filter states
   const [selectedSchools, setSelectedSchools] = useState<string[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+  const [enrollmentStatusFilter, setEnrollmentStatusFilter] =
+    useState<string>("all"); // "all", "enrolled", "not_enrolled"
   const [showFilters, setShowFilters] = useState(false);
   const [availableSchools, setAvailableSchools] = useState<string[]>([]);
   const [availableClasses, setAvailableClasses] = useState<string[]>([]);
@@ -64,26 +77,16 @@ export default function PartnerStudentsList() {
   const [importProgress, setImportProgress] = useState(0);
   const [importStatus, setImportStatus] = useState("");
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, selectedSchools, selectedClasses]);
+  }, [currentPage, selectedSchools, selectedClasses, enrollmentStatusFilter]);
 
   useEffect(() => {
     fetchAvailableFilters();
   }, []);
-
-  // Filter available classes based on selected schools
-  useEffect(() => {
-    if (selectedSchools.length > 0) {
-      // Fetch classes for selected schools
-      fetchClassesForSchools();
-    } else {
-      // Show all classes when no schools are selected
-      setAvailableClasses(allClasses);
-    }
-  }, [selectedSchools, allClasses]);
 
   // Clear selected classes when schools change to avoid inconsistencies
   useEffect(() => {
@@ -292,12 +295,32 @@ export default function PartnerStudentsList() {
         });
       }
 
+      // Add enrollment status filter
+      if (enrollmentStatusFilter !== "all") {
+        params.append("enrollmentStatus", enrollmentStatusFilter);
+      }
+
       const response = await fetch(
         `/api/partner-students?${params.toString()}`
       );
       if (response.ok) {
         const data = await response.json();
-        setAllStudents(data.data || []);
+        const mappedStudents = (data.data || []).map((student: any) => {
+          const mappedStudent = {
+            id: student.id,
+            nome: student.attributes?.nome || student.nome,
+            cpf: student.attributes?.cpf || student.cpf,
+            escola: student.attributes?.escola || student.escola,
+            turma: student.attributes?.turma || student.turma,
+            data_importacao:
+              student.attributes?.data_importacao || student.data_importacao,
+            isEnrolled: student.attributes?.isEnrolled || student.isEnrolled,
+            courseInfo: student.attributes?.courseInfo || student.courseInfo,
+          };
+
+          return mappedStudent;
+        });
+        setAllStudents(mappedStudents);
         setTotalStudents(data.meta?.pagination?.total || 0);
         setTotalPages(data.meta?.pagination?.pageCount || 1);
       } else {
@@ -322,10 +345,14 @@ export default function PartnerStudentsList() {
 
         // Extract unique schools and classes
         const schools = Array.from(
-          new Set(students.map((s: any) => s.escola))
+          new Set(students.map((s: any) => s.attributes?.escola || s.escola))
         ).sort() as string[];
         const allClasses = Array.from(
-          new Set(students.map((s: any) => s.turma).filter(Boolean))
+          new Set(
+            students
+              .map((s: any) => s.attributes?.turma || s.turma)
+              .filter(Boolean)
+          )
         ).sort() as string[];
 
         setAvailableSchools(schools);
@@ -337,7 +364,7 @@ export default function PartnerStudentsList() {
     }
   };
 
-  const fetchClassesForSchools = async () => {
+  const fetchClassesForSchools = useCallback(async () => {
     try {
       // Build query parameters for selected schools
       const params = new URLSearchParams();
@@ -354,7 +381,11 @@ export default function PartnerStudentsList() {
 
         // Extract unique classes from students in selected schools
         const classes = Array.from(
-          new Set(students.map((s: any) => s.turma).filter(Boolean))
+          new Set(
+            students
+              .map((s: any) => s.attributes?.turma || s.turma)
+              .filter(Boolean)
+          )
         ).sort() as string[];
 
         setAvailableClasses(classes);
@@ -362,7 +393,18 @@ export default function PartnerStudentsList() {
     } catch (err) {
       console.error("Error fetching classes for schools:", err);
     }
-  };
+  }, [selectedSchools]);
+
+  // Filter available classes based on selected schools
+  useEffect(() => {
+    if (selectedSchools.length > 0) {
+      // Fetch classes for selected schools
+      fetchClassesForSchools();
+    } else {
+      // Show all classes when no schools are selected
+      setAvailableClasses(allClasses);
+    }
+  }, [selectedSchools, allClasses, fetchClassesForSchools]);
 
   const downloadTemplate = () => {
     const csvContent = "Nome,CPF,Escola,Turma";
@@ -384,6 +426,7 @@ export default function PartnerStudentsList() {
   const clearFilters = () => {
     setSelectedSchools([]);
     setSelectedClasses([]);
+    setEnrollmentStatusFilter("all");
     setCurrentPage(1);
   };
 
@@ -392,8 +435,172 @@ export default function PartnerStudentsList() {
     fetchAvailableFilters();
   };
 
+  const exportToPDF = () => {
+    setExporting(true);
+    try {
+      const doc = new jsPDF();
+
+      // Title
+      doc.setFontSize(18);
+      doc.text(t("pdf_title"), 14, 22);
+
+      // Enrollment summary
+      doc.setFontSize(12);
+      doc.text(getEnrollmentSummary(), 14, 35);
+
+      // Filters info
+      let filterInfo = "";
+      if (selectedSchools.length > 0) {
+        filterInfo += `Escolas: ${selectedSchools.join(", ")}`;
+      }
+      if (selectedClasses.length > 0) {
+        filterInfo += filterInfo
+          ? ` | Turmas: ${selectedClasses.join(", ")}`
+          : `Turmas: ${selectedClasses.join(", ")}`;
+      }
+      if (enrollmentStatusFilter !== "all") {
+        const statusText =
+          enrollmentStatusFilter === "enrolled"
+            ? "Matriculados"
+            : "Não Matriculados";
+        filterInfo += filterInfo
+          ? ` | Status: ${statusText}`
+          : `Status: ${statusText}`;
+      }
+
+      if (filterInfo) {
+        doc.setFontSize(10);
+        doc.text(`Filtros aplicados: ${filterInfo}`, 14, 45);
+      }
+
+      // Table data
+      const tableData = allStudents.map((student) => [
+        student.nome,
+        student.cpf || "-",
+        student.escola,
+        student.turma || "-",
+        student.isEnrolled ? "Matriculado" : "Não Matriculado",
+        student.isEnrolled && student.courseInfo
+          ? student.courseInfo.courseName
+          : "-",
+        student.isEnrolled && student.courseInfo && student.courseInfo.schedule
+          ? `${student.courseInfo.schedule.dia_semana || ""} ${
+              student.courseInfo.schedule.horario_aula || ""
+            }`.trim()
+          : "-",
+      ]);
+
+      // Table headers
+      const headers = [
+        t("name"),
+        t("cpf"),
+        t("school"),
+        t("class"),
+        t("status"),
+        t("course"),
+        t("schedule"),
+      ];
+
+      // Generate table
+      autoTable(doc, {
+        head: [headers],
+        body: tableData,
+        startY: 55,
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+        },
+        headStyles: {
+          fillColor: [59, 130, 246], // Blue color
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252], // Light gray
+        },
+        columnStyles: {
+          0: { cellWidth: 40 }, // Name
+          1: { cellWidth: 25 }, // CPF
+          2: { cellWidth: 30 }, // School
+          3: { cellWidth: 20 }, // Class
+          4: { cellWidth: 25 }, // Status
+          5: { cellWidth: 35 }, // Course
+          6: { cellWidth: 25 }, // Schedule
+        },
+      });
+
+      // Footer with date
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(
+          `Gerado em: ${new Date().toLocaleDateString(
+            "pt-BR"
+          )} - Página ${i} de ${pageCount}`,
+          14,
+          doc.internal.pageSize.height - 10
+        );
+      }
+
+      // Save the PDF
+      const fileName = `lista_alunos_nitro${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      doc.save(fileName);
+
+      setSuccess(t("export_success"));
+    } catch (error) {
+      console.error("Export error:", error);
+      setError(t("export_error"));
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const hasActiveFilters =
-    selectedSchools.length > 0 || selectedClasses.length > 0;
+    selectedSchools.length > 0 ||
+    selectedClasses.length > 0 ||
+    enrollmentStatusFilter !== "all";
+
+  // Calculate enrollment summary based on school and class filters
+  const getEnrollmentSummary = () => {
+    // Get students filtered by school and class
+    const filteredStudents = allStudents.filter((student) => {
+      // If no schools selected, include all students
+      if (selectedSchools.length === 0) return true;
+      // If schools selected, only include students from those schools
+      return selectedSchools.includes(student.escola);
+    });
+
+    const enrolledCount = filteredStudents.filter(
+      (student) => student.isEnrolled
+    ).length;
+    const totalCount = filteredStudents.length;
+
+    // If one school and one class are selected
+    if (selectedSchools.length === 1 && selectedClasses.length === 1) {
+      return t("enrollment_summary_school_class", {
+        school: selectedSchools[0],
+        class: selectedClasses[0],
+        enrolled: enrolledCount,
+        total: totalCount,
+      });
+    }
+    // If only one school is selected
+    else if (selectedSchools.length === 1) {
+      return t("enrollment_summary_school", {
+        school: selectedSchools[0],
+        enrolled: enrolledCount,
+        total: totalCount,
+      });
+    } else {
+      return t("enrollment_summary", {
+        enrolled: enrolledCount,
+        total: totalCount,
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -516,6 +723,18 @@ export default function PartnerStudentsList() {
                 <Filter className="w-4 h-4" />
                 {t("filters")}
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportToPDF}
+                disabled={exporting || allStudents.length === 0}
+                className="flex items-center gap-2"
+              >
+                <FileDown
+                  className={`w-4 h-4 ${exporting ? "animate-spin" : ""}`}
+                />
+                {exporting ? t("exporting") : t("export_pdf")}
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -599,6 +818,39 @@ export default function PartnerStudentsList() {
                     ))}
                   </div>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("enrollment_status")}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: "all", label: "Todos", color: "bg-gray-600" },
+                      {
+                        value: "enrolled",
+                        label: "Matriculados",
+                        color: "bg-green-600",
+                      },
+                      {
+                        value: "not_enrolled",
+                        label: "Não Matriculados",
+                        color: "bg-red-600",
+                      },
+                    ].map((status) => (
+                      <button
+                        key={status.value}
+                        onClick={() => setEnrollmentStatusFilter(status.value)}
+                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                          enrollmentStatusFilter === status.value
+                            ? `${status.color} text-white`
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {status.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -618,6 +870,13 @@ export default function PartnerStudentsList() {
             </div>
           ) : (
             <>
+              {/* Enrollment Summary */}
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800 font-medium">
+                  {getEnrollmentSummary()}
+                </p>
+              </div>
+
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200">
                   <thead>
@@ -633,6 +892,15 @@ export default function PartnerStudentsList() {
                       </th>
                       <th className="border border-gray-200 px-4 py-2 text-left">
                         {t("class")}
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        {t("status")}
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        {t("course")}
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        {t("schedule")}
                       </th>
                     </tr>
                   </thead>
@@ -650,6 +918,52 @@ export default function PartnerStudentsList() {
                         </td>
                         <td className="border border-gray-200 px-4 py-2">
                           {student.turma || "-"}
+                        </td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              student.isEnrolled
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {student.isEnrolled
+                              ? "Matriculado"
+                              : "Não Matriculado"}
+                          </span>
+                        </td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {student.isEnrolled && student.courseInfo ? (
+                            <span className="font-medium text-gray-900">
+                              {student.courseInfo.courseName}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="border border-gray-200 px-4 py-2">
+                          {student.isEnrolled &&
+                          student.courseInfo &&
+                          student.courseInfo.schedule ? (
+                            <div className="text-sm text-gray-600">
+                              {student.courseInfo.schedule.dia_semana && (
+                                <span>
+                                  {student.courseInfo.schedule.dia_semana}
+                                </span>
+                              )}
+                              {student.courseInfo.schedule.dia_semana &&
+                                student.courseInfo.schedule.horario_aula && (
+                                  <span> • </span>
+                                )}
+                              {student.courseInfo.schedule.horario_aula && (
+                                <span>
+                                  {student.courseInfo.schedule.horario_aula}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
                       </tr>
                     ))}

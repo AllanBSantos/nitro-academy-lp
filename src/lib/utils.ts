@@ -22,3 +22,11 @@ export function convertToEmbedUrl(url: string): string {
 
   return url;
 }
+
+export function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .trim();
+}

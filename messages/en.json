@@ -606,7 +606,6 @@
       "cpf": "CPF",
       "school": "School",
       "class": "Class",
-      "status": "Status",
       "import_date": "Import Date",
       "active": "Active",
       "inactive": "Inactive",
@@ -620,7 +619,19 @@
       "filtered_by_schools": "Filtered by schools",
       "no_students_found": "No students found with applied filters",
       "try_different_filters": "Try using different filters",
-      "showing_records": "(showing {showing} of {total} records)"
+      "showing_records": "(showing {showing} of {total} records)",
+      "enrollment_status": "Enrollment Status",
+      "status": "Status",
+      "course": "Course",
+      "schedule": "Day/Time",
+      "enrollment_summary": "{enrolled} of {total} students are enrolled",
+      "enrollment_summary_school": "From school {school} {enrolled} of {total} students are enrolled",
+      "enrollment_summary_school_class": "From school {school} - class {class} - {enrolled} of {total} students are enrolled",
+      "export_pdf": "Export PDF",
+      "exporting": "Exporting...",
+      "export_success": "PDF exported successfully!",
+      "export_error": "Error exporting PDF",
+      "pdf_title": "Nitro Academy Students List"
     }
   },
   "CourseRating": {

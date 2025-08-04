@@ -622,7 +622,19 @@
       "filtered_by_schools": "Filtrado por escolas",
       "no_students_found": "Nenhum aluno encontrado com os filtros aplicados",
       "try_different_filters": "Tente usar filtros diferentes",
-      "showing_records": "(mostrando {showing} de {total} registros)"
+      "showing_records": "(mostrando {showing} de {total} registros)",
+      "enrollment_status": "Status de Matrícula",
+      "status": "Status",
+      "course": "Curso",
+      "schedule": "Dia/Horário",
+      "enrollment_summary": "{enrolled} de {total} alunos estão matriculados",
+      "enrollment_summary_school": "Da escola {school} {enrolled} de {total} alunos estão matriculados",
+      "enrollment_summary_school_class": "Da escola {school} - turma {class} - {enrolled} de {total} alunos estão matriculados",
+      "export_pdf": "Exportar PDF",
+      "exporting": "Exportando...",
+      "export_success": "PDF exportado com sucesso!",
+      "export_error": "Erro ao exportar PDF",
+      "pdf_title": "Lista de Alunos Nitro Academy"
     }
   },
   "CourseRating": {
