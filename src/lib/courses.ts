@@ -62,7 +62,17 @@ export async function getCardsContent(
       aviso_matricula: course.aviso_matricula || "",
       topicosRelacionados: course.tags?.map((tag) => tag.nome) || [],
       videos,
-      cronograma: Array.isArray(course.cronograma) ? course.cronograma : [],
+      cronograma: Array.isArray(course.cronograma)
+        ? course.cronograma.map((item) => ({
+            dia: item.dia_semana || "",
+            horario: item.horario_aula || "",
+            dia_semana: item.dia_semana,
+            horario_aula: item.horario_aula,
+            data_inicio: item.data_inicio || "",
+            data_fim: item.data_fim,
+            faixa_etaria: item.faixa_etaria || "",
+          }))
+        : [],
       moeda: course.moeda || "Real",
       lingua: course.lingua || "portugues",
       cupons: (course.cupons || []).map((coupon, index) => ({
