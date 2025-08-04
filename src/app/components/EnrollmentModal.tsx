@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
+import { X } from "lucide-react";
 
 interface EnrollmentModalProps {
   courseName: string;
@@ -45,8 +46,8 @@ export default function EnrollmentModal({
   courseName,
   selectedTime,
   paymentLink,
-  /*   link_desconto, */
-  /*   cupons = [], */
+  link_desconto,
+  cupons = [],
   courseId,
   scheduleIndex,
   disabled = false,
@@ -57,9 +58,9 @@ export default function EnrollmentModal({
   const [isMaterialComplementarModalOpen, setIsMaterialComplementarModalOpen] =
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  /*   const [couponCode, setCouponCode] = useState(""); */
+  const [couponCode, setCouponCode] = useState("");
   const [schools, setSchools] = useState<School[]>([]);
-  /*   const [appliedCoupon, setAppliedCoupon] = useState<{
+  const [appliedCoupon, setAppliedCoupon] = useState<{
     id: number;
     documentId: string;
     nome: string;
@@ -68,7 +69,7 @@ export default function EnrollmentModal({
     validade: string | null;
     voucher_gratuito: boolean;
   } | null>(null);
-  const [couponError, setCouponError] = useState(""); */
+  const [couponError, setCouponError] = useState("");
   const [isPartnerStudent, setIsPartnerStudent] = useState(false);
   const [isSearchingStudent, setIsSearchingStudent] = useState(false);
   const params = useParams();
@@ -101,7 +102,7 @@ export default function EnrollmentModal({
     loadSchools();
   }, []);
 
-  /* const handleApplyCoupon = async () => {
+  const handleApplyCoupon = async () => {
     setCouponError("");
     const coupon = cupons.find(
       (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
@@ -144,12 +145,12 @@ export default function EnrollmentModal({
 
     setAppliedCoupon(coupon);
     setCouponCode("");
-  }; */
+  };
 
-  /*   const handleRemoveCoupon = () => {
+  const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponError("");
-  }; */
+  };
 
   const searchPartnerStudent = async (studentName: string) => {
     if (!studentName.trim()) {
@@ -338,13 +339,9 @@ export default function EnrollmentModal({
     try {
       await sendEnrollmentEmails();
 
-      /*   const schoolName = appliedCoupon?.voucher_gratuito
-        ? schools.find((s) => s.id === formData.partnerSchool)?.nome
-        : isPartnerStudent
-        ? formData.partnerSchool // Use the escola name directly
-        : undefined; */
-
       const schoolName = isPartnerStudent ? formData.partnerSchool : undefined;
+
+      const couponName = appliedCoupon?.nome;
 
       await createStudent(
         {
@@ -364,21 +361,21 @@ export default function EnrollmentModal({
           turma: scheduleIndex + 1,
           usou_voucher: isPartnerStudent, // Set as true if partner student
           publishedAt: new Date().toISOString(),
-        }
-        /* appliedCoupon?.nome */
+        },
+        couponName
       );
 
       setIsOpen(false);
-      /*      if (appliedCoupon) {
-        if (appliedCoupon.voucher_gratuito) {
-          setIsSuccessModalOpen(true);
-          return;
-        }
+
+      // Se há cupom aplicado, usar URL do cupom ou link_desconto como fallback
+      if (appliedCoupon) {
         const redirectUrl = appliedCoupon.url || link_desconto;
         if (redirectUrl) {
           window.location.href = redirectUrl;
+          return;
         }
-      } else */
+      }
+
       if (isPartnerStudent) {
         setIsSuccessModalOpen(true);
         return;
@@ -685,7 +682,7 @@ export default function EnrollmentModal({
 
             {/* Coupon Section */}
             <div className="space-y-4">
-              {/*  <div className="space-y-2">
+              <div className="space-y-2">
                 <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
                 <div className="flex gap-2">
                   <Input
@@ -699,16 +696,11 @@ export default function EnrollmentModal({
                     type="button"
                     onClick={handleApplyCoupon}
                     className="bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!formData.studentCPF}
+                    disabled={!couponCode}
                   >
                     {modalT("coupon.apply")}
                   </Button>
                 </div>
-                {!formData.studentCPF && (
-                  <p className="text-sm text-gray-500">
-                    {modalT("coupon.cpf_required")}
-                  </p>
-                )}
                 {couponError && (
                   <p className="text-red-500 text-sm">{couponError}</p>
                 )}
@@ -724,9 +716,8 @@ export default function EnrollmentModal({
                     </button>
                   </div>
                 )}
-              </div> */}
+              </div>
 
-              {/* {(appliedCoupon?.voucher_gratuito || isPartnerStudent) && ( */}
               {isPartnerStudent && (
                 <div className="space-y-2">
                   <Label htmlFor="partnerSchool">
