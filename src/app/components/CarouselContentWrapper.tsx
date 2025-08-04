@@ -45,13 +45,13 @@ export function CarouselContentWrapper({
               opts={{
                 align: "start",
                 loop: true,
-                containScroll: "trimSnaps",
+                containScroll: "keepSnaps",
                 dragFree: true,
                 slidesToScroll: 1,
               }}
-              className="w-full"
+              className="w-full overflow-visible"
             >
-              <CarouselContent className="-ml-2 md:-ml-4">
+              <CarouselContent className="-ml-2 md:-ml-4 pr-8 md:pr-12 lg:pr-16">
                 {filteredCourses.map((props) => (
                   <CarouselItem
                     key={props.id}
