@@ -1,7 +1,7 @@
 import { Course, Mentor, Review } from "@/types/strapi";
 
 const STRAPI_API_URL =
-  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+  process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
 export async function fetchCourses(
   locale: string = "pt-BR"
 ): Promise<Course[]> {
@@ -225,16 +225,13 @@ export async function createStudent(
     },
   };
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    }
-  );
+  const response = await fetch(`${STRAPI_API_URL}/api/alunos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -432,6 +429,91 @@ export async function fetchFAQs(locale: string = "pt-BR"): Promise<FAQ[]> {
     return data.data;
   } catch (error) {
     console.error("Error fetching FAQs:", error);
+    return [];
+  }
+}
+
+export interface PartnerSchool {
+  id: number;
+  documentId: string;
+  name: string;
+  logo: {
+    id: number;
+    documentId: string;
+    name: string;
+    alternativeText: string | null;
+    width: number;
+    height: number;
+    formats: {
+      thumbnail: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      small: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      medium: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      large: {
+        url: string;
+        width: number;
+        height: number;
+      };
+    };
+    url: string;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export async function fetchPartnerSchools(
+  locale: string = "pt"
+): Promise<PartnerSchool[]> {
+  try {
+    // Map locale to Strapi format
+    const strapiLocale = locale === "pt" ? "pt-BR" : "en";
+
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/escolas-parceiras?populate=logo&locale=${strapiLocale}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch partner schools");
+    }
+
+    const data = await response.json();
+
+    // Transform the data to match our interface
+    const transformedData = data.data.map(
+      (school: {
+        id: number;
+        documentId: string;
+        name: string;
+        logo: PartnerSchool["logo"];
+        createdAt: string;
+        updatedAt: string;
+        publishedAt: string;
+      }) => ({
+        id: school.id,
+        documentId: school.documentId,
+        name: school.name,
+        logo: school.logo,
+        createdAt: school.createdAt,
+        updatedAt: school.updatedAt,
+        publishedAt: school.publishedAt,
+      })
+    );
+
+    return transformedData;
+  } catch (error) {
+    console.error("Error fetching partner schools:", error);
     return [];
   }
 }

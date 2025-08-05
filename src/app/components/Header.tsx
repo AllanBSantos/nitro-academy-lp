@@ -6,7 +6,7 @@ import TeacherDialog from "@/components/TeacherDialog";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { Menu, User } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
