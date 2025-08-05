@@ -315,7 +315,9 @@
       "name": "Nome completo do aluno*",
       "birthDate": "Data de nascimento do aluno*",
       "phone": "Telefone do aluno*",
-      "cpf": "CPF do aluno*"
+      "cpf": "CPF do aluno*",
+      "disability": "O aluno é portador de alguma deficiência?",
+      "disability_description": "Qual?*"
     },
     "guardian": {
       "name": "Nome completo do responsável*",

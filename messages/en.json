@@ -310,7 +310,9 @@
       "name": "Student's full name*",
       "birthDate": "Student's birth date*",
       "cpf": "Student's document number*",
-      "phone": "Student's phone number*"
+      "phone": "Student's phone number*",
+      "disability": "Does the student have any disability?",
+      "disability_description": "Which one?*"
     },
     "guardian": {
       "name": "Guardian's full name*",

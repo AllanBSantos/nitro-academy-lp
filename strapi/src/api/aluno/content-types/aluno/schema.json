@@ -66,6 +66,13 @@
       "type": "string",
       "required": true
     },
+    "portador_deficiencia": {
+      "type": "boolean",
+      "default": false
+    },
+    "descricao_deficiencia": {
+      "type": "text"
+    },
     "usou_voucher": {
       "type": "boolean",
       "default": false

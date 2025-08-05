@@ -101,6 +101,8 @@ export interface Student {
   estado: string;
   cidade: string;
   telefone_aluno?: string;
+  portador_deficiencia?: boolean;
+  descricao_deficiencia?: string;
   escola_parceira?: string;
   cursos: Array<{
     id: number;
@@ -133,12 +135,16 @@ export async function updateStudentCourses(
   studentId: number,
   courseId: number,
   documentId: string,
-  usedVoucher: boolean = false
+  usedVoucher: boolean = false,
+  portadorDeficiencia?: boolean,
+  descricaoDeficiencia?: string
 ): Promise<void> {
   try {
     const updateData: {
       cursos: { connect: Array<{ id: number }> };
       usou_voucher?: boolean;
+      portador_deficiencia?: boolean;
+      descricao_deficiencia?: string;
     } = {
       cursos: {
         connect: [{ id: courseId }],
@@ -147,6 +153,14 @@ export async function updateStudentCourses(
 
     if (usedVoucher) {
       updateData.usou_voucher = true;
+    }
+
+    if (portadorDeficiencia !== undefined) {
+      updateData.portador_deficiencia = portadorDeficiencia;
+    }
+
+    if (descricaoDeficiencia !== undefined) {
+      updateData.descricao_deficiencia = descricaoDeficiencia;
     }
 
     const response = await fetch(`${STRAPI_API_URL}/api/alunos/${documentId}`, {
@@ -180,7 +194,9 @@ export async function createStudent(
       existingStudent.id!,
       parseInt(student.cursos[0].id.toString()),
       existingStudent.documentId!,
-      isVoucher100
+      isVoucher100,
+      student.portador_deficiencia,
+      student.descricao_deficiencia
     );
     return existingStudent;
   }
@@ -198,6 +214,8 @@ export async function createStudent(
       estado: student.estado,
       cidade: student.cidade,
       telefone_aluno: student.telefone_aluno,
+      portador_deficiencia: student.portador_deficiencia,
+      descricao_deficiencia: student.descricao_deficiencia,
       cursos: student.cursos.map((course) => ({
         id: course.id,
       })),

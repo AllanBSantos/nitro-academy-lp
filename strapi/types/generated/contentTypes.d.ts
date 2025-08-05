@@ -425,6 +425,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     cursos: Schema.Attribute.Relation<'manyToMany', 'api::curso.curso'>;
     data_nascimento: Schema.Attribute.Date & Schema.Attribute.Required;
+    descricao_deficiencia: Schema.Attribute.Text;
     email_responsavel: Schema.Attribute.String & Schema.Attribute.Required;
     escola_parceira: Schema.Attribute.String;
     estado: Schema.Attribute.String & Schema.Attribute.Required;
@@ -434,6 +435,8 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
     pais: Schema.Attribute.String & Schema.Attribute.Required;
+    portador_deficiencia: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     publishedAt: Schema.Attribute.DateTime;
     responsavel: Schema.Attribute.String & Schema.Attribute.Required;
     telefone_aluno: Schema.Attribute.String;

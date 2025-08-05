@@ -92,6 +92,8 @@ export default function EnrollmentModal({
     studentPhone: "",
     partnerSchool: "",
     classNumber: "",
+    portadorDeficiencia: false,
+    descricaoDeficiencia: "",
   });
 
   useEffect(() => {
@@ -238,6 +240,10 @@ export default function EnrollmentModal({
   };
 
   const sendEnrollmentEmails = async () => {
+    const disabilityInfo = formData.portadorDeficiencia
+      ? `Portador de deficiência: Sim\nDescrição: ${formData.descricaoDeficiencia}`
+      : "Portador de deficiência: Não";
+
     const emailBody = `
       Nova matrícula para o curso: ${courseName}
       Horário selecionado: ${selectedTime}
@@ -247,6 +253,7 @@ export default function EnrollmentModal({
       Data de Nascimento: ${formData.studentBirthDate}
       CPF: ${formData.studentCPF}
       Celular: ${formData.studentPhone}
+      ${disabilityInfo}
       
       Dados do Responsável:
       Nome: ${formData.guardianName}
@@ -356,6 +363,8 @@ export default function EnrollmentModal({
           estado: formData.state,
           cidade: formData.city,
           telefone_aluno: formData.studentPhone,
+          portador_deficiencia: formData.portadorDeficiencia,
+          descricao_deficiencia: formData.descricaoDeficiencia,
           cursos: [{ id: courseId, documentId: courseId.toString() }],
           escola_parceira: schoolName,
           turma: scheduleIndex + 1,
@@ -678,6 +687,55 @@ export default function EnrollmentModal({
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Disability Section */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="portadorDeficiencia"
+                    checked={formData.portadorDeficiencia}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        portadorDeficiencia: e.target.checked,
+                        descricaoDeficiencia: e.target.checked
+                          ? formData.descricaoDeficiencia
+                          : "",
+                      })
+                    }
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <Label
+                    htmlFor="portadorDeficiencia"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    {modalT("student.disability")}
+                  </Label>
+                </div>
+              </div>
+
+              {formData.portadorDeficiencia && (
+                <div className="space-y-2">
+                  <Label htmlFor="descricaoDeficiencia">
+                    {modalT("student.disability_description")}
+                  </Label>
+                  <Input
+                    id="descricaoDeficiencia"
+                    required={formData.portadorDeficiencia}
+                    value={formData.descricaoDeficiencia}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        descricaoDeficiencia: e.target.value,
+                      })
+                    }
+                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Coupon Section */}
