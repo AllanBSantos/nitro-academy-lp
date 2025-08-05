@@ -134,8 +134,6 @@ export default function PartnerStudentsList() {
 
         const requiredColumns = ["Nome", "Escola"];
         const firstRow = data[0] as any;
-
-        // Normalizar nomes das colunas (remover espaços e converter para minúsculas)
         const normalizedFirstRow: Record<string, any> = {};
         Object.keys(firstRow).forEach((key) => {
           const normalizedKey = key.trim().toLowerCase();
@@ -153,8 +151,7 @@ export default function PartnerStudentsList() {
           }
         }
 
-        const csvData = data.map((row: any, index: number) => {
-          // Normalizar as chaves para encontrar os valores corretos
+        const csvData = data.map((row: any) => {
           const normalizedRow: Record<string, any> = {};
           Object.keys(row).forEach((key) => {
             const normalizedKey = key.trim().toLowerCase();
@@ -273,7 +270,6 @@ export default function PartnerStudentsList() {
         if (allErrors.length > 0) {
           setError(t("import_warnings", { errors: allErrors.join(", ") }));
         }
-        // Recarregar dados e filtros disponíveis
         fetchStudents();
         fetchAvailableFilters();
       }, 500);
