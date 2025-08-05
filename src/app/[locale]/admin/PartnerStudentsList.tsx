@@ -123,6 +123,7 @@ export default function PartnerStudentsList() {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      transformHeader: (header) => header.trim(), // Remove espaços dos cabeçalhos
       complete: (results) => {
         const { data, errors } = results;
 
@@ -134,8 +135,17 @@ export default function PartnerStudentsList() {
         const requiredColumns = ["Nome", "Escola"];
         const firstRow = data[0] as any;
 
+        // Normalizar nomes das colunas (remover espaços e converter para minúsculas)
+        const normalizedFirstRow: Record<string, any> = {};
+        Object.keys(firstRow).forEach((key) => {
+          const normalizedKey = key.trim().toLowerCase();
+          normalizedFirstRow[normalizedKey] = firstRow[key];
+        });
+
         for (const column of requiredColumns) {
-          if (!(column in firstRow)) {
+          const normalizedColumn = column.trim().toLowerCase();
+
+          if (!(normalizedColumn in normalizedFirstRow)) {
             setError(
               t("missing_columns", { columns: requiredColumns.join(", ") })
             );
@@ -143,12 +153,27 @@ export default function PartnerStudentsList() {
           }
         }
 
-        const csvData = data.map((row: any) => ({
-          nome: row.Nome,
-          cpf: row.CPF || "",
-          escola: row.Escola,
-          turma: row.Turma || "",
-        }));
+        const csvData = data.map((row: any, index: number) => {
+          // Normalizar as chaves para encontrar os valores corretos
+          const normalizedRow: Record<string, any> = {};
+          Object.keys(row).forEach((key) => {
+            const normalizedKey = key.trim().toLowerCase();
+            normalizedRow[normalizedKey] = row[key];
+          });
+
+          const mappedRow = {
+            nome: normalizedRow["nome"] || row["NOME "] || row["Nome"] || "",
+            cpf: normalizedRow["cpf"] || row["CPF"] || "",
+            escola: normalizedRow["escola"] || row["Escola"] || "",
+            turma:
+              normalizedRow["turma"] ||
+              row["ano/série "] ||
+              row["ANO/SÉRIE "] ||
+              row["Turma"] ||
+              "",
+          };
+          return mappedRow;
+        });
 
         importStudents(csvData);
       },
@@ -407,8 +432,11 @@ export default function PartnerStudentsList() {
   }, [selectedSchools, allClasses, fetchClassesForSchools]);
 
   const downloadTemplate = () => {
-    const csvContent = "Nome,CPF,Escola,Turma";
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    const csvContent = `Nome,CPF,Escola,Turma
+João Silva,12345678901,Nitro Academy,8º ano
+Maria Santos,98765432109,Nitro Academy,9º ano
+Pedro Oliveira,11122233344,Outra Escola,7º ano`;
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

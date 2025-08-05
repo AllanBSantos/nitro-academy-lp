@@ -89,24 +89,28 @@ async function processBatch(
     turma: string;
   }>
 ) {
-  const batchResults = {
-    imported: 0,
-    errors: [] as string[],
-  };
+  const results = await Promise.allSettled(
+    students.map((student) => processStudentWithRetry(student))
+  );
 
-  for (const studentData of students) {
-    const result = await processStudentWithRetry(studentData);
+  let imported = 0;
+  const errors: string[] = [];
 
-    if (result.success) {
-      batchResults.imported++;
+  results.forEach((result, index) => {
+    const student = students[index];
+
+    if (result.status === "fulfilled" && result.value.success) {
+      imported++;
     } else {
-      batchResults.errors.push(
-        `Erro ao importar ${studentData.nome}: ${result.error}`
-      );
+      const error =
+        result.status === "rejected"
+          ? result.reason
+          : result.value.error || "Erro desconhecido";
+      errors.push(`Erro ao importar ${student.nome}: ${error}`);
     }
-  }
+  });
 
-  return batchResults;
+  return { imported, errors };
 }
 
 export async function POST(request: NextRequest) {
@@ -123,13 +127,14 @@ export async function POST(request: NextRequest) {
     const validatedData = [];
     const errors = [];
 
-    for (const row of data) {
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+
       if (!row.nome || !row.escola) {
-        errors.push(
-          `Linha inválida: ${JSON.stringify(
-            row
-          )} - Nome e Escola são obrigatórios`
-        );
+        const errorMsg = `Linha ${i + 1} inválida: ${JSON.stringify(
+          row
+        )} - Nome e Escola são obrigatórios`;
+        errors.push(errorMsg);
         continue;
       }
 
@@ -138,12 +143,14 @@ export async function POST(request: NextRequest) {
         cpf = row.cpf.replace(/\D/g, "");
       }
 
-      validatedData.push({
+      const validatedRow = {
         nome: row.nome.trim(),
         cpf: cpf,
         escola: row.escola.trim(),
         turma: row.turma ? row.turma.trim() : "",
-      });
+      };
+
+      validatedData.push(validatedRow);
     }
 
     if (validatedData.length === 0) {
@@ -194,6 +201,7 @@ export async function POST(request: NextRequest) {
       const batch = batches[i];
 
       const batchResults = await processBatch(batch);
+
       totalImported += batchResults.imported;
       errors.push(...batchResults.errors);
 
