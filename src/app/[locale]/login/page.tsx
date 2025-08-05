@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
@@ -14,8 +14,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@/app/components/ui/card";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
 import axios from "axios";

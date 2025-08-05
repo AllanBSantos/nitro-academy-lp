@@ -5,15 +5,15 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@/app/components/ui/card";
+import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import {
   Upload,
   Download,

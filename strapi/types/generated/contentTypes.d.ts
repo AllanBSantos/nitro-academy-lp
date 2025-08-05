@@ -693,36 +693,6 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiEscolaParceiraEscolaParceira
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'escolas_parceiras';
-  info: {
-    displayName: 'escola_parceira';
-    pluralName: 'escolas-parceiras';
-    singularName: 'escola-parceira';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::escola-parceira.escola-parceira'
-    > &
-      Schema.Attribute.Private;
-    logo: Schema.Attribute.Media<'images'>;
-    name: Schema.Attribute.String;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiEscolaEscola extends Struct.CollectionTypeSchema {
   collectionName: 'escolas';
   info: {
@@ -1436,7 +1406,6 @@ declare module '@strapi/strapi' {
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::cupom.cupom': ApiCupomCupom;
       'api::curso.curso': ApiCursoCurso;
-      'api::escola-parceira.escola-parceira': ApiEscolaParceiraEscolaParceira;
       'api::escola.escola': ApiEscolaEscola;
       'api::mentor.mentor': ApiMentorMentor;
       'api::pergunta-frequente.pergunta-frequente': ApiPerguntaFrequentePerguntaFrequente;
