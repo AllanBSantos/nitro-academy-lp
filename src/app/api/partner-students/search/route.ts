@@ -21,13 +21,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Buscar todos os alunos de uma vez (agora que o limite foi aumentado)
     const response = await fetch(
       `${STRAPI_API_URL}/api/alunos-escola-parceira?pagination[pageSize]=10000&sort=nome:asc`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        cache: "no-store", // Disable fetch caching
+        cache: "no-store",
       }
     );
 
