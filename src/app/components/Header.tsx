@@ -72,7 +72,7 @@ export default function Header() {
             </Link>
             {showTooltip && (
               <div className="absolute top-full right-0 mt-2 px-3 py-1 bg-black text-white text-sm rounded-md whitespace-nowrap z-50">
-                Área Logada
+                Área administradores
               </div>
             )}
           </div>
