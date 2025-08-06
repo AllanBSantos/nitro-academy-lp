@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -66,6 +66,24 @@ export default function TimeSelectionSection({
   };
 
   const schedules = course.cronograma || [];
+
+  // Seleção automática quando há apenas uma opção de cronograma
+  useEffect(() => {
+    if (schedules.length === 1 && inscricoes_abertas && !selectedTime) {
+      const schedule = schedules[0];
+      const classNumber = "1";
+
+      // Verificar se o schedule tem as propriedades necessárias
+      if (schedule.dia_semana && schedule.horario_aula) {
+        // Verificar se a turma não está cheia
+        if (!isScheduleFull(classNumber)) {
+          setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
+          setSelectedClass(classNumber);
+          onScheduleClick(classNumber);
+        }
+      }
+    }
+  }, [schedules, inscricoes_abertas, selectedTime]);
 
   return (
     <section className="w-full bg-white py-16">
