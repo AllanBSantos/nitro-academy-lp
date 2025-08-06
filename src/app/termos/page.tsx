@@ -34,7 +34,7 @@ export default function TermsPage({
             A Nitro Academy é uma plataforma online de intermediação entre
             professores independentes e clientes responsáveis por menores de
             idade, com foco em cursos educacionais destinados a crianças e
-            adolescentes, geralmente com idade entre 11 e 15 anos.
+            adolescentes, geralmente com idade entre 12 e 17 anos.
           </p>
           <p className="mb-8">
             A Digniti Ltda não é autora, produtora ou responsável pelo conteúdo

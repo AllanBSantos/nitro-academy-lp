@@ -77,7 +77,7 @@ export default function Card({
   const maxStudentsPerClass = parseInt(
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
   );
-  const faixaEtaria = cronograma?.[0]?.faixa_etaria || "";
+  const faixaEtaria = "De 12 a 17 anos";
   const priceClass =
     price && moeda
       ? (price.total / CLASSES_PER_COURSE)

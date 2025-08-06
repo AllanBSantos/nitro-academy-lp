@@ -5,7 +5,7 @@
     "em talento": "into talent"
   },
   "Introduction": {
-    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 13 a 16 anos através de projetos práticos e estimulantes orientados por mentores experientes": "Nitro Academy is an online school for vocational initiation projects for teenagers aged 11 to 15 through practical and stimulating projects guided by experienced mentors"
+    "A Nitro Academy é uma escola online de projetos de iniciação vocacional para adolescentes entre 12 a 17 anos através de projetos práticos e estimulantes orientados por mentores experientes": "Nitro Academy is an online school for vocational initiation projects for teenagers aged 12 to 17 through practical and stimulating projects guided by experienced mentors"
   },
   "MiniUniversity": {
     "Uma mini universidade": "A mini university",
@@ -149,7 +149,7 @@
     "Dúvidas?": "Do you have any questions?",
     "Acesse a nossa página de dúvidas frequentes": "Visit our frequently asked questions page",
     "O que é a Nitro Academy?": "What is Nitro Academy?",
-    "A Nitro Academy é uma escola online para alunos de 13 a 16 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "Nitro Academy is an online school for students aged 11 to 15 who want to learn beyond traditional school. With dynamic classes, small groups, and a project-based approach, our students develop creativity, leadership, critical thinking, and much more!",
+    "A Nitro Academy é uma escola online para alunos de 12 a 17 anos que desejam aprender além da escola tradicional Com aulas dinâmicas, grupos pequenos e uma abordagem baseada em projetos, nossos alunos desenvolvem criatividade, liderança, pensamento crítico e muito mais!": "Nitro Academy is an online school for students aged 12 to 17 who want to learn beyond traditional school. With dynamic classes, small groups, and a project-based approach, our students develop creativity, leadership, critical thinking, and much more!",
     "Por que a Nitro é diferente?": "Why is Nitro different?",
     "Turmas reduzidas, projetos práticos e uma abordagem moderna Aqui, você desenvolve habilidades que as escolas tradicionais não ensinam": "Small classes, practical projects, and a modern approach. Here, you develop skills that traditional schools don't teach.",
     "Por que a Nitro é diferente? 2": "Why is Nitro different? 2",
@@ -172,7 +172,7 @@
     "teacher_dialog": {
       "description": "At Nitro Academy, we believe that preparing young people for the future goes far beyond guaranteeing a livelihood. We are building a school where learning is a journey of discovering vocations, talents and purpose - not just for individual benefit, but as a true service to society."
     },
-    "É algo que a Nitro Academy veio solucionar, transformando o tempo livre dos adolescentes (11-15 anos) em talento": "This is something Nitro Academy came to solve, transforming adolescents' (11-15 years) free time into talent.",
+    "É algo que a Nitro Academy veio solucionar, transformando o tempo livre dos adolescentes (11-15 anos) em talento": "This is something Nitro Academy came to solve, transforming adolescents' (12-17 years) free time into talent.",
     "Exemplos de projetos já estruturados na Nitro Academy:": "Examples of established projects at Nitro Academy:",
     "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico": "Interning as a Youtuber, Making your First Online Sale, Creating your Own Perfume, Creating a Cinematic Script",
     "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores": "We are an online vocational initiation project school and we are looking for professionals passionate about education who have practical experience in their professional fields to act as mentors.",
