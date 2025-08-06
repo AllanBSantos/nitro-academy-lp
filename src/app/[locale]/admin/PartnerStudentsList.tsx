@@ -74,6 +74,13 @@ export default function PartnerStudentsList() {
   const [totalPages, setTotalPages] = useState(1);
   const studentsPerPage = 100;
 
+  // Estatísticas absolutas (sem paginação)
+  const [absoluteStats, setAbsoluteStats] = useState({
+    totalStudents: 0,
+    enrolledCount: 0,
+    notEnrolledCount: 0,
+  });
+
   const [importProgress, setImportProgress] = useState(0);
   const [importStatus, setImportStatus] = useState("");
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -81,6 +88,7 @@ export default function PartnerStudentsList() {
 
   useEffect(() => {
     fetchStudents();
+    fetchAbsoluteStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, selectedSchools, selectedClasses, enrollmentStatusFilter]);
 
@@ -355,6 +363,54 @@ export default function PartnerStudentsList() {
     }
   };
 
+  const fetchAbsoluteStats = async () => {
+    try {
+      const params = new URLSearchParams({
+        page: "1",
+        pageSize: "10000", // Buscar todos os alunos
+        _t: Date.now().toString(),
+      });
+
+      // Add school filters
+      if (selectedSchools.length > 0) {
+        selectedSchools.forEach((school) => {
+          params.append("escola", school);
+        });
+      }
+
+      // Add class filters
+      if (selectedClasses.length > 0) {
+        selectedClasses.forEach((classItem) => {
+          params.append("turma", classItem);
+        });
+      }
+
+      const response = await fetch(
+        `/api/partner-students?${params.toString()}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const students = data.data || [];
+
+        // Calcular estatísticas absolutas
+        const totalStudents = students.length;
+        const enrolledCount = students.filter(
+          (student: any) => student.attributes?.isEnrolled
+        ).length;
+        const notEnrolledCount = totalStudents - enrolledCount;
+
+        setAbsoluteStats({
+          totalStudents,
+          enrolledCount,
+          notEnrolledCount,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching absolute stats:", err);
+    }
+  };
+
   const fetchAvailableFilters = async () => {
     try {
       const response = await fetch(
@@ -457,6 +513,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
   const refreshData = () => {
     fetchStudents();
     fetchAvailableFilters();
+    fetchAbsoluteStats();
   };
 
   const exportToPDF = () => {
@@ -587,20 +644,9 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
     selectedClasses.length > 0 ||
     enrollmentStatusFilter !== "all";
 
-  // Calculate enrollment summary based on school and class filters
+  // Calculate enrollment summary based on absolute statistics
   const getEnrollmentSummary = () => {
-    // Get students filtered by school and class
-    const filteredStudents = allStudents.filter((student) => {
-      // If no schools selected, include all students
-      if (selectedSchools.length === 0) return true;
-      // If schools selected, only include students from those schools
-      return selectedSchools.includes(student.escola);
-    });
-
-    const enrolledCount = filteredStudents.filter(
-      (student) => student.isEnrolled
-    ).length;
-    const totalCount = filteredStudents.length;
+    const { totalStudents, enrolledCount } = absoluteStats;
 
     // If one school and one class are selected
     if (selectedSchools.length === 1 && selectedClasses.length === 1) {
@@ -608,7 +654,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
         school: selectedSchools[0],
         class: selectedClasses[0],
         enrolled: enrolledCount,
-        total: totalCount,
+        total: totalStudents,
       });
     }
     // If only one school is selected
@@ -616,12 +662,12 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
       return t("enrollment_summary_school", {
         school: selectedSchools[0],
         enrolled: enrolledCount,
-        total: totalCount,
+        total: totalStudents,
       });
     } else {
       return t("enrollment_summary", {
         enrolled: enrolledCount,
-        total: totalCount,
+        total: totalStudents,
       });
     }
   };
