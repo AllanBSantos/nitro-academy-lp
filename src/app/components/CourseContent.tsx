@@ -59,7 +59,7 @@ export default function CourseContent({ course }: CourseContentProps) {
 
   const getClassAvailability = (classNumber: string) => {
     const studentsInClass = getStudentsInClass(parseInt(classNumber));
-    const turma = course.turmas?.find((t) => String(t.id) === classNumber);
+    // const turma = course.turmas?.find((t) => String(t.id) === classNumber);
 
     // Removida a verificação de vagas disponíveis - sempre permite matrícula
     return {
