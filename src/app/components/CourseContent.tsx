@@ -61,17 +61,9 @@ export default function CourseContent({ course }: CourseContentProps) {
     const studentsInClass = getStudentsInClass(parseInt(classNumber));
     const turma = course.turmas?.find((t) => String(t.id) === classNumber);
 
-    if (turma) {
-      const availableSpots = Math.max(0, turma.vagas_disponiveis || 0);
-      return {
-        isFull: availableSpots === 0,
-        currentStudents: maxStudentsPerClass - availableSpots,
-        maxStudents: maxStudentsPerClass,
-      };
-    }
-
+    // Removida a verificação de vagas disponíveis - sempre permite matrícula
     return {
-      isFull: studentsInClass.length >= maxStudentsPerClass,
+      isFull: false, // Nunca considera como cheio
       currentStudents: studentsInClass.length,
       maxStudents: maxStudentsPerClass,
     };
@@ -83,10 +75,9 @@ export default function CourseContent({ course }: CourseContentProps) {
   };
 
   const handleEnrollClick = (classNumber: string) => {
-    if (!isClassFull(classNumber)) {
-      setSelectedClass(classNumber);
-      setIsModalOpen(true);
-    }
+    // Removida a verificação de vagas disponíveis - sempre permite matrícula
+    setSelectedClass(classNumber);
+    setIsModalOpen(true);
   };
 
   const reviews: Review[] = course.reviews || [];

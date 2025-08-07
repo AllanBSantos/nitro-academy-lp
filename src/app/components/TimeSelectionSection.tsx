@@ -52,11 +52,10 @@ export default function TimeSelectionSection({
 
   const handleTimeSelect = (schedule: Schedule, index: number) => {
     const classNumber = (index + 1).toString();
-    if (!isScheduleFull(classNumber)) {
-      setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
-      setSelectedClass(classNumber);
-      onScheduleClick(classNumber);
-    }
+    // Removida a verificação de vagas disponíveis - sempre permite seleção
+    setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
+    setSelectedClass(classNumber);
+    onScheduleClick(classNumber);
   };
 
   const formatDate = (dateString: string) => {
@@ -75,12 +74,10 @@ export default function TimeSelectionSection({
 
       // Verificar se o schedule tem as propriedades necessárias
       if (schedule.dia_semana && schedule.horario_aula) {
-        // Verificar se a turma não está cheia
-        if (!isScheduleFull(classNumber)) {
-          setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
-          setSelectedClass(classNumber);
-          onScheduleClick(classNumber);
-        }
+        // Removida a verificação de vagas disponíveis - sempre permite seleção
+        setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
+        setSelectedClass(classNumber);
+        onScheduleClick(classNumber);
       }
     }
   }, [schedules, inscricoes_abertas, selectedTime]);
