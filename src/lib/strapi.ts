@@ -1,4 +1,5 @@
 import { Course, Mentor, Review } from "@/types/strapi";
+import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
@@ -434,6 +435,174 @@ export async function fetchFAQs(locale: string = "pt-BR"): Promise<FAQ[]> {
   } catch (error) {
     console.error("Error fetching FAQs:", error);
     return [];
+  }
+}
+
+export interface AlunoStrapi {
+  id: number;
+  nome?: string;
+  cpf_aluno?: string;
+  email_responsavel?: string;
+  telefone_aluno?: string;
+  data_nascimento?: string;
+  escola_parceira?: string;
+  habilitado?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AlunoParceiro {
+  id: number;
+  nome?: string;
+  cpf?: string;
+  email?: string;
+  telefone?: string;
+  dataNascimento?: string;
+  escola?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface StudentsReportData {
+  alunos: Array<{
+    id: number;
+    nome: string;
+    cpf: string;
+    email: string;
+    telefone: string;
+    dataNascimento: string;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+  total: number;
+  totalAlunosStrapi: number;
+  totalAlunosParceiros: number;
+}
+
+export async function fetchAllAlunosStrapi(): Promise<AlunoStrapi[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/alunos?populate=*&pagination[pageSize]=1000`
+    );
+
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      throw new Error(`Failed to fetch alunos from Strapi: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Filtrar apenas alunos habilitados
+    const alunosHabilitados =
+      data.data?.filter(
+        (aluno: { habilitado?: boolean }) => aluno.habilitado === true
+      ) || [];
+
+    return alunosHabilitados;
+  } catch (error) {
+    console.error("Error fetching alunos from Strapi:", error);
+    throw error; // Re-throw para que o erro seja tratado na função principal
+  }
+}
+
+export async function fetchAllAlunosParceiros(): Promise<AlunoParceiro[]> {
+  try {
+    // Buscar todos os registros, incluindo não publicados, sem limite de paginação
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/alunos-escola-parceira?populate=*&publicationState=preview&pagination[pageSize]=1000`
+    );
+
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      // Se não conseguir buscar alunos parceiros, retorna array vazio
+      // para que o relatório ainda funcione mostrando todos os alunos do Strapi
+      return [];
+    }
+
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error("Error fetching alunos parceiros:", error);
+    // Em caso de erro, retorna array vazio para não quebrar o relatório
+    return [];
+  }
+}
+
+export async function generateStudentsReport(): Promise<StudentsReportData> {
+  try {
+    // Buscar alunos do Strapi primeiro
+    let alunos: AlunoStrapi[] = [];
+    try {
+      alunos = await fetchAllAlunosStrapi();
+    } catch (error) {
+      console.error("Error fetching alunos from Strapi:", error);
+      // Se não conseguir buscar alunos do Strapi, retorna relatório vazio
+      return {
+        alunos: [],
+        total: 0,
+        totalAlunosStrapi: 0,
+        totalAlunosParceiros: 0,
+      };
+    }
+
+    // Buscar alunos parceiros (pode falhar sem quebrar o relatório)
+    let alunosParceiros: AlunoParceiro[] = [];
+    try {
+      alunosParceiros = await fetchAllAlunosParceiros();
+    } catch (error) {
+      console.error("Error fetching alunos parceiros:", error);
+      // Se não conseguir buscar alunos parceiros, considera lista vazia
+      alunosParceiros = [];
+    }
+
+    // Criar um Set com os nomes normalizados dos alunos parceiros para busca mais eficiente
+    const nomesAlunosParceiros = new Set(
+      alunosParceiros
+        .map((aluno) => {
+          const nome = aluno.nome;
+          return nome ? normalizeName(nome) : null;
+        })
+        .filter(Boolean)
+    );
+
+    // Filtrar alunos que existem no Strapi mas não estão na lista de parceiros
+    const alunosNaoParceiros = alunos.filter((aluno) => {
+      const nomeAluno = aluno.nome;
+      if (!nomeAluno) return true; // Se não tem nome, considera como não parceiro
+
+      const nomeNormalizado = normalizeName(nomeAluno);
+      const isNotPartner = !nomesAlunosParceiros.has(nomeNormalizado);
+
+      return isNotPartner;
+    });
+
+    // Formatar os dados para retorno
+    const alunosFormatados = alunosNaoParceiros.map((aluno) => ({
+      id: aluno.id,
+      nome: aluno.nome || "",
+      cpf: aluno.cpf_aluno || "",
+      email: aluno.email_responsavel || "",
+      telefone: aluno.telefone_aluno || "",
+      dataNascimento: aluno.data_nascimento || "",
+      createdAt: aluno.createdAt || "",
+      updatedAt: aluno.updatedAt || "",
+    }));
+
+    return {
+      alunos: alunosFormatados,
+      total: alunosFormatados.length,
+      totalAlunosStrapi: alunos.length,
+      totalAlunosParceiros: alunosParceiros.length,
+    };
+  } catch (error) {
+    console.error("Error generating students report:", error);
+    // Retorna relatório vazio em caso de erro geral
+    return {
+      alunos: [],
+      total: 0,
+      totalAlunosStrapi: 0,
+      totalAlunosParceiros: 0,
+    };
   }
 }
 

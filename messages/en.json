@@ -571,7 +571,8 @@
       "logout_confirm": "Do you want to logout?",
       "logout_action": "Logout",
       "dashboard": "Dashboard",
-      "partner_students": "Partner School Students List"
+      "partner_students": "Partner School Students List",
+      "students_report": "Students Report"
     },
     "partnerStudents": {
       "title": "Partner School Students List",
@@ -636,6 +637,27 @@
       "export_success": "PDF exported successfully!",
       "export_error": "Error exporting PDF",
       "pdf_title": "Nitro Academy Students List"
+    },
+    "studentsReport": {
+      "title": "Students Report",
+      "description": "Students that exist in the system but are not in the partner schools list",
+      "loading": "Loading report...",
+      "try_again": "Try again",
+      "refresh": "Refresh",
+      "download_csv": "Download CSV",
+      "total_strapi_students": "Total Students in System",
+      "total_partner_students": "Total Partner Students",
+      "non_partner_students": "Non-Partner Students",
+      "students_list": "Students List",
+      "showing_count": "Showing {count} students",
+      "no_students_found": "No students found",
+      "all_students_are_partners": "All students are in the partner list",
+      "name": "Name",
+      "cpf": "CPF",
+      "email": "Email",
+      "phone": "Phone",
+      "birth_date": "Birth Date",
+      "created_at": "Created At"
     }
   },
   "CourseRating": {

@@ -577,7 +577,8 @@
       "logout_action": "Deslogar",
       "title": "Painel Administrativo",
       "dashboard": "Dashboard",
-      "partner_students": "Lista de Alunos Escola Parceira"
+      "partner_students": "Lista de Alunos Escola Parceira",
+      "students_report": "Relatório de Alunos"
     },
     "partnerStudents": {
       "title": "Lista de Alunos Escola Parceira",
@@ -639,6 +640,27 @@
       "export_success": "PDF exportado com sucesso!",
       "export_error": "Erro ao exportar PDF",
       "pdf_title": "Lista de Alunos Nitro Academy"
+    },
+    "studentsReport": {
+      "title": "Relatório de Alunos",
+      "description": "Alunos que existem no sistema mas não estão na lista de escolas parceiras",
+      "loading": "Carregando relatório...",
+      "try_again": "Tentar novamente",
+      "refresh": "Atualizar",
+      "download_csv": "Baixar CSV",
+      "total_strapi_students": "Total de Alunos no Sistema",
+      "total_partner_students": "Total de Alunos Parceiros",
+      "non_partner_students": "Alunos Não Parceiros",
+      "students_list": "Lista de Alunos",
+      "showing_count": "Mostrando {count} alunos",
+      "no_students_found": "Nenhum aluno encontrado",
+      "all_students_are_partners": "Todos os alunos estão na lista de parceiros",
+      "name": "Nome",
+      "cpf": "CPF",
+      "email": "Email",
+      "phone": "Telefone",
+      "birth_date": "Data de Nascimento",
+      "created_at": "Data de Criação"
     }
   },
   "CourseRating": {

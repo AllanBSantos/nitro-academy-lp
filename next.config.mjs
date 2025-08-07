@@ -11,6 +11,31 @@ const nextConfig = {
     serverComponentsExternalPackages: [],
   },
 
+  // Cache configuration
+  generateEtags: false,
+
+  async headers() {
+    return [
+      {
+        source: '/api/admin/students-report',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+    ];
+  },
+
   async rewrites() {
     return [
       {
