@@ -348,33 +348,38 @@ export default function EnrollmentModal({
 
       const schoolName = isPartnerStudent ? formData.partnerSchool : undefined;
 
-      const couponName = appliedCoupon?.nome;
+      // Verificar se o cupom é gratuito
+      const isVoucherGratuito =
+        appliedCoupon?.voucher_gratuito || isPartnerStudent;
 
-      await createStudent(
-        {
-          nome: formData.studentName,
-          data_nascimento: formData.studentBirthDate,
-          cpf_aluno: formData.studentCPF,
-          responsavel: formData.guardianName,
-          email_responsavel: formData.guardianEmail,
-          cpf_responsavel: formData.guardianCPF,
-          telefone_responsavel: formData.guardianPhone,
-          pais: formData.country,
-          estado: formData.state,
-          cidade: formData.city,
-          telefone_aluno: formData.studentPhone,
-          portador_deficiencia: formData.portadorDeficiencia,
-          descricao_deficiencia: formData.descricaoDeficiencia,
-          cursos: [{ id: courseId, documentId: courseId.toString() }],
-          escola_parceira: schoolName,
-          turma: scheduleIndex + 1,
-          usou_voucher: isPartnerStudent, // Set as true if partner student
-          publishedAt: new Date().toISOString(),
-        },
-        couponName
-      );
+      await createStudent({
+        nome: formData.studentName,
+        data_nascimento: formData.studentBirthDate,
+        cpf_aluno: formData.studentCPF,
+        responsavel: formData.guardianName,
+        email_responsavel: formData.guardianEmail,
+        cpf_responsavel: formData.guardianCPF,
+        telefone_responsavel: formData.guardianPhone,
+        pais: formData.country,
+        estado: formData.state,
+        cidade: formData.city,
+        telefone_aluno: formData.studentPhone,
+        portador_deficiencia: formData.portadorDeficiencia,
+        descricao_deficiencia: formData.descricaoDeficiencia,
+        cursos: [{ id: courseId, documentId: courseId.toString() }],
+        escola_parceira: schoolName,
+        turma: scheduleIndex + 1,
+        usou_voucher: isVoucherGratuito, // Set as true if partner student or voucher gratuito
+        publishedAt: new Date().toISOString(),
+      });
 
       setIsOpen(false);
+
+      // Se há cupom aplicado com voucher_gratuito, mostrar modal de sucesso
+      if (appliedCoupon && appliedCoupon.voucher_gratuito) {
+        setIsSuccessModalOpen(true);
+        return;
+      }
 
       // Se há cupom aplicado, usar URL do cupom ou link_desconto como fallback
       if (appliedCoupon) {

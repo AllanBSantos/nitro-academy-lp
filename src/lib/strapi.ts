@@ -183,18 +183,19 @@ export async function updateStudentCourses(
 }
 
 export async function createStudent(
-  student: Omit<Student, "id">,
-  couponCode?: string
+  student: Omit<Student, "id">
 ): Promise<Student> {
   const existingStudent = await findStudentByCPF(student.cpf_aluno);
-  const isVoucher100 = couponCode?.toLowerCase() === "voucher100";
+  // Verificar se o cupom é gratuito baseado no campo usou_voucher do aluno
+  // O campo usou_voucher já é definido no EnrollmentModal baseado no voucher_gratuito do cupom
+  const isVoucherGratuito = student.usou_voucher;
 
   if (existingStudent) {
     await updateStudentCourses(
       existingStudent.id!,
       parseInt(student.cursos[0].id.toString()),
       existingStudent.documentId!,
-      isVoucher100,
+      isVoucherGratuito,
       student.portador_deficiencia,
       student.descricao_deficiencia
     );
@@ -221,7 +222,7 @@ export async function createStudent(
       })),
       escola_parceira: student.escola_parceira,
       turma: student.turma,
-      usou_voucher: student.usou_voucher || isVoucher100, // Use the field from student or fallback to voucher100 check
+      usou_voucher: isVoucherGratuito, // Usar a verificação baseada no cupom ou no campo do aluno
     },
   };
 
