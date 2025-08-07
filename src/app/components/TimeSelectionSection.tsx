@@ -30,7 +30,7 @@ export default function TimeSelectionSection({
   inscricoes_abertas,
   course,
   onScheduleClick,
-  isScheduleFull,
+  //isScheduleFull,
 }: TimeSelectionSectionProps) {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
