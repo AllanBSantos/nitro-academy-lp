@@ -16,7 +16,6 @@ export default function Card({
   price,
   moeda,
   badge,
-  alunos,
   data_inicio_curso,
   lingua,
 }: CardProps) {
@@ -24,7 +23,6 @@ export default function Card({
   const t = useTranslations("TimeSelection");
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
-  const studentCount = Array.isArray(alunos) ? alunos.length : 0;
   const isEnglishCourse = lingua === "ingles";
 
   const mentorReviews = mentor.reviews || [];
@@ -74,9 +72,6 @@ export default function Card({
     return stars;
   };
   const CLASSES_PER_COURSE = 6;
-  const maxStudentsPerClass = parseInt(
-    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
-  );
   const faixaEtaria = "De 12 a 17 anos";
   const priceClass =
     price && moeda
@@ -157,19 +152,31 @@ export default function Card({
         poucas_vagas: commonT("few_spots"),
       };
 
-      const totalStudentsAccepted = cronograma?.length * maxStudentsPerClass;
-      const availableSpots = Math.max(0, totalStudentsAccepted - studentCount);
-      if (availableSpots > 0) {
+      if (badge === "dias_faltantes" && daysRemaining > 0) {
         badges.push(
           <span
-            key="spots"
+            key="days"
+            className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium"
+          >
+            {badgeText[badge]}
+          </span>
+        );
+      } else if (badge === "poucos_dias") {
+        badges.push(
+          <span
+            key="few-days"
+            className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium"
+          >
+            {badgeText[badge]}
+          </span>
+        );
+      } else if (badge === "poucas_vagas") {
+        badges.push(
+          <span
+            key="few-spots"
             className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium"
           >
-            {availableSpots > 7
-              ? badgeText[badge]
-              : availableSpots === 1
-              ? "1 vaga restante"
-              : `${availableSpots} vagas restantes`}
+            {badgeText[badge]}
           </span>
         );
       }
