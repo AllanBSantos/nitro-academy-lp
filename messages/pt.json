@@ -578,7 +578,50 @@
       "title": "Painel Administrativo",
       "dashboard": "Dashboard",
       "partner_students": "Lista de Alunos Escola Parceira",
-      "students_report": "Relatório de Alunos"
+      "students_report": "Relatório de Alunos",
+      "exceeded_students_report": "Alunos Excedentes"
+    },
+    "exceededStudentsReport": {
+      "title": "Relatório de Alunos Excedentes",
+      "description": "Alunos que excederam o limite de 15 alunos por curso",
+      "loading": "Carregando relatório de alunos excedentes...",
+      "error": {
+        "title": "Erro ao carregar relatório",
+        "retry": "Tentar novamente"
+      },
+      "stats": {
+        "total_exceeded": "Total de Excedentes",
+        "courses_with_exceeded": "Cursos com Excedentes",
+        "enabled_students": "Alunos Habilitados",
+        "exceeded_percentage": "{percentage}% dos alunos habilitados",
+        "courses_exceeded_limit": "Cursos que ultrapassaram o limite",
+        "total_students_system": "Total de alunos no sistema"
+      },
+      "course": {
+        "total": "Total: {count} alunos",
+        "enrolled": "Matriculados: {count} alunos",
+        "exceeded": "Excedentes: {count} alunos",
+        "exceeded_students": "Alunos Excedentes (ordem de inscrição):",
+        "slug": "Slug: {slug}",
+        "level": "Nível: {level}"
+      },
+      "student": {
+        "email": "Email: {email}",
+        "responsible": "Responsável: {responsible}",
+        "phone": "Telefone: {phone}",
+        "enrolled_at": "Inscrito em: {date}",
+        "id": "ID: {id}"
+      },
+      "no_exceeded": {
+        "title": "Nenhum aluno excedente encontrado",
+        "description": "Todos os cursos estão dentro do limite de 15 alunos por curso."
+      },
+      "actions": {
+        "refresh": "Atualizar",
+        "export_csv": "Exportar CSV",
+        "export_pdf": "Exportar PDF"
+      },
+      "exporting": "Exportando..."
     },
     "partnerStudents": {
       "title": "Lista de Alunos Escola Parceira",

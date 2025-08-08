@@ -572,7 +572,50 @@
       "logout_action": "Logout",
       "dashboard": "Dashboard",
       "partner_students": "Partner School Students List",
-      "students_report": "Students Report"
+      "students_report": "Students Report",
+      "exceeded_students_report": "Exceeded Students"
+    },
+    "exceededStudentsReport": {
+      "title": "Exceeded Students Report",
+      "description": "Students who exceeded the limit of 15 students per course",
+      "loading": "Loading exceeded students report...",
+      "error": {
+        "title": "Error loading report",
+        "retry": "Try again"
+      },
+      "stats": {
+        "total_exceeded": "Total Exceeded",
+        "courses_with_exceeded": "Courses with Exceeded",
+        "enabled_students": "Enabled Students",
+        "exceeded_percentage": "{percentage}% of enabled students",
+        "courses_exceeded_limit": "Courses that exceeded the limit",
+        "total_students_system": "Total students in system"
+      },
+      "course": {
+        "total": "Total: {count} students",
+        "enrolled": "Enrolled: {count} students",
+        "exceeded": "Exceeded: {count} students",
+        "exceeded_students": "Exceeded Students (enrollment order):",
+        "slug": "Slug: {slug}",
+        "level": "Level: {level}"
+      },
+      "student": {
+        "email": "Email: {email}",
+        "responsible": "Responsible: {responsible}",
+        "phone": "Phone: {phone}",
+        "enrolled_at": "Enrolled at: {date}",
+        "id": "ID: {id}"
+      },
+      "no_exceeded": {
+        "title": "No exceeded students found",
+        "description": "All courses are within the limit of 15 students per course."
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "export_csv": "Export CSV",
+        "export_pdf": "Export PDF"
+      },
+      "exporting": "Exporting..."
     },
     "partnerStudents": {
       "title": "Partner School Students List",

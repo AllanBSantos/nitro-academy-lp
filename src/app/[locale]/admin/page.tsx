@@ -13,6 +13,7 @@ import {
 import { CoursesList } from "@/components/admin/CoursesList";
 import PartnerStudentsList from "./PartnerStudentsList";
 import StudentsReport from "@/components/admin/StudentsReport";
+import ExceededStudentsReport from "@/app/components/admin/ExceededStudentsReport";
 
 function AdminLayout() {
   const t = useTranslations("Admin.panel");
@@ -34,6 +35,8 @@ function AdminLayout() {
         return <PartnerStudentsList />;
       case "students-report":
         return <StudentsReport />;
+      case "exceeded-students-report":
+        return <ExceededStudentsReport />;
       default:
         return <CoursesList />;
     }
@@ -114,6 +117,16 @@ function AdminLayout() {
             }`}
           >
             <span className="whitespace-nowrap">{t("students_report")}</span>
+          </button>
+          <button
+            onClick={() => setActiveMenu("exceeded-students-report")}
+            className={`w-full flex items-center justify-start px-4 py-2 text-sm font-medium rounded-md transition-colors text-left ${
+              activeMenu === "exceeded-students-report"
+                ? "bg-[#3B82F6] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <span className="whitespace-nowrap">Alunos Excedentes</span>
           </button>
         </nav>
       </aside>
