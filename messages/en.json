@@ -333,6 +333,10 @@
     "material_complementar": {
       "title": "Important Notice",
       "acknowledge": "I understand"
+    },
+    "second_option": {
+      "label": "If the number of registrations exceeds the number of vacancies for this course, you may be guided to choose a second option. Select below which course you would like to take as a second option:",
+      "placeholder": "Select a second option"
     }
   },
   "Terms": {
