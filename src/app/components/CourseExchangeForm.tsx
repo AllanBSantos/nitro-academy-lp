@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import {
@@ -80,6 +81,7 @@ export default function CourseExchangeForm() {
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const router = useRouter();
+  const t = useTranslations("CourseExchange");
 
   const [formData, setFormData] = useState<CourseExchangeFormData>({
     student: null,
@@ -104,7 +106,7 @@ export default function CourseExchangeForm() {
         ...prev,
         showModal: true,
         modalType: "error",
-        modalMessage: "Por favor, informe o CPF",
+        modalMessage: t("please_inform_cpf"),
       }));
       return;
     }
@@ -126,7 +128,7 @@ export default function CourseExchangeForm() {
       );
 
       if (!studentResponse.ok) {
-        throw new Error("Aluno não encontrado. Verifique o CPF informado.");
+        throw new Error(t("student_not_found"));
       }
 
       const studentData = await studentResponse.json();
@@ -143,7 +145,7 @@ export default function CourseExchangeForm() {
       });
 
       if (!coursesResponse.ok) {
-        throw new Error("Erro ao buscar cursos disponíveis");
+        throw new Error(t("error_fetching_courses"));
       }
 
       const coursesData = await coursesResponse.json();
@@ -168,7 +170,7 @@ export default function CourseExchangeForm() {
         showModal: true,
         modalType: "error",
         modalMessage:
-          error instanceof Error ? error.message : "Erro ao buscar dados",
+          error instanceof Error ? error.message : t("error_fetching"),
       }));
     }
   };
@@ -187,7 +189,7 @@ export default function CourseExchangeForm() {
         ...prev,
         showModal: true,
         modalType: "error",
-        modalMessage: "Por favor, selecione um curso",
+        modalMessage: t("error_select_course"),
       }));
       return;
     }
@@ -217,7 +219,7 @@ export default function CourseExchangeForm() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Erro ao realizar troca de curso");
+        throw new Error(errorData.error || t("error_exchange"));
       }
 
       setFormData((prev) => ({
@@ -225,8 +227,7 @@ export default function CourseExchangeForm() {
         submitting: false,
         showModal: true,
         modalType: "success",
-        modalMessage:
-          "Troca de curso realizada com sucesso! Clique em Fechar para voltar à página inicial.",
+        modalMessage: t("success_message"),
       }));
     } catch (error) {
       setFormData((prev) => ({
@@ -235,7 +236,7 @@ export default function CourseExchangeForm() {
         showModal: true,
         modalType: "error",
         modalMessage:
-          error instanceof Error ? error.message : "Erro ao realizar troca",
+          error instanceof Error ? error.message : t("error_exchange"),
       }));
     }
   };
@@ -292,14 +293,14 @@ export default function CourseExchangeForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search className="w-5 h-5" />
-            Buscar Aluno
+            {t("search_student")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-3">
             <Input
               type="text"
-              placeholder="Digite seu CPF"
+              placeholder={t("cpf_placeholder")}
               value={cpf}
               onChange={(e) => setCpf(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && searchStudent()}
@@ -315,7 +316,7 @@ export default function CourseExchangeForm() {
               ) : (
                 <Search className="w-4 h-4 mr-2" />
               )}
-              Buscar
+              {t("search")}
             </Button>
           </div>
         </CardContent>
@@ -327,25 +328,27 @@ export default function CourseExchangeForm() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-800">
               <User className="w-5 h-5" />
-              Dados do Aluno
+              {t("student_data")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-600">Nome</p>
+                <p className="text-sm font-medium text-gray-600">{t("name")}</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {formData.student.nome}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600">CPF</p>
+                <p className="text-sm font-medium text-gray-600">{t("cpf")}</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {formatCPF(formData.student.cpf_aluno)}
                 </p>
               </div>
               <div className="md:col-span-2">
-                <p className="text-sm font-medium text-gray-600">Curso Atual</p>
+                <p className="text-sm font-medium text-gray-600">
+                  {t("current_course")}
+                </p>
                 <p className="text-lg font-semibold text-blue-600">
                   {formData.student.cursoAtual.titulo}
                 </p>
@@ -361,10 +364,10 @@ export default function CourseExchangeForm() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
-              Cursos Disponíveis para Troca
+              {t("available_courses_title")}
             </CardTitle>
             <p className="text-sm text-gray-600 mt-2">
-              Selecione um dos cursos abaixo que possuem vagas disponíveis
+              {t("available_courses_subtitle")}
             </p>
           </CardHeader>
           <CardContent>
@@ -390,7 +393,7 @@ export default function CourseExchangeForm() {
 
                       {course.mentor && (
                         <p className="text-sm text-gray-600 mb-2">
-                          <span className="font-medium">Mentor:</span>{" "}
+                          <span className="font-medium">{t("mentor")}:</span>{" "}
                           {course.mentor.nome}
                         </p>
                       )}
@@ -424,7 +427,7 @@ export default function CourseExchangeForm() {
                           className="text-blue-600 border-blue-600 hover:bg-blue-50"
                         >
                           <Info className="w-4 h-4 mr-1" />
-                          Informações do curso
+                          {t("course_info")}
                           <ExternalLink className="w-4 h-4 ml-1" />
                         </Button>
                       </div>
@@ -464,12 +467,12 @@ export default function CourseExchangeForm() {
                 ) : (
                   <CheckCircle className="w-4 h-4 mr-2" />
                 )}
-                Confirmar troca de curso
+                {t("confirm_button")}
               </Button>
               <p className="text-sm text-gray-500 text-center mt-2">
                 {formData.selectedCourseId && formData.selectedCourseDocumentId
-                  ? "Ao confirmar, você será transferido para o curso selecionado"
-                  : "Selecione um curso para confirmar a troca"}
+                  ? t("confirm_helper_selected")
+                  : t("confirm_helper_unselected")}
               </p>
             </div>
           </CardContent>
@@ -483,12 +486,9 @@ export default function CourseExchangeForm() {
             <div className="text-center">
               <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum curso disponível para troca
+                {t("no_courses_title")}
               </h3>
-              <p className="text-gray-600">
-                No momento, não há cursos com vagas disponíveis para troca.
-                Tente novamente mais tarde ou entre em contato conosco.
-              </p>
+              <p className="text-gray-600">{t("no_courses_desc")}</p>
             </div>
           </CardContent>
         </Card>
@@ -510,7 +510,9 @@ export default function CourseExchangeForm() {
               ) : (
                 <AlertCircle className="w-6 h-6" />
               )}
-              {formData.modalType === "success" ? "Sucesso!" : "Erro!"}
+              {formData.modalType === "success"
+                ? t("modal_success_title")
+                : t("modal_error_title")}
             </DialogTitle>
             <DialogDescription className="text-base pt-2">
               {formData.modalMessage}
@@ -521,7 +523,7 @@ export default function CourseExchangeForm() {
               onClick={closeModal}
               className="bg-theme-orange hover:bg-theme-orange/90 text-white"
             >
-              Fechar
+              {t("modal_close")}
             </Button>
           </DialogFooter>
         </DialogContent>

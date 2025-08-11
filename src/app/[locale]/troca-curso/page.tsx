@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import CourseExchangeForm from "@/app/components/CourseExchangeForm";
+import { useTranslations } from "next-intl";
 
 export default function CourseExchangePage({
   params,
@@ -9,6 +10,7 @@ export default function CourseExchangePage({
   params: { locale: string };
 }) {
   setRequestLocale(params.locale);
+  const t = useTranslations("CourseExchange");
 
   return (
     <div className="overflow-x-hidden">
@@ -18,12 +20,9 @@ export default function CourseExchangePage({
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Troca de Curso
+                {t("page_title")}
               </h1>
-              <p className="text-lg text-gray-600">
-                Informe seu CPF para buscar seus dados e solicitar a troca de
-                curso
-              </p>
+              <p className="text-lg text-gray-600">{t("page_subtitle")}</p>
             </div>
             <CourseExchangeForm />
           </div>
