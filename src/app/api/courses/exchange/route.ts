@@ -320,8 +320,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Current course id for this student (normalized)
-    const cursoAtualId = alunoAttr.cursos?.[0]?.id;
+    // Current course for this student (normalized for both shapes)
+    const cursosRelation = (alunoAttr as any)?.cursos?.data
+      ? (alunoAttr as any).cursos.data
+      : (alunoAttr as any)?.cursos || [];
+    const firstCurso = Array.isArray(cursosRelation) ? cursosRelation[0] : null;
+    const cursoAtualId =
+      (firstCurso && (firstCurso.id ?? firstCurso?.attributes?.id)) ||
+      (alunoAttr as any)?.cursos?.[0]?.id ||
+      null;
+    const cursoAtualTitulo =
+      (firstCurso &&
+        (firstCurso?.attributes?.titulo ?? firstCurso?.titulo ?? null)) ||
+      null;
 
     if (!cursoAtualId) {
       return NextResponse.json(
@@ -338,46 +349,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch new course (by ID) to get attributes like title
-    const novoCursoResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos/${newCourseId}`,
-      {
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!novoCursoResponse.ok) {
-      console.error(
-        "Erro ao buscar novo curso:",
-        novoCursoResponse.status,
-        novoCursoResponse.statusText
-      );
-      return NextResponse.json(
-        { error: "Erro ao buscar informações do novo curso" },
-        { status: 500 }
-      );
-    }
-
-    const novoCursoData = await novoCursoResponse.json();
-    const novoCurso = novoCursoData.data;
-    const novoCursoAttr = (novoCurso as any)?.attributes ?? (novoCurso as any);
-
-    if (!novoCurso || !novoCursoAttr) {
-      return NextResponse.json(
-        { error: "Dados do novo curso inválidos" },
-        { status: 500 }
-      );
-    }
+    // Reuse the previously fetched course data to avoid locale-related 404s
+    const novoCursoAttr = cursoAttr;
 
     // Update student linking: disconnect current and connect new
-    const updateUrl = studentDocumentId
-      ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos/${studentDocumentId}`
-      : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos/${studentId}`;
+    const alunoIdForUpdate = (aluno as any)?.id ?? Number(studentId);
+    const alunoDocumentIdForUpdate =
+      (aluno as any)?.documentId ?? (alunoAttr as any)?.documentId;
+    if (!alunoIdForUpdate || Number.isNaN(Number(alunoIdForUpdate))) {
+      return NextResponse.json(
+        { error: "ID do aluno inválido para atualização" },
+        { status: 400 }
+      );
+    }
 
-    console.log("Updating student at URL:", updateUrl);
+    const updateUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos/${
+      alunoDocumentIdForUpdate || alunoIdForUpdate
+    }`;
+
+    console.log("Updating student at URL:", updateUrl, {
+      alunoIdForUpdate,
+      alunoDocumentIdForUpdate,
+    });
 
     const updateResponse = await fetch(updateUrl, {
       method: "PUT",
@@ -388,8 +381,8 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         data: {
           cursos: {
-            disconnect: [cursoAtualId],
-            connect: [newCourseId],
+            disconnect: [{ id: cursoAtualId }],
+            connect: [{ id: newCourseId }],
           },
         },
       }),
@@ -406,8 +399,59 @@ export async function POST(request: NextRequest) {
 
     // Audit log
     console.log(
-      `Aluno ${alunoAttr.nome} (ID: ${studentId}) trocou do curso ${cursoAtualId} para o curso ${newCourseId}`
+      `Aluno ${alunoAttr.nome} (ID: ${studentId}) trocou do curso ${
+        cursoAtualTitulo || cursoAtualId
+      } para o curso ${newCourseId} - ${(novoCursoAttr as any).titulo}`
     );
+
+    // Notify via email
+    try {
+      const enrollmentEmail = process.env.NEXT_PUBLIC_ENROLLMENT_EMAIL;
+      if (enrollmentEmail) {
+        const emailSubject = `Troca de curso realizada para ${alunoAttr.nome}`;
+        const emailText = `Olá,\n\nO aluno ${
+          alunoAttr.nome
+        } (ID: ${studentId}) realizou uma troca de curso.\n\nCurso anterior: ${
+          cursoAtualTitulo || cursoAtualId
+        }\nNovo curso: ${newCourseId} - ${
+          (novoCursoAttr as any).titulo
+        }\n\nCPF do aluno: ${
+          (alunoAttr as any).cpf_aluno || "-"
+        }\nResponsável: ${
+          (alunoAttr as any).responsavel || "-"
+        }\nEmail do responsável: ${
+          (alunoAttr as any).email_responsavel || "-"
+        }\nTelefone do responsável: ${
+          (alunoAttr as any).telefone_responsavel || "-"
+        }\n\nAtt,\nSistema Nitro Academy`;
+        const origin =
+          request.headers.get("origin") ||
+          process.env.NEXT_PUBLIC_BASE_URL ||
+          "http://localhost:5173";
+
+        await fetch(`${origin}/api/send-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: enrollmentEmail,
+            subject: emailSubject,
+            text: emailText,
+          }),
+        });
+      } else {
+        console.warn(
+          "NEXT_PUBLIC_ENROLLMENT_EMAIL não definido. Email não enviado."
+        );
+      }
+    } catch (emailError) {
+      console.error(
+        "Falha ao enviar email de notificação de troca:",
+        emailError
+      );
+      // Prossegue sem falhar a troca
+    }
 
     return NextResponse.json({
       success: true,
@@ -415,6 +459,7 @@ export async function POST(request: NextRequest) {
       data: {
         studentId,
         oldCourseId: cursoAtualId,
+        oldCourseTitle: cursoAtualTitulo,
         newCourseId,
         newCourseTitle: (novoCursoAttr as any).titulo,
       },

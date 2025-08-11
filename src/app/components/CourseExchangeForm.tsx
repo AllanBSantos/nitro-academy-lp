@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import {
@@ -79,6 +79,7 @@ interface CourseExchangeFormData {
 export default function CourseExchangeForm() {
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
+  const router = useRouter();
 
   const [formData, setFormData] = useState<CourseExchangeFormData>({
     student: null,
@@ -225,7 +226,7 @@ export default function CourseExchangeForm() {
         showModal: true,
         modalType: "success",
         modalMessage:
-          "Troca de curso realizada com sucesso! Você receberá uma confirmação por email.",
+          "Troca de curso realizada com sucesso! Clique em Fechar para voltar à página inicial.",
       }));
     } catch (error) {
       setFormData((prev) => ({
@@ -244,6 +245,8 @@ export default function CourseExchangeForm() {
   };
 
   const closeModal = () => {
+    const wasSuccess = formData.modalType === "success";
+
     setFormData((prev) => ({
       ...prev,
       showModal: false,
@@ -251,19 +254,18 @@ export default function CourseExchangeForm() {
       modalMessage: "",
     }));
 
-    // Se foi sucesso, resetar o formulário
-    if (formData.modalType === "success") {
-      setTimeout(() => {
-        setFormData((prev) => ({
-          ...prev,
-          student: null,
-          availableCourses: [],
-          selectedCourseId: null,
-          selectedCourseDocumentId: null,
-          success: false,
-        }));
-        setCpf("");
-      }, 500);
+    if (wasSuccess) {
+      // Resetar formulário e redirecionar para a tela principal do locale
+      setFormData((prev) => ({
+        ...prev,
+        student: null,
+        availableCourses: [],
+        selectedCourseId: null,
+        selectedCourseDocumentId: null,
+        success: false,
+      }));
+      setCpf("");
+      router.push(`/${locale}`);
     }
   };
 
@@ -363,7 +365,6 @@ export default function CourseExchangeForm() {
             </CardTitle>
             <p className="text-sm text-gray-600 mt-2">
               Selecione um dos cursos abaixo que possuem vagas disponíveis
-              (menos de 15 alunos)
             </p>
           </CardHeader>
           <CardContent>
