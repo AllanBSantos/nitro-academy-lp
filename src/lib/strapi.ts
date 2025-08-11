@@ -116,16 +116,81 @@ export interface Student {
 
 export async function findStudentByCPF(cpf: string): Promise<Student | null> {
   try {
-    const response = await fetch(
-      `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id`
-    );
+    if (!cpf || cpf.length !== 11) {
+      console.error("CPF inválido:", cpf);
+      return null;
+    }
+
+    console.log("Buscando aluno no Strapi com CPF:", cpf);
+    const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId`;
+    console.log("URL da API:", url);
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    console.log("Status da resposta:", response.status, response.statusText);
 
     if (!response.ok) {
+      console.error(
+        "Erro na resposta da API:",
+        response.status,
+        response.statusText
+      );
       throw new Error("Failed to fetch student");
     }
 
     const data = await response.json();
-    return data.data[0] || null;
+    console.log("Dados brutos retornados:", data);
+
+    if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
+      console.log("Nenhum aluno encontrado ou dados inválidos");
+      return null;
+    }
+
+    const aluno = data.data[0];
+    const attributes = aluno?.attributes ?? aluno; // Suporta formatos com e sem 'attributes'
+    const cursosRaw = attributes?.cursos?.data ?? attributes?.cursos ?? [];
+
+    console.log("Aluno (raw) para mapeamento:", {
+      id: aluno?.id,
+      attributesKeys: attributes ? Object.keys(attributes) : null,
+      hasCursosData: Array.isArray(attributes?.cursos?.data),
+      cursosLength: Array.isArray(cursosRaw) ? cursosRaw.length : 0,
+    });
+
+    // Mapear para a interface Student de forma resiliente
+    const student: Student = {
+      id: aluno.id,
+      documentId: aluno.documentId ?? attributes?.documentId ?? "",
+      nome: attributes?.nome ?? "",
+      data_nascimento: attributes?.data_nascimento ?? "",
+      cpf_aluno: attributes?.cpf_aluno ?? "",
+      responsavel: attributes?.responsavel ?? "",
+      email_responsavel: attributes?.email_responsavel ?? "",
+      cpf_responsavel: attributes?.cpf_responsavel ?? "",
+      telefone_responsavel: attributes?.telefone_responsavel ?? "",
+      pais: attributes?.pais ?? "",
+      estado: attributes?.estado ?? "",
+      cidade: attributes?.cidade ?? "",
+      telefone_aluno: attributes?.telefone_aluno ?? "",
+      portador_deficiencia: attributes?.portador_deficiencia ?? false,
+      descricao_deficiencia: attributes?.descricao_deficiencia ?? "",
+      escola_parceira: attributes?.escola_parceira ?? "",
+      cursos: (Array.isArray(cursosRaw) ? cursosRaw : []).map((curso: any) => ({
+        id: curso?.id,
+        documentId: curso?.documentId ?? curso?.attributes?.documentId ?? "",
+      })),
+      turma: attributes?.turma ?? 0,
+      publishedAt: attributes?.publishedAt ?? "",
+      usou_voucher: attributes?.usou_voucher ?? false,
+    };
+
+    console.log("Aluno mapeado:", student);
+    return student;
   } catch (error) {
     console.error("Error finding student:", error);
     return null;
