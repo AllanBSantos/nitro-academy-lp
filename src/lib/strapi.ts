@@ -180,6 +180,7 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
       portador_deficiencia: attributes?.portador_deficiencia ?? false,
       descricao_deficiencia: attributes?.descricao_deficiencia ?? "",
       escola_parceira: attributes?.escola_parceira ?? "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cursos: (Array.isArray(cursosRaw) ? cursosRaw : []).map((curso: any) => ({
         id: curso?.id,
         documentId: curso?.documentId ?? curso?.attributes?.documentId ?? "",
