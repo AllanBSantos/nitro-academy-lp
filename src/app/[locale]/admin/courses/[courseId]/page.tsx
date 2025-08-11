@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { fetchCourse } from "@/lib/strapi";
 import {
@@ -85,7 +85,7 @@ export default function CourseDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>("alunos");
   const [selectedTurma, setSelectedTurma] = useState<number | "all">("all");
 
-  const loadCourseData = async () => {
+  const loadCourseData = useCallback(async () => {
     try {
       const documentId = params.courseId as string;
       const courseData = await fetchCourse(documentId);
@@ -155,11 +155,11 @@ export default function CourseDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.courseId, t]);
 
   useEffect(() => {
     loadCourseData();
-  }, [params.courseId, t]);
+  }, [loadCourseData]);
 
   if (loading) {
     return (
