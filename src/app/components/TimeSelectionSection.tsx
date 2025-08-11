@@ -30,7 +30,7 @@ export default function TimeSelectionSection({
   inscricoes_abertas,
   course,
   onScheduleClick,
-  //isScheduleFull,
+  isScheduleFull,
 }: TimeSelectionSectionProps) {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
@@ -52,7 +52,10 @@ export default function TimeSelectionSection({
 
   const handleTimeSelect = (schedule: Schedule, index: number) => {
     const classNumber = (index + 1).toString();
-    // Removida a verificação de vagas disponíveis - sempre permite seleção
+    // Bloqueia seleção se turma cheia
+    if (isScheduleFull && isScheduleFull(classNumber)) {
+      return;
+    }
     setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
     setSelectedClass(classNumber);
     onScheduleClick(classNumber);
@@ -133,13 +136,19 @@ export default function TimeSelectionSection({
                   selectedTime ===
                   `${schedule.dia_semana}-${schedule.horario_aula}`;
 
+                const classIsFull = isScheduleFull
+                  ? isScheduleFull(classNumber)
+                  : false;
+
                 return (
                   <div key={index} className="mb-4">
                     <button
                       onClick={() => handleTimeSelect(schedule, index)}
-                      disabled={!inscricoes_abertas}
+                      disabled={!inscricoes_abertas || classIsFull}
                       className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
                         !inscricoes_abertas
+                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
+                          : classIsFull
                           ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
                           : isSelected
                           ? "border-2 border-orange-500 bg-orange-50"
@@ -156,6 +165,11 @@ export default function TimeSelectionSection({
                               schedule.dia_semana}{" "}
                             {schedule.horario_aula}
                           </div>
+                          {classIsFull && (
+                            <div className="text-sm mt-1 text-red-600 font-medium">
+                              {t("class_full")}
+                            </div>
+                          )}
                           {course.price &&
                             course.moeda &&
                             course.price.total > 0 && (

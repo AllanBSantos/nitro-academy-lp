@@ -31,6 +31,7 @@ interface RawStudent {
 interface Student extends RawStudent {
   details?: StudentDetails;
   nome: string;
+  escola_parceira?: string;
 }
 
 interface CronogramaAula {
@@ -129,12 +130,21 @@ export default function CourseDashboard() {
           : [],
         ementa_resumida: courseData.ementa_resumida || [],
         resumo_aulas: courseData.resumo_aulas || [],
-        alunos: (courseData.alunos || []).map((aluno) => ({
-          id: aluno.id,
-          turma: aluno.turma,
-          documentId: aluno.documentId || "",
-          nome: aluno.nome || "",
-        })),
+        alunos: (courseData.alunos || []).map(
+          (aluno: {
+            id: number;
+            turma: number;
+            documentId?: string;
+            nome?: string;
+            escola_parceira?: string;
+          }) => ({
+            id: aluno.id,
+            turma: aluno.turma,
+            documentId: aluno.documentId || "",
+            nome: aluno.nome || "",
+            escola_parceira: aluno.escola_parceira || "",
+          })
+        ),
         cronograma: Array.isArray(courseData.cronograma)
           ? courseData.cronograma
           : [],
@@ -248,6 +258,9 @@ export default function CourseDashboard() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("students.table.class")}
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("students.table.school")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -277,6 +290,11 @@ export default function CourseDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
                             {t("students.class", { number: student.turma })}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500">
+                            {student.escola_parceira || "-"}
                           </div>
                         </td>
                       </tr>

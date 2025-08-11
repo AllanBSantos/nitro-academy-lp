@@ -33,7 +33,7 @@ export default function CourseContent({ course }: CourseContentProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const maxStudentsPerClass = parseInt(
-    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
+    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "15"
   );
   const alunos = Array.isArray(course.alunos) ? course.alunos : [];
 
@@ -61,9 +61,9 @@ export default function CourseContent({ course }: CourseContentProps) {
     const studentsInClass = getStudentsInClass(parseInt(classNumber));
     // const turma = course.turmas?.find((t) => String(t.id) === classNumber);
 
-    // Removida a verificação de vagas disponíveis - sempre permite matrícula
+    // Considera turma cheia quando atingir o limite configurado
     return {
-      isFull: false, // Nunca considera como cheio
+      isFull: studentsInClass.length > maxStudentsPerClass,
       currentStudents: studentsInClass.length,
       maxStudents: maxStudentsPerClass,
     };

@@ -18,6 +18,7 @@ export default function Card({
   badge,
   data_inicio_curso,
   lingua,
+  alunos = [],
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
@@ -81,6 +82,18 @@ export default function Card({
       : null;
   const dataInicioText = data_inicio_curso || null;
   const dataInicio = data_inicio_curso || cronograma?.[0]?.data_inicio || "";
+
+  const maxStudentsPerClass = parseInt(
+    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "15"
+  );
+  const schedulesCount = Array.isArray(cronograma) ? cronograma.length : 0;
+  const allClassesFull =
+    schedulesCount > 0 &&
+    Array.from({ length: schedulesCount }, (_, idx) => idx + 1).every(
+      (classNum) =>
+        alunos.filter((aluno) => aluno.turma === classNum).length >
+        maxStudentsPerClass
+    );
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -150,7 +163,7 @@ export default function Card({
         }),
         poucos_dias: commonT("few_days"),
         poucas_vagas: commonT("few_spots"),
-      };
+      } as const;
 
       if (badge === "dias_faltantes" && daysRemaining > 0) {
         badges.push(
@@ -306,7 +319,13 @@ export default function Card({
               <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
                 {faixaEtaria}
               </span>
-              {renderBadge()}
+              {allClassesFull ? (
+                <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">
+                  {t("class_full")}
+                </span>
+              ) : (
+                renderBadge()
+              )}
             </div>
 
             <div className="mt-auto flex items-center justify-between">

@@ -546,7 +546,8 @@
         "student_count": "{count} students",
         "table": {
           "name": "Name",
-          "class": "Class"
+          "class": "Class",
+          "school": "School"
         }
       },
       "classes": {
