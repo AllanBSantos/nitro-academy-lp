@@ -565,6 +565,9 @@
           "alphabetical": "Nome (A-Z)",
           "enrolled_desc": "Alunos matriculados (maior primeiro)"
         },
+        "actions": {
+          "export_pdf": "Exportar PDF"
+        },
         "table": {
           "course_name": "Nome do Curso",
           "total_spots": "Total de Vagas",

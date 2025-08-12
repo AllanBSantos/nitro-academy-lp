@@ -11,6 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { Button } from "@/app/components/ui/button";
+import { Download } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface CourseStats {
   courseId: number;
@@ -102,12 +106,57 @@ export function CoursesList() {
     return b.studentCount - a.studentCount;
   });
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    const title = t("title");
+    doc.setFontSize(16);
+    doc.text(title, 14, 18);
+
+    const head = [
+      [
+        t("table.course_name"),
+        t("table.total_spots"),
+        t("table.enrolled_students"),
+        t("table.available_spots"),
+      ],
+    ];
+    const body = sortedCourseStats.map((c) => [
+      c.courseTitle,
+      String(c.totalSpots),
+      String(c.studentCount),
+      String(c.availableSpots),
+    ]);
+
+    autoTable(doc, {
+      head,
+      body,
+      startY: 24,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [59, 130, 246] },
+      theme: "striped",
+      columnStyles: {
+        0: { cellWidth: 90 },
+      },
+    });
+
+    const date = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+    doc.save(`cursos-${date}.pdf`);
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-8">{t("title")}</h1>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="flex items-center justify-end gap-2 p-4 border-b">
+        <div className="flex items-center justify-between gap-4 p-4 border-b">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleExportPDF}
+            className="gap-2 text-gray-900"
+          >
+            <Download className="h-4 w-4" /> {t("actions.export_pdf")}
+          </Button>
           <span className="text-sm text-gray-600">{t("sort.label")}</span>
           <Select
             value={sortOption}

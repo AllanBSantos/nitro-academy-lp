@@ -564,6 +564,9 @@
           "alphabetical": "Name (A-Z)",
           "enrolled_desc": "Enrolled students (highest first)"
         },
+        "actions": {
+          "export_pdf": "Export PDF"
+        },
         "table": {
           "course_name": "Course Name",
           "total_spots": "Total Spots",
