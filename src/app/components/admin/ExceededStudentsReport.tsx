@@ -30,6 +30,7 @@ interface AlunoExcedente {
   telefone: string;
   createdAt: string;
   habilitado: boolean;
+  escola?: string;
 }
 
 interface CursoComExcedentes {
@@ -109,6 +110,7 @@ export default function ExceededStudentsReport() {
       "Alunos Matriculados",
       "Alunos Excedentes",
       "Nome do Aluno",
+      "Escola",
       "Telefone",
       "Data de Inscrição",
     ];
@@ -126,6 +128,7 @@ export default function ExceededStudentsReport() {
           curso.alunosMatriculados.toString(),
           curso.alunosExcedentes.toString(),
           aluno.nome,
+          aluno.escola || "",
           aluno.telefone,
           dataInscricao,
         ]);
@@ -214,12 +217,19 @@ export default function ExceededStudentsReport() {
         }
 
         // Table headers
-        const headers = ["#", "Nome do Aluno", "Telefone", "Data de Inscrição"];
+        const headers = [
+          "#",
+          "Nome do Aluno",
+          "Escola",
+          "Telefone",
+          "Data de Inscrição",
+        ];
 
         // Table data
         const tableData = curso.listaExcedentes.map((aluno, alunoIndex) => [
           (alunoIndex + 1).toString(),
           aluno.nome,
+          aluno.escola || "",
           aluno.telefone,
           new Date(aluno.createdAt).toLocaleDateString("pt-BR"),
         ]);
@@ -243,9 +253,10 @@ export default function ExceededStudentsReport() {
           },
           columnStyles: {
             0: { cellWidth: 10 }, // #
-            1: { cellWidth: 60 }, // Name
-            2: { cellWidth: 30 }, // Phone
-            3: { cellWidth: 30 }, // Date
+            1: { cellWidth: 55 }, // Name
+            2: { cellWidth: 35 }, // School
+            3: { cellWidth: 30 }, // Phone
+            4: { cellWidth: 25 }, // Date
           },
         });
 
@@ -477,6 +488,12 @@ export default function ExceededStudentsReport() {
                               <div className="text-sm text-gray-600 mt-1">
                                 <span className="font-medium">Telefone: </span>
                                 {aluno.telefone}
+                              </div>
+                              <div className="text-sm text-gray-600 mt-1">
+                                <span className="font-medium">
+                                  {t("student.school")}:{" "}
+                                </span>
+                                {aluno.escola || "-"}
                               </div>
                             </div>
                             <div className="text-right">

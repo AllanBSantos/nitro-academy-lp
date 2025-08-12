@@ -10,6 +10,7 @@ interface Aluno {
   createdAt: string;
   habilitado: boolean;
   cursos: Curso[];
+  escola_parceira?: string;
 }
 
 interface Curso {
@@ -28,6 +29,7 @@ interface AlunoExcedente {
   telefone: string;
   createdAt: string;
   habilitado: boolean;
+  escola?: string;
 }
 
 interface CursoComExcedentes {
@@ -129,6 +131,10 @@ export async function GET() {
     } = {};
 
     alunosHabilitados.forEach((aluno) => {
+      // Suporta formatos com e sem 'attributes'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const attrs: any = (aluno as any)?.attributes ?? aluno;
+      const escolaParceira: string = attrs?.escola_parceira ?? "";
       const cursos = aluno.cursos || [];
       cursos.forEach((curso: Curso) => {
         const cursoId = curso.id;
@@ -146,12 +152,13 @@ export async function GET() {
         alunosPorCurso[cursoId].alunos.push({
           id: aluno.id,
           documentId: aluno.documentId,
-          nome: aluno.nome,
-          email: aluno.email_responsavel,
-          responsavel: aluno.responsavel,
-          telefone: aluno.telefone_responsavel,
-          createdAt: aluno.createdAt,
-          habilitado: aluno.habilitado,
+          nome: attrs?.nome ?? aluno.nome,
+          email: attrs?.email_responsavel ?? aluno.email_responsavel,
+          responsavel: attrs?.responsavel ?? aluno.responsavel,
+          telefone: attrs?.telefone_responsavel ?? aluno.telefone_responsavel,
+          createdAt: attrs?.createdAt ?? aluno.createdAt,
+          habilitado: attrs?.habilitado ?? aluno.habilitado,
+          escola: escolaParceira,
         });
       });
     });

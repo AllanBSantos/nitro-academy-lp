@@ -615,6 +615,7 @@
         "level": "Nível: {level}"
       },
       "student": {
+        "school": "Escola",
         "email": "Email: {email}",
         "responsible": "Responsável: {responsible}",
         "phone": "Telefone: {phone}",

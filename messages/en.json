@@ -613,6 +613,7 @@
         "level": "Level: {level}"
       },
       "student": {
+        "school": "School",
         "email": "Email: {email}",
         "responsible": "Responsible: {responsible}",
         "phone": "Phone: {phone}",
