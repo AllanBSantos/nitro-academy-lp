@@ -544,10 +544,15 @@
         "all_classes": "All Classes",
         "class": "Class {number}",
         "student_count": "{count} students",
+        "sort": {
+          "name": "Sort by name",
+          "createdAt": "Sort by enrollment date"
+        },
         "table": {
           "name": "Name",
           "class": "Class",
-          "school": "School"
+          "school": "School",
+          "created_at": "Enrolled at"
         }
       },
       "classes": {

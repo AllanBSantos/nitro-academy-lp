@@ -545,10 +545,15 @@
         "all_classes": "Todas as Turmas",
         "class": "Turma {number}",
         "student_count": "{count} alunos",
+        "sort": {
+          "name": "Ordenar por nome",
+          "createdAt": "Ordenar por data de inscrição"
+        },
         "table": {
           "name": "Nome",
           "class": "Turma",
-          "school": "Escola"
+          "school": "Escola",
+          "created_at": "Inscrito em"
         }
       },
       "classes": {

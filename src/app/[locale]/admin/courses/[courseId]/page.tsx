@@ -32,6 +32,7 @@ interface Student extends RawStudent {
   details?: StudentDetails;
   nome: string;
   escola_parceira?: string;
+  createdAt?: string;
 }
 
 interface CronogramaAula {
@@ -85,6 +86,8 @@ export default function CourseDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("alunos");
   const [selectedTurma, setSelectedTurma] = useState<number | "all">("all");
+  type SortOption = "name" | "createdAt";
+  const [sortOption, setSortOption] = useState<SortOption>("createdAt");
 
   const loadCourseData = useCallback(async () => {
     try {
@@ -137,12 +140,14 @@ export default function CourseDashboard() {
             documentId?: string;
             nome?: string;
             escola_parceira?: string;
+            createdAt?: string;
           }) => ({
             id: aluno.id,
             turma: aluno.turma,
             documentId: aluno.documentId || "",
             nome: aluno.nome || "",
             escola_parceira: aluno.escola_parceira || "",
+            createdAt: aluno.createdAt || "",
           })
         ),
         cronograma: Array.isArray(courseData.cronograma)
@@ -199,6 +204,20 @@ export default function CourseDashboard() {
       (aluno) => selectedTurma === "all" || aluno.turma === selectedTurma
     ) || [];
 
+  const sortedAlunos = [...filteredAlunos].sort((a, b) => {
+    if (sortOption === "name") {
+      return (a.nome || "").localeCompare(b.nome || "", undefined, {
+        sensitivity: "base",
+      });
+    }
+    const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return aTime - bTime; // oldest first (order of arrival)
+  });
+
+  const formatDate = (iso?: string) =>
+    iso ? new Date(iso).toLocaleString("pt-BR") : "-";
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "alunos":
@@ -240,6 +259,26 @@ export default function CourseDashboard() {
                       <ChevronDown className="h-4 w-4" />
                     </div>
                   </div>
+                  <div className="relative w-full sm:w-56">
+                    <select
+                      value={sortOption}
+                      onChange={(e) =>
+                        setSortOption(e.target.value as SortOption)
+                      }
+                      className="appearance-none block w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm cursor-pointer"
+                      style={{ color: "rgb(17, 24, 39)" }}
+                    >
+                      <option value="createdAt" className="text-gray-900">
+                        {t("students.sort.createdAt")}
+                      </option>
+                      <option value="name" className="text-gray-900">
+                        {t("students.sort.name")}
+                      </option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <ChevronDown className="h-4 w-4" />
+                    </div>
+                  </div>
                   <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium whitespace-nowrap">
                     {t("students.student_count", {
                       count: filteredAlunos.length,
@@ -261,10 +300,13 @@ export default function CourseDashboard() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("students.table.school")}
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("students.table.created_at")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filteredAlunos.map((student) => {
+                  {sortedAlunos.map((student) => {
                     const studentName = student.nome || t("loading");
                     const studentInitial = studentName.charAt(0).toUpperCase();
 
@@ -295,6 +337,11 @@ export default function CourseDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
                             {student.escola_parceira || "-"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500">
+                            {formatDate(student.createdAt)}
                           </div>
                         </td>
                       </tr>
