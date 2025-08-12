@@ -88,6 +88,7 @@ export default function CourseDashboard() {
   const [selectedTurma, setSelectedTurma] = useState<number | "all">("all");
   type SortOption = "name" | "createdAt";
   const [sortOption, setSortOption] = useState<SortOption>("createdAt");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadCourseData = useCallback(async () => {
     try {
@@ -204,7 +205,11 @@ export default function CourseDashboard() {
       (aluno) => selectedTurma === "all" || aluno.turma === selectedTurma
     ) || [];
 
-  const sortedAlunos = [...filteredAlunos].sort((a, b) => {
+  const searchedAlunos = filteredAlunos.filter((aluno) =>
+    (aluno.nome || "").toLowerCase().includes(searchQuery.toLowerCase().trim())
+  );
+
+  const sortedAlunos = [...searchedAlunos].sort((a, b) => {
     if (sortOption === "name") {
       return (a.nome || "").localeCompare(b.nome || "", undefined, {
         sensitivity: "base",
@@ -259,6 +264,15 @@ export default function CourseDashboard() {
                       <ChevronDown className="h-4 w-4" />
                     </div>
                   </div>
+                  <div className="w-full sm:w-64">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={t("students.search_placeholder")}
+                      className="block w-full bg-white border border-gray-300 rounded-md py-2 px-3 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                    />
+                  </div>
                   <div className="relative w-full sm:w-56">
                     <select
                       value={sortOption}
@@ -281,7 +295,7 @@ export default function CourseDashboard() {
                   </div>
                   <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium whitespace-nowrap">
                     {t("students.student_count", {
-                      count: filteredAlunos.length,
+                      count: sortedAlunos.length,
                     })}
                   </span>
                 </div>

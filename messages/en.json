@@ -544,6 +544,7 @@
         "all_classes": "All Classes",
         "class": "Class {number}",
         "student_count": "{count} students",
+        "search_placeholder": "Search by name...",
         "sort": {
           "name": "Sort by name",
           "createdAt": "Sort by enrollment date"

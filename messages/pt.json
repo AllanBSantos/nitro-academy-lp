@@ -545,6 +545,7 @@
         "all_classes": "Todas as Turmas",
         "class": "Turma {number}",
         "student_count": "{count} alunos",
+        "search_placeholder": "Buscar por nome...",
         "sort": {
           "name": "Ordenar por nome",
           "createdAt": "Ordenar por data de inscrição"
