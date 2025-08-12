@@ -559,6 +559,11 @@
       },
       "courses_list": {
         "title": "Courses",
+        "sort": {
+          "label": "Sort by",
+          "alphabetical": "Name (A-Z)",
+          "enrolled_desc": "Enrolled students (highest first)"
+        },
         "table": {
           "course_name": "Course Name",
           "total_spots": "Total Spots",

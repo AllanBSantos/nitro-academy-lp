@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import { fetchCourses } from "@/lib/strapi";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 
 interface CourseStats {
   courseId: number;
@@ -21,6 +28,8 @@ export function CoursesList() {
   const [courseStats, setCourseStats] = useState<CourseStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  type SortOption = "alphabetical" | "enrolled";
+  const [sortOption, setSortOption] = useState<SortOption>("alphabetical");
 
   useEffect(() => {
     const loadData = async () => {
@@ -83,11 +92,40 @@ export function CoursesList() {
     );
   }
 
+  const sortedCourseStats = [...courseStats].sort((a, b) => {
+    if (sortOption === "alphabetical") {
+      return a.courseTitle.localeCompare(b.courseTitle, undefined, {
+        sensitivity: "base",
+      });
+    }
+    // Default to sort by enrolled students (desc)
+    return b.studentCount - a.studentCount;
+  });
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-8">{t("title")}</h1>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="flex items-center justify-end gap-2 p-4 border-b">
+          <span className="text-sm text-gray-600">{t("sort.label")}</span>
+          <Select
+            value={sortOption}
+            onValueChange={(value) => setSortOption(value as SortOption)}
+          >
+            <SelectTrigger className="w-64 text-gray-900 data-[placeholder]:text-gray-500">
+              <SelectValue placeholder={t("sort.label")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="alphabetical">
+                {t("sort.alphabetical")}
+              </SelectItem>
+              <SelectItem value="enrolled">
+                {t("sort.enrolled_desc")}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -107,7 +145,7 @@ export function CoursesList() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {courseStats.map((course) => (
+              {sortedCourseStats.map((course) => (
                 <tr
                   key={course.courseId}
                   className="hover:bg-gray-50 cursor-pointer transition-colors"

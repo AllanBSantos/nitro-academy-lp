@@ -560,6 +560,11 @@
       },
       "courses_list": {
         "title": "Cursos",
+        "sort": {
+          "label": "Ordenar por",
+          "alphabetical": "Nome (A-Z)",
+          "enrolled_desc": "Alunos matriculados (maior primeiro)"
+        },
         "table": {
           "course_name": "Nome do Curso",
           "total_spots": "Total de Vagas",
