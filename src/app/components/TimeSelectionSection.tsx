@@ -53,7 +53,7 @@ export default function TimeSelectionSection({
   const handleTimeSelect = (schedule: Schedule, index: number) => {
     const classNumber = (index + 1).toString();
     // Bloqueia seleção se turma cheia
-    if (isScheduleFull && isScheduleFull(classNumber)) {
+    if (isScheduleFull(classNumber)) {
       return;
     }
     setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
@@ -77,13 +77,23 @@ export default function TimeSelectionSection({
 
       // Verificar se o schedule tem as propriedades necessárias
       if (schedule.dia_semana && schedule.horario_aula) {
-        // Removida a verificação de vagas disponíveis - sempre permite seleção
+        const isOnlyClassFull = isScheduleFull(classNumber);
+        if (isOnlyClassFull) {
+          return;
+        }
+
         setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
         setSelectedClass(classNumber);
         onScheduleClick(classNumber);
       }
     }
-  }, [schedules, inscricoes_abertas, selectedTime]);
+  }, [
+    schedules,
+    inscricoes_abertas,
+    selectedTime,
+    isScheduleFull,
+    onScheduleClick,
+  ]);
 
   return (
     <section className="w-full bg-white py-16">
@@ -136,9 +146,7 @@ export default function TimeSelectionSection({
                   selectedTime ===
                   `${schedule.dia_semana}-${schedule.horario_aula}`;
 
-                const classIsFull = isScheduleFull
-                  ? isScheduleFull(classNumber)
-                  : false;
+                const classIsFull = isScheduleFull(classNumber);
 
                 return (
                   <div key={index} className="mb-4">
@@ -249,7 +257,10 @@ export default function TimeSelectionSection({
                     selectedClass ? parseInt(selectedClass) - 1 : 0
                   }
                   disabled={
-                    !selectedTime || !selectedClass || !inscricoes_abertas
+                    !selectedTime ||
+                    !selectedClass ||
+                    !inscricoes_abertas ||
+                    (selectedClass ? isScheduleFull(selectedClass) : false)
                   }
                   aviso_matricula={course.aviso_matricula}
                   pre_requisitos={course.pre_requisitos}
