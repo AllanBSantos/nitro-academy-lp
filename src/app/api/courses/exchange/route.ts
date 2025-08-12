@@ -380,10 +380,12 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         data: {
+          // Replace relation completely so only the new course remains
           cursos: {
-            disconnect: [{ id: cursoAtualId }],
-            connect: [{ id: newCourseId }],
+            set: [{ id: newCourseId }],
           },
+          // Ensure published version mirrors draft
+          publishedAt: new Date().toISOString(),
         },
       }),
     });

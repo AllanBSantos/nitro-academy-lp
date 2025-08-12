@@ -208,14 +208,18 @@ export async function updateStudentCourses(
 ): Promise<void> {
   try {
     const updateData: {
-      cursos: { connect: Array<{ id: number }> };
+      cursos: { set: Array<{ id: number }> };
       usou_voucher?: boolean;
       portador_deficiencia?: boolean;
       descricao_deficiencia?: string;
+      publishedAt?: string;
     } = {
+      // Replace entire relation to ensure ONLY the new course remains
       cursos: {
-        connect: [{ id: courseId }],
+        set: [{ id: courseId }],
       },
+      // Force publish so published matches draft
+      publishedAt: new Date().toISOString(),
     };
 
     if (usedVoucher) {
