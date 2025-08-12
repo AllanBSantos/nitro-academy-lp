@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 
+// Disable any caching for this route
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 interface Aluno {
   id: number;
   documentId: string;
@@ -58,11 +63,14 @@ async function buscarTodosAlunos(baseURL: string): Promise<Aluno[]> {
   while (true) {
     try {
       const response = await fetch(
-        `${baseURL}/api/alunos?populate=*&pagination[page]=${pagina}&pagination[pageSize]=${tamanhoPagina}`,
+        `${baseURL}/api/alunos?populate=*&publicationState=preview&pagination[page]=${pagina}&pagination[pageSize]=${tamanhoPagina}`,
         {
           headers: {
             "Content-Type": "application/json",
+            "Cache-Control": "no-store",
           },
+          cache: "no-store",
+          next: { revalidate: 0 },
         }
       );
 
@@ -213,7 +221,18 @@ export async function GET() {
       percentualExcedentes,
     };
 
-    return NextResponse.json({ data: reportData });
+    return NextResponse.json(
+      { data: reportData },
+      {
+        headers: {
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+          "Surrogate-Control": "no-store",
+        },
+      }
+    );
   } catch (error) {
     console.error("Erro ao gerar relatório de alunos excedentes:", error);
     return NextResponse.json(
