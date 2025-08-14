@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "campanhas",
+  "info": {
+    "singularName": "campanha",
+    "pluralName": "campanhas",
+    "displayName": "campanha"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "periodo_inscricao": {
+      "type": "string"
+    },
+    "inicio_e_fim_aulas": {
+      "type": "string"
+    }
+  }
+}
