@@ -506,6 +506,35 @@ export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCampanhaCampanha extends Struct.CollectionTypeSchema {
+  collectionName: 'campanhas';
+  info: {
+    displayName: 'campanha';
+    pluralName: 'campanhas';
+    singularName: 'campanha';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    inicio_e_fim_aulas: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::campanha.campanha'
+    > &
+      Schema.Attribute.Private;
+    periodo_inscricao: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCupomCupom extends Struct.CollectionTypeSchema {
   collectionName: 'cupoms';
   info: {
@@ -1404,6 +1433,7 @@ declare module '@strapi/strapi' {
       'api::aluno-escola-parceira.aluno-escola-parceira': ApiAlunoEscolaParceiraAlunoEscolaParceira;
       'api::aluno.aluno': ApiAlunoAluno;
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
+      'api::campanha.campanha': ApiCampanhaCampanha;
       'api::cupom.cupom': ApiCupomCupom;
       'api::curso.curso': ApiCursoCurso;
       'api::escola.escola': ApiEscolaEscola;
