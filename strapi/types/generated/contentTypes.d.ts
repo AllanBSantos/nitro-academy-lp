@@ -509,6 +509,7 @@ export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
 export interface ApiCampanhaCampanha extends Struct.CollectionTypeSchema {
   collectionName: 'campanhas';
   info: {
+    description: '';
     displayName: 'campanha';
     pluralName: 'campanhas';
     singularName: 'campanha';
@@ -527,6 +528,7 @@ export interface ApiCampanhaCampanha extends Struct.CollectionTypeSchema {
       'api::campanha.campanha'
     > &
       Schema.Attribute.Private;
+    nome: Schema.Attribute.String;
     periodo_inscricao: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
