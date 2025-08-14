@@ -6,7 +6,13 @@ import { getCardsContent } from "@/lib/courses";
 import { CardProps } from "@/types/card";
 import { CarouselContentWrapper } from "./CarouselContentWrapper";
 
-export default function CarouselClient({ locale }: { locale: string }) {
+export default function CarouselClient({
+  locale,
+  showTitle = true,
+}: {
+  locale: string;
+  showTitle?: boolean;
+}) {
   const t = useTranslations("Carousel");
   const [cardsContent, setCardsContent] = useState<CardProps[]>([]);
 
@@ -27,6 +33,7 @@ export default function CarouselClient({ locale }: { locale: string }) {
     <CarouselContentWrapper
       cardsContent={cardsContent}
       learnMoreLabel={t("learn_more")}
+      showTitle={showTitle}
     />
   );
 }
