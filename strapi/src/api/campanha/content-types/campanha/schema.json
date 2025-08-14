@@ -4,7 +4,8 @@
   "info": {
     "singularName": "campanha",
     "pluralName": "campanhas",
-    "displayName": "campanha"
+    "displayName": "campanha",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -14,6 +15,9 @@
       "type": "string"
     },
     "inicio_e_fim_aulas": {
+      "type": "string"
+    },
+    "nome": {
       "type": "string"
     }
   }
