@@ -99,6 +99,7 @@ export default function CourseDashboard() {
   const [selectedTurma, setSelectedTurma] = useState<number | "all">("all");
   const [selectedSchool, setSelectedSchool] = useState<string>("all");
   const [showPhone, setShowPhone] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [schools, setSchools] = useState<School[]>([]);
   type SortOption = "name" | "createdAt";
   const [sortOption, setSortOption] = useState<SortOption>("createdAt");
@@ -229,17 +230,17 @@ export default function CourseDashboard() {
   const availableSchools = course
     ? Array.from(
         new Set(
-          course.alunos
-            .map((aluno) => aluno.escola_parceira)
-            .filter(Boolean)
+          course.alunos.map((aluno) => aluno.escola_parceira).filter(Boolean)
         )
       ).sort()
     : [];
 
   const filteredAlunos =
     course?.alunos.filter((aluno) => {
-      const turmaMatch = selectedTurma === "all" || aluno.turma === selectedTurma;
-      const schoolMatch = selectedSchool === "all" || aluno.escola_parceira === selectedSchool;
+      const turmaMatch =
+        selectedTurma === "all" || aluno.turma === selectedTurma;
+      const schoolMatch =
+        selectedSchool === "all" || aluno.escola_parceira === selectedSchool;
       return turmaMatch && schoolMatch;
     }) || [];
 
@@ -265,19 +266,23 @@ export default function CourseDashboard() {
     if (!course) return;
 
     const doc = new jsPDF();
-    
+
     // Título do curso
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
     doc.text("Lista de Alunos", 20, 20);
-    
+
     doc.setFontSize(16);
     doc.setFont("helvetica", "normal");
     doc.text(`Curso: ${course.titulo}`, 20, 35);
-    
+
     doc.setFontSize(12);
     doc.text(`Total de alunos: ${sortedAlunos.length}`, 20, 45);
-    doc.text(`Data de exportação: ${new Date().toLocaleDateString("pt-BR")}`, 20, 55);
+    doc.text(
+      `Data de exportação: ${new Date().toLocaleDateString("pt-BR")}`,
+      20,
+      55
+    );
 
     // Preparar dados para a tabela
     const tableData = sortedAlunos.map((aluno) => [
@@ -285,16 +290,16 @@ export default function CourseDashboard() {
       `Turma ${aluno.turma}`,
       aluno.escola_parceira || "-",
       formatDate(aluno.createdAt),
-      showPhone ? (aluno.telefone_responsavel || "-") : "-"
+      showPhone ? aluno.telefone_responsavel || "-" : "-",
     ]);
 
     // Cabeçalhos da tabela
     const headers = [
       "Nome",
-      "Turma", 
+      "Turma",
       "Escola Parceira",
       "Data de Inscrição",
-      showPhone ? "Telefone" : ""
+      showPhone ? "Telefone" : "",
     ].filter(Boolean);
 
     // Adicionar tabela
@@ -317,7 +322,11 @@ export default function CourseDashboard() {
     });
 
     // Salvar PDF
-    doc.save(`alunos-${course.titulo.replace(/[^a-zA-Z0-9]/g, "-")}-${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(
+      `alunos-${course.titulo.replace(/[^a-zA-Z0-9]/g, "-")}-${
+        new Date().toISOString().split("T")[0]
+      }.pdf`
+    );
   };
 
   const renderTabContent = () => {
@@ -443,7 +452,11 @@ export default function CourseDashboard() {
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                     />
                     <span className="text-sm text-gray-700 flex items-center gap-2">
-                      {showPhone ? <Phone className="w-4 h-4" /> : <PhoneOff className="w-4 h-4" />}
+                      {showPhone ? (
+                        <Phone className="w-4 h-4" />
+                      ) : (
+                        <PhoneOff className="w-4 h-4" />
+                      )}
                       {showPhone ? "Ocultar telefone" : "Mostrar telefone"}
                     </span>
                   </label>
