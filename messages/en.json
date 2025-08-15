@@ -750,6 +750,40 @@
     "request_error": "An error occurred while setting up the request.",
     "unexpected_error": "An unexpected error occurred during login"
   },
+  "MoreInfo": {
+    "title": "Nitro Academy",
+    "subtitle": "Transforming teenagers into protagonists of their future.",
+    "badges": {
+      "mentorships": "Online mentorships",
+      "projects": "Practical projects",
+      "talents": "Talent development"
+    },
+    "what_is": {
+      "title": "What is Nitro Academy:",
+      "show_more": "Show more",
+      "full_text": {
+        "p1": "Nowadays, teenagers live immersed in technology, surrounded by social media, games, movies, series, and ever-growing digital distractions. As a result, anxiety, immediacy, and difficulty in staying focused on activities that require consistency and purpose also increase. Many families are concerned about this scenario, especially in a world that is constantly changing, driven by the rapid advancement of technology. These are parents who want more than traditional school education; they seek educational, enjoyable alternatives aligned with today's reality, but face the challenge of finding solutions that truly fit their children's routines and interests.",
+        "p2": "Nitro Academy was founded precisely for these reasons, by two parents who saw their own children wasting precious time on screens. Nitro offers online, synchronous mentorships with experienced professionals, courses that respect each teenager's interests, and projects that develop essential future skills such as creativity, autonomy, critical thinking, and teamwork. Among the courses offered are current and relevant topics such as leadership, communication, entrepreneurship, photography, nutrition, and health — all connected to the real world and aimed at awakening each teenager's potential. More than assisting in choosing a college major, Nitro helps teenagers find their path with purpose, using their talents to contribute to society."
+      }
+    },
+    "parents_challenge": {
+      "title": "The Challenge of Modern Parents",
+      "items": {
+        "screens": {
+          "title": "Excessive Screen Time",
+          "desc": "Teenagers immersed in social media, games, and digital distractions that increase anxiety and immediacy."
+        },
+        "purpose": {
+          "title": "Lack of Purpose",
+          "desc": "Difficulty maintaining focus on activities that require consistency and the development of essential competencies."
+        },
+        "education": {
+          "title": "Education that prepares",
+          "desc": "A search for education that prepares for the professional future with courses that enhance regular schooling."
+        }
+      }
+    }
+  },
   "CourseExchange": {
     "page_title": "Course Change",
     "page_subtitle": "Enter your CPF to fetch your data and request a course change",

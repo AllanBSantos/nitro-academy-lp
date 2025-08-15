@@ -115,6 +115,8 @@ export default function Reviews() {
     },
   ];
 
+  const reviewsSorted = [...reviews].reverse();
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -171,7 +173,7 @@ export default function Reviews() {
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {reviews.map((review) => (
+              {reviewsSorted.map((review) => (
                 <CarouselItem
                   key={review.id}
                   className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"

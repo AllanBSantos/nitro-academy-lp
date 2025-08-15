@@ -749,6 +749,57 @@
     "request_error": "Ocorreu um erro ao configurar a requisição.",
     "unexpected_error": "Ocorreu um erro inesperado durante o login"
   },
+  "MoreInfo": {
+    "title": "Nitro Academy",
+    "subtitle": "Transformando adolescentes em protagonistas do seu futuro.",
+    "badges": {
+      "mentorships": "Mentorias online",
+      "projects": "Projetos práticos",
+      "talents": "Desenvolvimento de talentos"
+    },
+    "what_is": {
+      "title": "O que é a Nitro Academy:",
+      "show_more": "Mostrar mais",
+      "full_text": {
+        "p1": "Atualmente, os adolescentes vivem imersos em tecnologia cercados por redes sociais, jogos, filmes, séries e distrações digitais que só aumentam.",
+        "p2": "Com isso, cresce também a ansiedade, o imediatismo e a dificuldade de se manterem focados em algo que exige constância e propósito.\n\nMuitas famílias se preocupam com esse cenário, especialmente diante de um mundo em constante transformação, impulsionado pelo avanço acelerado da tecnologia.\n\nSão pais que desejam mais do que o ensino escolar tradicional; que procuram alternativas educativas, divertidas e alinhadas com a realidade atual, mas enfrentam o desafio de encontrar soluções que realmente façam sentido para a rotina e os interesses dos filhos.\n\nA Nitro Academy foi fundada exatamente por esses motivos, por dois pais que viram seus próprios filhos desperdiçando tempo precioso em telas.\n\nA Nitro oferece mentorias online e síncronas com profissionais experientes, cursos que respeitam os interesses de cada adolescente e projetos que desenvolvem competências essenciais para o futuro, como criatividade, autonomia, pensamento crítico e trabalho em equipe.\n\nEntre os cursos oferecidos estão temas atuais e relevantes como liderança, comunicação, empreendedorismo, fotografia, nutrição e saúde, todos conectados com o mundo real e voltados para despertar o potencial de cada adolescente.\n\nMais do que auxiliar nas escolhas do curso que será realizado na faculdade, a Nitro ajuda os adolescentes a encontrar seu caminho com propósito, usando seus talentos para contribuir com a sociedade."
+      },
+      "parents_challenge": {
+        "title": "O Desafio dos Pais Modernos",
+        "items": {
+          "screens": {
+            "title": "Excesso de Telas",
+            "desc": "Adolescentes imersos em redes sociais, jogos e distrações digitais que aumentam ansiedade e imediatismo."
+          },
+          "purpose": {
+            "title": "Falta de Propósito",
+            "desc": "Dificuldade em manter foco em atividades que exigem constância e desenvolvimento de competências essenciais."
+          },
+          "education": {
+            "title": "Educação que prepara",
+            "desc": "Busca por um ensino que prepare para o futuro profissional e com cursos que potencializem o ensino regular."
+          }
+        }
+      }
+    },
+    "parents_challenge": {
+      "title": "O Desafio dos Pais Modernos",
+      "items": {
+        "screens": {
+          "title": "Excesso de Telas",
+          "desc": "Adolescentes imersos em redes sociais, jogos e distrações digitais que aumentam ansiedade e imediatismo."
+        },
+        "purpose": {
+          "title": "Falta de Propósito",
+          "desc": "Dificuldade em manter foco em atividades que exigem constância e desenvolvimento de competências essenciais."
+        },
+        "education": {
+          "title": "Educação que prepara",
+          "desc": "Busca por um ensino que prepare para o futuro profissional e com cursos que potencializem o ensino regular."
+        }
+      }
+    }
+  },
   "CourseExchange": {
     "page_title": "Troca de Curso",
     "page_subtitle": "Informe seu CPF para buscar seus dados e solicitar a troca de curso",

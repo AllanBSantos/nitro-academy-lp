@@ -14,10 +14,12 @@ import CourseFilters from "@/components/CourseFilters";
 interface CarouselContentWrapperProps {
   cardsContent: CardProps[];
   learnMoreLabel: string;
+  showTitle?: boolean;
 }
 
 export function CarouselContentWrapper({
   cardsContent,
+  showTitle = true,
 }: CarouselContentWrapperProps) {
   const t = useTranslations("Carousel");
   const [filteredCourses, setFilteredCourses] =
@@ -27,12 +29,14 @@ export function CarouselContentWrapper({
     <div className="flex flex-col items-center bg-theme-orange py-8 sm:py-16">
       <section className="w-full max-w-[1400px] mx-auto">
         <div className="container px-4 sm:px-6 mx-auto">
-          <div className="flex flex-col items-start gap-4 sm:gap-8 mb-8">
-            <h2 className="font-gilroy-extrabold text-white text-4xl sm:text-5xl leading-tight">
-              {t("choose_project")}
-            </h2>
-            <div className="w-full sm:w-[30vw] h-[1px] bg-white"></div>
-          </div>
+          {showTitle && (
+            <div className="flex flex-col items-start gap-4 sm:gap-8 mb-8">
+              <h2 className="font-gilroy-extrabold text-white text-4xl sm:text-5xl leading-tight">
+                {t("choose_project")}
+              </h2>
+              <div className="w-full sm:w-[30vw] h-[1px] bg-white"></div>
+            </div>
+          )}
 
           {/* Filters */}
           <CourseFilters
@@ -51,11 +55,11 @@ export function CarouselContentWrapper({
               }}
               className="w-full overflow-visible"
             >
-              <CarouselContent className="-ml-2 md:-ml-4 pr-8 md:pr-12 lg:pr-16">
+              <CarouselContent className="-ml-2 md:-ml-4 pr-4 md:pr-12 lg:pr-16">
                 {filteredCourses.map((props) => (
                   <CarouselItem
                     key={props.id}
-                    className="pl-2 md:pl-4 basis-[75%] md:basis-[40%] lg:basis-[25%]"
+                    className="pl-2 md:pl-4 basis-[90%] md:basis-[40%] lg:basis-[25%]"
                   >
                     <div className="h-full">
                       <CardVariant

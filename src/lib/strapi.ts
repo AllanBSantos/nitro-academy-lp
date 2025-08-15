@@ -88,6 +88,84 @@ export async function fetchReviews(courseId: string): Promise<Review[]> {
   return data;
 }
 
+// Returns total count of schools (content-type: escola)
+export async function fetchSchoolsCount(): Promise<number> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/escolas?pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
+      { next: { revalidate: 60 } }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch schools count");
+    }
+    const json = await response.json();
+    // Strapi v4 returns a meta.pagination.total with the total count
+    const total = json?.meta?.pagination?.total ?? 0;
+    return typeof total === "number" ? total : 0;
+  } catch (e) {
+    console.error("Error fetching schools count", e);
+    return 0;
+  }
+}
+
+// Returns total count of students (content-type: aluno)
+export async function fetchStudentsCount(): Promise<number> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/alunos?pagination[page]=1&pagination[pageSize]=1`,
+      { next: { revalidate: 60 } }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch students count");
+    }
+    const json = await response.json();
+    const total = json?.meta?.pagination?.total ?? 0;
+    return typeof total === "number" ? total : 0;
+  } catch (e) {
+    console.error("Error fetching students count", e);
+    return 0;
+  }
+}
+
+// Fetch the first upcoming campaign: inscricao_iniciada = false/null AND aulas_iniciadas = false/null
+export async function fetchCurrentCampaign(): Promise<{
+  periodo_inscricao?: string | null;
+  inicio_e_fim_aulas?: string | null;
+} | null> {
+  try {
+    // Get a small batch and filter client-side to be robust to filter quirks
+    const url = `${STRAPI_API_URL}/api/campanhas?pagination[page]=1&pagination[pageSize]=10&sort[0]=createdAt:asc&publicationState=preview&locale=pt-BR`;
+    const response = await fetch(url, { next: { revalidate: 60 } });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch campaign: ${response.status}`);
+    }
+    const json = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const list: any[] = Array.isArray(json?.data) ? json.data : [];
+    const found = list.find((item) => {
+      const a = item?.attributes || item || {};
+      const inscricaoOk =
+        a.inscricao_iniciada === false || a.inscricao_iniciada == null;
+      const aulasOk = a.aulas_iniciadas === false || a.aulas_iniciadas == null;
+      return inscricaoOk && aulasOk;
+    });
+    if (!found) return null;
+    const attr = found.attributes || found;
+    return {
+      periodo_inscricao:
+        attr.periodo_inscricao ??
+        attr.periodoDeInscricao ??
+        attr.periodo ??
+        null,
+      inicio_e_fim_aulas:
+        attr.inicio_e_fim_aulas ?? attr.inicioFimAulas ?? null,
+    };
+  } catch (e) {
+    console.error("Error fetching current campaign", e);
+    return null;
+  }
+}
+
 export interface Student {
   id?: number;
   documentId?: string;
