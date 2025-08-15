@@ -140,6 +140,7 @@ export async function fetchCurrentCampaign(): Promise<{
       throw new Error(`Failed to fetch campaign: ${response.status}`);
     }
     const json = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const list: any[] = Array.isArray(json?.data) ? json.data : [];
     const found = list.find((item) => {
       const a = item?.attributes || item || {};
