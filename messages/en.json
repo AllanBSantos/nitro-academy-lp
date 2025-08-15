@@ -761,6 +761,7 @@
     "what_is": {
       "title": "What is Nitro Academy:",
       "show_more": "Show more",
+      "preview_end": "their children's routines and interests.",
       "full_text": {
         "p1": "Nowadays, teenagers live immersed in technology, surrounded by social media, games, movies, series, and ever-growing digital distractions. As a result, anxiety, immediacy, and difficulty in staying focused on activities that require consistency and purpose also increase. Many families are concerned about this scenario, especially in a world that is constantly changing, driven by the rapid advancement of technology. These are parents who want more than traditional school education; they seek educational, enjoyable alternatives aligned with today's reality, but face the challenge of finding solutions that truly fit their children's routines and interests.",
         "p2": "Nitro Academy was founded precisely for these reasons, by two parents who saw their own children wasting precious time on screens. Nitro offers online, synchronous mentorships with experienced professionals, courses that respect each teenager's interests, and projects that develop essential future skills such as creativity, autonomy, critical thinking, and teamwork. Among the courses offered are current and relevant topics such as leadership, communication, entrepreneurship, photography, nutrition, and health — all connected to the real world and aimed at awakening each teenager's potential. More than assisting in choosing a college major, Nitro helps teenagers find their path with purpose, using their talents to contribute to society."
@@ -782,6 +783,147 @@
           "desc": "A search for education that prepares for the professional future with courses that enhance regular schooling."
         }
       }
+    },
+    "schedule": {
+      "title": "Upcoming Cycle Start Schedule",
+      "enrollment_deadline": "Student Enrollment Deadline",
+      "classes_period": "Class Start and End Period"
+    },
+    "our_solution": {
+      "title": "Our Solution",
+      "items": {
+        "mentorships": {
+          "title": "Online and Synchronous Mentorships",
+          "desc": "With experienced professionals from Brazil and around the world"
+        },
+        "projects": {
+          "title": "Practical Projects",
+          "desc": "Developing essential skills for the future"
+        },
+        "themes": {
+          "title": "Current Topics",
+          "desc": "Leadership, communication, entrepreneurship, photography, nutrition, storytelling"
+        }
+      }
+    },
+    "main_benefits": {
+      "title": "Main Benefits",
+      "items": {
+        "talents": {
+          "title": "Talent Discovery",
+          "desc": "Each teenager carries unique gifts. Our mentors awaken new skills and encourage recognition of individual potential."
+        },
+        "purpose": {
+          "title": "Purpose Development",
+          "desc": "We guide teenagers to understand how their talents can contribute to a greater purpose in society."
+        },
+        "skills": {
+          "title": "Future Skills",
+          "desc": "We develop autonomy, teamwork, critical thinking, problem-solving, and creativity."
+        },
+        "practical_knowledge": {
+          "title": "Practical Knowledge",
+          "desc": "Challenging and fun projects that broaden horizons in a light and educational way."
+        },
+        "connections": {
+          "title": "Valuable Connections",
+          "desc": "Small groups that create healthy relationships with teenagers who share similar interests."
+        },
+        "flexibility": {
+          "title": "Flexibility",
+          "desc": "Classes once a week, allowing balance with other activities and maintaining focus on development without overload."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "How Nitro Academy Works",
+      "steps": {
+        "1": {
+          "title": "Choosing the Course and Schedule",
+          "desc": "The teenager and guardian choose the course according to the student's interests and availability."
+        },
+        "2": {
+          "title": "Start After Enrollment",
+          "desc": "After enrollment, they receive access to the course's WhatsApp group, the link to the first class, and complete guidelines."
+        },
+        "3": {
+          "title": "Communication via WhatsApp",
+          "desc": "Exclusive group for communication with students, guardians, and mentors, ensuring direct guidance."
+        },
+        "4": {
+          "title": "Online and Synchronous Classes",
+          "desc": "Live via Google Meet, groups of up to 12 students, 50 minutes per class, once a week."
+        },
+        "5": {
+          "title": "Project-Based Methodology",
+          "desc": "Specialized mentors lead practical projects connected to the real world."
+        },
+        "6": {
+          "title": "Gamification System",
+          "desc": "Students accumulate Spinners based on engagement that can be exchanged for rewards."
+        },
+        "7": {
+          "title": "Certification",
+          "desc": "With 90% attendance, the student receives a certificate recognizing performance and skills developed."
+        }
+      }
+    },
+    "courses_section": {
+      "title": "Our Courses"
+    },
+    "differentiators": {
+      "title": "Our Differentials",
+      "items": {
+        "report": {
+          "title": "Development Report",
+          "desc": "Continuous analysis of student progress: attendance, summary of activities, and engagement in classes."
+        },
+        "full_development": {
+          "title": "Complete Development",
+          "desc": "Journey that explores interests, sets goals, and develops skills that enhance learning."
+        },
+        "global_vision": {
+          "title": "Global Vision",
+          "desc": "Diversity of experiences with international mentors, broadening horizons and perspectives."
+        }
+      }
+    },
+    "mentors_section": {
+      "title": "Nitro Mentors Team",
+      "desc": "Our mentors are qualified professionals with practical experience and passion for their careers. They are selected, trained, and managed by Nitro Academy itself, ensuring excellent mentorship connected to market needs and the holistic development of each teenager."
+    },
+    "impact_section": {
+      "title": "Impact and Results",
+      "competencies_title": "Developed Skills",
+      "competencies": [
+        "Autonomy and Responsibility",
+        "Critical Thinking",
+        "Teamwork",
+        "Creativity and Innovation",
+        "Effective Communication",
+        "Leadership"
+      ]
+    },
+    "proposal_section": {
+      "title": "2026 Pedagogical Proposal: A Journey of Continuous Growth",
+      "p1": "Nitro Academy's pedagogical journey will be structured into semester-long collective projects. Each semester, the student will participate in a 9-week project, developing practical and collaborative skills.",
+      "p2": "After each project, there will be an individualized online mentorship (mentor and family) to:",
+      "cards": {
+        "next_course": {
+          "title": "Guide the student to the next course",
+          "desc": "Aligning interests and development"
+        },
+        "skills_feedback": {
+          "title": "Discuss developed skills",
+          "desc": "Necessary for academic and professional life"
+        }
+      },
+      "summary": "Annually, the student will go through <strong>two collective projects</strong> and <strong>two individualized mentorships</strong>, ensuring continuous and personalized support."
+    },
+    "cta_section": {
+      "title": "Become a Power by Nitro school",
+      "desc": "Prepare your students for the future in a complete and integrated way.",
+      "button": "I WANT TO KNOW MORE"
     }
   },
   "CourseExchange": {
