@@ -38,7 +38,7 @@ interface Student extends RawStudent {
   nome: string;
   escola_parceira?: string;
   createdAt?: string;
-  telefone_responsavel?: string;
+  telefone_aluno?: string;
 }
 
 interface CronogramaAula {
@@ -157,7 +157,7 @@ export default function CourseDashboard() {
             nome?: string;
             escola_parceira?: string;
             createdAt?: string;
-            telefone_responsavel?: string;
+            telefone_aluno?: string;
           }) => ({
             id: aluno.id,
             turma: aluno.turma,
@@ -165,7 +165,7 @@ export default function CourseDashboard() {
             nome: aluno.nome || "",
             escola_parceira: aluno.escola_parceira || "",
             createdAt: aluno.createdAt || "",
-            telefone_responsavel: aluno.telefone_responsavel || "",
+            telefone_aluno: aluno.telefone_aluno || "",
           })
         ),
         cronograma: Array.isArray(courseData.cronograma)
@@ -290,7 +290,7 @@ export default function CourseDashboard() {
       `Turma ${aluno.turma}`,
       aluno.escola_parceira || "-",
       formatDate(aluno.createdAt),
-      showPhone ? aluno.telefone_responsavel || "-" : "-",
+      showPhone ? aluno.telefone_aluno || "-" : "-",
     ]);
 
     // Cabeçalhos da tabela
@@ -538,7 +538,7 @@ export default function CourseDashboard() {
                         {showPhone && (
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">
-                              {student.telefone_responsavel || "-"}
+                              {student.telefone_aluno || "-"}
                             </div>
                           </td>
                         )}
