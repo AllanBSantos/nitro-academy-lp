@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { fetchCourse } from "@/lib/strapi";
+import { fetchCourse, fetchSchools } from "@/lib/strapi";
 import {
   ArrowLeft,
   Users,
@@ -11,10 +11,15 @@ import {
   BookOpen,
   ChevronDown,
   Plus,
+  Download,
+  Phone,
+  PhoneOff,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import CourseEditForm from "../../../../components/admin/CourseEditForm";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface StudentDetails {
   nome: string;
@@ -33,6 +38,7 @@ interface Student extends RawStudent {
   nome: string;
   escola_parceira?: string;
   createdAt?: string;
+  telefone_responsavel?: string;
 }
 
 interface CronogramaAula {
@@ -75,6 +81,11 @@ interface CourseDetails {
   availableSpots: number;
 }
 
+interface School {
+  id: string;
+  nome: string;
+}
+
 type Tab = "alunos" | "aulas" | "pagina";
 
 export default function CourseDashboard() {
@@ -86,6 +97,9 @@ export default function CourseDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("alunos");
   const [selectedTurma, setSelectedTurma] = useState<number | "all">("all");
+  const [selectedSchool, setSelectedSchool] = useState<string>("all");
+  const [showPhone, setShowPhone] = useState(false);
+  const [schools, setSchools] = useState<School[]>([]);
   type SortOption = "name" | "createdAt";
   const [sortOption, setSortOption] = useState<SortOption>("createdAt");
   const [searchQuery, setSearchQuery] = useState("");
@@ -142,6 +156,7 @@ export default function CourseDashboard() {
             nome?: string;
             escola_parceira?: string;
             createdAt?: string;
+            telefone_responsavel?: string;
           }) => ({
             id: aluno.id,
             turma: aluno.turma,
@@ -149,6 +164,7 @@ export default function CourseDashboard() {
             nome: aluno.nome || "",
             escola_parceira: aluno.escola_parceira || "",
             createdAt: aluno.createdAt || "",
+            telefone_responsavel: aluno.telefone_responsavel || "",
           })
         ),
         cronograma: Array.isArray(courseData.cronograma)
@@ -173,9 +189,19 @@ export default function CourseDashboard() {
     }
   }, [params.courseId, t]);
 
+  const loadSchools = useCallback(async () => {
+    try {
+      const schoolsData = await fetchSchools();
+      setSchools(schoolsData);
+    } catch (err) {
+      console.error("Error loading schools:", err);
+    }
+  }, []);
+
   useEffect(() => {
     loadCourseData();
-  }, [loadCourseData]);
+    loadSchools();
+  }, [loadCourseData, loadSchools]);
 
   if (loading) {
     return (
@@ -200,10 +226,22 @@ export default function CourseDashboard() {
       )
     : [];
 
+  const availableSchools = course
+    ? Array.from(
+        new Set(
+          course.alunos
+            .map((aluno) => aluno.escola_parceira)
+            .filter(Boolean)
+        )
+      ).sort()
+    : [];
+
   const filteredAlunos =
-    course?.alunos.filter(
-      (aluno) => selectedTurma === "all" || aluno.turma === selectedTurma
-    ) || [];
+    course?.alunos.filter((aluno) => {
+      const turmaMatch = selectedTurma === "all" || aluno.turma === selectedTurma;
+      const schoolMatch = selectedSchool === "all" || aluno.escola_parceira === selectedSchool;
+      return turmaMatch && schoolMatch;
+    }) || [];
 
   const searchedAlunos = filteredAlunos.filter((aluno) =>
     (aluno.nome || "").toLowerCase().includes(searchQuery.toLowerCase().trim())
@@ -223,6 +261,65 @@ export default function CourseDashboard() {
   const formatDate = (iso?: string) =>
     iso ? new Date(iso).toLocaleString("pt-BR") : "-";
 
+  const exportToPDF = () => {
+    if (!course) return;
+
+    const doc = new jsPDF();
+    
+    // Título do curso
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("Lista de Alunos", 20, 20);
+    
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Curso: ${course.titulo}`, 20, 35);
+    
+    doc.setFontSize(12);
+    doc.text(`Total de alunos: ${sortedAlunos.length}`, 20, 45);
+    doc.text(`Data de exportação: ${new Date().toLocaleDateString("pt-BR")}`, 20, 55);
+
+    // Preparar dados para a tabela
+    const tableData = sortedAlunos.map((aluno) => [
+      aluno.nome || "-",
+      `Turma ${aluno.turma}`,
+      aluno.escola_parceira || "-",
+      formatDate(aluno.createdAt),
+      showPhone ? (aluno.telefone_responsavel || "-") : "-"
+    ]);
+
+    // Cabeçalhos da tabela
+    const headers = [
+      "Nome",
+      "Turma", 
+      "Escola Parceira",
+      "Data de Inscrição",
+      showPhone ? "Telefone" : ""
+    ].filter(Boolean);
+
+    // Adicionar tabela
+    autoTable(doc, {
+      head: [headers],
+      body: tableData,
+      startY: 70,
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [59, 130, 246],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250],
+      },
+    });
+
+    // Salvar PDF
+    doc.save(`alunos-${course.titulo.replace(/[^a-zA-Z0-9]/g, "-")}-${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "alunos":
@@ -234,6 +331,7 @@ export default function CourseDashboard() {
                   {t("students.title")}
                 </h2>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {/* Filtro por turma */}
                   <div className="relative w-full sm:w-48">
                     <select
                       value={selectedTurma}
@@ -264,6 +362,34 @@ export default function CourseDashboard() {
                       <ChevronDown className="h-4 w-4" />
                     </div>
                   </div>
+
+                  {/* Filtro por escola */}
+                  <div className="relative w-full sm:w-48">
+                    <select
+                      value={selectedSchool}
+                      onChange={(e) => setSelectedSchool(e.target.value)}
+                      className="appearance-none block w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm cursor-pointer"
+                      style={{ color: "rgb(17, 24, 39)" }}
+                    >
+                      <option value="all" className="text-gray-900">
+                        Todas as escolas
+                      </option>
+                      {availableSchools.map((school) => (
+                        <option
+                          key={school}
+                          value={school}
+                          className="text-gray-900"
+                        >
+                          {school}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <ChevronDown className="h-4 w-4" />
+                    </div>
+                  </div>
+
+                  {/* Campo de busca */}
                   <div className="w-full sm:w-64">
                     <input
                       type="text"
@@ -273,6 +399,8 @@ export default function CourseDashboard() {
                       className="block w-full bg-white border border-gray-300 rounded-md py-2 px-3 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
+
+                  {/* Ordenação */}
                   <div className="relative w-full sm:w-56">
                     <select
                       value={sortOption}
@@ -293,12 +421,43 @@ export default function CourseDashboard() {
                       <ChevronDown className="h-4 w-4" />
                     </div>
                   </div>
+
+                  {/* Contador de alunos */}
                   <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium whitespace-nowrap">
                     {t("students.student_count", {
                       count: sortedAlunos.length,
                     })}
                   </span>
                 </div>
+              </div>
+
+              {/* Controles adicionais */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-4">
+                  {/* Checkbox para mostrar telefone */}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showPhone}
+                      onChange={(e) => setShowPhone(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <span className="text-sm text-gray-700 flex items-center gap-2">
+                      {showPhone ? <Phone className="w-4 h-4" /> : <PhoneOff className="w-4 h-4" />}
+                      {showPhone ? "Ocultar telefone" : "Mostrar telefone"}
+                    </span>
+                  </label>
+                </div>
+
+                {/* Botão de exportar PDF */}
+                <button
+                  onClick={exportToPDF}
+                  disabled={sortedAlunos.length === 0}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Exportar PDF
+                </button>
               </div>
             </div>
             <div className="overflow-x-auto">
@@ -317,6 +476,11 @@ export default function CourseDashboard() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("students.table.created_at")}
                     </th>
+                    {showPhone && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Telefone
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -358,6 +522,13 @@ export default function CourseDashboard() {
                             {formatDate(student.createdAt)}
                           </div>
                         </td>
+                        {showPhone && (
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">
+                              {student.telefone_responsavel || "-"}
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}
