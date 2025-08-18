@@ -7,7 +7,7 @@ interface WhyChooseNitroProps {
 }
 
 const titles = [
-  "Turmas reduzidas (máximo 10 alunos)",
+  "Turmas reduzidas",
   "Ensino personalizado",
   "Desenvolvimento de habilidades do século XXI",
   "Flexibilidade de horários",
