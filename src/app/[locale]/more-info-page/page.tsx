@@ -55,7 +55,7 @@ export default function MoreInfoPage({
     const campaign = await fetchCurrentCampaign();
     return (
       <Section className="bg-white">
-        <SectionTitle>Cronograma de Início próximo ciclo</SectionTitle>
+        <SectionTitle>{t("schedule.title")}</SectionTitle>
         <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
           <Card className="text-center">
             <CardHeader>
@@ -66,7 +66,7 @@ export default function MoreInfoPage({
                 />
               </div>
               <CardTitle className="mt-4">
-                Prazo para Inscrição dos Alunos
+                {t("schedule.enrollment_deadline")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -86,7 +86,7 @@ export default function MoreInfoPage({
                 />
               </div>
               <CardTitle className="mt-4">
-                Período de Início e Fim das Aulas
+                {t("schedule.classes_period")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -110,7 +110,7 @@ export default function MoreInfoPage({
     .map((p) => p.trim())
     .filter((p) => p.length > 0);
   const modalParagraphs = [...p1Paragraphs, ...p2Paragraphs];
-  const targetEnd = "para a rotina e os interesses dos filhos.";
+  const targetEnd = t("what_is.preview_end");
   const previewParagraphs: string[] = [];
   for (const p of [...p1Paragraphs, ...p2Paragraphs]) {
     previewParagraphs.push(p);
@@ -122,21 +122,18 @@ export default function MoreInfoPage({
       icon: (
         <Smartphone className="h-6 w-6 text-orange-600" aria-hidden="true" />
       ),
-      title: "Excesso de Telas",
-      description:
-        "Adolescentes imersos em redes sociais, jogos e distrações digitais que aumentam ansiedade e imediatismo.",
+      title: t("parents_challenge.items.screens.title"),
+      description: t("parents_challenge.items.screens.desc"),
     },
     {
       icon: <Target className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Falta de Propósito",
-      description:
-        "Dificuldade em manter foco em atividades que exigem constância e desenvolvimento de competências essenciais.",
+      title: t("parents_challenge.items.purpose.title"),
+      description: t("parents_challenge.items.purpose.desc"),
     },
     {
       icon: <School className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Educação que prepara",
-      description:
-        "Busca por um ensino que prepare para o futuro profissional e com cursos que potencializem o ensino regular.",
+      title: t("parents_challenge.items.education.title"),
+      description: t("parents_challenge.items.education.desc"),
     },
   ];
 
@@ -145,125 +142,119 @@ export default function MoreInfoPage({
       icon: (
         <UsersRound className="h-6 w-6 text-orange-600" aria-hidden="true" />
       ),
-      title: "Mentorias Online e Síncronas",
-      description: "Com profissionais experientes do Brasil e do mundo",
+      title: t("our_solution.items.mentorships.title"),
+      description: t("our_solution.items.mentorships.desc"),
     },
     {
       icon: <Laptop className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Projetos Práticos",
-      description: "Desenvolvendo competências essenciais para o futuro",
+      title: t("our_solution.items.projects.title"),
+      description: t("our_solution.items.projects.desc"),
     },
     {
       icon: (
         <Lightbulb className="h-6 w-6 text-orange-600" aria-hidden="true" />
       ),
-      title: "Temas Atuais",
-      description:
-        "Liderança, comunicação, empreendedorismo, fotografia, nutrição, storytelling",
+      title: t("our_solution.items.themes.title"),
+      description: t("our_solution.items.themes.desc"),
     },
   ];
 
   const beneficios = [
     {
       icon: <Sparkles className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Descoberta de Talentos",
-      description:
-        "Cada adolescente carrega dons únicos. Nossos mentores despertam novas habilidades e incentivam o reconhecimento do potencial individual.",
+      title: t("main_benefits.items.talents.title"),
+      description: t("main_benefits.items.talents.desc"),
     },
     {
       icon: <Goal className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Desenvolvimento de Propósito",
-      description:
-        "Direcionamos os adolescentes a entender como seus talentos podem contribuir para um propósito maior na sociedade.",
+      title: t("main_benefits.items.purpose.title"),
+      description: t("main_benefits.items.purpose.desc"),
     },
     {
       icon: (
         <BrainCircuit className="h-6 w-6 text-orange-600" aria-hidden="true" />
       ),
-      title: "Competências do Futuro",
-      description:
-        "Desenvolvemos autonomia, trabalho em equipe, pensamento crítico, resolução de problemas e criatividade.",
+      title: t("main_benefits.items.skills.title"),
+      description: t("main_benefits.items.skills.desc"),
     },
     {
       icon: (
         <FlaskConical className="h-6 w-6 text-orange-600" aria-hidden="true" />
       ),
-      title: "Conhecimento Prático",
-      description:
-        "Projetos desafiantes e divertidos que expandem horizontes de forma leve e educativa.",
+      title: t("main_benefits.items.practical_knowledge.title"),
+      description: t("main_benefits.items.practical_knowledge.desc"),
     },
     {
       icon: <Users className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Conexões Valiosas",
-      description:
-        "Grupos pequenos que criam relacionamentos saudáveis com adolescentes que compartilham interesses similares.",
+      title: t("main_benefits.items.connections.title"),
+      description: t("main_benefits.items.connections.desc"),
     },
     {
       icon: <Clock className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Flexibilidade",
-      description:
-        "Aulas uma vez por semana, permitindo conciliar com outras atividades e mantendo foco no desenvolvimento, sem sobrecarga.",
+      title: t("main_benefits.items.flexibility.title"),
+      description: t("main_benefits.items.flexibility.desc"),
     },
   ];
 
   const comoFuncionaSteps = [
     {
       n: "1",
-      t: "Escolha do Curso e Horário",
-      d: "O adolescente e responsável escolhem o curso de acordo com interesses e disponibilidade do aluno.",
+      t: t("how_it_works.steps.1.title"),
+      d: t("how_it_works.steps.1.desc"),
     },
     {
       n: "2",
-      t: "Início Após Inscrição",
-      d: "Após a matrícula, recebe acesso ao grupo do curso no WhatsApp, link da primeira aula e orientações completas.",
+      t: t("how_it_works.steps.2.title"),
+      d: t("how_it_works.steps.2.desc"),
     },
     {
       n: "3",
-      t: "Comunicação via WhatsApp",
-      d: "grupo exclusivo para comunicação com alunos, responsáveis e mentores, garantindo orientação direta.",
+      t: t("how_it_works.steps.3.title"),
+      d: t("how_it_works.steps.3.desc"),
     },
     {
       n: "4",
-      t: "Aulas Online e Síncronas",
-      d: "Ao vivo via Google Meet, turmas de até 12 alunos, 50 minutos por aula, uma vez por semana.",
+      t: t("how_it_works.steps.4.title"),
+      d: t("how_it_works.steps.4.desc"),
     },
     {
       n: "5",
-      t: "Metodologia Baseada em Projetos",
-      d: "Mentores especializados conduzem projetos práticos conectados ao mundo real.",
+      t: t("how_it_works.steps.5.title"),
+      d: t("how_it_works.steps.5.desc"),
     },
     {
       n: "6",
-      t: "Sistema de Gamificação",
-      d: "Alunos acumulam Spinners baseados em engajamento que podem ser trocados por premiações.",
+      t: t("how_it_works.steps.6.title"),
+      d: t("how_it_works.steps.6.desc"),
     },
     {
       n: "7",
-      t: "Certificação",
-      d: "Com 90% de frequência, o aluno recebe certificado reconhecendo desempenho e competências desenvolvidas.",
+      t: t("how_it_works.steps.7.title"),
+      d: t("how_it_works.steps.7.desc"),
     },
   ];
 
   const diferenciais = [
     {
       icon: <FileText className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Relatório de desenvolvimento",
-      description:
-        "Análise contínua do progresso do aluno: frequência, resumo das atividades e engajamento nas aulas.",
+      title: t("differentiators.items.report.title"),
+      description: t("differentiators.items.report.desc"),
     },
     {
       icon: <Package className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Desenvolvimento por completo",
-      description:
-        "Jornada que explora interesses, estabelece metas e desenvolve competências que ampliam o aprendizado.",
+      title: t("differentiators.items.full_development.title"),
+      description: t("differentiators.items.full_development.desc"),
     },
     {
       icon: <Globe className="h-6 w-6 text-orange-600" aria-hidden="true" />,
-      title: "Visão Global",
-      description:
-        "Diversidade de experiências com mentores internacionais, ampliando horizontes e perspectivas.",
+      title: t("differentiators.items.global_vision.title"),
+      description: t("differentiators.items.global_vision.desc"),
     },
   ];
+
+  const competencies = t("impact_section.competencies", {
+    returnObjects: true,
+  }) as string[];
 
   type SectionProps = { children: ReactNode; className?: string };
   const Section = ({ children, className = "" }: SectionProps) => (
@@ -395,7 +386,7 @@ export default function MoreInfoPage({
           {/* Mobile: stack all desafios first, then solucoes */}
           <div className="lg:hidden space-y-6">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-              O Desafio dos Pais Modernos
+              {t("parents_challenge.title")}
             </h3>
             <div className="space-y-6">
               {desafios.map((item) => (
@@ -408,7 +399,7 @@ export default function MoreInfoPage({
               ))}
             </div>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Nossa Solução
+              {t("our_solution.title")}
             </h3>
             <div className="space-y-6">
               {solucoes.map((s) => (
@@ -425,10 +416,10 @@ export default function MoreInfoPage({
           {/* Desktop: two columns aligned side by side */}
           <div className="hidden lg:grid grid-cols-2 gap-10 items-stretch content-start">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 pr-8">
-              O Desafio dos Pais Modernos
+              {t("parents_challenge.title")}
             </h3>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 pl-8">
-              Nossa Solução
+              {t("our_solution.title")}
             </h3>
             {desafios.map((item, idx) => (
               <>
@@ -464,7 +455,7 @@ export default function MoreInfoPage({
 
       {/* Main Benefits Section */}
       <Section className="bg-white">
-        <SectionTitle>Principais Benefícios</SectionTitle>
+        <SectionTitle>{t("main_benefits.title")}</SectionTitle>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {beneficios.map((b) => (
             <FeatureCard
@@ -479,7 +470,7 @@ export default function MoreInfoPage({
 
       {/* How It Works Section */}
       <Section className="bg-slate-50">
-        <SectionTitle>Como Funciona a Nitro Academy</SectionTitle>
+        <SectionTitle>{t("how_it_works.title")}</SectionTitle>
         <div className="max-w-4xl mx-auto space-y-4">
           {comoFuncionaSteps.map((s) => (
             <Card key={s.n} className="shadow-sm">
@@ -506,7 +497,7 @@ export default function MoreInfoPage({
       <section className="bg-theme-orange">
         <div className="w-full px-6 md:px-10 lg:px-20 py-10 sm:py-14">
           <h2 className="text-center text-white text-3xl md:text-4xl font-bold mb-8">
-            Nossos Cursos
+            {t("courses_section.title")}
           </h2>
           <div className="max-w-[1400px] mx-auto -mt-6 sm:-mt-10">
             <CarouselClient locale={params.locale} showTitle={false} />
@@ -519,7 +510,7 @@ export default function MoreInfoPage({
 
       {/* Differentiators Section */}
       <Section className="bg-slate-50">
-        <SectionTitle>Nossos Diferenciais</SectionTitle>
+        <SectionTitle>{t("differentiators.title")}</SectionTitle>
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {diferenciais.map((d) => (
             <FeatureCard
@@ -534,34 +525,23 @@ export default function MoreInfoPage({
 
       {/* Mentors Section */}
       <Section className="bg-white">
-        <SectionTitle>Equipe de Mentores Nitro</SectionTitle>
+        <SectionTitle>{t("mentors_section.title")}</SectionTitle>
         <p className="text-gray-700 leading-relaxed max-w-5xl mx-auto mb-10 text-center">
-          Nossos mentores são profissionais qualificados, com vivência prática e
-          paixão por suas carreiras. São selecionados, treinados e gerenciados
-          pela própria Nitro Academy, garantindo mentoria de excelência,
-          conectada às necessidades do mercado e ao desenvolvimento integral de
-          cada adolescente.
+          {t("mentors_section.desc")}
         </p>
         <MentorsGrid locale={params.locale} />
       </Section>
 
       {/* Impact Section */}
       <Section className="bg-slate-50">
-        <SectionTitle>Impacto e Resultados</SectionTitle>
+        <SectionTitle>{t("impact_section.title")}</SectionTitle>
         <ImpactStats />
         <div className="mt-10">
           <h4 className="text-xl font-semibold text-gray-900 text-center">
-            Competências Desenvolvidas
+            {t("impact_section.competencies_title")}
           </h4>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
-            {[
-              "Autonomia e Responsabilidade",
-              "Pensamento Crítico",
-              "Trabalho em Equipe",
-              "Criatividade e Inovação",
-              "Comunicação Eficaz",
-              "Liderança",
-            ].map((item) => (
+            {competencies.map((item) => (
               <Badge
                 key={item}
                 variant="outline"
@@ -577,50 +557,39 @@ export default function MoreInfoPage({
       {/* 2026 Pedagogical Proposal Section */}
       <Section className="bg-[#1e1b4b] text-white">
         <SectionTitle className="!text-white">
-          Proposta Pedagógica 2026: Uma Jornada de Crescimento Contínuo
+          {t("proposal_section.title")}
         </SectionTitle>
         <div className="max-w-4xl mx-auto">
           <div className="text-center text-lg text-white/90 leading-relaxed space-y-4">
-            <p>
-              A jornada pedagógica da Nitro Academy será estruturada em projetos
-              coletivos semestrais. A cada semestre, o aluno participará de um
-              projeto de 9 semanas, desenvolvendo habilidades práticas e
-              colaborativas.
-            </p>
-            <p>
-              Após cada projeto, haverá uma mentoria individualizada online
-              (mentor e família) para:
-            </p>
+            <p>{t("proposal_section.p1")}</p>
+            <p>{t("proposal_section.p2")}</p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 mt-10">
             <Card className="bg-white text-gray-900">
               <CardContent className="p-6">
                 <strong className="text-gray-900">
-                  Destinar o aluno para o próximo curso
+                  {t("proposal_section.cards.next_course.title")}
                 </strong>
                 <div className="text-gray-600">
-                  Alinhando interesses e desenvolvimento
+                  {t("proposal_section.cards.next_course.desc")}
                 </div>
               </CardContent>
             </Card>
             <Card className="bg-white text-gray-900">
               <CardContent className="p-6">
                 <strong className="text-gray-900">
-                  Comentar sobre habilidades desenvolvidas
+                  {t("proposal_section.cards.skills_feedback.title")}
                 </strong>
                 <div className="text-gray-600">
-                  Necessárias para a vida acadêmica e profissional
+                  {t("proposal_section.cards.skills_feedback.desc")}
                 </div>
               </CardContent>
             </Card>
           </div>
           <p className="text-center text-lg text-white/90 leading-relaxed mt-10">
-            Anualmente, o aluno passará por{" "}
-            <strong className="text-white">dois projetos coletivos</strong> e{" "}
-            <strong className="text-white">
-              duas mentorias individualizadas
-            </strong>
-            , garantindo acompanhamento contínuo e personalizado.
+            {t.rich("proposal_section.summary", {
+              strong: (chunks) => <strong className="text-white">{chunks}</strong>,
+            })}
           </p>
         </div>
       </Section>
@@ -629,10 +598,10 @@ export default function MoreInfoPage({
       <section className="bg-theme-orange text-white">
         <div className="max-w-4xl mx-auto px-4 py-16 text-center">
           <h2 id="cta-title" className="text-3xl md:text-4xl font-bold">
-            Seja uma escola Power by Nitro
+            {t("cta_section.title")}
           </h2>
           <p className="mt-4 text-white/90 text-lg max-w-2xl mx-auto">
-            Prepare seus alunos para o futuro de forma completa e integrada.
+            {t("cta_section.desc")}
           </p>
           <div className="mt-8">
             <Button
@@ -645,7 +614,7 @@ export default function MoreInfoPage({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                QUERO SABER MAIS
+                {t("cta_section.button")}
               </a>
             </Button>
           </div>

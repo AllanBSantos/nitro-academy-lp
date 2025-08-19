@@ -760,6 +760,7 @@
     "what_is": {
       "title": "O que é a Nitro Academy:",
       "show_more": "Mostrar mais",
+      "preview_end": "para a rotina e os interesses dos filhos.",
       "full_text": {
         "p1": "Atualmente, os adolescentes vivem imersos em tecnologia cercados por redes sociais, jogos, filmes, séries e distrações digitais que só aumentam.",
         "p2": "Com isso, cresce também a ansiedade, o imediatismo e a dificuldade de se manterem focados em algo que exige constância e propósito.\n\nMuitas famílias se preocupam com esse cenário, especialmente diante de um mundo em constante transformação, impulsionado pelo avanço acelerado da tecnologia.\n\nSão pais que desejam mais do que o ensino escolar tradicional; que procuram alternativas educativas, divertidas e alinhadas com a realidade atual, mas enfrentam o desafio de encontrar soluções que realmente façam sentido para a rotina e os interesses dos filhos.\n\nA Nitro Academy foi fundada exatamente por esses motivos, por dois pais que viram seus próprios filhos desperdiçando tempo precioso em telas.\n\nA Nitro oferece mentorias online e síncronas com profissionais experientes, cursos que respeitam os interesses de cada adolescente e projetos que desenvolvem competências essenciais para o futuro, como criatividade, autonomia, pensamento crítico e trabalho em equipe.\n\nEntre os cursos oferecidos estão temas atuais e relevantes como liderança, comunicação, empreendedorismo, fotografia, nutrição e saúde, todos conectados com o mundo real e voltados para despertar o potencial de cada adolescente.\n\nMais do que auxiliar nas escolhas do curso que será realizado na faculdade, a Nitro ajuda os adolescentes a encontrar seu caminho com propósito, usando seus talentos para contribuir com a sociedade."
@@ -798,6 +799,147 @@
           "desc": "Busca por um ensino que prepare para o futuro profissional e com cursos que potencializem o ensino regular."
         }
       }
+    },
+    "schedule": {
+      "title": "Cronograma de Início próximo ciclo",
+      "enrollment_deadline": "Prazo para Inscrição dos Alunos",
+      "classes_period": "Período de Início e Fim das Aulas"
+    },
+    "our_solution": {
+      "title": "Nossa Solução",
+      "items": {
+        "mentorships": {
+          "title": "Mentorias Online e Síncronas",
+          "desc": "Com profissionais experientes do Brasil e do mundo"
+        },
+        "projects": {
+          "title": "Projetos Práticos",
+          "desc": "Desenvolvendo competências essenciais para o futuro"
+        },
+        "themes": {
+          "title": "Temas Atuais",
+          "desc": "Liderança, comunicação, empreendedorismo, fotografia, nutrição, storytelling"
+        }
+      }
+    },
+    "main_benefits": {
+      "title": "Principais Benefícios",
+      "items": {
+        "talents": {
+          "title": "Descoberta de Talentos",
+          "desc": "Cada adolescente carrega dons únicos. Nossos mentores despertam novas habilidades e incentivam o reconhecimento do potencial individual."
+        },
+        "purpose": {
+          "title": "Desenvolvimento de Propósito",
+          "desc": "Direcionamos os adolescentes a entender como seus talentos podem contribuir para um propósito maior na sociedade."
+        },
+        "skills": {
+          "title": "Competências do Futuro",
+          "desc": "Desenvolvemos autonomia, trabalho em equipe, pensamento crítico, resolução de problemas e criatividade."
+        },
+        "practical_knowledge": {
+          "title": "Conhecimento Prático",
+          "desc": "Projetos desafiantes e divertidos que expandem horizontes de forma leve e educativa."
+        },
+        "connections": {
+          "title": "Conexões Valiosas",
+          "desc": "Grupos pequenos que criam relacionamentos saudáveis com adolescentes que compartilham interesses similares."
+        },
+        "flexibility": {
+          "title": "Flexibilidade",
+          "desc": "Aulas uma vez por semana, permitindo conciliar com outras atividades e mantendo foco no desenvolvimento, sem sobrecarga."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "Como Funciona a Nitro Academy",
+      "steps": {
+        "1": {
+          "title": "Escolha do Curso e Horário",
+          "desc": "O adolescente e responsável escolhem o curso de acordo com interesses e disponibilidade do aluno."
+        },
+        "2": {
+          "title": "Início Após Inscrição",
+          "desc": "Após a matrícula, recebe acesso ao grupo do curso no WhatsApp, link da primeira aula e orientações completas."
+        },
+        "3": {
+          "title": "Comunicação via WhatsApp",
+          "desc": "grupo exclusivo para comunicação com alunos, responsáveis e mentores, garantindo orientação direta."
+        },
+        "4": {
+          "title": "Aulas Online e Síncronas",
+          "desc": "Ao vivo via Google Meet, turmas de até 12 alunos, 50 minutos por aula, uma vez por semana."
+        },
+        "5": {
+          "title": "Metodologia Baseada em Projetos",
+          "desc": "Mentores especializados conduzem projetos práticos conectados ao mundo real."
+        },
+        "6": {
+          "title": "Sistema de Gamificação",
+          "desc": "Alunos acumulam Spinners baseados em engajamento que podem ser trocados por premiações."
+        },
+        "7": {
+          "title": "Certificação",
+          "desc": "Com 90% de frequência, o aluno recebe certificado reconhecendo desempenho e competências desenvolvidas."
+        }
+      }
+    },
+    "courses_section": {
+      "title": "Nossos Cursos"
+    },
+    "differentiators": {
+      "title": "Nossos Diferenciais",
+      "items": {
+        "report": {
+          "title": "Relatório de desenvolvimento",
+          "desc": "Análise contínua do progresso do aluno: frequência, resumo das atividades e engajamento nas aulas."
+        },
+        "full_development": {
+          "title": "Desenvolvimento por completo",
+          "desc": "Jornada que explora interesses, estabelece metas e desenvolve competências que ampliam o aprendizado."
+        },
+        "global_vision": {
+          "title": "Visão Global",
+          "desc": "Diversidade de experiências com mentores internacionais, ampliando horizontes e perspectivas."
+        }
+      }
+    },
+    "mentors_section": {
+      "title": "Equipe de Mentores Nitro",
+      "desc": "Nossos mentores são profissionais qualificados, com vivência prática e paixão por suas carreiras. São selecionados, treinados e gerenciados pela própria Nitro Academy, garantindo mentoria de excelência, conectada às necessidades do mercado e ao desenvolvimento integral de cada adolescente."
+    },
+    "impact_section": {
+      "title": "Impacto e Resultados",
+      "competencies_title": "Competências Desenvolvidas",
+      "competencies": [
+        "Autonomia e Responsabilidade",
+        "Pensamento Crítico",
+        "Trabalho em Equipe",
+        "Criatividade e Inovação",
+        "Comunicação Eficaz",
+        "Liderança"
+      ]
+    },
+    "proposal_section": {
+      "title": "Proposta Pedagógica 2026: Uma Jornada de Crescimento Contínuo",
+      "p1": "A jornada pedagógica da Nitro Academy será estruturada em projetos coletivos semestrais. A cada semestre, o aluno participará de um projeto de 9 semanas, desenvolvendo habilidades práticas e colaborativas.",
+      "p2": "Após cada projeto, haverá uma mentoria individualizada online (mentor e família) para:",
+      "cards": {
+        "next_course": {
+          "title": "Destinar o aluno para o próximo curso",
+          "desc": "Alinhando interesses e desenvolvimento"
+        },
+        "skills_feedback": {
+          "title": "Comentar sobre habilidades desenvolvidas",
+          "desc": "Necessárias para a vida acadêmica e profissional"
+        }
+      },
+      "summary": "Anualmente, o aluno passará por <strong>dois projetos coletivos</strong> e <strong>duas mentorias individualizadas</strong>, garantindo acompanhamento contínuo e personalizado."
+    },
+    "cta_section": {
+      "title": "Seja uma escola Power by Nitro",
+      "desc": "Prepare seus alunos para o futuro de forma completa e integrada.",
+      "button": "QUERO SABER MAIS"
     }
   },
   "CourseExchange": {
