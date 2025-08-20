@@ -3,10 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function Footer() {
   const params = useParams();
   const locale = (params?.locale as string) || "pt"; // Default to 'pt' if no locale
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>
@@ -67,17 +74,25 @@ export default function Footer() {
           Termos de uso e política de privacidade
         </Link>
       </div>
-      <Link href="https://wa.me/5511975809082?text=Visitei%20o%20site%20da%20Nitro%20Academy%20e%20queria%20saber%20mais%21">
-        <div className="h-14 w-14 fixed bottom-5 right-5 rounded-full bg-[#4CC247] z-50 flex justify-center items-center shadow-[0px_0px_5px_1px_#777] transition-shadow hover:shadow-none md:h-16 md:w-16">
-          <Image
-            src={`/${locale}/whatsapp.svg`}
-            width={45}
-            height={45}
-            alt="whatsapp"
-            className="w-9 h-9"
-          />
-        </div>
-      </Link>
+      {isMounted &&
+        createPortal(
+          <a
+            href="https://wa.me/5511975809082?text=Visitei%20o%20site%20da%20Nitro%20Academy%20e%20queria%20saber%20mais%21"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="h-14 w-14 fixed bottom-5 right-5 rounded-full bg-[#4CC247] z-[100000] pointer-events-auto flex justify-center items-center shadow-[0px_0px_5px_1px_#777] transition-shadow hover:shadow-none md:h-16 md:w-16">
+              <Image
+                src={`/${locale}/whatsapp.svg`}
+                width={45}
+                height={45}
+                alt="whatsapp"
+                className="w-9 h-9"
+              />
+            </div>
+          </a>,
+          document.body
+        )}
     </>
   );
 }
