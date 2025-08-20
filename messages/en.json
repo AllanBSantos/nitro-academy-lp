@@ -238,6 +238,9 @@
   },
   "TimeSelection": {
     "only": "Only",
+    "installments_prefix": "{installments}x of",
+    "installments_of": "{installments}x of {amount}",
+    "or_cash": "or {total} upfront",
     "payment_options": "in {installments}x interest-free or {total} in cash",
     "select": "Select",
     "best_time": "the best time and click",

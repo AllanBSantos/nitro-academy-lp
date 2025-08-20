@@ -103,24 +103,40 @@ export default function TimeSelectionSection({
             {course.price && course.moeda && course.price.total > 0 && (
               <>
                 <h2 className="text-gray-800 text-xl mb-2">{t("only")}</h2>
-                <div className="text-[#3B82F6] text-4xl font-bold mb-4">
-                  {course.moeda === "Real" ? "R$" : "USD"}{" "}
-                  {course.price.installments
-                    ? course.price.installment.toFixed(2).replace(".", ",")
-                    : course.price.total.toFixed(2).replace(".", ",")}
+                <div className="mb-2">
+                  {course.price.installments ? (
+                    <div className="flex items-baseline justify-center gap-2">
+                      <span className="text-gray-800 text-2xl">
+                        {t("installments_prefix", {
+                          installments: course.price.installments,
+                        })}
+                      </span>
+                      <span className="text-[#3B82F6] text-4xl font-bold">
+                        {`${
+                          course.moeda === "Real" ? "R$" : "USD"
+                        } ${course.price.installment
+                          .toFixed(2)
+                          .replace(".", course.moeda === "Real" ? "," : ".")}`}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="text-[#3B82F6] text-4xl font-bold">
+                      {`${
+                        course.moeda === "Real" ? "R$" : "USD"
+                      } ${course.price.total
+                        .toFixed(2)
+                        .replace(".", course.moeda === "Real" ? "," : ".")}`}
+                    </div>
+                  )}
                 </div>
                 {course.price.installments ? (
                   <p className="text-gray-600 text-md mb-8">
-                    {t("payment_options", {
-                      installment: `${
-                        course.moeda === "Real" ? "R$" : "USD"
-                      } ${course.price?.installment
-                        .toFixed(2)
-                        .replace(".", ",")}`,
+                    {t("or_cash", {
                       total: `${
                         course.moeda === "Real" ? "R$" : "USD"
-                      } ${course.price?.total.toFixed(2).replace(".", ",")}`,
-                      installments: course.price?.installments,
+                      } ${course.price.total
+                        .toFixed(2)
+                        .replace(".", course.moeda === "Real" ? "," : ".")}`,
                     })}
                   </p>
                 ) : null}

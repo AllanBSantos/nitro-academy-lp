@@ -236,6 +236,9 @@
   },
   "TimeSelection": {
     "only": "Apenas",
+    "installments_prefix": "{installments}x de",
+    "installments_of": "{installments}x de {amount}",
+    "or_cash": "ou {total} à vista",
     "payment_options": "em {installments}x sem juros ou {total} à vista",
     "select": "Selecione",
     "best_time": "o melhor horário e clique em",
