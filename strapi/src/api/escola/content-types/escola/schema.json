@@ -4,7 +4,8 @@
   "info": {
     "singularName": "escola",
     "pluralName": "escolas",
-    "displayName": "escola"
+    "displayName": "escola",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -12,6 +13,13 @@
   "attributes": {
     "nome": {
       "type": "string"
+    },
+    "logo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

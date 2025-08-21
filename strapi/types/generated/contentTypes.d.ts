@@ -727,6 +727,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
 export interface ApiEscolaEscola extends Struct.CollectionTypeSchema {
   collectionName: 'escolas';
   info: {
+    description: '';
     displayName: 'escola';
     pluralName: 'escolas';
     singularName: 'escola';
@@ -744,6 +745,7 @@ export interface ApiEscolaEscola extends Struct.CollectionTypeSchema {
       'api::escola.escola'
     > &
       Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
     nome: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
