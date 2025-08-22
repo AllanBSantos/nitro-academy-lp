@@ -120,6 +120,19 @@ export default function GoogleRedirectGlobalPage() {
           }
         }
 
+        // Fetch admin emails from Strapi
+        let adminEmails: string[] = [];
+        try {
+          const adminResponse = await fetch("/api/admins/list");
+          if (adminResponse.ok) {
+            const adminData = await adminResponse.json();
+            adminEmails = adminData.adminEmails || [];
+          }
+        } catch {
+          // Fallback to empty array if admin fetch fails
+          adminEmails = [];
+        }
+
         // Check if user exists and has a role
         const userRes = await fetch(`${STRAPI_URL}/api/users/me`, {
           headers: {
@@ -129,6 +142,25 @@ export default function GoogleRedirectGlobalPage() {
 
         if (userRes.ok) {
           const userData = await userRes.json();
+
+          // Check if user email is in admin list
+          if (
+            userData.email &&
+            adminEmails.includes(userData.email.toLowerCase())
+          ) {
+            // Admin email detected - redirect directly to admin
+            const target = nextPath || `/${DEFAULT_LOCALE}/admin`;
+            router.replace(target);
+            return;
+          }
+
+          // Check if user already has admin role
+          if (userData.role && userData.role.type === "admin") {
+            // Admin users go directly to admin panel
+            const target = nextPath || `/${DEFAULT_LOCALE}/admin`;
+            router.replace(target);
+            return;
+          }
 
           // If user has no role, is new, or has role but no mentor/student association, redirect to identification
           if (
