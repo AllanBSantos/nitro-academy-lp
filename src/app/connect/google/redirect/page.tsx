@@ -53,8 +53,44 @@ export default function GoogleRedirectGlobalPage() {
           expires: 7,
         });
 
+        // Define default locale constant
+        const DEFAULT_LOCALE = "pt";
+
+        // Check if user exists and has a role
+        const userRes = await fetch(`${STRAPI_URL}/api/users/me`, {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
+
+        if (userRes.ok) {
+          const userData = await userRes.json();
+
+          // If user has no role, is new, or has role but no mentor/student association, redirect to identification
+          if (
+            !userData.role ||
+            userData.role.type === "authenticated" ||
+            (userData.role.type === "mentor" && !userData.mentor) ||
+            (userData.role.type === "student" && !userData.student)
+          ) {
+            // Detect locale from the original redirect URL or default to Portuguese
+            const originalRedirect = searchParams.get("redirect");
+            let locale = DEFAULT_LOCALE;
+
+            if (originalRedirect) {
+              const localeMatch = originalRedirect.match(/^\/([a-z]{2})\//);
+              if (localeMatch) {
+                locale = localeMatch[1];
+              }
+            }
+
+            router.replace(`/${locale}/identify`);
+            return;
+          }
+        }
+
         // If "next" is provided, use it; else default to Portuguese admin
-        const target = nextPath || "/pt/admin";
+        const target = nextPath || `/${DEFAULT_LOCALE}/admin`;
         router.replace(target);
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : "Unexpected error";

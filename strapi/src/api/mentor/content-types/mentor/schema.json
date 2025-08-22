@@ -117,6 +117,9 @@
         "França"
       ],
       "default": "Brasil"
+    },
+    "cpf_id": {
+      "type": "string"
     }
   }
 }

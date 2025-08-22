@@ -818,5 +818,21 @@
     "error_select_course": "Please select a course",
     "error_exchange": "Error performing course change",
     "success_message": "Course change completed successfully! Click Close to return to the home page."
+  },
+  "Student": {
+    "dashboard_title": "Student Dashboard",
+    "welcome": "Welcome",
+    "personal_info": "Personal Information",
+    "name": "Name",
+    "id": "ID",
+    "my_courses": "My Courses",
+    "enrolled_courses": "Courses you are enrolled in",
+    "no_courses": "No courses found",
+    "quick_actions": "Quick Actions",
+    "view_schedules": "View Schedules",
+    "view_schedules_desc": "Check class schedules",
+    "materials": "Materials",
+    "materials_desc": "Access course materials",
+    "logout": "Logout"
   }
 }

@@ -834,5 +834,21 @@
     "error_select_course": "Por favor, selecione um curso",
     "error_exchange": "Erro ao realizar troca de curso",
     "success_message": "Troca de curso realizada com sucesso! Clique em Fechar para voltar à página inicial."
+  },
+  "Student": {
+    "dashboard_title": "Dashboard do Estudante",
+    "welcome": "Bem-vindo",
+    "personal_info": "Informações Pessoais",
+    "name": "Nome",
+    "id": "ID",
+    "my_courses": "Meus Cursos",
+    "enrolled_courses": "Cursos em que você está matriculado",
+    "no_courses": "Nenhum curso encontrado",
+    "quick_actions": "Ações Rápidas",
+    "view_schedules": "Ver Horários",
+    "view_schedules_desc": "Consultar cronograma das aulas",
+    "materials": "Materiais",
+    "materials_desc": "Acessar materiais do curso",
+    "logout": "Sair"
   }
 }
