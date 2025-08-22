@@ -53,8 +53,72 @@ export default function GoogleRedirectGlobalPage() {
           expires: 7,
         });
 
-        // Define default locale constant
-        const DEFAULT_LOCALE = "pt";
+        // Define default locale constant - try to detect from current URL first
+        let DEFAULT_LOCALE = "pt"; // fallback
+
+        // Try to detect locale from the redirect parameter or current context
+        const originalRedirect = searchParams.get("redirect");
+
+        if (originalRedirect) {
+          const localeMatch = originalRedirect.match(/^\/([a-z]{2})\//);
+          if (localeMatch) {
+            DEFAULT_LOCALE = localeMatch[1];
+          }
+        }
+
+        // If no redirect parameter, try to detect from referrer header
+        if (DEFAULT_LOCALE === "pt" && typeof window !== "undefined") {
+          try {
+            const referrer = document.referrer;
+            if (referrer) {
+              const url = new URL(referrer);
+              const pathLocaleMatch = url.pathname.match(/^\/([a-z]{2})\//);
+              if (pathLocaleMatch) {
+                DEFAULT_LOCALE = pathLocaleMatch[1];
+              }
+            }
+          } catch (error) {
+            console.error("Referrer detection failed:", error);
+          }
+        }
+
+        // If still no locale detected, try to get from the current page URL
+        if (DEFAULT_LOCALE === "pt" && typeof window !== "undefined") {
+          try {
+            // Check if we're on a localized route
+            const currentPath = window.location.pathname;
+
+            // Check if we're on a localized route like /en/connect/google/redirect
+            const currentLocaleMatch = currentPath.match(
+              /^\/([a-z]{2})\/connect\/google\/redirect/
+            );
+
+            if (currentLocaleMatch) {
+              DEFAULT_LOCALE = currentLocaleMatch[1];
+            }
+          } catch (error) {
+            console.error("Current path detection failed:", error);
+          }
+        }
+
+        // If still no locale detected, try to get from sessionStorage or localStorage
+        if (DEFAULT_LOCALE === "pt" && typeof window !== "undefined") {
+          try {
+            // Check if we stored the locale before redirecting to Google
+            const storedLocale =
+              sessionStorage.getItem("loginLocale") ||
+              localStorage.getItem("loginLocale");
+
+            if (
+              storedLocale &&
+              (storedLocale === "en" || storedLocale === "pt")
+            ) {
+              DEFAULT_LOCALE = storedLocale;
+            }
+          } catch (error) {
+            console.error("Storage detection failed:", error);
+          }
+        }
 
         // Check if user exists and has a role
         const userRes = await fetch(`${STRAPI_URL}/api/users/me`, {
@@ -73,23 +137,13 @@ export default function GoogleRedirectGlobalPage() {
             (userData.role.type === "mentor" && !userData.mentor) ||
             (userData.role.type === "student" && !userData.student)
           ) {
-            // Detect locale from the original redirect URL or default to Portuguese
-            const originalRedirect = searchParams.get("redirect");
-            let locale = DEFAULT_LOCALE;
-
-            if (originalRedirect) {
-              const localeMatch = originalRedirect.match(/^\/([a-z]{2})\//);
-              if (localeMatch) {
-                locale = localeMatch[1];
-              }
-            }
-
-            router.replace(`/${locale}/identify`);
+            // Use the detected locale for identification
+            router.replace(`/${DEFAULT_LOCALE}/identify`);
             return;
           }
         }
 
-        // If "next" is provided, use it; else default to Portuguese admin
+        // If "next" is provided, use it; else use detected locale
         const target = nextPath || `/${DEFAULT_LOCALE}/admin`;
         router.replace(target);
       } catch (e: unknown) {

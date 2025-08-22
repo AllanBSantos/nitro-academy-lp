@@ -27,12 +27,6 @@ interface RolesResponse {
   roles: Role[];
 }
 
-interface Mentor {
-  id: number;
-  cpf_id: string;
-  nome: string;
-}
-
 export default function IdentifyPage() {
   const [identifier, setIdentifier] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +46,6 @@ export default function IdentifyPage() {
         if (response.ok) {
           const rolesData = await response.json();
           setRoles(rolesData);
-          console.log("Available roles:", rolesData);
         }
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -163,26 +156,6 @@ export default function IdentifyPage() {
       }
 
       // First, try to find by CPF in mentors
-      console.log("Searching for mentor with CPF/ID:", identifier);
-
-      // Debug: Fetch all mentors to see what's in the database
-      const allMentorsRes = await fetch(
-        `${STRAPI_URL}/api/mentores?populate=*&locale=pt-BR`,
-        {
-          headers: {
-            // Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (allMentorsRes.ok) {
-        const allMentors = await allMentorsRes.json();
-        console.log("All mentors in database:", allMentors.data);
-        console.log(
-          "CPF/ID values:",
-          allMentors.data?.map((m: Mentor) => m.cpf_id)
-        );
-      }
 
       const mentorRes = await fetch(
         `${STRAPI_URL}/api/mentores?filters[cpf_id][$eq]=${identifier}&locale=pt-BR`,
@@ -193,16 +166,11 @@ export default function IdentifyPage() {
         }
       );
 
-      console.log("Mentor search response status:", mentorRes.status);
-
       if (mentorRes.ok) {
         const mentorData = await mentorRes.json();
-        console.log("Mentor search response:", mentorData);
-        console.log("Mentors found:", mentorData.data?.length || 0);
 
         if (mentorData.data && mentorData.data.length > 0) {
           const mentor = mentorData.data[0];
-          console.log("Found mentor:", mentor);
 
           // Decode JWT to get user ID
           try {
@@ -213,8 +181,6 @@ export default function IdentifyPage() {
 
             const payload = JSON.parse(atob(tokenParts[1]));
             const userId = payload.id;
-
-            console.log("User ID from token:", userId);
 
             // Update user role to mentor using our API route
             const updateRes = await fetch("/api/users/update-role", {
@@ -257,10 +223,8 @@ export default function IdentifyPage() {
       }
 
       // Only search for students if no mentor was found
-      console.log("No mentor found, searching for students...");
 
       // If not found as mentor, try to find as student
-      console.log("Searching for student with CPF/ID:", identifier);
       const studentRes = await fetch(
         `${STRAPI_URL}/api/alunos?filters[cpf_aluno][$eq]=${identifier}`,
         {
@@ -270,16 +234,11 @@ export default function IdentifyPage() {
         }
       );
 
-      console.log("Student search response status:", studentRes.status);
-
       if (studentRes.ok) {
         const studentData = await studentRes.json();
-        console.log("Student search response:", studentData);
-        console.log("Students found:", studentData.data?.length || 0);
 
         if (studentData.data && studentData.data.length > 0) {
           const student = studentData.data[0];
-          console.log("Found student:", student);
 
           // Decode JWT to get user ID
           try {
@@ -290,8 +249,6 @@ export default function IdentifyPage() {
 
             const payload = JSON.parse(atob(tokenParts[1]));
             const userId = payload.id;
-
-            console.log("User ID from token:", userId);
 
             // Update user role to student using our API route
             const updateRes = await fetch("/api/users/update-role", {
@@ -332,7 +289,6 @@ export default function IdentifyPage() {
       }
 
       // If not found anywhere
-      console.log("No mentor or student found with CPF/ID:", identifier);
       setError(getNotFoundError());
     } catch (err) {
       console.error("Identification error:", err);

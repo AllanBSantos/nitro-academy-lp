@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;

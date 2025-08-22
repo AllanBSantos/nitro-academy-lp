@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare update data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = { role: roleId };
     if (mentorId) updateData.mentor = mentorId;
     if (studentId) updateData.student = studentId;
@@ -39,26 +40,6 @@ export async function POST(request: NextRequest) {
 
     if (response.ok) {
       const result = await response.json();
-
-      // Verify the update was successful
-      const verifyResponse = await fetch(
-        `${STRAPI_URL}/api/users/${userId}?populate=*`,
-        {
-          headers: {
-            Authorization: `Bearer ${ADMIN_TOKEN}`,
-          },
-        }
-      );
-
-      if (verifyResponse.ok) {
-        const verifyData = await verifyResponse.json();
-        console.log("User updated successfully:", {
-          role: verifyData.role?.type,
-          mentorId: verifyData.mentor?.id,
-          studentId: verifyData.student?.id,
-        });
-      }
-
       return NextResponse.json(result);
     }
 

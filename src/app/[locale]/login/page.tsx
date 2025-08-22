@@ -161,6 +161,12 @@ export default function LoginPage() {
                 variant="outline"
                 className="w-full"
                 onClick={() => {
+                  // Store the current locale before redirecting to Google
+                  if (typeof window !== "undefined") {
+                    sessionStorage.setItem("loginLocale", locale);
+                    localStorage.setItem("loginLocale", locale);
+                  }
+
                   const redirect =
                     typeof window !== "undefined"
                       ? new URLSearchParams(window.location.search).get(

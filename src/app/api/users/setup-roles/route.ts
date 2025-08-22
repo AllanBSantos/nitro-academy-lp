@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
@@ -40,13 +40,13 @@ export async function POST(request: NextRequest) {
 
     // Check if mentor role exists
     const mentorRole = existingRoles.roles?.find(
-      (r: any) => r.type === "mentor"
+      (r: Record<string, unknown>) => r.type === "mentor"
     );
     const studentRole = existingRoles.roles?.find(
-      (r: any) => r.type === "student"
+      (r: Record<string, unknown>) => r.type === "student"
     );
 
-    const results: any = {};
+    const results: Record<string, unknown> = {};
 
     // Create mentor role if it doesn't exist
     if (!mentorRole) {

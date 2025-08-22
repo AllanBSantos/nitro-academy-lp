@@ -25,11 +25,15 @@ interface CourseStats {
   availableSpots: number;
 }
 
-interface CoursesListProps {
-  // Props removed - filtering now handled by secure API
+interface Course {
+  id: number;
+  titulo: string;
+  documentId: string;
+  alunos: unknown[];
+  cronograma: unknown[];
 }
 
-export function CoursesList({}: CoursesListProps) {
+export function CoursesList() {
   const t = useTranslations("Admin.panel.courses_list");
   const router = useRouter();
   const params = useParams();
@@ -78,7 +82,7 @@ export function CoursesList({}: CoursesListProps) {
           process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
         );
 
-        const stats = data.courses.map((course: any) => {
+        const stats = data.courses.map((course: Course) => {
           const studentCount = Array.isArray(course.alunos)
             ? course.alunos.length
             : 0;
