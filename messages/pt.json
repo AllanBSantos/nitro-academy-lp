@@ -850,5 +850,23 @@
     "materials": "Materiais",
     "materials_desc": "Acessar materiais do curso",
     "logout": "Sair"
+  },
+  "Identify": {
+    "page_title": "Vincular Conta",
+    "page_description": "Para vincular sua conta, informe seu CPF ou ID de estudante",
+    "identifier_label": "CPF ou ID do Estudante",
+    "identifier_placeholder": "Digite seu CPF ou ID de estudante",
+    "mentor_text": "Mentores: informe seu CPF para vincular",
+    "student_text": "Estudantes: informe seu CPF para vincular",
+    "identify_button": "Vincular Conta",
+    "identifying": "Vinculando...",
+    "not_found_error": "CPF ou ID não encontrado. Verifique o número informado.",
+    "generic_error": "Erro ao vincular conta. Tente novamente.",
+    "auth_token_error": "Token de autenticação não encontrado",
+    "invalid_token_error": "Token inválido",
+    "token_decode_error": "Erro ao decodificar token de autenticação",
+    "mentor_role_error": "Role de mentor não configurado",
+    "student_role_error": "Role de student não configurado",
+    "update_role_error": "Erro ao vincular conta: {error}"
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -34,9 +35,9 @@ export default function IdentifyPage() {
   const [roles, setRoles] = useState<RolesResponse | null>(null);
   const router = useRouter();
   const params = useParams();
+  const t = useTranslations("Identify");
 
   const locale = params.locale as string;
-  const isPortuguese = locale === "pt";
 
   // Fetch available roles on component mount
   useEffect(() => {
@@ -55,79 +56,12 @@ export default function IdentifyPage() {
     fetchRoles();
   }, []);
 
-  // Helper function to get role ID by type
-  const getRoleId = (roleType: string) => {
-    if (!roles || !roles.roles) return null;
-
-    const role = roles.roles.find((r: Role) => r.type === roleType);
-    return role ? role.id : null;
-  };
-
-  const getIdentifierLabel = () => {
-    return isPortuguese ? "CPF ou ID" : "CPF or ID Number";
-  };
-
-  const getIdentifierPlaceholder = () => {
-    return isPortuguese
-      ? "Digite seu CPF ou ID"
-      : "Enter your CPF or ID number";
-  };
-
-  const getPageTitle = () => {
-    return isPortuguese ? "Identificação" : "Identification";
-  };
-
-  const getPageDescription = () => {
-    return isPortuguese
-      ? "Para completar seu cadastro, informe seu CPF ou ID"
-      : "To complete your registration, please provide your CPF or ID number";
-  };
-
-  const getMentorText = () => {
-    return isPortuguese
-      ? "Mentores: acesso aos seus cursos"
-      : "Mentors: access to their courses";
-  };
-
-  const getStudentText = () => {
-    return isPortuguese
-      ? "Estudantes: acesso ao dashboard"
-      : "Students: access to dashboard";
-  };
-
-  const getIdentifyButtonText = () => {
-    return isPortuguese ? "Identificar" : "Identify";
-  };
-
-  const getIdentifyingText = () => {
-    return isPortuguese ? "Identificando..." : "Identifying...";
-  };
-
-  const getNotFoundError = () => {
-    return isPortuguese
-      ? "CPF ou ID não encontrado. Verifique o número informado."
-      : "ID number not found. Please check the number provided.";
-  };
-
-  const getGenericError = () => {
-    return isPortuguese
-      ? "Erro ao identificar usuário. Tente novamente."
-      : "Error identifying user. Please try again.";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
-      // Check if roles are loaded
-      if (!roles) {
-        setError("Carregando roles, aguarde um momento...");
-        setIsLoading(false);
-        return;
-      }
-
       const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
       if (!STRAPI_URL) {
         throw new Error(
@@ -135,54 +69,75 @@ export default function IdentifyPage() {
         );
       }
 
-      // Get role IDs
-      const mentorRoleId = getRoleId("mentor");
-      const studentRoleId = getRoleId("student");
-
-      if (!mentorRoleId || !studentRoleId) {
-        setError(
-          "Roles não configurados corretamente. Entre em contato com o administrador."
-        );
-        setIsLoading(false);
-        return;
-      }
-
       // Get authentication token
       const token = Cookies.get("auth_token");
       if (!token) {
-        setError("Token de autenticação não encontrado");
+        setError(t("auth_token_error"));
         setIsLoading(false);
         return;
       }
 
-      // First, try to find by CPF in mentors
+      // Decode JWT to get user ID and email
+      let userId: number;
+      let userEmail: string;
 
-      const mentorRes = await fetch(
-        `${STRAPI_URL}/api/mentores?filters[cpf_id][$eq]=${identifier}&locale=pt-BR`,
-        {
-          headers: {
-            // Authorization: `Bearer ${token}`,
-          },
+      try {
+        const tokenParts = token.split(".");
+        if (tokenParts.length !== 3) {
+          throw new Error(t("invalid_token_error"));
         }
-      );
 
-      if (mentorRes.ok) {
-        const mentorData = await mentorRes.json();
+        const payload = JSON.parse(atob(tokenParts[1]));
+        userId = payload.id;
+        userEmail = payload.email;
 
-        if (mentorData.data && mentorData.data.length > 0) {
-          const mentor = mentorData.data[0];
+        // Se email não estiver no token, buscar via API
+        if (!userEmail) {
+          const userResponse = await fetch(`${STRAPI_URL}/api/users/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-          // Decode JWT to get user ID
-          try {
-            const tokenParts = token.split(".");
-            if (tokenParts.length !== 3) {
-              throw new Error("Token inválido");
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            userEmail = userData.email;
+          }
+        }
+      } catch {
+        setError(t("token_decode_error"));
+        setIsLoading(false);
+        return;
+      }
+
+      // Buscar por mentor primeiro (se CPF for fornecido)
+      if (identifier) {
+        const mentorRes = await fetch(
+          `${STRAPI_URL}/api/mentores?filters[cpf_id][$eq]=${identifier}&locale=pt-BR`,
+          {
+            headers: {
+              // Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (mentorRes.ok) {
+          const mentorData = await mentorRes.json();
+
+          if (mentorData.data && mentorData.data.length > 0) {
+            const mentor = mentorData.data[0];
+
+            // Buscar role de mentor
+            const mentorRole = roles?.roles?.find(
+              (r: Role) => r.type === "mentor"
+            );
+            if (!mentorRole) {
+              setError(t("mentor_role_error"));
+              setIsLoading(false);
+              return;
             }
 
-            const payload = JSON.parse(atob(tokenParts[1]));
-            const userId = payload.id;
-
-            // Update user role to mentor using our API route
+            // Vincular usuário ao mentor
             const updateRes = await fetch("/api/users/update-role", {
               method: "POST",
               headers: {
@@ -190,109 +145,139 @@ export default function IdentifyPage() {
               },
               body: JSON.stringify({
                 userId: userId,
-                roleId: mentorRoleId,
+                roleId: mentorRole.id,
                 mentorId: mentor.id,
               }),
             });
 
             if (updateRes.ok) {
-              // Redirect to admin with mentor context
-              const adminUrl = isPortuguese
-                ? "/pt/admin?mentor=true"
-                : "/en/admin?mentor=true";
+              const adminUrl = locale === "pt" ? "/pt/admin" : "/en/admin";
               router.replace(adminUrl);
               return;
             } else {
               const errorData = await updateRes.json().catch(() => ({}));
-              console.error("Error updating mentor role:", errorData);
               setError(
-                `Erro ao atualizar role: ${
-                  errorData.error || "Erro desconhecido"
-                }`
+                t("update_role_error", {
+                  error: errorData.error || "Erro desconhecido",
+                })
               );
               setIsLoading(false);
               return;
             }
-          } catch (error) {
-            console.error("Error decoding token:", error);
-            setError("Erro ao decodificar token de autenticação");
-            setIsLoading(false);
-            return;
           }
         }
       }
 
-      // Only search for students if no mentor was found
-
-      // If not found as mentor, try to find as student
-      const studentRes = await fetch(
-        `${STRAPI_URL}/api/alunos?filters[cpf_aluno][$eq]=${identifier}`,
-        {
-          headers: {
-            // Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (studentRes.ok) {
-        const studentData = await studentRes.json();
-
-        if (studentData.data && studentData.data.length > 0) {
-          const student = studentData.data[0];
-
-          // Decode JWT to get user ID
-          try {
-            const tokenParts = token.split(".");
-            if (tokenParts.length !== 3) {
-              throw new Error("Token inválido");
-            }
-
-            const payload = JSON.parse(atob(tokenParts[1]));
-            const userId = payload.id;
-
-            // Update user role to student using our API route
-            const updateRes = await fetch("/api/users/update-role", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userId: userId,
-                roleId: studentRoleId,
-                studentId: student.id,
-              }),
-            });
-
-            if (updateRes.ok) {
-              // Redirect to student dashboard or appropriate page
-              const studentUrl = isPortuguese ? "/pt/student" : "/en/student";
-              router.replace(studentUrl);
-              return;
-            } else {
-              const errorData = await updateRes.json().catch(() => ({}));
-              console.error("Error updating student role:", errorData);
-              setError(
-                `Erro ao atualizar role: ${
-                  errorData.error || "Erro desconhecido"
-                }`
-              );
-              setIsLoading(false);
-              return;
-            }
-          } catch (error) {
-            console.error("Error decoding token:", error);
-            setError("Erro ao decodificar token de autenticação");
-            setIsLoading(false);
-            return;
+      // Se não encontrou mentor, buscar por aluno
+      // Primeiro por CPF (se fornecido)
+      let studentRes;
+      if (identifier) {
+        studentRes = await fetch(
+          `${STRAPI_URL}/api/alunos?filters[cpf_aluno][$eq]=${identifier}`,
+          {
+            headers: {
+              // Authorization: `Bearer ${token}`,
+            },
           }
+        );
+      }
+
+      // Verificar se encontrou aluno por CPF
+      let studentFound = false;
+      let studentData = null;
+
+      if (studentRes && studentRes.ok) {
+        studentData = await studentRes.json();
+        studentFound = studentData.data && studentData.data.length > 0;
+      }
+
+      // Se não encontrou por CPF, buscar por email do usuário logado
+      if (!studentFound && userEmail) {
+        const emailStudentRes = await fetch(
+          `${STRAPI_URL}/api/alunos?filters[email_responsavel][$eq]=${userEmail}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (emailStudentRes.ok) {
+          const emailStudentData = await emailStudentRes.json();
+          studentFound =
+            emailStudentData.data && emailStudentData.data.length > 0;
+          if (studentFound) {
+            studentData = emailStudentData;
+          }
+        }
+      }
+
+      // Se não encontrou aluno em nenhuma busca
+      if (!studentFound) {
+        setError(t("not_found_error"));
+        setIsLoading(false);
+        return;
+      }
+
+      // Processar o aluno encontrado
+      if (studentData && studentData.data && studentData.data.length > 0) {
+        const student = studentData.data[0];
+
+        // Buscar role de student
+        const studentRole = roles?.roles?.find(
+          (r: Role) => r.type === "student"
+        );
+        if (!studentRole) {
+          setError(t("student_role_error"));
+          setIsLoading(false);
+          return;
+        }
+
+        // Vincular usuário ao aluno
+
+        const updateRes = await fetch("/api/users/update-role", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            roleId: studentRole.id,
+            studentId: student.id,
+          }),
+        });
+
+        console.log(
+          "📡 Status da resposta da API update-role:",
+          updateRes.status
+        );
+
+        if (updateRes.ok) {
+          await updateRes.json();
+
+          // Aguardar um momento para a atualização propagar
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Redirecionar para o dashboard de student
+          const studentUrl = locale === "pt" ? "/pt/student" : "/en/student";
+          router.replace(studentUrl);
+          return;
+        } else {
+          const errorData = await updateRes.json().catch(() => ({}));
+          setError(
+            t("update_role_error", {
+              error: errorData.error || "Erro desconhecido",
+            })
+          );
+          setIsLoading(false);
+          return;
         }
       }
 
       // If not found anywhere
-      setError(getNotFoundError());
-    } catch (err) {
-      console.error("Identification error:", err);
-      setError(getGenericError());
+      setError(t("not_found_error"));
+    } catch {
+      setError(t("generic_error"));
     } finally {
       setIsLoading(false);
     }
@@ -303,10 +288,10 @@ export default function IdentifyPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            {getPageTitle()}
+            {t("page_title")}
           </CardTitle>
           <CardDescription className="text-center">
-            {getPageDescription()}
+            {t("page_description")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -318,11 +303,11 @@ export default function IdentifyPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="identifier">{getIdentifierLabel()}</Label>
+              <Label htmlFor="identifier">{t("identifier_label")}</Label>
               <Input
                 id="identifier"
                 type="text"
-                placeholder={getIdentifierPlaceholder()}
+                placeholder={t("identifier_placeholder")}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
@@ -333,11 +318,11 @@ export default function IdentifyPage() {
             <div className="text-sm text-gray-600 text-center space-y-2">
               <div className="flex items-center justify-center space-x-2">
                 <User className="h-4 w-4" />
-                <span>{getMentorText()}</span>
+                <span>{t("mentor_text")}</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
                 <BookOpen className="h-4 w-4" />
-                <span>{getStudentText()}</span>
+                <span>{t("student_text")}</span>
               </div>
             </div>
           </CardContent>
@@ -347,12 +332,12 @@ export default function IdentifyPage() {
               {isLoading ? (
                 <>
                   <Search className="mr-2 h-4 w-4 animate-spin" />
-                  {getIdentifyingText()}
+                  {t("identifying")}
                 </>
               ) : (
                 <>
                   <Search className="mr-2 h-4 w-4" />
-                  {getIdentifyButtonText()}
+                  {t("identify_button")}
                 </>
               )}
             </Button>

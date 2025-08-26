@@ -65,8 +65,17 @@ export default function LoginPage() {
         expires: 7, // 7 days
       });
 
-      // Redirect to admin page based on locale
-      router.push(`/${locale}/admin`);
+      // Check user role and redirect accordingly
+      if (data.data?.user?.role?.type === "student") {
+        router.push(`/${locale}/student`);
+      } else if (data.data?.user?.role?.type === "mentor") {
+        router.push(`/${locale}/admin`);
+      } else if (data.data?.user?.role?.type === "admin") {
+        router.push(`/${locale}/admin`);
+      } else {
+        // Default to admin for authenticated users
+        router.push(`/${locale}/admin`);
+      }
     } catch (err) {
       console.error("Login error:", err);
       if (axios.isAxiosError(err)) {

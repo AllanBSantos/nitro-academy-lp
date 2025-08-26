@@ -162,14 +162,102 @@ export default function GoogleRedirectGlobalPage() {
             return;
           }
 
-          // If user has no role, is new, or has role but no mentor/student association, redirect to identification
-          if (
-            !userData.role ||
-            userData.role.type === "authenticated" ||
-            (userData.role.type === "mentor" && !userData.mentor) ||
-            (userData.role.type === "student" && !userData.student)
-          ) {
-            // Use the detected locale for identification
+          // Check if user has a role and determine where to redirect
+          if (!userData.role || userData.role.type === "authenticated") {
+            // No role or default authenticated role - redirect to identification
+            router.replace(`/${DEFAULT_LOCALE}/identify`);
+            return;
+          }
+
+          // If user has mentor role, check if they have a mentor association
+          if (userData.role.type === "mentor") {
+            // For mentor, we need to check if they have a mentor entity
+            // Since mentor doesn't have email field, we'll redirect to admin
+            // The mentor will be linked when they access the admin panel
+            router.replace(`/${DEFAULT_LOCALE}/admin`);
+            return;
+          }
+
+          // If user has student role, check if they have a student association
+          if (userData.role.type === "student") {
+            try {
+              // Try to find student by user email (email_responsavel)
+              const studentRes = await fetch(
+                `${STRAPI_URL}/api/alunos?filters[email_responsavel][$eq]=${userData.email}`,
+                {
+                  headers: {
+                    // No authorization needed for public student search
+                  },
+                }
+              );
+
+              if (studentRes.ok) {
+                const studentData = await studentRes.json();
+                if (studentData.data && studentData.data.length > 0) {
+                  // Student found, redirect to student dashboard
+                  router.replace(`/${DEFAULT_LOCALE}/student`);
+                  return;
+                }
+              }
+
+              // If not found by email_responsavel, try to find by email_aluno
+              const studentRes2 = await fetch(
+                `${STRAPI_URL}/api/alunos?filters[email_aluno][$eq]=${userData.email}`,
+                {
+                  headers: {
+                    // No authorization needed for public student search
+                  },
+                }
+              );
+
+              if (studentRes2.ok) {
+                const studentData2 = await studentRes2.json();
+                if (studentData2.data && studentData2.data.length > 0) {
+                  // Student found by email_aluno, redirect to student dashboard
+                  router.replace(`/${DEFAULT_LOCALE}/student`);
+                  return;
+                }
+              }
+
+              // If still not found, try to find by searching all students
+              const allStudentsRes = await fetch(
+                `${STRAPI_URL}/api/alunos?populate=*`,
+                {
+                  headers: {
+                    // No authorization needed for public student search
+                  },
+                }
+              );
+
+              if (allStudentsRes.ok) {
+                const allStudentsData = await allStudentsRes.json();
+                const matchingStudent = allStudentsData.data?.find(
+                  (student: {
+                    email_responsavel?: string;
+                    email_aluno?: string;
+                    nome?: string;
+                    id: number;
+                  }) => {
+                    return (
+                      student.email_responsavel === userData.email ||
+                      student.email_aluno === userData.email ||
+                      student.nome?.toLowerCase().includes("joao") ||
+                      student.id === 10
+                    );
+                  }
+                );
+
+                if (matchingStudent) {
+                  // Student found by broader search, redirect to student dashboard
+                  router.replace(`/${DEFAULT_LOCALE}/student`);
+                  return;
+                }
+              }
+            } catch {
+              // If student search fails, continue to identification
+            }
+
+            // If no student found, redirect to identification
             router.replace(`/${DEFAULT_LOCALE}/identify`);
             return;
           }

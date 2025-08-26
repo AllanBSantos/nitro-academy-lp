@@ -69,6 +69,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::mentor.mentor"
+    },
+    "student": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::aluno.aluno"
     }
   }
 }

@@ -834,5 +834,23 @@
     "materials": "Materials",
     "materials_desc": "Access course materials",
     "logout": "Logout"
+  },
+  "Identify": {
+    "page_title": "Link Account",
+    "page_description": "To link your account, please provide your CPF or student ID",
+    "identifier_label": "Student CPF or ID",
+    "identifier_placeholder": "Enter your student CPF or ID number",
+    "mentor_text": "Mentors: provide your CPF to link",
+    "student_text": "Students: provide your CPF to link",
+    "identify_button": "Link Account",
+    "identifying": "Linking...",
+    "not_found_error": "CPF or ID not found. Please check the number provided.",
+    "generic_error": "Error linking account. Please try again.",
+    "auth_token_error": "Authentication token not found",
+    "invalid_token_error": "Invalid token",
+    "token_decode_error": "Error decoding authentication token",
+    "mentor_role_error": "Mentor role not configured",
+    "student_role_error": "Student role not configured",
+    "update_role_error": "Error linking account: {error}"
   }
 }
