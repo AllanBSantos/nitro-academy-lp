@@ -55,10 +55,19 @@ function AdminLayout() {
 
         // Set user role and permissions based on server verification
         if (userData.role.type === "mentor") {
-          setIsMentor(true);
-          setMentor(
-            userData.mentorId ? { id: userData.mentorId, nome: "Mentor" } : null
-          );
+          if (userData.mentorId) {
+            // Mentor is linked, allow access
+            setIsMentor(true);
+            setMentor(
+              userData.mentorId
+                ? { id: userData.mentorId, nome: "Mentor" }
+                : null
+            );
+          } else {
+            // Mentor role but not linked, redirect to identification
+            router.replace(`/${params.locale}/identify`);
+            return;
+          }
         } else if (userData.role.type === "student") {
           // Students should not access admin panel
           router.replace(`/${params.locale}/student`);
@@ -70,6 +79,10 @@ function AdminLayout() {
           // Admin or authenticated users have full access
           setIsMentor(false);
           setMentor(null);
+        } else {
+          // No specific role, redirect to identification
+          router.replace(`/${params.locale}/identify`);
+          return;
         }
       } catch (error) {
         console.error("Error verifying user role:", error);

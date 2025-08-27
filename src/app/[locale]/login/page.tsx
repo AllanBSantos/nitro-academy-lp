@@ -66,15 +66,30 @@ export default function LoginPage() {
       });
 
       // Check user role and redirect accordingly
-      if (data.data?.user?.role?.type === "student") {
-        router.push(`/${locale}/student`);
-      } else if (data.data?.user?.role?.type === "mentor") {
-        router.push(`/${locale}/admin`);
-      } else if (data.data?.user?.role?.type === "admin") {
-        router.push(`/${locale}/admin`);
+      if (data.data?.isLinked) {
+        // User is already linked, redirect directly based on linked type
+        if (data.data.linkedType === "student") {
+          router.push(`/${locale}/student`);
+        } else if (data.data.linkedType === "mentor") {
+          router.push(`/${locale}/admin`);
+        } else if (data.data.linkedType === "admin") {
+          router.push(`/${locale}/admin`);
+        } else {
+          // Fallback to role-based redirect
+          if (data.data?.user?.role?.type === "student") {
+            router.push(`/${locale}/student`);
+          } else if (data.data?.user?.role?.type === "mentor") {
+            router.push(`/${locale}/admin`);
+          } else if (data.data?.user?.role?.type === "admin") {
+            router.push(`/${locale}/admin`);
+          } else {
+            // Default to admin for authenticated users
+            router.push(`/${locale}/admin`);
+          }
+        }
       } else {
-        // Default to admin for authenticated users
-        router.push(`/${locale}/admin`);
+        // User is not linked, redirect to identification
+        router.push(`/${locale}/identify`);
       }
     } catch (err) {
       console.error("Login error:", err);

@@ -76,6 +76,9 @@ export async function POST(request: NextRequest) {
 
       const roleData = await roleResponse.json();
 
+      // Extract mentor and student IDs from user data
+      const mentorId = userData.mentor?.id || null;
+      const studentId = userData.student?.id || null;
       return NextResponse.json({
         userId: userData.id,
         role: {
@@ -83,8 +86,8 @@ export async function POST(request: NextRequest) {
           type: userData.role.type,
           name: userData.role.name,
         },
-        mentorId: userData.mentor?.id || null,
-        studentId: userData.student?.id || null,
+        mentorId,
+        studentId,
         permissions: roleData.role.permissions || {},
       });
     } catch (decodeError) {

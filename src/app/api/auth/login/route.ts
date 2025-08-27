@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+
     if (!STRAPI_URL) {
       return NextResponse.json(
         { error: "STRAPI_URL não configurado" },
@@ -73,11 +74,36 @@ export async function POST(request: NextRequest) {
 
     const userData = await userResponse.json();
 
+    // Check if user has been linked to a student or mentor
+    let isLinked = false;
+    let linkedType = null;
+    let linkedId = null;
+
+    if (userData.role && userData.role.type !== "authenticated") {
+      // User has a specific role, check if they're linked
+      if (userData.role.type === "student" && userData.student?.id) {
+        isLinked = true;
+        linkedType = "student";
+        linkedId = userData.student.id;
+      } else if (userData.role.type === "mentor" && userData.mentor?.id) {
+        isLinked = true;
+        linkedType = "mentor";
+        linkedId = userData.mentor.id;
+      } else if (userData.role.type === "admin") {
+        // Admin users are always considered linked
+        isLinked = true;
+        linkedType = "admin";
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         token: data.jwt,
         user: userData,
+        isLinked,
+        linkedType,
+        linkedId,
       },
       message: "Login realizado com sucesso",
     });

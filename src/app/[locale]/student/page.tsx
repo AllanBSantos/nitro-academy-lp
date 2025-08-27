@@ -29,6 +29,8 @@ export default function StudentDashboard() {
   const params = useParams();
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -36,6 +38,32 @@ export default function StudentDashboard() {
         const token = Cookies.get("auth_token");
         if (!token) {
           router.replace(`/${params.locale}/login`);
+          return;
+        }
+
+        // First verify user role to ensure they have student role and are linked
+        const roleResponse = await fetch("/api/auth/verify-role", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        if (!roleResponse.ok) {
+          console.error("Failed to verify user role");
+          router.replace(`/${params.locale}/login`);
+          return;
+        }
+
+        const roleData = await roleResponse.json();
+
+        // Check if user has student role and is linked to a student
+        if (roleData.role.type !== "student" || !roleData.studentId) {
+          console.error(
+            "User does not have student role or is not linked to a student"
+          );
+          router.replace(`/${params.locale}/identify`);
           return;
         }
 
@@ -95,6 +123,7 @@ export default function StudentDashboard() {
 
               // Encontrar aluno que corresponde ao usuário
               const matchingStudent = allStudentsResult.data?.find(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (student: any) => {
                   return (
                     student.email_responsavel === userEmail ||

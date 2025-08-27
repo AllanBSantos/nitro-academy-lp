@@ -53,8 +53,50 @@ export default function IdentifyPage() {
       }
     };
 
+    // Check if user is already linked before showing identification screen
+    const checkUserStatus = async () => {
+      try {
+        const token = Cookies.get("auth_token");
+        if (!token) {
+          router.replace(`/${locale}/login`);
+          return;
+        }
+
+        // Verify user role to check if already linked
+        const response = await fetch("/api/auth/verify-role", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+
+          // If user is already linked, redirect directly
+          if (userData.studentId || userData.mentorId) {
+            if (userData.role.type === "student") {
+              const studentUrl =
+                locale === "pt" ? "/pt/student" : "/en/student";
+              router.replace(studentUrl);
+              return;
+            } else if (userData.role.type === "mentor") {
+              const adminUrl = locale === "pt" ? "/pt/admin" : "/en/admin";
+              router.replace(adminUrl);
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error checking user status:", error);
+        // Continue to show identification screen if there's an error
+      }
+    };
+
+    checkUserStatus();
     fetchRoles();
-  }, []);
+  }, [router, locale]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -246,11 +288,6 @@ export default function IdentifyPage() {
             studentId: student.id,
           }),
         });
-
-        console.log(
-          "📡 Status da resposta da API update-role:",
-          updateRes.status
-        );
 
         if (updateRes.ok) {
           await updateRes.json();

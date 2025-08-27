@@ -63,6 +63,11 @@ export async function POST(request: NextRequest) {
 
     // Both approaches failed
     const errorData = await response.json().catch(() => ({}));
+    console.error("Failed to update user:", {
+      status: response.status,
+      error: errorData,
+      altStatus: altResponse.status,
+    });
     return NextResponse.json(
       {
         error: "Failed to update user role",
