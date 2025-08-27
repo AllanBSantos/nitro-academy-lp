@@ -475,6 +475,38 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAulaAula extends Struct.CollectionTypeSchema {
+  collectionName: 'aulas';
+  info: {
+    description: '';
+    displayName: 'aula';
+    pluralName: 'aulas';
+    singularName: 'aula';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    alunos: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'>;
+    arquivos: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
+    aula_status: Schema.Attribute.Enumeration<
+      ['INICIADA', 'CONLU\u00CDDA ', 'EM ANDAMENTO', 'PENDENTE']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    curso: Schema.Attribute.Relation<'oneToOne', 'api::curso.curso'>;
+    data: Schema.Attribute.Date & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::aula.aula'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
   collectionName: 'avaliacoes';
   info: {
@@ -1465,6 +1497,7 @@ declare module '@strapi/strapi' {
       'api::admin.admin': ApiAdminAdmin;
       'api::aluno-escola-parceira.aluno-escola-parceira': ApiAlunoEscolaParceiraAlunoEscolaParceira;
       'api::aluno.aluno': ApiAlunoAluno;
+      'api::aula.aula': ApiAulaAula;
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::campanha.campanha': ApiCampanhaCampanha;
       'api::cupom.cupom': ApiCupomCupom;
