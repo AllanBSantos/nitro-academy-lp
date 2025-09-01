@@ -14,22 +14,22 @@ import { Label } from "@/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
-import { X } from "lucide-react";
+// import { X } from "lucide-react";
 
 interface EnrollmentModalProps {
   courseName: string;
   selectedTime: string | null;
-  paymentLink?: string;
-  link_desconto: string | null;
-  cupons?: Array<{
-    id: number;
-    documentId: string;
-    nome: string;
-    url: string | null;
-    valido: boolean;
-    validade: string | null;
-    voucher_gratuito: boolean;
-  }>;
+  // paymentLink?: string;
+  // link_desconto: string | null;
+  // cupons?: Array<{
+  //   id: number;
+  //   documentId: string;
+  //   nome: string;
+  //   url: string | null;
+  //   valido: boolean;
+  //   validade: string | null;
+  //   voucher_gratuito: boolean;
+  // }>;
   courseId: number;
   scheduleIndex: number;
   disabled?: boolean;
@@ -45,9 +45,9 @@ interface School {
 export default function EnrollmentModal({
   courseName,
   selectedTime,
-  paymentLink,
-  link_desconto,
-  cupons = [],
+  // paymentLink,
+  // link_desconto,
+  // cupons = [],
   courseId,
   scheduleIndex,
   disabled = false,
@@ -58,18 +58,18 @@ export default function EnrollmentModal({
   const [isMaterialComplementarModalOpen, setIsMaterialComplementarModalOpen] =
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
+  // const [couponCode, setCouponCode] = useState("");
   const [schools, setSchools] = useState<School[]>([]);
-  const [appliedCoupon, setAppliedCoupon] = useState<{
-    id: number;
-    documentId: string;
-    nome: string;
-    url: string | null;
-    valido: boolean;
-    validade: string | null;
-    voucher_gratuito: boolean;
-  } | null>(null);
-  const [couponError, setCouponError] = useState("");
+  // const [appliedCoupon, setAppliedCoupon] = useState<{
+  //   id: number;
+  //   documentId: string;
+  //   nome: string;
+  //   url: string | null;
+  //   valido: boolean;
+  //   validade: string | null;
+  //   voucher_gratuito: boolean;
+  // } | null>(null);
+  // const [couponError, setCouponError] = useState("");
   const [isPartnerStudent, setIsPartnerStudent] = useState(false);
   const [isSearchingStudent, setIsSearchingStudent] = useState(false);
   const params = useParams();
@@ -104,55 +104,55 @@ export default function EnrollmentModal({
     loadSchools();
   }, []);
 
-  const handleApplyCoupon = async () => {
-    setCouponError("");
-    const coupon = cupons.find(
-      (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
-    );
+  // const handleApplyCoupon = async () => {
+  //   setCouponError("");
+  //   const coupon = cupons.find(
+  //     (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
+  //   );
 
-    if (!coupon) {
-      setCouponError(modalT("errors.invalid_coupon"));
-      return;
-    }
+  //   if (!coupon) {
+  //     setCouponError(modalT("errors.invalid_coupon"));
+  //     return;
+  //   }
 
-    const today = new Date();
-    let validade: Date | null = null;
+  //   const today = new Date();
+  //   let validade: Date | null = null;
 
-    if (coupon.validade) {
-      const [year, month, day] = coupon.validade.split("-").map(Number);
-      validade = new Date(year, month - 1, day, 23, 59, 59, 999);
-    }
+  //   if (coupon.validade) {
+  //     const [year, month, day] = coupon.validade.split("-").map(Number);
+  //     validade = new Date(year, month - 1, day, 23, 59, 59, 999);
+  //   }
 
-    if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
-      setCouponError(modalT("errors.expired_coupon"));
-      return;
-    }
+  //   if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
+  //     setCouponError(modalT("errors.expired_coupon"));
+  //     return;
+  //   }
 
-    if (couponCode.toLowerCase() === "voucher100") {
-      try {
-        const existingStudent = await findStudentByCPF(formData.studentCPF);
-        if (existingStudent?.usou_voucher) {
-          setCouponError(modalT("coupon.voucher_used"));
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking voucher usage:", error);
-      }
-    }
+  //   if (couponCode.toLowerCase() === "voucher100") {
+  //     try {
+  //       const existingStudent = await findStudentByCPF(formData.studentCPF);
+  //       if (existingStudent?.usou_voucher) {
+  //         setCouponError(modalT("coupon.voucher_used"));
+  //         return;
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking voucher usage:", error);
+  //     }
+  //   }
 
-    if (!coupon.url && !link_desconto && !coupon.voucher_gratuito) {
-      setCouponError(modalT("errors.invalid_coupon"));
-      return;
-    }
+  //   if (!coupon.url && !link_desconto && !coupon.voucher_gratuito) {
+  //     setCouponError(modalT("errors.invalid_coupon"));
+  //     return;
+  //   }
 
-    setAppliedCoupon(coupon);
-    setCouponCode("");
-  };
+  //   setAppliedCoupon(coupon);
+  //   setCouponCode("");
+  // };
 
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponError("");
-  };
+  // const handleRemoveCoupon = () => {
+  //   setAppliedCoupon(null);
+  //   setCouponError("");
+  // };
 
   const searchPartnerStudent = async (studentName: string) => {
     if (!studentName.trim()) {
@@ -349,8 +349,9 @@ export default function EnrollmentModal({
       const schoolName = isPartnerStudent ? formData.partnerSchool : undefined;
 
       // Verificar se o cupom é gratuito
-      const isVoucherGratuito =
-        appliedCoupon?.voucher_gratuito || isPartnerStudent;
+      // const isVoucherGratuito =
+      //   appliedCoupon?.voucher_gratuito || isPartnerStudent;
+      const isVoucherGratuito = isPartnerStudent;
 
       await createStudent({
         nome: formData.studentName,
@@ -376,26 +377,27 @@ export default function EnrollmentModal({
       setIsOpen(false);
 
       // Se há cupom aplicado com voucher_gratuito, mostrar modal de sucesso
-      if (appliedCoupon && appliedCoupon.voucher_gratuito) {
-        setIsSuccessModalOpen(true);
-        return;
-      }
+      // if (appliedCoupon && appliedCoupon.voucher_gratuito) {
+      //   setIsSuccessModalOpen(true);
+      //   return;
+      // }
 
       // Se há cupom aplicado, usar URL do cupom ou link_desconto como fallback
-      if (appliedCoupon) {
-        const redirectUrl = appliedCoupon.url || link_desconto;
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-          return;
-        }
-      }
+      // if (appliedCoupon) {
+      //   const redirectUrl = appliedCoupon.url || link_desconto;
+      //   if (redirectUrl) {
+      //     window.location.href = redirectUrl;
+      //     return;
+      //   }
+      // }
 
       if (isPartnerStudent) {
         setIsSuccessModalOpen(true);
         return;
-      } else if (paymentLink) {
-        window.location.href = paymentLink;
       }
+      // else if (paymentLink) {
+      //   window.location.href = paymentLink;
+      // }
     } catch (error) {
       console.error("Error in enrollment process:", error);
       alert(modalT("errors.submit"));
@@ -743,8 +745,8 @@ export default function EnrollmentModal({
               )}
             </div>
 
-            {/* Coupon Section */}
-            <div className="space-y-4">
+            {/* Coupon Section - COMMENTED OUT FOR FUTURE USE */}
+            {/* <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
                 <div className="flex gap-2">
@@ -780,75 +782,75 @@ export default function EnrollmentModal({
                   </div>
                 )}
               </div>
+            </div> */}
 
-              {isPartnerStudent && (
-                <div className="space-y-2">
-                  <Label htmlFor="partnerSchool">
-                    {modalT("partner_school.label")}
-                  </Label>
-                  {isPartnerStudent ? (
-                    <input
-                      type="text"
-                      id="partnerSchool"
-                      value={formData.partnerSchool}
-                      readOnly
-                      className="w-full bg-gray-100 border-gray-200 rounded-md p-2 text-gray-600 cursor-not-allowed"
-                    />
-                  ) : (
-                    <select
-                      id="partnerSchool"
-                      required
-                      value={formData.partnerSchool}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          partnerSchool: e.target.value,
-                        })
-                      }
-                      className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
-                    >
-                      <option value="">
-                        {modalT("partner_school.placeholder")}
-                      </option>
-                      {schools.map((school) => (
-                        <option key={school.id} value={school.id}>
-                          {school.nome}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              )}
-
-              {isPartnerStudent && (
-                <div className="space-y-2">
-                  <Label htmlFor="classNumber">
-                    {modalT("class_number.label")}
-                  </Label>
-                  <Input
-                    id="classNumber"
-                    value={formData.classNumber}
+            {isPartnerStudent && (
+              <div className="space-y-2">
+                <Label htmlFor="partnerSchool">
+                  {modalT("partner_school.label")}
+                </Label>
+                {isPartnerStudent ? (
+                  <input
+                    type="text"
+                    id="partnerSchool"
+                    value={formData.partnerSchool}
+                    readOnly
+                    className="w-full bg-gray-100 border-gray-200 rounded-md p-2 text-gray-600 cursor-not-allowed"
+                  />
+                ) : (
+                  <select
+                    id="partnerSchool"
+                    required
+                    value={formData.partnerSchool}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        classNumber: e.target.value,
+                        partnerSchool: e.target.value,
                       })
                     }
-                    disabled={isPartnerStudent}
-                    className={`bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] ${
-                      isPartnerStudent ? "opacity-75 cursor-not-allowed" : ""
-                    }`}
-                    placeholder={modalT("class_number.placeholder")}
-                  />
-                </div>
-              )}
-            </div>
+                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
+                  >
+                    <option value="">
+                      {modalT("partner_school.placeholder")}
+                    </option>
+                    {schools.map((school) => (
+                      <option key={school.id} value={school.id}>
+                        {school.nome}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            )}
+
+            {isPartnerStudent && (
+              <div className="space-y-2">
+                <Label htmlFor="classNumber">
+                  {modalT("class_number.label")}
+                </Label>
+                <Input
+                  id="classNumber"
+                  value={formData.classNumber}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      classNumber: e.target.value,
+                    })
+                  }
+                  disabled={isPartnerStudent}
+                  className={`bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] ${
+                    isPartnerStudent ? "opacity-75 cursor-not-allowed" : ""
+                  }`}
+                  placeholder={modalT("class_number.placeholder")}
+                />
+              </div>
+            )}
 
             <Button
               type="submit"
               id="enrollment-button-modal"
-              className="w-full bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold"
-              disabled={isLoading}
+              className="w-full bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading || !isPartnerStudent}
             >
               {isLoading ? modalT("loading") : modalT("enroll")}
             </Button>

@@ -8,8 +8,6 @@ interface CourseSummaryCardProps {
   modelo: string;
   nivel: string;
   idioma: string;
-  priceTotal?: number;
-  moeda?: "Real" | "Dólar";
   onEnrollClick: () => void;
   isMobile?: boolean;
 }
@@ -20,27 +18,10 @@ export default function CourseSummaryCard({
   modelo,
   nivel,
   idioma,
-  priceTotal,
-  moeda,
   onEnrollClick,
   isMobile = false,
 }: CourseSummaryCardProps) {
   const t = useTranslations("CourseSummaryCard");
-  const CLASSES_PER_COURSE = 6;
-  const pricePerClass = priceTotal ? priceTotal / CLASSES_PER_COURSE : 0;
-
-  const formatPrice = (price: number) => {
-    if (moeda === "Dólar") {
-      return `USD ${price.toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`;
-    }
-    return price.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
 
   if (isMobile) {
     return (
@@ -48,12 +29,7 @@ export default function CourseSummaryCard({
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-2xl font-bold text-[#1e1b4b]">
-                {formatPrice(pricePerClass)}
-              </span>
-              <span className="text-sm text-gray-600 ml-2">
-                {t("per_class")}
-              </span>
+              <span className="text-sm text-gray-600">{t("course_info")}</span>
             </div>
             <Button
               onClick={onEnrollClick}
@@ -71,19 +47,6 @@ export default function CourseSummaryCard({
     <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
       <div className="p-4">
         <h2 className="text-lg font-semibold text-[#1e1b4b] mb-3">{title}</h2>
-
-        <div className="mb-4">
-          <div className="flex items-center gap-2">
-            {priceTotal && moeda && (
-              <>
-                <span className="text-2xl font-bold text-[#1e1b4b]">
-                  {formatPrice(pricePerClass)}
-                </span>
-                <span className="text-sm text-gray-600">{t("per_class")}</span>
-              </>
-            )}
-          </div>
-        </div>
 
         <div className="space-y-3 mb-4">
           <div className="flex items-center gap-2">
