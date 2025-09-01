@@ -518,7 +518,8 @@
     "level": "Nível",
     "language": "Idioma",
     "see_classes": "Veja todas as turmas",
-    "see_classes_mobile": "Ver turmas"
+    "see_classes_mobile": "Ver turmas",
+    "course_info": "Informações do curso"
   },
   "FAQ": {
     "title": "Perguntas Frequentes",

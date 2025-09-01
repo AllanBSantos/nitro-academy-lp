@@ -517,7 +517,8 @@
     "level": "Level",
     "language": "Language",
     "see_classes": "See all classes",
-    "see_classes_mobile": "View classes"
+    "see_classes_mobile": "View classes",
+    "course_info": "Course information"
   },
   "FAQ": {
     "title": "Frequently Asked Questions",
