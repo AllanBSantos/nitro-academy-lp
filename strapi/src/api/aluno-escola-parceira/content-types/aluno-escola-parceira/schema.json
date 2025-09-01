@@ -4,7 +4,8 @@
   "info": {
     "singularName": "aluno-escola-parceira",
     "pluralName": "alunos-escola-parceira",
-    "displayName": "aluno_escola_parceira"
+    "displayName": "aluno_escola_parceira",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -17,12 +18,22 @@
     "cpf": {
       "type": "string"
     },
-    "turma": {
+    "turma_old": {
       "type": "string"
     },
-    "escola": {
+    "escola_old": {
       "type": "string",
-      "required": true
+      "required": false
+    },
+    "escola": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::escola.escola"
+    },
+    "turma": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::turma.turma"
     }
   }
 }
