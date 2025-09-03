@@ -376,6 +376,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiAdminAdmin extends Struct.CollectionTypeSchema {
   collectionName: 'admins';
   info: {
+    description: '';
     displayName: 'Admin';
     pluralName: 'admins';
     singularName: 'admin';
@@ -384,6 +385,7 @@ export interface ApiAdminAdmin extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    celular: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -844,6 +846,7 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    celular: Schema.Attribute.String;
     cpf_id: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

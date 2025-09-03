@@ -120,6 +120,9 @@
     },
     "cpf_id": {
       "type": "string"
+    },
+    "celular": {
+      "type": "string"
     }
   }
 }
