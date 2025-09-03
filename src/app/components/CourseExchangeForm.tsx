@@ -134,7 +134,7 @@ export default function CourseExchangeForm() {
       const studentData = await studentResponse.json();
       console.log("Student data received:", studentData);
 
-      // Buscar cursos disponíveis (com menos de 15 alunos)
+      // Buscar cursos disponíveis
       const coursesResponse = await fetch("/api/courses/available", {
         cache: "no-store",
         headers: {

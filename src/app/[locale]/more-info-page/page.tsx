@@ -225,7 +225,7 @@ export default function MoreInfoPage({
     {
       n: "4",
       t: "Aulas Online e Síncronas",
-      d: "Ao vivo via Google Meet, turmas de até 12 alunos, 50 minutos por aula, uma vez por semana.",
+      d: "Ao vivo via Google Meet, turmas de 12 a 24 alunos, 50 minutos por aula, uma vez por semana.",
     },
     {
       n: "5",
@@ -588,39 +588,37 @@ export default function MoreInfoPage({
               colaborativas.
             </p>
             <p>
-              Após cada projeto, haverá uma mentoria individualizada online
-              (mentor e família) para:
+              Após cada projeto, haverá uma mentoria coletiva online (mentor e
+              família) para:
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 mt-10">
+          <div className="grid gap-6 md:grid-cols-3 mt-10">
             <Card className="bg-white text-gray-900">
-              <CardContent className="p-6">
-                <strong className="text-gray-900">
-                  Destinar o aluno para o próximo curso
+              <CardContent className="p-6 flex items-center justify-center min-h-[120px]">
+                <strong className="text-gray-900 text-center">
+                  Contextualizar o projeto
                 </strong>
-                <div className="text-gray-600">
-                  Alinhando interesses e desenvolvimento
-                </div>
               </CardContent>
             </Card>
             <Card className="bg-white text-gray-900">
-              <CardContent className="p-6">
-                <strong className="text-gray-900">
-                  Comentar sobre habilidades desenvolvidas
+              <CardContent className="p-6 flex items-center justify-center min-h-[120px]">
+                <strong className="text-gray-900 text-center">
+                  Ajudar as famílias para entender o propósito da Nitro
                 </strong>
-                <div className="text-gray-600">
-                  Necessárias para a vida acadêmica e profissional
-                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white text-gray-900">
+              <CardContent className="p-6 flex items-center justify-center min-h-[120px]">
+                <strong className="text-gray-900 text-center">
+                  Ajudar a família a ajudar o aluno para escolha do próximo
+                  curso
+                </strong>
               </CardContent>
             </Card>
           </div>
           <p className="text-center text-lg text-white/90 leading-relaxed mt-10">
             Anualmente, o aluno passará por{" "}
-            <strong className="text-white">dois projetos coletivos</strong> e{" "}
-            <strong className="text-white">
-              duas mentorias individualizadas
-            </strong>
-            , garantindo acompanhamento contínuo e personalizado.
+            <strong className="text-white">dois projetos coletivos</strong>.
           </p>
         </div>
       </Section>
