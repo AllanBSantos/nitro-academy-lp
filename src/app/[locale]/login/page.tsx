@@ -19,6 +19,7 @@ import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import { Phone } from "lucide-react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { formatPhoneForDisplay } from "@/lib/utils";
 
 // Configure axios defaults
 axios.defaults.headers.common["Content-Type"] = "application/json";
@@ -38,22 +39,7 @@ export default function LoginPage() {
   const t = useTranslations("Login");
 
   const formatWhatsApp = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, "");
-
-    // Format as Brazilian phone number
-    if (digits.length <= 2) {
-      return digits;
-    } else if (digits.length <= 6) {
-      return `${digits.slice(0, 2)} ${digits.slice(2)}`;
-    } else if (digits.length <= 10) {
-      return `${digits.slice(0, 2)} ${digits.slice(2, 6)} ${digits.slice(6)}`;
-    } else {
-      return `${digits.slice(0, 2)} ${digits.slice(2, 7)} ${digits.slice(
-        7,
-        11
-      )}`;
-    }
+    return formatPhoneForDisplay(value);
   };
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +56,7 @@ export default function LoginPage() {
     try {
       const whatsappDigits = whatsapp.replace(/\D/g, "");
 
-      if (whatsappDigits.length < 10 || whatsappDigits.length > 13) {
+      if (whatsappDigits.length < 8 || whatsappDigits.length > 15) {
         setError(t("invalid_whatsapp"));
         return;
       }

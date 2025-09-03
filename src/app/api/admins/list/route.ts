@@ -29,10 +29,10 @@ export async function GET() {
     const data = await response.json();
 
     // Extract admin emails from the response - using the actual Strapi structure
-    let adminEmails: string[] = [];
+    const adminEmails: string[] = [];
 
     if (data.data && Array.isArray(data.data)) {
-      data.data.forEach((admin: any) => {
+      data.data.forEach((admin: { email?: string }) => {
         if (admin.email) {
           adminEmails.push(admin.email);
         }
@@ -40,7 +40,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ adminEmails });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Erro interno do servidor" },
       { status: 500 }

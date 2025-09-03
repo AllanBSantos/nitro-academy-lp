@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { formatInternationalPhone } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,26 +14,15 @@ export async function POST(request: NextRequest) {
 
     const cleanWhatsapp = whatsapp.replace(/\D/g, "");
 
-    if (cleanWhatsapp.length < 10 || cleanWhatsapp.length > 13) {
+    if (cleanWhatsapp.length < 8 || cleanWhatsapp.length > 15) {
       return NextResponse.json(
         { error: "Número de WhatsApp inválido" },
         { status: 400 }
       );
     }
 
-    let formattedWhatsapp = cleanWhatsapp;
-    if (cleanWhatsapp.length === 10 || cleanWhatsapp.length === 11) {
-      formattedWhatsapp = "55" + cleanWhatsapp;
-    } else if (cleanWhatsapp.length === 12 || cleanWhatsapp.length === 13) {
-      formattedWhatsapp = cleanWhatsapp;
-    }
-
-    if (formattedWhatsapp.length !== 13) {
-      return NextResponse.json(
-        { error: "Número de WhatsApp inválido" },
-        { status: 400 }
-      );
-    }
+    // Use the utility function to format the phone number
+    const formattedWhatsapp = formatInternationalPhone(cleanWhatsapp);
 
     const ZAZU_URL = process.env.NEXT_PUBLIC_ZAZU_API_URL;
 

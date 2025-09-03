@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { formatInternationalPhone } from "@/lib/utils";
 
 // Simple JWT creation function for WhatsApp users
 function createSimpleJWT(whatsapp: string): string {
@@ -42,34 +43,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate and format WhatsApp number (Brazilian format)
+    // Validate and format WhatsApp number (international format)
     const cleanWhatsapp = whatsapp.replace(/\D/g, "");
 
-    // Check if it's a valid Brazilian number
-    if (cleanWhatsapp.length < 10 || cleanWhatsapp.length > 13) {
+    // Check if it's a valid phone number
+    if (cleanWhatsapp.length < 8 || cleanWhatsapp.length > 15) {
       return NextResponse.json(
         { error: "Número de WhatsApp inválido" },
         { status: 400 }
       );
     }
 
-    // If it's a Brazilian number without country code, add 55
-    let formattedWhatsapp = cleanWhatsapp;
-    if (cleanWhatsapp.length === 10 || cleanWhatsapp.length === 11) {
-      // Brazilian number without country code, add 55
-      formattedWhatsapp = "55" + cleanWhatsapp;
-    } else if (cleanWhatsapp.length === 12 || cleanWhatsapp.length === 13) {
-      // Already has country code, use as is
-      formattedWhatsapp = cleanWhatsapp;
-    }
-
-    // Final validation: must be 13 digits (55 + DDD + 9 digits)
-    if (formattedWhatsapp.length !== 13) {
-      return NextResponse.json(
-        { error: "Número de WhatsApp inválido" },
-        { status: 400 }
-      );
-    }
+    // Use the utility function to format the phone number
+    const formattedWhatsapp = formatInternationalPhone(cleanWhatsapp);
 
     const ZAZU_URL = process.env.NEXT_PUBLIC_ZAZU_API_URL;
 
