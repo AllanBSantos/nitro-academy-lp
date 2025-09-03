@@ -15,15 +15,6 @@ type ContentItem = {
 const content: ContentItem[] = [
   {
     label: {
-      title: "Flexibilidade",
-      backgroundColor: "bg-background",
-    },
-    description: {
-      text: "Pagamento por matéria, horários adaptáveis e acesso internacional",
-    },
-  },
-  {
-    label: {
       title: "Metodologia Inovadora",
       backgroundColor: "bg-[#1d358d]",
       className: "pr-8",
@@ -48,7 +39,7 @@ const content: ContentItem[] = [
       backgroundColor: "bg-[#e69223]",
     },
     description: {
-      text: "Mais de 10 projetos para explorar",
+      text: "Mais de 20 projetos para explorar",
     },
   },
 ];

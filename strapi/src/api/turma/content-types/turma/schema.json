@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "turmas",
+  "info": {
+    "singularName": "turma",
+    "pluralName": "turmas",
+    "displayName": "turma"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "turma": {
+      "type": "string"
+    },
+    "escola": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::escola.escola"
+    }
+  }
+}

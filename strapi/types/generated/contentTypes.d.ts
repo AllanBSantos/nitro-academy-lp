@@ -403,6 +403,7 @@ export interface ApiAlunoEscolaParceiraAlunoEscolaParceira
   extends Struct.CollectionTypeSchema {
   collectionName: 'alunos_escola_parceira';
   info: {
+    description: '';
     displayName: 'aluno_escola_parceira';
     pluralName: 'alunos-escola-parceira';
     singularName: 'aluno-escola-parceira';
@@ -415,7 +416,8 @@ export interface ApiAlunoEscolaParceiraAlunoEscolaParceira
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    escola: Schema.Attribute.String & Schema.Attribute.Required;
+    escola: Schema.Attribute.Relation<'oneToOne', 'api::escola.escola'>;
+    escola_old: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -424,7 +426,8 @@ export interface ApiAlunoEscolaParceiraAlunoEscolaParceira
       Schema.Attribute.Private;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    turma: Schema.Attribute.String;
+    turma: Schema.Attribute.Relation<'oneToOne', 'api::turma.turma'>;
+    turma_old: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -984,6 +987,32 @@ export interface ApiSugestaoSugestao extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTurmaTurma extends Struct.CollectionTypeSchema {
+  collectionName: 'turmas';
+  info: {
+    displayName: 'turma';
+    pluralName: 'turmas';
+    singularName: 'turma';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    escola: Schema.Attribute.Relation<'oneToOne', 'api::escola.escola'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::turma.turma'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    turma: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1506,6 +1535,7 @@ declare module '@strapi/strapi' {
       'api::mentor.mentor': ApiMentorMentor;
       'api::pergunta-frequente.pergunta-frequente': ApiPerguntaFrequentePerguntaFrequente;
       'api::sugestao.sugestao': ApiSugestaoSugestao;
+      'api::turma.turma': ApiTurmaTurma;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

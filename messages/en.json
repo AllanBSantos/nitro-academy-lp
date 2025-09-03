@@ -122,7 +122,7 @@
     "Evento Presencial": "In-Person Event",
     "Semana intensiva anual para integração e networking familiar": "Annual intensive week for integration and family networking",
     "Conteúdo Variado": "Diverse Content",
-    "Mais de 10 projetos para explorar": "Over 10 projects to explore."
+    "Mais de 20 projetos para explorar": "Over 20 projects to explore."
   },
   "HowItWorks": {
     "title": "How it works?",
@@ -177,7 +177,9 @@
     "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico": "Interning as a Youtuber, Making your First Online Sale, Creating your Own Perfume, Creating a Cinematic Script",
     "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores": "We are an online vocational initiation project school and we are looking for professionals passionate about education who have practical experience in their professional fields to act as mentors.",
     "Faça parte do nosso time.": "If this proposal appeals to you, come and be part of Nitro Academy. The first step is to complete this form:",
-    "Faça parte do nosso time": "Become part of our team"
+    "Faça parte do nosso time": "Become part of our team",
+    "Faça parte da Nitro": "Join Nitro",
+    "Seja uma escola Power by Nitro": "Be a Power by Nitro School"
   },
   "AboutUs": {
     "title": "About Us",
@@ -517,7 +519,8 @@
     "level": "Level",
     "language": "Language",
     "see_classes": "See all classes",
-    "see_classes_mobile": "View classes"
+    "see_classes_mobile": "View classes",
+    "course_info": "Course information"
   },
   "FAQ": {
     "title": "Frequently Asked Questions",

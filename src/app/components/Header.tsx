@@ -53,11 +53,43 @@ export default function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-6 flex-shrink-0">
-          <TeacherDialog>
-            <button className="font-bold px-4 py-2 border border-theme-orange bg-transparent text-theme-orange hover:bg-theme-orange hover:text-white transition-colors rounded">
-              {t("Seja um professor Nitro Academy!")}
+          <div className="relative group">
+            <button className="font-bold px-4 py-2 border border-theme-orange bg-transparent text-theme-orange hover:bg-theme-orange hover:text-white transition-colors rounded flex items-center gap-2">
+              {t("Faça parte da Nitro")}
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
-          </TeacherDialog>
+            <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="py-2">
+                <Link href={`/${locale}/more-info-page`}>
+                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-center">
+                    <div className="font-semibold text-gray-900">
+                      {t("Seja uma escola Power by Nitro")}
+                    </div>
+                  </div>
+                </Link>
+                <div className="border-t border-gray-100"></div>
+                <TeacherDialog>
+                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-center">
+                    <div className="font-semibold text-gray-900">
+                      {t("Seja um professor Nitro Academy!")}
+                    </div>
+                  </div>
+                </TeacherDialog>
+              </div>
+            </div>
+          </div>
           <div className="relative">
             <Link href={`/${locale}/login`}>
               <Button
@@ -99,10 +131,18 @@ export default function Header() {
                   </Link>
                 ))}
                 <div className="mt-4">
+                  <div className="text-white text-lg py-2 font-semibold text-left">
+                    {t("Faça parte da Nitro")}
+                  </div>
+                  <Link href={`/${locale}/more-info-page`}>
+                    <div className="text-white/80 hover:text-[#03A9F4] transition-colors text-base py-2 pl-4 text-left">
+                      {t("Seja uma escola Power by Nitro")}
+                    </div>
+                  </Link>
                   <TeacherDialog>
-                    <button className="w-full font-bold px-4 py-2 border border-theme-orange bg-transparent text-theme-orange hover:bg-theme-orange hover:text-white transition-colors rounded">
+                    <div className="text-white/80 hover:text-[#03A9F4] transition-colors text-base py-2 pl-4 cursor-pointer text-left">
                       {t("Seja um professor Nitro Academy!")}
-                    </button>
+                    </div>
                   </TeacherDialog>
                 </div>
                 <div className="mt-4">

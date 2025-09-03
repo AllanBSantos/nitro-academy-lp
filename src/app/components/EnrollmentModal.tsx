@@ -13,23 +13,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { createStudent, fetchSchools, findStudentByCPF } from "@/lib/strapi";
-import { X } from "lucide-react";
+import { createStudent, fetchSchools } from "@/lib/strapi";
+// import { X } from "lucide-react";
 
 interface EnrollmentModalProps {
   courseName: string;
   selectedTime: string | null;
-  paymentLink?: string;
-  link_desconto: string | null;
-  cupons?: Array<{
-    id: number;
-    documentId: string;
-    nome: string;
-    url: string | null;
-    valido: boolean;
-    validade: string | null;
-    voucher_gratuito: boolean;
-  }>;
+  // paymentLink?: string;
+  // link_desconto: string | null;
+  // cupons?: Array<{
+  //   id: number;
+  //   documentId: string;
+  //   nome: string;
+  //   url: string | null;
+  //   valido: boolean;
+  //   validade: string | null;
+  //   voucher_gratuito: boolean;
+  // }>;
   courseId: number;
   scheduleIndex: number;
   disabled?: boolean;
@@ -42,12 +42,22 @@ interface School {
   nome: string;
 }
 
+interface Turma {
+  nome: string;
+}
+
+interface Aluno {
+  nome: string;
+  escola: string;
+  turma: string;
+}
+
 export default function EnrollmentModal({
   courseName,
   selectedTime,
-  paymentLink,
-  link_desconto,
-  cupons = [],
+  // paymentLink,
+  // link_desconto,
+  // cupons = [],
   courseId,
   scheduleIndex,
   disabled = false,
@@ -58,20 +68,24 @@ export default function EnrollmentModal({
   const [isMaterialComplementarModalOpen, setIsMaterialComplementarModalOpen] =
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
+  // const [couponCode, setCouponCode] = useState("");
   const [schools, setSchools] = useState<School[]>([]);
-  const [appliedCoupon, setAppliedCoupon] = useState<{
-    id: number;
-    documentId: string;
-    nome: string;
-    url: string | null;
-    valido: boolean;
-    validade: string | null;
-    voucher_gratuito: boolean;
-  } | null>(null);
-  const [couponError, setCouponError] = useState("");
+  const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [alunos, setAlunos] = useState<Aluno[]>([]);
+  const [isLoadingTurmas, setIsLoadingTurmas] = useState(false);
+  const [isLoadingAlunos, setIsLoadingAlunos] = useState(false);
+  const [showAlunosDropdown, setShowAlunosDropdown] = useState(false);
+  // const [appliedCoupon, setAppliedCoupon] = useState<{
+  //   id: number;
+  //   documentId: string;
+  //   nome: string;
+  //   url: string | null;
+  //   valido: boolean;
+  //   validade: string | null;
+  //   voucher_gratuito: boolean;
+  // } | null>(null);
+  // const [couponError, setCouponError] = useState("");
   const [isPartnerStudent, setIsPartnerStudent] = useState(false);
-  const [isSearchingStudent, setIsSearchingStudent] = useState(false);
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || "pt";
@@ -104,129 +118,150 @@ export default function EnrollmentModal({
     loadSchools();
   }, []);
 
-  const handleApplyCoupon = async () => {
-    setCouponError("");
-    const coupon = cupons.find(
-      (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
-    );
-
-    if (!coupon) {
-      setCouponError(modalT("errors.invalid_coupon"));
-      return;
-    }
-
-    const today = new Date();
-    let validade: Date | null = null;
-
-    if (coupon.validade) {
-      const [year, month, day] = coupon.validade.split("-").map(Number);
-      validade = new Date(year, month - 1, day, 23, 59, 59, 999);
-    }
-
-    if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
-      setCouponError(modalT("errors.expired_coupon"));
-      return;
-    }
-
-    if (couponCode.toLowerCase() === "voucher100") {
-      try {
-        const existingStudent = await findStudentByCPF(formData.studentCPF);
-        if (existingStudent?.usou_voucher) {
-          setCouponError(modalT("coupon.voucher_used"));
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking voucher usage:", error);
-      }
-    }
-
-    if (!coupon.url && !link_desconto && !coupon.voucher_gratuito) {
-      setCouponError(modalT("errors.invalid_coupon"));
-      return;
-    }
-
-    setAppliedCoupon(coupon);
-    setCouponCode("");
-  };
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponError("");
-  };
-
-  const searchPartnerStudent = async (studentName: string) => {
-    if (!studentName.trim()) {
+  // Função para carregar turmas quando uma escola é selecionada
+  const loadTurmas = async (escola: string) => {
+    if (!escola) {
+      setTurmas([]);
+      setAlunos([]);
+      setFormData((prev) => ({ ...prev, classNumber: "", studentName: "" }));
       setIsPartnerStudent(false);
-      setFormData((prev) => ({
-        ...prev,
-        partnerSchool: "",
-        classNumber: "",
-      }));
       return;
     }
 
-    setIsSearchingStudent(true);
+    setIsLoadingTurmas(true);
     try {
       const response = await fetch(
-        `/api/partner-students/search?name=${encodeURIComponent(studentName)}`
+        `/api/turmas?escola=${encodeURIComponent(escola)}`
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.count > 0) {
-          const student = data.data[0];
-
-          // Check if student already used voucher by searching in existing students
-          try {
-            const existingStudent = await findStudentByCPF(formData.studentCPF);
-
-            if (existingStudent?.usou_voucher) {
-              // Student already used voucher, don't treat as partner student
-              setIsPartnerStudent(false);
-              setFormData((prev) => ({
-                ...prev,
-                partnerSchool: "",
-                classNumber: "",
-              }));
-            } else {
-              // Student found and hasn't used voucher yet
-              setIsPartnerStudent(true);
-              setFormData((prev) => ({
-                ...prev,
-                partnerSchool: student.escola || "",
-                classNumber: student.turma || "",
-              }));
-            }
-          } catch (error) {
-            console.error("Error checking voucher usage:", error);
-            // If error checking, treat as partner student (safer approach)
-            setIsPartnerStudent(true);
-            setFormData((prev) => ({
-              ...prev,
-              partnerSchool: student.escola || "",
-              classNumber: student.turma || "",
-            }));
-          }
+        if (data.success) {
+          setTurmas(data.data.map((turma: string) => ({ nome: turma })));
         } else {
-          setIsPartnerStudent(false);
-          setFormData((prev) => ({
-            ...prev,
-            partnerSchool: "",
-            classNumber: "",
-          }));
+          setTurmas([]);
         }
+      } else {
+        console.error("Erro na resposta da API turmas:", response.status);
+        setTurmas([]);
       }
     } catch (error) {
-      console.error("Error searching partner student:", error);
-      setIsPartnerStudent(false);
-      setFormData((prev) => ({
-        ...prev,
-        partnerSchool: "",
-        classNumber: "",
-      }));
+      console.error("Erro ao carregar turmas:", error);
+      setTurmas([]);
     } finally {
-      setIsSearchingStudent(false);
+      setIsLoadingTurmas(false);
+    }
+
+    // Limpar dados dependentes
+    setAlunos([]);
+    setFormData((prev) => ({ ...prev, classNumber: "", studentName: "" }));
+    setIsPartnerStudent(false);
+  };
+
+  // Função para carregar alunos quando uma turma é selecionada
+  const loadAlunos = async (escola: string, turma: string, search?: string) => {
+    if (!escola || !turma) {
+      setAlunos([]);
+      setFormData((prev) => ({ ...prev, studentName: "" }));
+      setIsPartnerStudent(false);
+      setShowAlunosDropdown(false);
+      return;
+    }
+
+    // Só buscar se não há busca ou se a busca tem pelo menos 2 caracteres
+    if (search && search.length < 2) {
+      setAlunos([]);
+      setShowAlunosDropdown(false);
+      return;
+    }
+
+    setIsLoadingAlunos(true);
+    try {
+      let url = `/api/alunos-turma?escola=${encodeURIComponent(
+        escola
+      )}&turma=${encodeURIComponent(turma)}`;
+
+      if (search) {
+        url += `&search=${encodeURIComponent(search)}`;
+      }
+
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setAlunos(data.data);
+          setShowAlunosDropdown(data.data.length > 0);
+        } else {
+          setAlunos([]);
+          setShowAlunosDropdown(false);
+        }
+      } else {
+        setAlunos([]);
+        setShowAlunosDropdown(false);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar alunos:", error);
+      setAlunos([]);
+      setShowAlunosDropdown(false);
+    } finally {
+      setIsLoadingAlunos(false);
+    }
+
+    // Limpar dados dependentes se não há busca
+    if (!search) {
+      setFormData((prev) => ({ ...prev, studentName: "" }));
+      setIsPartnerStudent(false);
     }
   };
+
+  // const handleApplyCoupon = async () => {
+  //   setCouponError("");
+  //   const coupon = cupons.find(
+  //     (c) => c.nome.toLowerCase() === couponCode.toLowerCase()
+  //   );
+
+  //   if (!coupon) {
+  //     setCouponError(modalT("errors.invalid_coupon"));
+  //     return;
+  //   }
+
+  //   const today = new Date();
+  //   let validade: Date | null = null;
+
+  //   if (coupon.validade) {
+  //     const [year, month, day] = coupon.validade.split("-").map(Number);
+  //     validade = new Date(year, month - 1, day, 23, 59, 59, 999);
+  //   }
+
+  //   if (!coupon.valido || (validade && today.getTime() > validade.getTime())) {
+  //     setCouponError(modalT("errors.expired_coupon"));
+  //     return;
+  //   }
+
+  //   if (couponCode.toLowerCase() === "voucher100") {
+  //     try {
+  //       const existingStudent = await findStudentByCPF(formData.studentCPF);
+  //       if (existingStudent?.usou_voucher) {
+  //         setCouponError(modalT("coupon.voucher_used"));
+  //         return;
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking voucher usage:", error);
+  //     }
+  //   }
+
+  //   if (!coupon.url && !link_desconto && !coupon.voucher_gratuito) {
+  //     setCouponError(modalT("errors.invalid_coupon"));
+  //     return;
+  //   }
+
+  //   setAppliedCoupon(coupon);
+  //   setCouponCode("");
+  // };
+
+  // const handleRemoveCoupon = () => {
+  //   setAppliedCoupon(null);
+  //   setCouponError("");
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -349,8 +384,9 @@ export default function EnrollmentModal({
       const schoolName = isPartnerStudent ? formData.partnerSchool : undefined;
 
       // Verificar se o cupom é gratuito
-      const isVoucherGratuito =
-        appliedCoupon?.voucher_gratuito || isPartnerStudent;
+      // const isVoucherGratuito =
+      //   appliedCoupon?.voucher_gratuito || isPartnerStudent;
+      const isVoucherGratuito = isPartnerStudent;
 
       await createStudent({
         nome: formData.studentName,
@@ -376,26 +412,27 @@ export default function EnrollmentModal({
       setIsOpen(false);
 
       // Se há cupom aplicado com voucher_gratuito, mostrar modal de sucesso
-      if (appliedCoupon && appliedCoupon.voucher_gratuito) {
-        setIsSuccessModalOpen(true);
-        return;
-      }
+      // if (appliedCoupon && appliedCoupon.voucher_gratuito) {
+      //   setIsSuccessModalOpen(true);
+      //   return;
+      // }
 
       // Se há cupom aplicado, usar URL do cupom ou link_desconto como fallback
-      if (appliedCoupon) {
-        const redirectUrl = appliedCoupon.url || link_desconto;
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-          return;
-        }
-      }
+      // if (appliedCoupon) {
+      //   const redirectUrl = appliedCoupon.url || link_desconto;
+      //   if (redirectUrl) {
+      //     window.location.href = redirectUrl;
+      //     return;
+      //   }
+      // }
 
       if (isPartnerStudent) {
         setIsSuccessModalOpen(true);
         return;
-      } else if (paymentLink) {
-        window.location.href = paymentLink;
       }
+      // else if (paymentLink) {
+      //   window.location.href = paymentLink;
+      // }
     } catch (error) {
       console.error("Error in enrollment process:", error);
       alert(modalT("errors.submit"));
@@ -443,38 +480,168 @@ export default function EnrollmentModal({
             onKeyDown={handleKeyDown}
             className="space-y-6 p-4"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Student Information */}
-              <div className="space-y-4">
+            {/* School, Class and Student Selection */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="studentName">{modalT("student.name")}</Label>
-                  <div className="relative">
-                    <Input
-                      id="studentName"
-                      required
-                      value={formData.studentName}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          studentName: e.target.value,
-                        })
+                  <Label htmlFor="partnerSchool">
+                    {modalT("partner_school.label")}
+                  </Label>
+                  <select
+                    id="partnerSchool"
+                    required
+                    value={formData.partnerSchool}
+                    onChange={(e) => {
+                      const selectedSchool = e.target.value;
+                      setFormData((prev) => ({
+                        ...prev,
+                        partnerSchool: selectedSchool,
+                      }));
+                      loadTurmas(selectedSchool);
+                    }}
+                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
+                  >
+                    <option value="">
+                      {modalT("partner_school.placeholder")}
+                    </option>
+                    {schools.map((school) => (
+                      <option key={school.id} value={school.nome}>
+                        {school.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="classNumber">
+                    {modalT("class_number.label")}
+                  </Label>
+                  <select
+                    id="classNumber"
+                    required
+                    value={formData.classNumber}
+                    onChange={(e) => {
+                      const selectedTurma = e.target.value;
+                      setFormData((prev) => ({
+                        ...prev,
+                        classNumber: selectedTurma,
+                      }));
+                      // Limpar alunos quando trocar de turma
+                      setAlunos([]);
+                      setShowAlunosDropdown(false);
+                      setFormData((prev) => ({ ...prev, studentName: "" }));
+                      setIsPartnerStudent(false);
+                    }}
+                    disabled={!formData.partnerSchool || isLoadingTurmas}
+                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">
+                      {isLoadingTurmas
+                        ? "Carregando turmas..."
+                        : "Selecione uma turma"}
+                    </option>
+                    {turmas.map((turma, index) => (
+                      <option key={index} value={turma.nome}>
+                        {turma.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="studentName">{modalT("student.name")}</Label>
+                <div className="relative">
+                  <Input
+                    id="studentName"
+                    type="text"
+                    required
+                    value={formData.studentName}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prev) => ({
+                        ...prev,
+                        studentName: value,
+                      }));
+
+                      // Buscar alunos quando digitar 2 ou mais caracteres
+                      if (
+                        value.length >= 2 &&
+                        formData.partnerSchool &&
+                        formData.classNumber
+                      ) {
+                        loadAlunos(
+                          formData.partnerSchool,
+                          formData.classNumber,
+                          value
+                        );
+                      } else if (value.length < 2) {
+                        setAlunos([]);
+                        setShowAlunosDropdown(false);
                       }
-                      onBlur={(e) => searchPartnerStudent(e.target.value)}
-                      className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
-                    />
-                    {isSearchingStudent && (
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      </div>
-                    )}
-                  </div>
-                  {isPartnerStudent && (
-                    <p className="text-sm text-green-600 bg-green-50 p-2 rounded">
-                      {modalT("student_found")}
-                    </p>
+
+                      // Resetar status de aluno parceiro
+                      setIsPartnerStudent(false);
+                    }}
+                    onFocus={() => {
+                      if (
+                        formData.studentName.length >= 2 &&
+                        formData.partnerSchool &&
+                        formData.classNumber
+                      ) {
+                        setShowAlunosDropdown(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      // Delay para permitir clicar no dropdown
+                      setTimeout(() => setShowAlunosDropdown(false), 200);
+                    }}
+                    placeholder=""
+                    disabled={!formData.classNumber}
+                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+
+                  {/* Dropdown de alunos */}
+                  {showAlunosDropdown && alunos.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {alunos.map((aluno, index) => (
+                        <div
+                          key={index}
+                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              studentName: aluno.nome,
+                            }));
+                            setIsPartnerStudent(true);
+                            setShowAlunosDropdown(false);
+                            setAlunos([]);
+                          }}
+                        >
+                          {aluno.nome}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {isLoadingAlunos && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    </div>
                   )}
                 </div>
 
+                {isPartnerStudent && (
+                  <p className="text-sm text-green-600 bg-green-50 p-2 rounded">
+                    {modalT("student_found")}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Student Information */}
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="studentBirthDate">
                     {modalT("student.birthDate")}
@@ -598,25 +765,6 @@ export default function EnrollmentModal({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="guardianEmail">
-                    {modalT("guardian.email")}
-                  </Label>
-                  <Input
-                    id="guardianEmail"
-                    type="email"
-                    required
-                    value={formData.guardianEmail}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        guardianEmail: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
-                  />
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="guardianCPF">{modalT("guardian.cpf")}</Label>
                   <Input
                     id="guardianCPF"
@@ -642,6 +790,25 @@ export default function EnrollmentModal({
                       setFormData({
                         ...formData,
                         guardianPhone: e.target.value,
+                      })
+                    }
+                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="guardianEmail">
+                    {modalT("guardian.email")}
+                  </Label>
+                  <Input
+                    id="guardianEmail"
+                    type="email"
+                    required
+                    value={formData.guardianEmail}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        guardianEmail: e.target.value,
                       })
                     }
                     className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
@@ -743,8 +910,8 @@ export default function EnrollmentModal({
               )}
             </div>
 
-            {/* Coupon Section */}
-            <div className="space-y-4">
+            {/* Coupon Section - COMMENTED OUT FOR FUTURE USE */}
+            {/* <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
                 <div className="flex gap-2">
@@ -780,75 +947,13 @@ export default function EnrollmentModal({
                   </div>
                 )}
               </div>
-
-              {isPartnerStudent && (
-                <div className="space-y-2">
-                  <Label htmlFor="partnerSchool">
-                    {modalT("partner_school.label")}
-                  </Label>
-                  {isPartnerStudent ? (
-                    <input
-                      type="text"
-                      id="partnerSchool"
-                      value={formData.partnerSchool}
-                      readOnly
-                      className="w-full bg-gray-100 border-gray-200 rounded-md p-2 text-gray-600 cursor-not-allowed"
-                    />
-                  ) : (
-                    <select
-                      id="partnerSchool"
-                      required
-                      value={formData.partnerSchool}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          partnerSchool: e.target.value,
-                        })
-                      }
-                      className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
-                    >
-                      <option value="">
-                        {modalT("partner_school.placeholder")}
-                      </option>
-                      {schools.map((school) => (
-                        <option key={school.id} value={school.id}>
-                          {school.nome}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              )}
-
-              {isPartnerStudent && (
-                <div className="space-y-2">
-                  <Label htmlFor="classNumber">
-                    {modalT("class_number.label")}
-                  </Label>
-                  <Input
-                    id="classNumber"
-                    value={formData.classNumber}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        classNumber: e.target.value,
-                      })
-                    }
-                    disabled={isPartnerStudent}
-                    className={`bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] ${
-                      isPartnerStudent ? "opacity-75 cursor-not-allowed" : ""
-                    }`}
-                    placeholder={modalT("class_number.placeholder")}
-                  />
-                </div>
-              )}
-            </div>
+            </div> */}
 
             <Button
               type="submit"
               id="enrollment-button-modal"
-              className="w-full bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold"
-              disabled={isLoading}
+              className="w-full bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading || !isPartnerStudent}
             >
               {isLoading ? modalT("loading") : modalT("enroll")}
             </Button>

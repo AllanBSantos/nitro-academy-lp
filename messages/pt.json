@@ -122,7 +122,7 @@
     "Evento Presencial": "Evento Presencial",
     "Semana intensiva anual para integração e networking familiar": "Semana intensiva anual para integração e networking familiar",
     "Conteúdo Variado": "Conteúdo Variado",
-    "Mais de 10 projetos para explorar": "Mais de 10 projetos para explorar."
+    "Mais de 20 projetos para explorar": "Mais de 20 projetos para explorar."
   },
   "HowItWorks": {
     "title": "Como funciona?",
@@ -176,7 +176,9 @@
     "Exemplos de projetos já estruturados na Nitro Academy:": "Exemplos de projetos já estruturados na Nitro Academy:",
     "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico": "Estagiando como Youtuber, Fazendo sua Primeira Venda Online, Criando seu Próprio Perfume, Criando um Roteiro Cinematográfico",
     "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores": "Somos uma escola online de projetos de iniciação vocacional e estamos em busca de profissionais apaixonados por educação e que tenham experiência prática em suas áreas profissionais para atuar como mentores.",
-    "Faça parte do nosso time": "Faça parte do nosso time"
+    "Faça parte do nosso time": "Faça parte do nosso time",
+    "Faça parte da Nitro": "Faça parte da Nitro",
+    "Seja uma escola Power by Nitro": "Seja uma escola Power by Nitro"
   },
   "AboutUs": {
     "title": "Sobre Nós",
@@ -518,7 +520,8 @@
     "level": "Nível",
     "language": "Idioma",
     "see_classes": "Veja todas as turmas",
-    "see_classes_mobile": "Ver turmas"
+    "see_classes_mobile": "Ver turmas",
+    "course_info": "Informações do curso"
   },
   "FAQ": {
     "title": "Perguntas Frequentes",
