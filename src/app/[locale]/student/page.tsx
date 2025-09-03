@@ -74,75 +74,23 @@ export default function StudentDashboard() {
           );
         }
 
-        // Buscar usuário para obter email
-        const userRes = await fetch(`${STRAPI_URL}/api/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Use the studentId directly from verify-role response
+        const studentId = roleData.studentId;
 
-        if (userRes.ok) {
-          const userData = await userRes.json();
-
-          // Buscar aluno por email do usuário
-          const userEmail = userData.email;
-          let studentFound = false;
-          let studentData = null;
-
-          // Buscar aluno por email (email_responsavel)
-          const emailStudentRes = await fetch(
-            `${STRAPI_URL}/api/alunos?filters[email_responsavel][$eq]=${userEmail}`,
-            {
-              headers: {
-                // Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (emailStudentRes.ok) {
-            const emailStudentResult = await emailStudentRes.json();
-            if (emailStudentResult.data && emailStudentResult.data.length > 0) {
-              studentFound = true;
-              studentData = emailStudentResult.data[0];
-            }
+        // Fetch student data using filter by ID
+        const studentRes = await fetch(
+          `${STRAPI_URL}/api/alunos?filters[id][$eq]=${studentId}&populate[cursos][populate]=*`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
+        );
 
-          // Se não encontrou por email, buscar entre todos os alunos
-          if (!studentFound) {
-            const allStudentsRes = await fetch(
-              `${STRAPI_URL}/api/alunos?populate[cursos][populate]=*`,
-              {
-                headers: {
-                  // Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-
-            if (allStudentsRes.ok) {
-              const allStudentsResult = await allStudentsRes.json();
-
-              // Encontrar aluno que corresponde ao usuário
-              const matchingStudent = allStudentsResult.data?.find(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (student: any) => {
-                  return (
-                    student.email_responsavel === userEmail ||
-                    student.email_aluno === userEmail ||
-                    student.nome?.toLowerCase().includes("joao") ||
-                    student.id === 10
-                  );
-                }
-              );
-
-              if (matchingStudent) {
-                studentFound = true;
-                studentData = matchingStudent;
-              }
-            }
-          }
-
-          if (studentFound && studentData) {
-            setStudent(studentData);
+        if (studentRes.ok) {
+          const studentResult = await studentRes.json();
+          if (studentResult.data && studentResult.data.length > 0) {
+            setStudent(studentResult.data[0]);
           } else {
             setError(
               "Aluno não encontrado. Entre em contato com o administrador."
@@ -150,12 +98,15 @@ export default function StudentDashboard() {
           }
         } else {
           console.error(
-            "Failed to fetch user data:",
-            userRes.status,
-            userRes.statusText
+            "Failed to fetch student data:",
+            studentRes.status,
+            studentRes.statusText
           );
-          const errorText = await userRes.text();
+          const errorText = await studentRes.text();
           console.error("Error response:", errorText);
+          setError(
+            "Erro ao carregar dados do estudante. Entre em contato com o administrador."
+          );
         }
       } catch (error) {
         console.error("Error fetching student data:", error);

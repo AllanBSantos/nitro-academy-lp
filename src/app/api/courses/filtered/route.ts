@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Helper function to verify user role (same logic as verify-role API)
 async function verifyUserRole(token: string) {
   try {
     const tokenParts = token.split(".");
@@ -10,6 +9,7 @@ async function verifyUserRole(token: string) {
 
     const payload = JSON.parse(atob(tokenParts[1]));
     const userId = payload.id;
+    const userEmail = payload.email;
 
     if (!userId) {
       throw new Error("Token não contém ID do usuário");
@@ -22,7 +22,159 @@ async function verifyUserRole(token: string) {
       throw new Error("Configuração do servidor incompleta");
     }
 
-    // Get user data using admin token
+    // Check if this is a WhatsApp user (ID 999)
+    if (userId === 999 && userEmail && userEmail.includes("@whatsapp.user")) {
+      // This is a WhatsApp user, extract WhatsApp number
+      const whatsappNumber = userEmail.replace("@whatsapp.user", "");
+
+      // Try to find student by WhatsApp number (try both formats)
+      let studentResponse = await fetch(
+        `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // If not found, try without country code
+      if (studentResponse.ok) {
+        const studentData = await studentResponse.json();
+        if (studentData.data && studentData.data.length === 0) {
+          const withoutCountryCode = whatsappNumber.replace(/^55/, "");
+          studentResponse = await fetch(
+            `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
+      }
+
+      if (studentResponse.ok) {
+        const studentData = await studentResponse.json();
+        if (studentData.data && studentData.data.length > 0) {
+          // Student found
+          return {
+            userId: 999,
+            role: {
+              id: 4, // Student role ID
+              type: "student",
+              name: "Student",
+            },
+            studentId: studentData.data[0].id,
+            mentorId: null,
+            permissions: {},
+          };
+        }
+      }
+
+      // Try to find mentor by WhatsApp number (try both formats)
+      let mentorResponse = await fetch(
+        `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}&locale=pt-BR`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // If not found, try without country code
+      if (mentorResponse.ok) {
+        const mentorData = await mentorResponse.json();
+        if (mentorData.data && mentorData.data.length === 0) {
+          const withoutCountryCode = whatsappNumber.replace(/^55/, "");
+          mentorResponse = await fetch(
+            `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
+      }
+
+      if (mentorResponse.ok) {
+        const mentorData = await mentorResponse.json();
+        if (mentorData.data && mentorData.data.length > 0) {
+          // Mentor found
+          return {
+            userId: 999,
+            role: {
+              id: 3, // Mentor role ID
+              type: "mentor",
+              name: "Mentor",
+            },
+            mentorId: mentorData.data[0].id,
+            studentId: null,
+            permissions: {},
+          };
+        }
+      }
+
+      // Try to find admin by WhatsApp number (try both formats)
+      let adminResponse = await fetch(
+        `${STRAPI_URL}/api/admins?filters[celular][$eq]=${whatsappNumber}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // If not found, try without country code
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json();
+        if (adminData.data && adminData.data.length === 0) {
+          const withoutCountryCode = whatsappNumber.replace(/^55/, "");
+          adminResponse = await fetch(
+            `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
+      }
+
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json();
+        if (adminData.data && adminData.data.length > 0) {
+          // Admin found
+          return {
+            userId: 999,
+            role: {
+              id: 5, // Admin role ID
+              type: "admin",
+              name: "Admin",
+            },
+            studentId: null,
+            mentorId: null,
+            adminId: adminData.data[0].id,
+            permissions: {},
+          };
+        }
+      }
+
+      // If not found, return authenticated role
+      return {
+        userId: 999,
+        role: {
+          id: 1, // Authenticated role ID
+          type: "authenticated",
+          name: "Authenticated",
+        },
+        studentId: null,
+        mentorId: null,
+        permissions: {},
+      };
+    }
+
+    // Original logic for regular Strapi users
     const userResponse = await fetch(
       `${STRAPI_URL}/api/users/${userId}?populate=*`,
       {

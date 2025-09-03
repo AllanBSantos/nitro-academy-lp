@@ -39,7 +39,6 @@ export default function IdentifyPage() {
 
   const locale = params.locale as string;
 
-  // Fetch available roles on component mount
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -53,7 +52,6 @@ export default function IdentifyPage() {
       }
     };
 
-    // Check if user is already linked before showing identification screen
     const checkUserStatus = async () => {
       try {
         const token = Cookies.get("auth_token");
@@ -62,7 +60,6 @@ export default function IdentifyPage() {
           return;
         }
 
-        // Verify user role to check if already linked
         const response = await fetch("/api/auth/verify-role", {
           method: "POST",
           headers: {
@@ -74,7 +71,6 @@ export default function IdentifyPage() {
         if (response.ok) {
           const userData = await response.json();
 
-          // If user is already linked, redirect directly
           if (userData.studentId || userData.mentorId) {
             if (userData.role.type === "student") {
               const studentUrl =
@@ -90,7 +86,6 @@ export default function IdentifyPage() {
         }
       } catch (error) {
         console.error("Error checking user status:", error);
-        // Continue to show identification screen if there's an error
       }
     };
 
@@ -111,9 +106,46 @@ export default function IdentifyPage() {
         );
       }
 
-      // Get authentication token
+      // Get WhatsApp number from cookies (if available from login)
+      const whatsappNumber = Cookies.get("whatsapp_number");
+
+      // Get authentication token (if available from previous login)
       const token = Cookies.get("auth_token");
-      if (!token) {
+
+      // If we have WhatsApp number but no token, we need to create a user first
+      if (whatsappNumber && !token) {
+        // Create a new user with WhatsApp number
+        const createUserResponse = await fetch(
+          "/api/users/create-with-whatsapp",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              whatsapp: whatsappNumber,
+            }),
+          }
+        );
+
+        if (createUserResponse.ok) {
+          const userData = await createUserResponse.json();
+          // Store the new token
+          Cookies.set("auth_token", userData.token, {
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            expires: 7,
+          });
+        } else {
+          setError("Erro ao criar usuário");
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Get the token (either existing or newly created)
+      const currentToken = Cookies.get("auth_token");
+      if (!currentToken) {
         setError(t("auth_token_error"));
         setIsLoading(false);
         return;
@@ -124,7 +156,7 @@ export default function IdentifyPage() {
       let userEmail: string;
 
       try {
-        const tokenParts = token.split(".");
+        const tokenParts = currentToken.split(".");
         if (tokenParts.length !== 3) {
           throw new Error(t("invalid_token_error"));
         }
@@ -137,7 +169,7 @@ export default function IdentifyPage() {
         if (!userEmail) {
           const userResponse = await fetch(`${STRAPI_URL}/api/users/me`, {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${currentToken}`,
             },
           });
 
@@ -152,60 +184,79 @@ export default function IdentifyPage() {
         return;
       }
 
-      // Buscar por mentor primeiro (se CPF for fornecido)
+      // Buscar por mentor primeiro (por CPF ou WhatsApp)
+      let mentorRes;
       if (identifier) {
-        const mentorRes = await fetch(
+        // Try CPF first
+        mentorRes = await fetch(
           `${STRAPI_URL}/api/mentores?filters[cpf_id][$eq]=${identifier}&locale=pt-BR`,
           {
             headers: {
-              // Authorization: `Bearer ${token}`,
+              // Authorization: `Bearer ${currentToken}`,
             },
           }
         );
+      }
 
-        if (mentorRes.ok) {
-          const mentorData = await mentorRes.json();
+      // If not found by CPF and we have WhatsApp, try WhatsApp
+      if (
+        whatsappNumber &&
+        (!mentorRes ||
+          !mentorRes.ok ||
+          (await mentorRes.json()).data.length === 0)
+      ) {
+        mentorRes = await fetch(
+          `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}`,
+          {
+            headers: {
+              // Authorization: `Bearer ${currentToken}`,
+            },
+          }
+        );
+      }
 
-          if (mentorData.data && mentorData.data.length > 0) {
-            const mentor = mentorData.data[0];
+      if (mentorRes && mentorRes.ok) {
+        const mentorData = await mentorRes.json();
 
-            // Buscar role de mentor
-            const mentorRole = roles?.roles?.find(
-              (r: Role) => r.type === "mentor"
+        if (mentorData.data && mentorData.data.length > 0) {
+          const mentor = mentorData.data[0];
+
+          // Buscar role de mentor
+          const mentorRole = roles?.roles?.find(
+            (r: Role) => r.type === "mentor"
+          );
+          if (!mentorRole) {
+            setError(t("mentor_role_error"));
+            setIsLoading(false);
+            return;
+          }
+
+          // Vincular usuário ao mentor
+          const updateRes = await fetch("/api/users/update-role", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userId,
+              roleId: mentorRole.id,
+              mentorId: mentor.id,
+            }),
+          });
+
+          if (updateRes.ok) {
+            const adminUrl = locale === "pt" ? "/pt/admin" : "/en/admin";
+            router.replace(adminUrl);
+            return;
+          } else {
+            const errorData = await updateRes.json().catch(() => ({}));
+            setError(
+              t("update_role_error", {
+                error: errorData.error || "Erro desconhecido",
+              })
             );
-            if (!mentorRole) {
-              setError(t("mentor_role_error"));
-              setIsLoading(false);
-              return;
-            }
-
-            // Vincular usuário ao mentor
-            const updateRes = await fetch("/api/users/update-role", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userId: userId,
-                roleId: mentorRole.id,
-                mentorId: mentor.id,
-              }),
-            });
-
-            if (updateRes.ok) {
-              const adminUrl = locale === "pt" ? "/pt/admin" : "/en/admin";
-              router.replace(adminUrl);
-              return;
-            } else {
-              const errorData = await updateRes.json().catch(() => ({}));
-              setError(
-                t("update_role_error", {
-                  error: errorData.error || "Erro desconhecido",
-                })
-              );
-              setIsLoading(false);
-              return;
-            }
+            setIsLoading(false);
+            return;
           }
         }
       }
@@ -218,13 +269,28 @@ export default function IdentifyPage() {
           `${STRAPI_URL}/api/alunos?filters[cpf_aluno][$eq]=${identifier}`,
           {
             headers: {
-              // Authorization: `Bearer ${token}`,
+              // Authorization: `Bearer ${currentToken}`,
             },
           }
         );
       }
 
-      // Verificar se encontrou aluno por CPF
+      if (
+        whatsappNumber &&
+        (!studentRes ||
+          !studentRes.ok ||
+          (await studentRes.json()).data.length === 0)
+      ) {
+        studentRes = await fetch(
+          `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
+          {
+            headers: {
+              // Authorization: `Bearer ${currentToken}`,
+            },
+          }
+        );
+      }
+
       let studentFound = false;
       let studentData = null;
 
@@ -233,13 +299,12 @@ export default function IdentifyPage() {
         studentFound = studentData.data && studentData.data.length > 0;
       }
 
-      // Se não encontrou por CPF, buscar por email do usuário logado
       if (!studentFound && userEmail) {
         const emailStudentRes = await fetch(
           `${STRAPI_URL}/api/alunos?filters[email_responsavel][$eq]=${userEmail}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${currentToken}`,
             },
           }
         );
@@ -254,18 +319,15 @@ export default function IdentifyPage() {
         }
       }
 
-      // Se não encontrou aluno em nenhuma busca
       if (!studentFound) {
         setError(t("not_found_error"));
         setIsLoading(false);
         return;
       }
 
-      // Processar o aluno encontrado
       if (studentData && studentData.data && studentData.data.length > 0) {
         const student = studentData.data[0];
 
-        // Buscar role de student
         const studentRole = roles?.roles?.find(
           (r: Role) => r.type === "student"
         );
@@ -274,8 +336,6 @@ export default function IdentifyPage() {
           setIsLoading(false);
           return;
         }
-
-        // Vincular usuário ao aluno
 
         const updateRes = await fetch("/api/users/update-role", {
           method: "POST",
@@ -292,10 +352,8 @@ export default function IdentifyPage() {
         if (updateRes.ok) {
           await updateRes.json();
 
-          // Aguardar um momento para a atualização propagar
           await new Promise((resolve) => setTimeout(resolve, 1000));
 
-          // Redirecionar para o dashboard de student
           const studentUrl = locale === "pt" ? "/pt/student" : "/en/student";
           router.replace(studentUrl);
           return;
@@ -311,11 +369,12 @@ export default function IdentifyPage() {
         }
       }
 
-      // If not found anywhere
       setError(t("not_found_error"));
-    } catch {
+      setIsLoading(false);
+      return;
+    } catch (error) {
+      console.error("Error in identification:", error);
       setError(t("generic_error"));
-    } finally {
       setIsLoading(false);
     }
   };
