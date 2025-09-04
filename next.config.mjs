@@ -42,6 +42,10 @@ const nextConfig = {
         source: '/api/auth/:path*',
         destination: `${zazuUrl}/auth/:path*`,
       },
+      {
+        source: '/api/auth-code/:path*',
+        destination: `${zazuUrl}/auth-code/:path*`,
+      },
     ];
   },
   images: {

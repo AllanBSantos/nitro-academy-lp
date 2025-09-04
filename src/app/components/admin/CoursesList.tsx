@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchCourses } from "@/lib/strapi";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -15,6 +14,7 @@ import { Button } from "@/app/components/ui/button";
 import { Download } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import Cookies from "js-cookie";
 
 interface CourseStats {
   courseId: number;
@@ -23,6 +23,14 @@ interface CourseStats {
   studentCount: number;
   totalSpots: number;
   availableSpots: number;
+}
+
+interface Course {
+  id: number;
+  titulo: string;
+  documentId: string;
+  alunos: unknown[];
+  cronograma: unknown[];
 }
 
 export function CoursesList() {
@@ -38,13 +46,43 @@ export function CoursesList() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const courses = await fetchCourses();
+        const token = Cookies.get("auth_token");
+        if (!token) {
+          setError("Token de autenticação não encontrado");
+          setLoading(false);
+          return;
+        }
+
+        // Use secure filtered courses API
+        const response = await fetch("/api/courses/filtered", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+
+          // Check if mentor needs identification
+          if (response.status === 403 && errorData.needsIdentification) {
+            router.replace(`/${params.locale}/identify`);
+            return;
+          }
+
+          setError(errorData.error || "Erro ao carregar cursos");
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
 
         const maxStudentsPerClass = parseInt(
           process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
         );
 
-        const stats = courses.map((course) => {
+        const stats = data.courses.map((course: Course) => {
           const studentCount = Array.isArray(course.alunos)
             ? course.alunos.length
             : 0;
@@ -73,7 +111,7 @@ export function CoursesList() {
     };
 
     loadData();
-  }, [t]);
+  }, [t, params.locale, router]);
 
   const handleCourseClick = (courseId: number, documentId: string) => {
     router.push(`/${params.locale}/admin/courses/${documentId}`);
