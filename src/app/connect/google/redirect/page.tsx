@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
-export default function GoogleRedirectGlobalPage() {
+function GoogleRedirectGlobalContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string>("");
@@ -286,5 +286,21 @@ export default function GoogleRedirectGlobalPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function GoogleRedirectGlobalPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-md text-center">
+            <div className="text-gray-700">Carregando...</div>
+          </div>
+        </div>
+      }
+    >
+      <GoogleRedirectGlobalContent />
+    </Suspense>
   );
 }

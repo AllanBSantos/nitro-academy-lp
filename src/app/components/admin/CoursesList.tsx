@@ -111,7 +111,7 @@ export function CoursesList() {
     };
 
     loadData();
-  }, [t]);
+  }, [t, params.locale, router]);
 
   const handleCourseClick = (courseId: number, documentId: string) => {
     router.push(`/${params.locale}/admin/courses/${documentId}`);

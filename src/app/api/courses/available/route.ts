@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url);
-    const locale = url.searchParams.get("locale") || "pt-BR";
+    // Use searchParams from NextRequest instead of URL constructor
+    const locale = request.nextUrl.searchParams.get("locale") || "pt-BR";
     const maxPerClass = Number(
       process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || 15
     );
