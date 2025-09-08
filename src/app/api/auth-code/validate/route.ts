@@ -91,309 +91,294 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
+    // Log Zazu response for debugging
+    console.log("Zazu API response:", {
+      userType: data.userType,
+      environment: process.env.NODE_ENV,
+      whatsapp: formattedWhatsapp,
+    });
+
     // For now, create a simple JWT token for WhatsApp users
     // This will allow them to access the protected routes
     const simpleJWT = createSimpleJWT(formattedWhatsapp);
 
     // Determine user type by searching in database first, then fallback to Zazu response
-    let userType = data.userType || "new_user";
+    const userType = data.userType || "new_user";
 
-    // If Zazu didn't provide a specific user type, try to determine it from database
-    if (userType === "new_user" || !userType) {
-      // Try to find admin first
-      const adminResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
+    // Always try to determine user type from database, regardless of Zazu response
+    // This ensures consistency between local and production environments
+    // We need to search in database even when Zazu returns a specific userType
+    // to confirm the user exists and set isLinked properly
+
+    // Try to find admin first
+    const adminResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (adminResponse.ok) {
+      const adminData = await adminResponse.json();
+      if (adminData.data && adminData.data.length > 0) {
+        // Admin found, return with admin info immediately
+        console.log("Found admin user:", {
+          whatsapp: formattedWhatsapp,
+          adminId: adminData.data[0].id,
+        });
+        return NextResponse.json({
+          success: true,
+          message: "Login realizado com sucesso",
+          data: {
+            whatsapp: formattedWhatsapp,
+            userType: "admin",
+            token: simpleJWT,
+            user: {
+              id: 999,
+              username: `user_${formattedWhatsapp}`,
+              email: `${formattedWhatsapp}@whatsapp.user`,
+            },
+            isLinked: true,
+            linkedType: "admin",
+            linkedId: adminData.data[0].id,
           },
-        }
-      );
-
-      if (adminResponse.ok) {
-        const adminData = await adminResponse.json();
-        if (adminData.data && adminData.data.length > 0) {
-          userType = "admin";
-        }
-      }
-
-      // If not admin, try to find mentor
-      if (userType === "new_user") {
-        const mentorResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (mentorResponse.ok) {
-          const mentorData = await mentorResponse.json();
-          if (mentorData.data && mentorData.data.length > 0) {
-            userType = "mentor";
-          }
-        }
-      }
-
-      // If not mentor, try to find student
-      if (userType === "new_user") {
-        const studentResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (studentResponse.ok) {
-          const studentData = await studentResponse.json();
-          if (studentData.data && studentData.data.length > 0) {
-            userType = "student";
-          }
-        }
-      }
-
-      // If still not found, try without country code
-      if (userType === "new_user") {
-        const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
-
-        // Try admin without country code
-        const adminResponse2 = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (adminResponse2.ok) {
-          const adminData = await adminResponse2.json();
-          if (adminData.data && adminData.data.length > 0) {
-            userType = "admin";
-          }
-        }
-
-        // Try mentor without country code
-        if (userType === "new_user") {
-          const mentorResponse2 = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (mentorResponse2.ok) {
-            const mentorData = await mentorResponse2.json();
-            if (mentorData.data && mentorData.data.length > 0) {
-              userType = "mentor";
-            }
-          }
-        }
-
-        // Try student without country code
-        if (userType === "new_user") {
-          const studentResponse2 = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (studentResponse2.ok) {
-            const studentData = await studentResponse2.json();
-            if (studentData.data && studentData.data.length > 0) {
-              userType = "student";
-            }
-          }
-        }
+        });
       }
     }
 
-    // If we have a specific user type (not new_user), try to link automatically
-    if (userType !== "new_user") {
-      try {
-        // Try to find student by WhatsApp number (try both formats)
-        if (userType === "student") {
-          // Try with country code first
-          let studentResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+    // Try to find mentor
+    const mentorResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-          // If not found, try without country code
-          if (studentResponse.ok) {
-            const studentData = await studentResponse.json();
-            if (studentData.data && studentData.data.length === 0) {
-              const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
-              studentResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-            }
-          }
-
-          if (studentResponse.ok) {
-            const studentData = await studentResponse.json();
-            if (studentData.data && studentData.data.length > 0) {
-              // Student found, return with student info
-              return NextResponse.json({
-                success: true,
-                message: "Login realizado com sucesso",
-                data: {
-                  whatsapp: formattedWhatsapp,
-                  userType: userType,
-                  token: simpleJWT,
-                  user: {
-                    id: 999,
-                    username: `user_${formattedWhatsapp}`,
-                    email: `${formattedWhatsapp}@whatsapp.user`,
-                  },
-                  isLinked: true,
-                  linkedType: "student",
-                  linkedId: studentData.data[0].id,
-                },
-              });
-            }
-          }
-        }
-
-        // Try to find mentor by WhatsApp number (try both formats)
-        if (userType === "mentor") {
-          // Try with country code first
-          let mentorResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          // If not found, try without country code
-          if (mentorResponse.ok) {
-            const mentorData = await mentorResponse.json();
-            if (mentorData.data && mentorData.data.length === 0) {
-              const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
-              mentorResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-            }
-          }
-
-          if (mentorResponse.ok) {
-            const mentorData = await mentorResponse.json();
-            if (mentorData.data && mentorData.data.length > 0) {
-              // Mentor found, return with mentor info
-              return NextResponse.json({
-                success: true,
-                message: "Login realizado com sucesso",
-                data: {
-                  whatsapp: formattedWhatsapp,
-                  userType: userType,
-                  token: simpleJWT,
-                  user: {
-                    id: 999,
-                    username: `user_${formattedWhatsapp}`,
-                    email: `${formattedWhatsapp}@whatsapp.user`,
-                  },
-                  isLinked: true,
-                  linkedType: "mentor",
-                  linkedId: mentorData.data[0].id,
-                },
-              });
-            }
-          }
-        }
-
-        // Try to find admin by WhatsApp number (try both formats)
-        if (userType === "admin") {
-          let adminResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          // If not found, try without country code
-          if (adminResponse.ok) {
-            const adminData = await adminResponse.json();
-            if (adminData.data && adminData.data.length === 0) {
-              const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
-              adminResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-            }
-          }
-
-          if (adminResponse.ok) {
-            const adminData = await adminResponse.json();
-            if (adminData.data && adminData.data.length > 0) {
-              // Admin found, return with admin info
-              return NextResponse.json({
-                success: true,
-                message: "Login realizado com sucesso",
-                data: {
-                  whatsapp: formattedWhatsapp,
-                  userType: userType,
-                  token: simpleJWT,
-                  user: {
-                    id: 999,
-                    username: `user_${formattedWhatsapp}`,
-                    email: `${formattedWhatsapp}@whatsapp.user`,
-                  },
-                  isLinked: true,
-                  linkedType: "admin",
-                  linkedId: adminData.data[0].id,
-                },
-              });
-            }
-          }
-        }
-      } catch (linkError) {
-        console.error("Error linking user automatically:", linkError);
-        // Continue with normal response if linking fails
+    if (mentorResponse.ok) {
+      const mentorData = await mentorResponse.json();
+      if (mentorData.data && mentorData.data.length > 0) {
+        // Mentor found, return with mentor info immediately
+        console.log("Found mentor user:", {
+          whatsapp: formattedWhatsapp,
+          mentorId: mentorData.data[0].id,
+        });
+        return NextResponse.json({
+          success: true,
+          message: "Login realizado com sucesso",
+          data: {
+            whatsapp: formattedWhatsapp,
+            userType: "mentor",
+            token: simpleJWT,
+            user: {
+              id: 999,
+              username: `user_${formattedWhatsapp}`,
+              email: `${formattedWhatsapp}@whatsapp.user`,
+            },
+            isLinked: true,
+            linkedType: "mentor",
+            linkedId: mentorData.data[0].id,
+          },
+        });
       }
     }
+
+    // Try to find student
+    const studentResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (studentResponse.ok) {
+      const studentData = await studentResponse.json();
+      console.log("Student search result:", {
+        whatsapp: formattedWhatsapp,
+        found: studentData.data?.length > 0,
+        count: studentData.data?.length || 0,
+        data: studentData.data,
+      });
+      if (studentData.data && studentData.data.length > 0) {
+        // Student found, return with student info immediately
+        console.log("Student found, returning linked response");
+        return NextResponse.json({
+          success: true,
+          message: "Login realizado com sucesso",
+          data: {
+            whatsapp: formattedWhatsapp,
+            userType: "student",
+            token: simpleJWT,
+            user: {
+              id: 999,
+              username: `user_${formattedWhatsapp}`,
+              email: `${formattedWhatsapp}@whatsapp.user`,
+            },
+            isLinked: true,
+            linkedType: "student",
+            linkedId: studentData.data[0].id,
+          },
+        });
+      } else {
+        console.log(
+          "Student not found in database, will return default response"
+        );
+      }
+    }
+
+    // If still not found, try without country code
+    const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
+
+    // Try admin without country code
+    const adminResponse2 = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (adminResponse2.ok) {
+      const adminData = await adminResponse2.json();
+      if (adminData.data && adminData.data.length > 0) {
+        console.log("Found admin user (without country code):", {
+          whatsapp: withoutCountryCode,
+          adminId: adminData.data[0].id,
+        });
+        return NextResponse.json({
+          success: true,
+          message: "Login realizado com sucesso",
+          data: {
+            whatsapp: formattedWhatsapp,
+            userType: "admin",
+            token: simpleJWT,
+            user: {
+              id: 999,
+              username: `user_${formattedWhatsapp}`,
+              email: `${formattedWhatsapp}@whatsapp.user`,
+            },
+            isLinked: true,
+            linkedType: "admin",
+            linkedId: adminData.data[0].id,
+          },
+        });
+      }
+    }
+
+    // Try mentor without country code
+    const mentorResponse2 = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (mentorResponse2.ok) {
+      const mentorData = await mentorResponse2.json();
+      if (mentorData.data && mentorData.data.length > 0) {
+        console.log("Found mentor user (without country code):", {
+          whatsapp: withoutCountryCode,
+          mentorId: mentorData.data[0].id,
+        });
+        return NextResponse.json({
+          success: true,
+          message: "Login realizado com sucesso",
+          data: {
+            whatsapp: formattedWhatsapp,
+            userType: "mentor",
+            token: simpleJWT,
+            user: {
+              id: 999,
+              username: `user_${formattedWhatsapp}`,
+              email: `${formattedWhatsapp}@whatsapp.user`,
+            },
+            isLinked: true,
+            linkedType: "mentor",
+            linkedId: mentorData.data[0].id,
+          },
+        });
+      }
+    }
+
+    // Try student without country code
+    const studentResponse2 = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (studentResponse2.ok) {
+      const studentData = await studentResponse2.json();
+      if (studentData.data && studentData.data.length > 0) {
+        console.log("Found student user (without country code):", {
+          whatsapp: withoutCountryCode,
+          studentId: studentData.data[0].id,
+        });
+        return NextResponse.json({
+          success: true,
+          message: "Login realizado com sucesso",
+          data: {
+            whatsapp: formattedWhatsapp,
+            userType: "student",
+            token: simpleJWT,
+            user: {
+              id: 999,
+              username: `user_${formattedWhatsapp}`,
+              email: `${formattedWhatsapp}@whatsapp.user`,
+            },
+            isLinked: true,
+            linkedType: "student",
+            linkedId: studentData.data[0].id,
+          },
+        });
+      }
+    }
+
+    // Log final user type determination
+    console.log("Final user type determination:", {
+      whatsapp: formattedWhatsapp,
+      zazuUserType: data.userType,
+      finalUserType: userType,
+      environment: process.env.NODE_ENV,
+    });
 
     // Default response (for new_user or if linking failed)
+    // If we still couldn't determine user type, it means the user is truly new
+    console.log("Returning default response:", {
+      whatsapp: formattedWhatsapp,
+      userType,
+      zazuUserType: data.userType,
+      environment: process.env.NODE_ENV,
+    });
+
     return NextResponse.json({
       success: true,
       message: "Código validado com sucesso",
       data: {
         whatsapp: formattedWhatsapp,
-        userType: userType,
+        userType: userType === "new_user" ? "new_user" : userType,
         token: simpleJWT,
         user: {
           id: 999, // Temporary ID for WhatsApp users
           username: `user_${formattedWhatsapp}`,
           email: `${formattedWhatsapp}@whatsapp.user`,
+        },
+        // Add debug info for production troubleshooting
+        debug: {
+          zazuUserType: data.userType,
+          determinedUserType: userType,
+          environment: process.env.NODE_ENV,
         },
       },
     });
