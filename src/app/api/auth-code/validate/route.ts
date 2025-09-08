@@ -105,17 +105,17 @@ export async function POST(request: NextRequest) {
     // This will allow them to access the protected routes
     const simpleJWT = createSimpleJWT(formattedWhatsapp);
 
-    // Determine user type by searching in database first, then fallback to Zazu response
-    let userType = data.userType || "new_user";
+    // Determine user type from Zazu response
+    let userType = data.data?.userType;
 
     console.log("User type determination:", {
-      zazuUserType: data.userType,
+      zazuUserType: data.data?.userType,
       determinedUserType: userType,
-      willSearchDatabase: userType === "new_user" || !userType,
+      willSearchDatabase: !userType,
     });
 
     // If Zazu didn't provide a specific user type, try to determine it from database
-    if (userType === "new_user" || !userType) {
+    if (!userType) {
       console.log("Searching database for user type...");
       // Try to find admin first
       const adminResponse = await fetch(
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       }
 
       // If not admin, try to find mentor
-      if (userType === "new_user") {
+      if (!userType) {
         const mentorResponse = await fetch(
           `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
           {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       }
 
       // If not mentor, try to find student
-      if (userType === "new_user") {
+      if (!userType) {
         const studentResponse = await fetch(
           `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
           {
@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Try mentor without country code
-        if (userType === "new_user") {
+        if (!userType) {
           const mentorResponse2 = await fetch(
             `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
             {
@@ -213,7 +213,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Try student without country code
-        if (userType === "new_user") {
+        if (!userType) {
           const studentResponse2 = await fetch(
             `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
             {
@@ -402,18 +402,18 @@ export async function POST(request: NextRequest) {
     // Log final user type determination
     console.log("Final user type determination:", {
       whatsapp: formattedWhatsapp,
-      zazuUserType: data.userType,
+      zazuUserType: data.data?.userType,
       finalUserType: userType,
       environment: process.env.NODE_ENV,
     });
 
-    // Default response (for new_user or if linking failed)
+    // Default response (if user type not found)
     return NextResponse.json({
       success: true,
       message: "Código validado com sucesso",
       data: {
         whatsapp: formattedWhatsapp,
-        userType: userType,
+        userType: userType || "unknown",
         token: simpleJWT,
         user: {
           id: 999, // Temporary ID for WhatsApp users
