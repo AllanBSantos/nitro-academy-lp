@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Try to find mentor by WhatsApp number (try WITHOUT country code first)
-        let mentorResponse = await fetch(
+        const mentorResponse = await fetch(
           `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
           {
             headers: {
@@ -170,11 +170,15 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        // If not found, try WITH country code
+        let mentorData = null;
+
+        // Parse the response data
         if (mentorResponse.ok) {
-          const mentorData = await mentorResponse.json();
+          mentorData = await mentorResponse.json();
+
+          // If not found, try WITH country code
           if (mentorData.data && mentorData.data.length === 0) {
-            mentorResponse = await fetch(
+            const newMentorResponse = await fetch(
               `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}&locale=pt-BR`,
               {
                 headers: {
@@ -182,11 +186,14 @@ export async function POST(request: NextRequest) {
                 },
               }
             );
+
+            if (newMentorResponse.ok) {
+              mentorData = await newMentorResponse.json();
+            }
           }
         }
 
-        if (mentorResponse.ok) {
-          const mentorData = await mentorResponse.json();
+        if (mentorData) {
           if (mentorData.data && mentorData.data.length > 0) {
             // Mentor found
             return NextResponse.json({
@@ -204,7 +211,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Try to find admin by WhatsApp number (try WITHOUT country code first)
-        let adminResponse = await fetch(
+        const adminResponse = await fetch(
           `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
           {
             headers: {
@@ -213,11 +220,15 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        // If not found, try WITH country code
+        let adminData = null;
+
+        // Parse the response data
         if (adminResponse.ok) {
-          const adminData = await adminResponse.json();
+          adminData = await adminResponse.json();
+
+          // If not found, try WITH country code
           if (adminData.data && adminData.data.length === 0) {
-            adminResponse = await fetch(
+            const newAdminResponse = await fetch(
               `${STRAPI_URL}/api/admins?filters[celular][$eq]=${whatsappNumber}`,
               {
                 headers: {
@@ -225,11 +236,14 @@ export async function POST(request: NextRequest) {
                 },
               }
             );
+
+            if (newAdminResponse.ok) {
+              adminData = await newAdminResponse.json();
+            }
           }
         }
 
-        if (adminResponse.ok) {
-          const adminData = await adminResponse.json();
+        if (adminData) {
           if (adminData.data && adminData.data.length > 0) {
             // Admin found
             return NextResponse.json({
