@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         // Try WITHOUT country code first (production has phones without country code)
         const withoutCountryCode = whatsappNumber.replace(/^55/, "");
 
-        let studentResponse = await fetch(
+        const studentResponse = await fetch(
           `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
           {
             headers: {
