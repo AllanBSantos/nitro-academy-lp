@@ -373,6 +373,34 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAdminAdmin extends Struct.CollectionTypeSchema {
+  collectionName: 'admins';
+  info: {
+    description: '';
+    displayName: 'Admin';
+    pluralName: 'admins';
+    singularName: 'admin';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    celular: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::admin.admin'> &
+      Schema.Attribute.Private;
+    nome: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiAlunoEscolaParceiraAlunoEscolaParceira
   extends Struct.CollectionTypeSchema {
   collectionName: 'alunos_escola_parceira';
@@ -449,6 +477,39 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     usou_voucher: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface ApiAulaAula extends Struct.CollectionTypeSchema {
+  collectionName: 'aulas';
+  info: {
+    description: '';
+    displayName: 'aula';
+    pluralName: 'aulas';
+    singularName: 'aula';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    alunos: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'>;
+    arquivos: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
+    aula_status: Schema.Attribute.Enumeration<
+      ['INICIADA', 'CONLU\u00CDDA ', 'EM ANDAMENTO', 'PENDENTE']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    curso: Schema.Attribute.Relation<'oneToOne', 'api::curso.curso'>;
+    data: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    link_aula: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::aula.aula'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -786,6 +847,8 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    celular: Schema.Attribute.String;
+    cpf_id: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1409,7 +1472,6 @@ export interface PluginUsersPermissionsUser
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1429,6 +1491,7 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    mentor: Schema.Attribute.Relation<'oneToOne', 'api::mentor.mentor'>;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -1441,6 +1504,7 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    student: Schema.Attribute.Relation<'oneToOne', 'api::aluno.aluno'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1463,8 +1527,10 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::admin.admin': ApiAdminAdmin;
       'api::aluno-escola-parceira.aluno-escola-parceira': ApiAlunoEscolaParceiraAlunoEscolaParceira;
       'api::aluno.aluno': ApiAlunoAluno;
+      'api::aula.aula': ApiAulaAula;
       'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::campanha.campanha': ApiCampanhaCampanha;
       'api::cupom.cupom': ApiCupomCupom;

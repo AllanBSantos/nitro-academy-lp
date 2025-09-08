@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "aulas",
+  "info": {
+    "singularName": "aula",
+    "pluralName": "aulas",
+    "displayName": "aula",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "data": {
+      "type": "datetime",
+      "required": true
+    },
+    "aula_status": {
+      "type": "enumeration",
+      "enum": [
+        "INICIADA",
+        "CONLUÍDA ",
+        "EM ANDAMENTO",
+        "PENDENTE"
+      ]
+    },
+    "alunos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::aluno.aluno"
+    },
+    "arquivos": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "curso": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::curso.curso"
+    },
+    "link_aula": {
+      "type": "string"
+    }
+  }
+}

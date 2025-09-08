@@ -117,6 +117,12 @@
         "França"
       ],
       "default": "Brasil"
+    },
+    "cpf_id": {
+      "type": "string"
+    },
+    "celular": {
+      "type": "string"
     }
   }
 }

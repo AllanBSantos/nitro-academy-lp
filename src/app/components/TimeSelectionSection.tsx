@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -65,7 +65,7 @@ export default function TimeSelectionSection({
     return `${day}/${month}/${year.slice(-2)}`;
   };
 
-  const schedules = course.cronograma || [];
+  const schedules = useMemo(() => course.cronograma || [], [course.cronograma]);
 
   // Seleção automática quando há apenas uma opção de cronograma
   useEffect(() => {

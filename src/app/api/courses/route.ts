@@ -4,8 +4,8 @@ const STRAPI_API_URL = process.env.STRAPI_API_URL || "http://localhost:1337";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const locale = searchParams.get("locale") || "pt-BR";
+    // Use searchParams from NextRequest instead of URL constructor
+    const locale = request.nextUrl.searchParams.get("locale") || "pt-BR";
 
     // URL para buscar cursos com cronograma
     const url = `${STRAPI_API_URL}/api/cursos?locale=${locale}&populate=cronograma&fields[0]=id&fields[1]=titulo&sort=createdAt:desc`;
