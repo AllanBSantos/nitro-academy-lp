@@ -93,17 +93,20 @@ export async function POST(request: NextRequest) {
           fullUrl: `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
         });
 
-        // If not found, try WITH country code
-        if (studentResponse.ok) {
-          const studentData = await studentResponse.json();
+        let studentData = null;
 
+        // Parse the response data
+        if (studentResponse.ok) {
+          studentData = await studentResponse.json();
+
+          // If not found, try WITH country code
           if (studentData.data && studentData.data.length === 0) {
             console.log("CRITICAL DEBUG: Trying with country code", {
               whatsappNumber,
               searchUrl: `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
             });
 
-            studentResponse = await fetch(
+            const newStudentResponse = await fetch(
               `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
               {
                 headers: {
@@ -111,12 +114,14 @@ export async function POST(request: NextRequest) {
                 },
               }
             );
+
+            if (newStudentResponse.ok) {
+              studentData = await newStudentResponse.json();
+            }
           }
         }
 
-        if (studentResponse.ok) {
-          const studentData = await studentResponse.json();
-
+        if (studentData) {
           console.log("CRITICAL DEBUG: Student search result", {
             whatsappNumber,
             responseStatus: studentResponse.status,
