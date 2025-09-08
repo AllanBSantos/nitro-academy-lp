@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  console.log("CRITICAL DEBUG: /api/auth/verify-role called", {
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+  });
+
   try {
     const { token } = await request.json();
+
+    console.log("CRITICAL DEBUG: Token received", {
+      tokenExists: !!token,
+      tokenLength: token?.length || 0,
+    });
 
     if (!token) {
       return NextResponse.json(
@@ -13,6 +23,13 @@ export async function POST(request: NextRequest) {
 
     const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    console.log("CRITICAL DEBUG: Environment variables", {
+      STRAPI_URL: STRAPI_URL ? "SET" : "NOT SET",
+      ADMIN_TOKEN: ADMIN_TOKEN ? "SET" : "NOT SET",
+      environment: process.env.NODE_ENV,
+      fullStrapiUrl: STRAPI_URL,
+    });
 
     if (!STRAPI_URL || !ADMIN_TOKEN) {
       return NextResponse.json(
@@ -45,8 +62,19 @@ export async function POST(request: NextRequest) {
         const whatsappNumber = userEmail.replace("@whatsapp.user", "");
 
         // Try to find student by WhatsApp number (try both formats)
+        console.log("CRITICAL DEBUG: Searching for student in Strapi", {
+          whatsappNumber,
+          strapiUrl: STRAPI_URL,
+          searchUrl: `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
+          environment: process.env.NODE_ENV,
+          fullStrapiUrl: STRAPI_URL,
+        });
+
+        // Try WITHOUT country code first (production has phones without country code)
+        const withoutCountryCode = whatsappNumber.replace(/^55/, "");
+
         let studentResponse = await fetch(
-          `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
+          `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -54,15 +82,29 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        // If not found, try without country code
+        console.log("CRITICAL DEBUG: Student fetch response", {
+          whatsappNumber,
+          withoutCountryCode,
+          url: `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+          status: studentResponse.status,
+          ok: studentResponse.ok,
+          environment: process.env.NODE_ENV,
+          strapiUrl: STRAPI_URL,
+          fullUrl: `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+        });
+
+        // If not found, try WITH country code
         if (studentResponse.ok) {
           const studentData = await studentResponse.json();
 
           if (studentData.data && studentData.data.length === 0) {
-            const withoutCountryCode = whatsappNumber.replace(/^55/, "");
+            console.log("CRITICAL DEBUG: Trying with country code", {
+              whatsappNumber,
+              searchUrl: `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
+            });
 
             studentResponse = await fetch(
-              `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+              `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
               {
                 headers: {
                   "Content-Type": "application/json",
@@ -75,8 +117,24 @@ export async function POST(request: NextRequest) {
         if (studentResponse.ok) {
           const studentData = await studentResponse.json();
 
+          console.log("CRITICAL DEBUG: Student search result", {
+            whatsappNumber,
+            responseStatus: studentResponse.status,
+            responseOk: studentResponse.ok,
+            studentData,
+            foundStudents: studentData.data?.length || 0,
+            environment: process.env.NODE_ENV,
+            strapiUrl: STRAPI_URL,
+          });
+
           if (studentData.data && studentData.data.length > 0) {
             // Student found
+            console.log("CRITICAL DEBUG: Student FOUND in Strapi", {
+              whatsappNumber,
+              studentId: studentData.data[0].id,
+              studentName: studentData.data[0].nome,
+              environment: process.env.NODE_ENV,
+            });
 
             return NextResponse.json({
               userId: 999,
@@ -89,12 +147,17 @@ export async function POST(request: NextRequest) {
               mentorId: null,
               permissions: {},
             });
+          } else {
+            console.log("CRITICAL DEBUG: Student NOT FOUND in Strapi", {
+              whatsappNumber,
+              environment: process.env.NODE_ENV,
+            });
           }
         }
 
-        // Try to find mentor by WhatsApp number (try both formats)
+        // Try to find mentor by WhatsApp number (try WITHOUT country code first)
         let mentorResponse = await fetch(
-          `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}&locale=pt-BR`,
+          `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -102,13 +165,12 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        // If not found, try without country code
+        // If not found, try WITH country code
         if (mentorResponse.ok) {
           const mentorData = await mentorResponse.json();
           if (mentorData.data && mentorData.data.length === 0) {
-            const withoutCountryCode = whatsappNumber.replace(/^55/, "");
             mentorResponse = await fetch(
-              `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+              `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}&locale=pt-BR`,
               {
                 headers: {
                   "Content-Type": "application/json",
@@ -136,9 +198,9 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // Try to find admin by WhatsApp number (try both formats)
+        // Try to find admin by WhatsApp number (try WITHOUT country code first)
         let adminResponse = await fetch(
-          `${STRAPI_URL}/api/admins?filters[celular][$eq]=${whatsappNumber}`,
+          `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -146,13 +208,12 @@ export async function POST(request: NextRequest) {
           }
         );
 
-        // If not found, try without country code
+        // If not found, try WITH country code
         if (adminResponse.ok) {
           const adminData = await adminResponse.json();
           if (adminData.data && adminData.data.length === 0) {
-            const withoutCountryCode = whatsappNumber.replace(/^55/, "");
             adminResponse = await fetch(
-              `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+              `${STRAPI_URL}/api/admins?filters[celular][$eq]=${whatsappNumber}`,
               {
                 headers: {
                   "Content-Type": "application/json",
@@ -182,6 +243,12 @@ export async function POST(request: NextRequest) {
         }
 
         // If not found, return authenticated role
+        console.log("CRITICAL DEBUG: No role found for WhatsApp user", {
+          whatsappNumber,
+          environment: process.env.NODE_ENV,
+          message: "User will get generic 'authenticated' role",
+        });
+
         return NextResponse.json({
           userId: 999,
           role: {

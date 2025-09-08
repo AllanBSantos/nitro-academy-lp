@@ -105,6 +105,12 @@ export async function POST(request: NextRequest) {
     // This will allow them to access the protected routes
     const simpleJWT = createSimpleJWT(formattedWhatsapp);
 
+    console.log("CRITICAL DEBUG: JWT created", {
+      whatsapp: formattedWhatsapp,
+      jwt: simpleJWT,
+      environment: process.env.NODE_ENV,
+    });
+
     // Determine user type from Zazu response
     let userType = data.data?.userType;
 
