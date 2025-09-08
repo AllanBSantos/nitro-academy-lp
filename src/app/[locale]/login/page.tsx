@@ -154,8 +154,26 @@ export default function LoginPage() {
       } else if (userType === "admin") {
         router.push(`/${locale}/admin`);
       } else {
-        // If userType is "new_user" or undefined, redirect to identification
-        router.push(`/${locale}/identify`);
+        // If userType is "new_user" or undefined, this should not happen
+        console.error(
+          "CRITICAL ERROR: User should not be redirected to identify",
+          {
+            timestamp: new Date().toISOString(),
+            userType,
+            isLinked,
+            linkedType,
+            fullData: data.data,
+            environment: process.env.NODE_ENV,
+            whatsapp: whatsappDigits,
+            code: code.trim(),
+          }
+        );
+
+        setError(
+          `Erro interno: Tipo de usuário inválido (${userType}). Verifique os logs do console para mais detalhes.`
+        );
+        setIsVerifying(false);
+        return;
       }
     } catch (err) {
       console.error("Verify code error:", err);

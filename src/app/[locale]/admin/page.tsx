@@ -64,8 +64,14 @@ function AdminLayout() {
                 : null
             );
           } else {
-            // Mentor role but not linked, redirect to identification
-            router.replace(`/${params.locale}/identify`);
+            // Mentor role but not linked, this should not happen
+            console.error("CRITICAL ERROR: Mentor not linked in admin page", {
+              timestamp: new Date().toISOString(),
+              userData,
+              environment: process.env.NODE_ENV,
+            });
+            // Instead of redirecting, show error or handle appropriately
+            router.replace(`/${params.locale}/login`);
             return;
           }
         } else if (userData.role.type === "student") {
@@ -80,8 +86,14 @@ function AdminLayout() {
           setIsMentor(false);
           setMentor(null);
         } else {
-          // No specific role, redirect to identification
-          router.replace(`/${params.locale}/identify`);
+          // No specific role, this should not happen
+          console.error("CRITICAL ERROR: No specific role in admin page", {
+            timestamp: new Date().toISOString(),
+            userData,
+            environment: process.env.NODE_ENV,
+          });
+          // Instead of redirecting, show error or handle appropriately
+          router.replace(`/${params.locale}/login`);
           return;
         }
       } catch (error) {

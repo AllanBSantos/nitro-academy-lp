@@ -62,9 +62,14 @@ export default function StudentDashboard() {
         // Check if user has student role and is linked to a student
         if (roleData.role.type !== "student" || !roleData.studentId) {
           console.error(
-            "User does not have student role or is not linked to a student"
+            "CRITICAL ERROR: User does not have student role or is not linked to a student",
+            {
+              timestamp: new Date().toISOString(),
+              roleData,
+              environment: process.env.NODE_ENV,
+            }
           );
-          router.replace(`/${params.locale}/identify`);
+          router.replace(`/${params.locale}/login`);
           return;
         }
 
