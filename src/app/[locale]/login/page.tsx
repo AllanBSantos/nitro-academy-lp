@@ -136,43 +136,25 @@ export default function LoginPage() {
       const isLinked = data.data?.isLinked;
       const linkedType = data.data?.linkedType;
 
-      // Debug logs for production troubleshooting
-      console.log("Login redirect data:", {
-        userType,
-        isLinked,
-        linkedType,
-        fullData: data.data,
-        environment: process.env.NODE_ENV,
-      });
-
       if (isLinked && linkedType) {
         // User is automatically linked, redirect directly
-        console.log("Redirecting based on linked type:", linkedType);
         if (linkedType === "student") {
-          console.log("Redirecting to student page");
           router.push(`/${locale}/student`);
         } else if (linkedType === "mentor") {
-          console.log("Redirecting to admin page (mentor)");
           router.push(`/${locale}/admin`);
         } else if (linkedType === "admin") {
-          console.log("Redirecting to admin page (admin)");
           router.push(`/${locale}/admin`);
         } else {
-          console.log("Redirecting to admin page (default)");
           router.push(`/${locale}/admin`);
         }
       } else if (userType === "student") {
-        console.log("Redirecting to student page based on userType");
         router.push(`/${locale}/student`);
       } else if (userType === "mentor") {
-        console.log("Redirecting to admin page based on userType (mentor)");
         router.push(`/${locale}/admin`);
       } else if (userType === "admin") {
-        console.log("Redirecting to admin page based on userType (admin)");
         router.push(`/${locale}/admin`);
       } else {
         // If userType is "new_user" or undefined, redirect to identification
-        console.log("Redirecting to identify page - userType:", userType);
         router.push(`/${locale}/identify`);
       }
     } catch (err) {
