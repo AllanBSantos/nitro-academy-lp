@@ -12,7 +12,7 @@
   },
   "attributes": {
     "data": {
-      "type": "date",
+      "type": "datetime",
       "required": true
     },
     "aula_status": {
@@ -43,6 +43,9 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::curso.curso"
+    },
+    "link_aula": {
+      "type": "string"
     }
   }
 }

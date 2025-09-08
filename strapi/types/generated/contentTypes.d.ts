@@ -501,7 +501,8 @@ export interface ApiAulaAula extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     curso: Schema.Attribute.Relation<'oneToOne', 'api::curso.curso'>;
-    data: Schema.Attribute.Date & Schema.Attribute.Required;
+    data: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    link_aula: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::aula.aula'> &
       Schema.Attribute.Private;

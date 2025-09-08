@@ -56,7 +56,8 @@ const nextConfig = {
       strapiHostname,
       'nitroacademy.com.br',
       'res.cloudinary.com',
-      'images.converteai.net'
+      'images.converteai.net',
+      'lh3.googleusercontent.com'
     ],
     remotePatterns: [
       {
@@ -83,6 +84,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.converteai.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
         pathname: '/**',
       }
     ],
