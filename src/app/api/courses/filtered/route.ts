@@ -5,12 +5,12 @@ const safeFetch = async (url: string, options: RequestInit = {}) => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
+
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
     });
-    
+
     clearTimeout(timeoutId);
     return response;
   } catch (error) {
@@ -21,7 +21,10 @@ const safeFetch = async (url: string, options: RequestInit = {}) => {
 
 async function verifyUserRole(token: string) {
   try {
-    console.log("verifyUserRole called with token:", token.substring(0, 20) + "...");
+    console.log(
+      "verifyUserRole called with token:",
+      token.substring(0, 20) + "..."
+    );
     const tokenParts = token.split(".");
     if (tokenParts.length !== 3) {
       throw new Error("Token inválido");
@@ -53,8 +56,11 @@ async function verifyUserRole(token: string) {
 
       // Try to find student by WhatsApp number (try both formats)
       try {
-        console.log("Searching for student with WhatsApp number:", whatsappNumber);
-        let studentResponse = await safeFetch(
+        console.log(
+          "Searching for student with WhatsApp number:",
+          whatsappNumber
+        );
+        const studentResponse = await safeFetch(
           `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
           {
             headers: {
@@ -70,7 +76,10 @@ async function verifyUserRole(token: string) {
           // If not found, try without country code
           if (studentData.data && studentData.data.length === 0) {
             const withoutCountryCode = whatsappNumber.replace(/^55/, "");
-            console.log("Trying student search without country code:", withoutCountryCode);
+            console.log(
+              "Trying student search without country code:",
+              withoutCountryCode
+            );
             const newStudentResponse = await safeFetch(
               `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
               {
@@ -107,8 +116,11 @@ async function verifyUserRole(token: string) {
 
       // Try to find mentor by WhatsApp number (try both formats)
       try {
-        console.log("Searching for mentor with WhatsApp number:", whatsappNumber);
-        let mentorResponse = await safeFetch(
+        console.log(
+          "Searching for mentor with WhatsApp number:",
+          whatsappNumber
+        );
+        const mentorResponse = await safeFetch(
           `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}&locale=pt-BR`,
           {
             headers: {
@@ -124,7 +136,10 @@ async function verifyUserRole(token: string) {
           // If not found, try without country code
           if (mentorData.data && mentorData.data.length === 0) {
             const withoutCountryCode = whatsappNumber.replace(/^55/, "");
-            console.log("Trying mentor search without country code:", withoutCountryCode);
+            console.log(
+              "Trying mentor search without country code:",
+              withoutCountryCode
+            );
             const newMentorResponse = await safeFetch(
               `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
               {
@@ -161,8 +176,11 @@ async function verifyUserRole(token: string) {
 
       // Try to find admin by WhatsApp number (try both formats)
       try {
-        console.log("Searching for admin with WhatsApp number:", whatsappNumber);
-        let adminResponse = await safeFetch(
+        console.log(
+          "Searching for admin with WhatsApp number:",
+          whatsappNumber
+        );
+        const adminResponse = await safeFetch(
           `${STRAPI_URL}/api/admins?filters[celular][$eq]=${whatsappNumber}`,
           {
             headers: {
@@ -178,7 +196,10 @@ async function verifyUserRole(token: string) {
           // If not found, try without country code
           if (adminData.data && adminData.data.length === 0) {
             const withoutCountryCode = whatsappNumber.replace(/^55/, "");
-            console.log("Trying admin search without country code:", withoutCountryCode);
+            console.log(
+              "Trying admin search without country code:",
+              withoutCountryCode
+            );
             const newAdminResponse = await safeFetch(
               `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
               {
@@ -214,7 +235,9 @@ async function verifyUserRole(token: string) {
         console.error("Error searching for admin:", error);
       }
 
-      console.log("No user found for WhatsApp number, returning authenticated role");
+      console.log(
+        "No user found for WhatsApp number, returning authenticated role"
+      );
       // If not found, return authenticated role
       return {
         userId: 999,
@@ -242,7 +265,9 @@ async function verifyUserRole(token: string) {
 
     console.log("User response status:", userResponse?.status);
     if (!userResponse || !userResponse.ok) {
-      const errorText = userResponse ? await userResponse.text() : "No response";
+      const errorText = userResponse
+        ? await userResponse.text()
+        : "No response";
       console.error("User fetch failed:", {
         status: userResponse?.status,
         statusText: userResponse?.statusText,
@@ -272,7 +297,9 @@ async function verifyUserRole(token: string) {
 
     console.log("Role response status:", roleResponse?.status);
     if (!roleResponse || !roleResponse.ok) {
-      const errorText = roleResponse ? await roleResponse.text() : "No response";
+      const errorText = roleResponse
+        ? await roleResponse.text()
+        : "No response";
       console.error("Role fetch failed:", {
         status: roleResponse?.status,
         statusText: roleResponse?.statusText,
@@ -361,7 +388,9 @@ export async function POST(request: NextRequest) {
 
       console.log("Strapi health check status:", healthResponse?.status);
       if (!healthResponse || !healthResponse.ok) {
-        const errorText = healthResponse ? await healthResponse.text() : "No response";
+        const errorText = healthResponse
+          ? await healthResponse.text()
+          : "No response";
         console.error("Strapi connectivity failed:", {
           status: healthResponse?.status,
           statusText: healthResponse?.statusText,
@@ -451,7 +480,9 @@ export async function POST(request: NextRequest) {
 
     console.log("Courses response status:", coursesResponse?.status);
     if (!coursesResponse || !coursesResponse.ok) {
-      const errorText = coursesResponse ? await coursesResponse.text() : "No response";
+      const errorText = coursesResponse
+        ? await coursesResponse.text()
+        : "No response";
       console.error("Courses fetch failed:", {
         status: coursesResponse?.status,
         statusText: coursesResponse?.statusText,
