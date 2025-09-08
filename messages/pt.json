@@ -879,6 +879,7 @@
     "lesson_files": "Arquivos",
     "no_files": "Nenhum arquivo disponível",
     "loading_google_signin": "Carregando Google Sign-In...",
+    "loading": "Carregando...",
     "sign_out": "Sair",
     "logout": "Sair"
   },
