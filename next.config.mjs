@@ -1,6 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
 const strapiHostname = new URL(strapiUrl).hostname;
 const zazuUrl = process.env.NEXT_PUBLIC_ZAZU_API_URL || 'http://localhost:3000';
 

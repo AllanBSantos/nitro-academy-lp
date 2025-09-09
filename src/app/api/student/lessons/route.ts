@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
     if (!STRAPI_URL) {
       return NextResponse.json(
         { error: "STRAPI_URL não configurado" },

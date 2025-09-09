@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
 
     if (!STRAPI_URL || !ADMIN_TOKEN) {

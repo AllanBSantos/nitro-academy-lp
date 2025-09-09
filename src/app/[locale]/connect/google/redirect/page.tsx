@@ -21,9 +21,7 @@ function GoogleRedirectContent() {
 
       try {
         const STRAPI_URL =
-          process.env.NEXT_PUBLIC_STRAPI_URL ||
-          process.env.NEXT_PUBLIC_STRAPI_API_URL ||
-          "http://localhost:1337";
+          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
         const res = await fetch(
           `${STRAPI_URL}/api/auth/google/callback?access_token=${encodeURIComponent(
             accessToken

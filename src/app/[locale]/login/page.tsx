@@ -242,9 +242,9 @@ export default function LoginPage() {
         ? new URLSearchParams(window.location.search).get("redirect")
         : null;
     const nextParam = redirect ? `?next=${encodeURIComponent(redirect)}` : "";
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
     if (!STRAPI_URL) {
-      throw new Error("NEXT_PUBLIC_STRAPI_URL environment variable is not set");
+      throw new Error("NEXT_PUBLIC_STRAPI_API_URL environment variable is not set");
     }
     // Use a non-localized redirect path to satisfy Strapi regex constraints
     const frontendRedirect = `${window.location.origin}/connect/google/redirect${nextParam}`;

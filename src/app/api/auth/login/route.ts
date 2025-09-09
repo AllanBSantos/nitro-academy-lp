@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
     if (!STRAPI_URL) {
       return NextResponse.json(
