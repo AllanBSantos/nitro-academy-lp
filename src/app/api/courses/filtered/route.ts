@@ -374,7 +374,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Test Strapi connectivity first
     try {
       console.log("Testing Strapi connectivity...");
       const healthResponse = await safeFetch(
