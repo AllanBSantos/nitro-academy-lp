@@ -258,7 +258,7 @@ async function verifyUserRole(token: string) {
       `${STRAPI_URL}/api/users/${userId}?populate=*`,
       {
         headers: {
-          Authorization: `Bearer ${ADMIN_TOKEN}`,
+          //  Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
@@ -290,7 +290,7 @@ async function verifyUserRole(token: string) {
       `${STRAPI_URL}/api/users-permissions/roles/${userData.role.id}`,
       {
         headers: {
-          Authorization: `Bearer ${ADMIN_TOKEN}`,
+          // Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
@@ -381,7 +381,7 @@ export async function POST(request: NextRequest) {
         `${STRAPI_URL}/api/cursos?pagination[limit]=1`,
         {
           headers: {
-            Authorization: `Bearer ${ADMIN_TOKEN}`,
+            // Authorization: `Bearer ${ADMIN_TOKEN}`,
           },
         }
       );
@@ -474,7 +474,7 @@ export async function POST(request: NextRequest) {
     console.log("Fetching courses from URL:", coursesUrl);
     const coursesResponse = await safeFetch(coursesUrl, {
       headers: {
-        Authorization: `Bearer ${ADMIN_TOKEN}`,
+        // Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
 
