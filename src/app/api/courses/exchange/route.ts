@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
 
     // Count current students in the target course
     const alunosResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[cursos][id][$eq]=${newCourseId}&populate=*&pagination[pageSize]=1000`,
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[cursos][id][$eq]=${newCourseId}&filters[habilitado][$eq]=true&populate=*&pagination[pageSize]=1000`,
       {
         cache: "no-store",
         headers: {
@@ -270,9 +270,7 @@ export async function POST(request: NextRequest) {
     }
 
     const alunosData = await alunosResponse.json();
-    const alunosNoCurso =
-      alunosData.data?.filter((aluno: any) => aluno.attributes?.habilitado) ||
-      [];
+    const alunosNoCurso = alunosData.data || [];
 
     if (alunosNoCurso.length >= 15) {
       return NextResponse.json(
