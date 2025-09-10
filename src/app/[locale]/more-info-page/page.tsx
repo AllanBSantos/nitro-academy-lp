@@ -40,6 +40,7 @@ import {
   Package,
   Globe,
 } from "lucide-react";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -303,42 +304,61 @@ export default function MoreInfoPage({
       <Header />
 
       {/* Hero Section */}
-      <Section
-        className="relative overflow-hidden text-white py-10 sm:py-12"
-        aria-labelledby="hero-title"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1e1b4b] to-[#3B82F6]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-8 sm:py-12">
-          <div className="flex flex-col items-center gap-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
-              {t("title")}
-            </h1>
-            <p className="text-lg md:text-xl opacity-90 max-w-3xl">
-              {t("subtitle")}
-            </p>
-            <div className="mt-2 flex flex-wrap gap-3 justify-center">
+      <section className="relative h-[46rem] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <Image
+          src={`/${params.locale}/adolescente-menino.png`}
+          alt="Adolescente usando o computador"
+          priority={true}
+          width={540}
+          height={540}
+          unoptimized
+          className="absolute w-full h-[46rem] object-cover brightness-75"
+        />
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1e1b4b]/60 to-[#3B82F6]/60" />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:py-12">
+          <div className="flex flex-col items-center gap-8 text-center text-white">
+            {/* Main Title */}
+            <div className="space-y-4">
+              <h1
+                id="hero-title"
+                className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight"
+              >
+                {t("title")}
+              </h1>
+              <p className="text-lg md:text-xl lg:text-2xl opacity-90 max-w-4xl font-medium">
+                {t("subtitle")}
+              </p>
+            </div>
+
+            {/* Service Badges */}
+            <div className="mt-6 flex flex-wrap gap-4 justify-center">
               <Badge
                 variant="outline"
-                className="bg-white text-[#1e1b4b] border-white hover:bg-white hover:text-[#1e1b4b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white px-6 py-3 text-base font-medium"
               >
                 {t("badges.mentorships")}
               </Badge>
               <Badge
                 variant="outline"
-                className="bg-white text-[#1e1b4b] border-white hover:bg-white hover:text-[#1e1b4b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white px-6 py-3 text-base font-medium"
               >
                 {t("badges.projects")}
               </Badge>
               <Badge
                 variant="outline"
-                className="bg-white text-[#1e1b4b] border-white hover:bg-white hover:text-[#1e1b4b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white px-6 py-3 text-base font-medium"
               >
                 {t("badges.talents")}
               </Badge>
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* What Is Section */}
       <Section
