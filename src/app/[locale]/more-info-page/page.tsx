@@ -324,12 +324,16 @@ export default function MoreInfoPage({
           <div className="flex flex-col items-center gap-8 text-center text-white">
             {/* Main Title */}
             <div className="space-y-4">
-              <h1
-                id="hero-title"
-                className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight"
-              >
-                {t("title")}
-              </h1>
+              <div className="flex justify-center">
+                <Image
+                  src={`/${params.locale}/logo_nitro_transparente.png`}
+                  alt="Nitro Academy Logo"
+                  width={250}
+                  height={70}
+                  unoptimized
+                  className="h-20 md:h-28 lg:h-32 w-auto"
+                />
+              </div>
               <p className="text-lg md:text-xl lg:text-2xl opacity-90 max-w-4xl font-medium">
                 {t("subtitle")}
               </p>
