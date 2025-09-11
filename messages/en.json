@@ -882,5 +882,15 @@
     "mentor_role_error": "Mentor role not configured",
     "student_role_error": "Student role not configured",
     "update_role_error": "Error linking account: {error}"
+  },
+  "Header": {
+    "user": "User",
+    "student_area": "Student Area",
+    "mentor_area": "Mentor Area",
+    "admin_area": "Administrative Area",
+    "logout": "Logout",
+    "student_role": "Student",
+    "mentor_role": "Mentor",
+    "admin_role": "Administrator"
   }
 }

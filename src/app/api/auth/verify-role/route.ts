@@ -319,9 +319,14 @@ export async function POST(request: NextRequest) {
 
       const roleData = await roleResponse.json();
 
-      // Extract mentor and student IDs from user data
+      // Extract mentor, student IDs from user data
       const mentorId = userData.mentor?.id || null;
       const studentId = userData.student?.id || null;
+
+      // For regular Strapi users, adminId is not available in the user data
+      // Only WhatsApp users have adminId
+      const adminId = null;
+
       return NextResponse.json({
         userId: userData.id,
         role: {
@@ -331,6 +336,7 @@ export async function POST(request: NextRequest) {
         },
         mentorId,
         studentId,
+        adminId,
         permissions: roleData.role.permissions || {},
       });
     } catch (decodeError) {

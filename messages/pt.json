@@ -900,5 +900,15 @@
     "mentor_role_error": "Role de mentor não configurado",
     "student_role_error": "Role de student não configurado",
     "update_role_error": "Erro ao vincular conta: {error}"
+  },
+  "Header": {
+    "user": "Usuário",
+    "student_area": "Área do Estudante",
+    "mentor_area": "Área do Mentor",
+    "admin_area": "Área Administrativa",
+    "logout": "Sair",
+    "student_role": "Estudante",
+    "mentor_role": "Mentor",
+    "admin_role": "Administrador"
   }
 }
