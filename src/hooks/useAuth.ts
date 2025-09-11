@@ -36,6 +36,40 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+// Strapi data interfaces
+interface StrapiStudent {
+  id: number;
+  documentId?: string;
+  attributes?: {
+    nome?: string;
+    email_responsavel?: string;
+  };
+  nome?: string;
+  email_responsavel?: string;
+}
+
+interface StrapiMentor {
+  id: number;
+  documentId?: string;
+  attributes?: {
+    nome?: string;
+    email?: string;
+  };
+  nome?: string;
+  email?: string;
+}
+
+interface StrapiAdmin {
+  id: number;
+  documentId?: string;
+  attributes?: {
+    nome?: string;
+    email?: string;
+  };
+  nome?: string;
+  email?: string;
+}
+
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -81,7 +115,7 @@ export function useAuth() {
         const userData = await response.json();
 
         // Get additional user information based on role
-        let userInfo: User = {
+        const userInfo: User = {
           id: userData.userId,
           role: userData.role,
           studentId: userData.studentId,
@@ -118,7 +152,7 @@ export function useAuth() {
 
                   // Find student by ID in the list
                   const foundStudent = allStudentsData.data?.find(
-                    (student: any) =>
+                    (student: StrapiStudent) =>
                       student.id === userData.studentId ||
                       student.documentId === userData.studentId.toString()
                   );
@@ -139,7 +173,7 @@ export function useAuth() {
               }
             }
           } catch (error) {
-            // If error occurs, keep basic user info without name
+            console.error("Error fetching student data:", error);
             userInfo.name = "Estudante";
           }
         } else if (userData.role.type === "mentor" && userData.mentorId) {
@@ -169,7 +203,7 @@ export function useAuth() {
 
                   // Find mentor by ID in the list
                   const foundMentor = allMentorsData.data?.find(
-                    (mentor: any) =>
+                    (mentor: StrapiMentor) =>
                       mentor.id === userData.mentorId ||
                       mentor.documentId === userData.mentorId.toString()
                   );
@@ -189,7 +223,7 @@ export function useAuth() {
               }
             }
           } catch (error) {
-            // If error occurs, keep basic user info without name
+            console.error("Error fetching mentor data:", error);
             userInfo.name = "Mentor";
           }
         } else if (userData.role.type === "admin") {
@@ -228,7 +262,7 @@ export function useAuth() {
 
                     // Find admin by ID in the list
                     const foundAdmin = allAdminsData.data?.find(
-                      (admin: any) =>
+                      (admin: StrapiAdmin) =>
                         admin.id === userData.adminId ||
                         admin.documentId === userData.adminId.toString()
                     );
@@ -248,7 +282,7 @@ export function useAuth() {
                 }
               }
             } catch (error) {
-              // If error occurs, keep basic user info without name
+              console.error("Error fetching admin data:", error);
               userInfo.name = "Administrador";
             }
           } else {
