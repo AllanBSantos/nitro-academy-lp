@@ -741,6 +741,8 @@
   "Login": {
     "title": "Login",
     "description": "Enter your WhatsApp number to access your account",
+    "welcome_title": "Welcome to Nitro Academy",
+    "welcome_description": "Log in to access your member area and have access to your course data",
     "whatsapp_label": "WhatsApp Number",
     "whatsapp_placeholder": "Enter your phone number",
     "whatsapp_example": "Ex: 11999999999 or +1234567890",
@@ -753,6 +755,9 @@
     "verifying_code": "Verifying...",
     "resend_code": "Resend code",
     "resending_code": "Resending...",
+    "back": "Back",
+    "terms_text": "By logging in, you agree to our",
+    "terms_and_privacy": "Terms of Use and Privacy Policy",
     "or": "or (Disabled)",
     "sign_in_google": "Sign in with Google (Disabled)",
     "login_failed": "Failed to login",
