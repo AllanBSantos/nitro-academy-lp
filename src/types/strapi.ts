@@ -94,6 +94,20 @@ export interface Review {
   };
 }
 
+export interface Escola {
+  id: number;
+  documentId: string;
+  nome: string;
+  logo: {
+    url: string;
+  };
+  cliente: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  locale: string;
+}
+
 export interface Course {
   id: number;
   documentId: string;

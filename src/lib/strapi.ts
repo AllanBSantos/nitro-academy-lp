@@ -1,4 +1,4 @@
-import { Course, Mentor, Review } from "@/types/strapi";
+import { Course, Mentor, Review, Escola } from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
@@ -410,6 +410,29 @@ export async function fetchSchools() {
     }));
   } catch (error) {
     console.error("Error fetching schools:", error);
+    return [];
+  }
+}
+
+export async function fetchSchoolsWithLogo(): Promise<Escola[]> {
+  try {
+    const url = `${STRAPI_API_URL}/api/escolas?filters[cliente][$eq]=true&populate=*`;
+
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch schools with logo: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error("Error fetching schools with logo:", error);
     return [];
   }
 }
