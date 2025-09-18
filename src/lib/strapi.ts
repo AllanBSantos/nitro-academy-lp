@@ -416,11 +416,10 @@ export async function fetchSchools() {
 
 export async function fetchSchoolsWithLogo(): Promise<Escola[]> {
   try {
-    const url = `${STRAPI_API_URL}/api/escolas?filters[cliente][$eq]=true&populate=*`;
+    const url = `${STRAPI_API_URL}/api/escolas?populate=*`;
 
     const response = await fetch(url, {
       next: { revalidate: 60 },
-      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -430,7 +429,12 @@ export async function fetchSchoolsWithLogo(): Promise<Escola[]> {
     }
 
     const data = await response.json();
-    return data.data || [];
+
+    // Filter schools with cliente=true on the client side
+    const schoolsWithCliente =
+      data.data?.filter((school: Escola) => school.cliente === true) || [];
+
+    return schoolsWithCliente;
   } catch (error) {
     console.error("Error fetching schools with logo:", error);
     return [];
