@@ -418,7 +418,7 @@ export async function fetchSchoolsWithLogo(
   locale: string = "pt-BR"
 ): Promise<Escola[]> {
   try {
-    const url = `${STRAPI_API_URL}/api/escolas?populate=*`;
+    const url = `${STRAPI_API_URL}/api/escolas?filters[cliente][$eq]=true&populate=*`;
 
     const response = await fetch(url, {
       next: { revalidate: 60 },

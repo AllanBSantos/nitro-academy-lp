@@ -99,6 +99,7 @@ export interface Escola {
   documentId: string;
   nome: string;
   logo: StrapiImage | null;
+  cliente: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
