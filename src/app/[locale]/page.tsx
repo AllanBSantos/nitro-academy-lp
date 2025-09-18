@@ -13,6 +13,7 @@ import Reviews from "@/components/Reviews";
 import Faq from "@/components/Faq";
 import CarouselClient from "@/components/CarouselClient";
 import Perks from "../components/text-cards/Perks";
+import OurClients from "../../components/OurClients";
 
 export default function Home({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
@@ -29,6 +30,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       </div>
       <ChildGuy locale={params.locale} />
       <OurGoal />
+      <OurClients locale={params.locale} />
       <Reviews />
       <Faq />
       <Footer />

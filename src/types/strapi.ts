@@ -94,6 +94,17 @@ export interface Review {
   };
 }
 
+export interface Escola {
+  id: number;
+  documentId: string;
+  nome: string;
+  logo: StrapiImage | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  locale: string;
+}
+
 export interface Course {
   id: number;
   documentId: string;

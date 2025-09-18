@@ -915,5 +915,9 @@
     "student_role": "Estudante",
     "mentor_role": "Mentor",
     "admin_role": "Administrador"
+  },
+  "OurClients": {
+    "title": "Nossos Clientes",
+    "subtitle": "Escolas powered by Nitro Academy"
   }
 }
