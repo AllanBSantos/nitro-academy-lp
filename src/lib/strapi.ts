@@ -414,9 +414,7 @@ export async function fetchSchools() {
   }
 }
 
-export async function fetchSchoolsWithLogo(
-  locale: string = "pt-BR"
-): Promise<Escola[]> {
+export async function fetchSchoolsWithLogo(): Promise<Escola[]> {
   try {
     const url = `${STRAPI_API_URL}/api/escolas?filters[cliente][$eq]=true&populate=*`;
 

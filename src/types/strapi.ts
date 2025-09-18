@@ -98,7 +98,9 @@ export interface Escola {
   id: number;
   documentId: string;
   nome: string;
-  logo: StrapiImage | null;
+  logo: {
+    url: string;
+  };
   cliente: boolean;
   createdAt: string;
   updatedAt: string;

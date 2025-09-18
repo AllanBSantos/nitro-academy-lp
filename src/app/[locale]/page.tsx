@@ -30,7 +30,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       </div>
       <ChildGuy locale={params.locale} />
       <OurGoal />
-      <OurClients locale={params.locale} />
+      <OurClients />
       <Reviews />
       <Faq />
       <Footer />

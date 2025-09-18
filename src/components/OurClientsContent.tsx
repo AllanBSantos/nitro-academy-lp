@@ -1,10 +1,9 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import SchoolLogo from "./SchoolLogo";
+import { Escola } from "@/types/strapi";
 
 interface OurClientsContentProps {
-  schools: any[];
+  schools: Escola[];
 }
 
 export default function OurClientsContent({ schools }: OurClientsContentProps) {
@@ -33,20 +32,13 @@ export default function OurClientsContent({ schools }: OurClientsContentProps) {
               className="flex flex-col items-center justify-center p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 group"
             >
               {(() => {
-                const logoUrl =
-                  school.logo?.data?.attributes?.url ||
-                  school.logo?.url ||
-                  school.logo?.attributes?.url;
+                const logoUrl = school.logo?.url;
 
                 return logoUrl ? (
                   <SchoolLogo
                     logoUrl={logoUrl}
                     schoolName={school.nome}
-                    altText={
-                      school.logo?.data?.attributes?.alternativeText ||
-                      school.logo?.alternativeText ||
-                      school.nome
-                    }
+                    altText={school.nome}
                   />
                 ) : (
                   <div className="w-24 h-24 mb-3 bg-gray-200 rounded-lg flex items-center justify-center">
