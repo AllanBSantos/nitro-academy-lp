@@ -42,6 +42,24 @@
     "realestate_title": "Explorando o Mercado Imobiliário",
     "realestate_desc": "Já imaginou ajudar sua família a encontrar a casa dos sonhos ou fazer negócios inteligentes no mercado imobiliário? Neste curso, você aprenderá como pesquisar imóveis e avaliar preços!"
   },
+  "TrailCard": {
+    "courses_included": "Cursos incluídos:",
+    "explore_trail": "Explorar Trilha",
+    "trails_title": "Nossas Trilhas de Aprendizado",
+    "trails_subtitle": "Explore nossas trilhas cuidadosamente organizadas para uma jornada de aprendizado completa e estruturada.",
+    "trails_development": "Trilhas em Desenvolvimento",
+    "trails_development_desc": "Estamos organizando nossos cursos em trilhas temáticas para uma experiência de aprendizado mais estruturada. Em breve você poderá explorar trilhas como:",
+    "creativity_wellness": "🎨 Criatividade e Bem-Estar",
+    "creativity_wellness_desc": "Arte, design e desenvolvimento pessoal",
+    "technology_programming": "💻 Tecnologia e Programação",
+    "technology_programming_desc": "Desenvolvimento de apps, jogos e IA",
+    "leadership_business": "👥 Liderança e Negócios",
+    "leadership_business_desc": "Empreendedorismo e habilidades de liderança",
+    "digital_marketing": "📱 Marketing Digital",
+    "digital_marketing_desc": "Comunicação e estratégias digitais",
+    "course": "curso",
+    "courses": "cursos"
+  },
   "CourseFilters": {
     "filters": "Filtros",
     "search_placeholder": "Buscar por nome do curso...",

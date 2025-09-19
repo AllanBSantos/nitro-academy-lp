@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { TrailCardProps } from "@/types/card";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
 interface TrailCardComponentProps extends TrailCardProps {
   locale: string;
@@ -17,6 +18,8 @@ export default function TrailCard({
   totalCursos,
   locale,
 }: TrailCardComponentProps) {
+  const t = useTranslations("TrailCard");
+
   const handleTrailClick = () => {
     // Por enquanto, vamos redirecionar para a primeira página de cursos
     // Futuramente pode ser implementada uma página específica de trilha
@@ -41,7 +44,7 @@ export default function TrailCard({
           <div className="w-full h-full bg-gradient-to-br from-theme-orange to-orange-600 flex items-center justify-center">
             <div className="text-white text-center">
               <div className="text-4xl font-bold mb-2">{totalCursos}</div>
-              <div className="text-sm">Cursos</div>
+              <div className="text-sm">{t("courses")}</div>
             </div>
           </div>
         )}
@@ -49,7 +52,7 @@ export default function TrailCard({
         {/* Badge com número de cursos */}
         <div className="absolute top-4 right-4">
           <Badge className="bg-theme-orange text-white font-semibold">
-            {totalCursos} curso{totalCursos !== 1 ? "s" : ""}
+            {totalCursos} {totalCursos === 1 ? t("course") : t("courses")}
           </Badge>
         </div>
       </div>
@@ -65,7 +68,7 @@ export default function TrailCard({
         {/* Lista de cursos */}
         <div className="space-y-2">
           <h4 className="text-sm font-semibold text-gray-700 mb-2">
-            Cursos incluídos:
+            {t("courses_included")}
           </h4>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {cursos.map((curso) => (
@@ -83,7 +86,7 @@ export default function TrailCard({
         {/* Botão de ação */}
         <div className="mt-6">
           <div className="w-full bg-theme-orange text-white text-center py-3 rounded-lg font-semibold group-hover:bg-orange-600 transition-colors duration-200">
-            Explorar Trilha
+            {t("explore_trail")}
           </div>
         </div>
       </div>

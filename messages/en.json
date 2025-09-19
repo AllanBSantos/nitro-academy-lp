@@ -42,6 +42,24 @@
     "realestate_title": "Exploring the Real Estate Market",
     "realestate_desc": "Have you ever imagined helping your family find their dream home or making smart real estate deals? In this course, you will learn how to research properties and evaluate prices!"
   },
+  "TrailCard": {
+    "courses_included": "Included courses:",
+    "explore_trail": "Explore Trail",
+    "trails_title": "Our Learning Trails",
+    "trails_subtitle": "Explore our carefully organized trails for a complete and structured learning journey.",
+    "trails_development": "Trails in Development",
+    "trails_development_desc": "We are organizing our courses into thematic trails for a more structured learning experience. Soon you will be able to explore trails like:",
+    "creativity_wellness": "🎨 Creativity and Wellness",
+    "creativity_wellness_desc": "Art, design and personal development",
+    "technology_programming": "💻 Technology and Programming",
+    "technology_programming_desc": "App development, games and AI",
+    "leadership_business": "👥 Leadership and Business",
+    "leadership_business_desc": "Entrepreneurship and leadership skills",
+    "digital_marketing": "📱 Digital Marketing",
+    "digital_marketing_desc": "Communication and digital strategies",
+    "course": "course",
+    "courses": "courses"
+  },
   "CourseFilters": {
     "filters": "Filters",
     "search_placeholder": "Search by course name...",

@@ -114,12 +114,11 @@ export async function getCardsContent(
 export async function getTrailsContent(
   locale: string = "pt"
 ): Promise<TrailCardProps[]> {
-  if (locale === "pt") {
-    locale = "pt-BR";
-  }
+  // Sempre usar pt-BR para buscar dados do Strapi, independente do locale da interface
+  const strapiLocale = "pt-BR";
 
-  const trails = await fetchTrails(locale);
-  const courses = await fetchCourses(locale);
+  const trails = await fetchTrails(strapiLocale);
+  const courses = await fetchCourses(strapiLocale);
 
   const buildUrl = (url?: string) => {
     if (!url) return "";

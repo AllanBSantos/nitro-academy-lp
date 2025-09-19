@@ -15,7 +15,7 @@ export default function TrailGrid({
   locale,
   showTitle = true,
 }: TrailGridProps) {
-  const t = useTranslations("Carousel");
+  const t = useTranslations("TrailCard");
   const [trailsContent, setTrailsContent] = useState<TrailCardProps[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -131,11 +131,10 @@ export default function TrailGrid({
         {showTitle && (
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Nossas Trilhas de Aprendizado
+              {t("trails_title")}
             </h2>
             <p className="text-white text-lg max-w-3xl mx-auto">
-              Explore nossas trilhas cuidadosamente organizadas para uma jornada
-              de aprendizado completa e estruturada.
+              {t("trails_subtitle")}
             </p>
           </div>
         )}
