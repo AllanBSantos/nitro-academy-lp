@@ -115,3 +115,13 @@ export interface CardProps {
     comment: string;
   }>;
 }
+
+export interface TrailCardProps {
+  id: string;
+  documentId: string;
+  nome: string;
+  descricao: string;
+  imagem: string;
+  cursos: CardProps[];
+  totalCursos: number;
+}

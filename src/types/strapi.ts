@@ -224,3 +224,18 @@ export interface Course {
     data: string;
   }> | null;
 }
+
+export interface Trail {
+  id: number;
+  documentId: string;
+  nome: string;
+  descricao: string;
+  imagem: {
+    url: string;
+  } | null;
+  cursos: Course[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  locale: string;
+}

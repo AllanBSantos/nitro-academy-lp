@@ -1,4 +1,4 @@
-import { Course, Mentor, Review, Escola } from "@/types/strapi";
+import { Course, Mentor, Review, Escola, Trail } from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
@@ -915,5 +915,23 @@ export async function updateCourse(
   } catch (error) {
     console.error("Error updating course:", error);
     throw error;
+  }
+}
+
+export async function fetchTrails(locale: string = "pt-BR"): Promise<Trail[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/trilhas?fields[0]=id&fields[1]=nome&fields[2]=descricao&populate[imagem][fields][0]=url&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&populate[cursos][fields][2]=descricao&populate[cursos][fields][3]=slug&populate[cursos][fields][4]=nota&populate[cursos][fields][5]=preco&populate[cursos][fields][6]=parcelas&populate[cursos][fields][7]=moeda&populate[cursos][fields][8]=inscricoes_abertas&populate[cursos][fields][9]=badge&populate[cursos][populate][imagem][fields][0]=url&populate[cursos][populate][mentor][fields][0]=nome&populate[cursos][populate][mentor][fields][1]=profissao&populate[cursos][populate][mentor][populate][imagem][fields][0]=url&populate[cursos][populate][tags][fields][0]=nome&locale=${locale}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch trails");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching trails:", error);
+    return [];
   }
 }

@@ -11,7 +11,7 @@ import ChildGuy from "@/components/image-cards/ChildGuy";
 import OurGoal from "@/components/text-cards/OurGoal";
 import Reviews from "@/components/Reviews";
 import Faq from "@/components/Faq";
-import CarouselClient from "@/components/CarouselClient";
+import TrailGrid from "../../components/TrailGrid";
 import Perks from "../components/text-cards/Perks";
 import OurClients from "../../components/OurClients";
 
@@ -23,7 +23,7 @@ export default function Home({ params }: { params: { locale: string } }) {
       <TeenGuy locale={params.locale} />
       <Introduction locale={params.locale} />
       <OurApproach />
-      <CarouselClient locale={params.locale} />
+      <TrailGrid locale={params.locale} />
       <WhyChooseNitro locale={params.locale} />
       <div className="bg-theme-orange">
         <Perks />
