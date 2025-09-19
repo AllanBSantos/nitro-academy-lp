@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trilhas",
+  "info": {
+    "singularName": "trilha",
+    "pluralName": "trilhas",
+    "displayName": "trilha"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "nome": {
+      "type": "string"
+    },
+    "descricao": {
+      "type": "text"
+    },
+    "imagem": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "cursos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::curso.curso"
+    }
+  }
+}

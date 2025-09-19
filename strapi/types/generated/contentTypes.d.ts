@@ -995,6 +995,37 @@ export interface ApiSugestaoSugestao extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTrilhaTrilha extends Struct.CollectionTypeSchema {
+  collectionName: 'trilhas';
+  info: {
+    displayName: 'trilha';
+    pluralName: 'trilhas';
+    singularName: 'trilha';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
+    descricao: Schema.Attribute.Text;
+    imagem: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::trilha.trilha'
+    > &
+      Schema.Attribute.Private;
+    nome: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTurmaTurma extends Struct.CollectionTypeSchema {
   collectionName: 'turmas';
   info: {
@@ -1543,6 +1574,7 @@ declare module '@strapi/strapi' {
       'api::mentor.mentor': ApiMentorMentor;
       'api::pergunta-frequente.pergunta-frequente': ApiPerguntaFrequentePerguntaFrequente;
       'api::sugestao.sugestao': ApiSugestaoSugestao;
+      'api::trilha.trilha': ApiTrilhaTrilha;
       'api::turma.turma': ApiTurmaTurma;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
