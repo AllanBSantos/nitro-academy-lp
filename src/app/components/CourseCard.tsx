@@ -7,7 +7,7 @@ import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CardProps } from "@/types/card";
 
-export default function Card({
+export default function CourseCard({
   slug,
   title,
   mentor,

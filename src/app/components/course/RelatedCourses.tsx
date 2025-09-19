@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import CardVariant from "../CardVariant";
+import CourseCard from "../CourseCard";
 import { CardProps } from "@/types/card";
 
 interface RelatedCoursesProps {
@@ -47,7 +47,7 @@ export default function RelatedCourses({
                     key={relatedCourse.id}
                     className="pl-2 md:pl-4 basis-[85%] md:basis-[45%] lg:basis-[30%]"
                   >
-                    <CardVariant
+                    <CourseCard
                       {...relatedCourse}
                       title={relatedCourse.title}
                       description={relatedCourse.description}
