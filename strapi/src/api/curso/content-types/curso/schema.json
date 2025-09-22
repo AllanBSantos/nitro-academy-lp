@@ -38,9 +38,7 @@
       "type": "media",
       "multiple": false,
       "required": true,
-      "allowedTypes": [
-        "images"
-      ],
+      "allowedTypes": ["images"],
       "pluginOptions": {
         "i18n": {
           "localized": true
@@ -171,10 +169,7 @@
     },
     "moeda": {
       "type": "enumeration",
-      "enum": [
-        "Real",
-        "Dólar"
-      ],
+      "enum": ["Real", "Dólar"],
       "required": true,
       "default": "Real"
     },
@@ -194,12 +189,7 @@
     },
     "badge": {
       "type": "enumeration",
-      "enum": [
-        "nenhum",
-        "poucos_dias",
-        "poucas_vagas",
-        "dias_faltantes"
-      ]
+      "enum": ["nenhum", "poucos_dias", "poucas_vagas", "dias_faltantes"]
     },
     "ementa_resumida": {
       "displayName": "emenda_resumida",
@@ -240,14 +230,17 @@
     },
     "lingua": {
       "type": "enumeration",
-      "enum": [
-        "portugues",
-        "ingles"
-      ],
+      "enum": ["portugues", "ingles"],
       "default": "portugues"
     },
     "aviso_matricula": {
       "type": "text"
+    },
+    "trilhas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::trilha.trilha",
+      "mappedBy": "cursos"
     }
   }
 }

@@ -776,6 +776,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    trilhas: Schema.Attribute.Relation<'manyToMany', 'api::trilha.trilha'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1006,7 +1007,7 @@ export interface ApiTrilhaTrilha extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
+    cursos: Schema.Attribute.Relation<'manyToMany', 'api::curso.curso'>;
     descricao: Schema.Attribute.Text;
     imagem: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;

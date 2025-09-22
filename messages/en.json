@@ -49,6 +49,8 @@
     "trails_subtitle": "Explore our carefully organized trails for a complete and structured learning journey.",
     "trails_development": "Trails in Development",
     "trails_development_desc": "We are organizing our courses into thematic trails for a more structured learning experience. Soon you will be able to explore trails like:",
+    "no_trails_found": "No trails found",
+    "no_trails_found_desc": "There are no trails available at the moment. Please try again later.",
     "creativity_wellness": "🎨 Creativity and Wellness",
     "creativity_wellness_desc": "Art, design and personal development",
     "technology_programming": "💻 Technology and Programming",

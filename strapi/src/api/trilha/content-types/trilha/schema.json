@@ -17,15 +17,13 @@
       "type": "text"
     },
     "imagem": {
-      "allowedTypes": [
-        "images"
-      ],
+      "allowedTypes": ["images"],
       "type": "media",
       "multiple": false
     },
     "cursos": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::curso.curso"
     }
   }
