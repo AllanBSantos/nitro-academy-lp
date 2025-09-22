@@ -727,6 +727,22 @@
       "phone": "Phone",
       "birth_date": "Birth Date",
       "created_at": "Created At"
+    },
+    "allStudentsList": {
+      "title": "Students Listing",
+      "description": "All enabled students in the system",
+      "loading": "Loading students list...",
+      "try_again": "Try again",
+      "refresh": "Refresh",
+      "download_csv": "Download CSV",
+      "no_students_found": "No enabled students found",
+      "all_students_tab": "Students Listing",
+      "unlinked_students_tab": "Unlinked Students",
+      "student_name": "Student Name",
+      "student_phone": "Student Phone",
+      "responsible_name": "Responsible Name",
+      "responsible_phone": "Responsible Phone",
+      "courses": "Courses"
     }
   },
   "CourseRating": {

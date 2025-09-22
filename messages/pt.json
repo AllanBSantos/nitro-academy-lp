@@ -725,6 +725,22 @@
       "phone": "Telefone",
       "birth_date": "Data de Nascimento",
       "created_at": "Data de Criação"
+    },
+    "allStudentsList": {
+      "title": "Listagem de Alunos",
+      "description": "Todos os alunos habilitados no sistema",
+      "loading": "Carregando lista de alunos...",
+      "try_again": "Tentar novamente",
+      "refresh": "Atualizar",
+      "download_csv": "Baixar CSV",
+      "no_students_found": "Nenhum aluno habilitado encontrado",
+      "all_students_tab": "Listagem de Alunos",
+      "unlinked_students_tab": "Alunos sem Vínculos",
+      "student_name": "Nome do Aluno",
+      "student_phone": "Telefone do Aluno",
+      "responsible_name": "Nome do Responsável",
+      "responsible_phone": "Telefone do Responsável",
+      "courses": "Cursos"
     }
   },
   "CourseRating": {
