@@ -26,7 +26,7 @@ export function CarouselContentWrapper({
     useState<CardProps[]>(cardsContent);
 
   return (
-    <div className="flex flex-col items-center bg-theme-orange py-8 sm:py-16">
+    <div className="flex flex-col items-center bg-theme-orange py-2 sm:py-16">
       <section className="w-full max-w-[1400px] mx-auto">
         <div className="container px-4 sm:px-6 mx-auto">
           {showTitle && (

@@ -61,7 +61,7 @@ export default function TrailCard({
 
       {/* Conteúdo da Trilha */}
       <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-theme-orange transition-colors duration-200">
+        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-theme-orange transition-colors duration-200 h-14 flex items-center">
           {nome}
         </h3>
 

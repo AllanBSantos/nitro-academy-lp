@@ -37,14 +37,14 @@ export default function TrailGrid({
 
   if (loading) {
     return (
-      <section className="w-full bg-theme-orange py-16">
+      <section className="w-full bg-theme-orange">
         <div className="max-w-7xl mx-auto px-4">
           {showTitle && (
             <h2 className="text-3xl font-bold text-white mb-8">
               {t("trails_title")}
             </h2>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[...Array(6)].map((_, index) => (
               <div
                 key={index}
@@ -90,7 +90,7 @@ export default function TrailGrid({
 
   return (
     <section className="w-full bg-theme-orange py-16">
-      <div className="max-w-9xl mx-auto px-4 md:px-12">
+      <div className="max-w-9xl mx-auto px-4 md:px-6">
         {showTitle && (
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -102,7 +102,7 @@ export default function TrailGrid({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {trailsContent.map((trail) => (
             <TrailCard key={trail.id} {...trail} locale={locale} />
           ))}
