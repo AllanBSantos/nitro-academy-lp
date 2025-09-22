@@ -160,7 +160,7 @@ export default function MoreInfoPage({
       ),
       title: "Temas Atuais",
       description:
-        "Liderança, comunicação, empreendedorismo, fotografia, nutrição, storytelling",
+        "Liderança, comunicação, empreendedorismo, inteligência artificial, UX/UI",
     },
   ];
 
@@ -197,7 +197,7 @@ export default function MoreInfoPage({
       icon: <Users className="h-6 w-6 text-orange-600" aria-hidden="true" />,
       title: "Conexões Valiosas",
       description:
-        "Grupos pequenos que criam relacionamentos saudáveis com adolescentes que compartilham interesses similares.",
+        "Grupos que criam relacionamentos saudáveis com adolescentes que compartilham interesses similares.",
     },
     {
       icon: <Clock className="h-6 w-6 text-orange-600" aria-hidden="true" />,
@@ -608,7 +608,7 @@ export default function MoreInfoPage({
             <p>
               A jornada pedagógica da Nitro Academy será estruturada em projetos
               coletivos semestrais. A cada semestre, o aluno participará de um
-              projeto de 9 semanas, desenvolvendo habilidades práticas e
+              projeto de 6 semanas, desenvolvendo habilidades práticas e
               colaborativas.
             </p>
             <p>
