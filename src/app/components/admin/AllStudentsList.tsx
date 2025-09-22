@@ -229,7 +229,7 @@ export default function AllStudentsList() {
                         <td className="py-3 px-4">
                           {aluno.cursos.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
-                              {aluno.cursos.map((curso, index) => (
+                              {aluno.cursos.map((curso) => (
                                 <span
                                   key={curso.id}
                                   className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"

@@ -44,19 +44,32 @@ export async function GET() {
     const alunos = data.data || [];
 
     // Formatar os dados para retorno
-    const alunosFormatados: AlunoHabilitado[] = alunos.map((aluno: any) => ({
-      id: aluno.id,
-      nome: aluno.nome || "",
-      telefone_aluno: aluno.telefone_aluno || "",
-      responsavel: aluno.responsavel || "",
-      telefone_responsavel: aluno.telefone_responsavel || "",
-      cursos: (aluno.cursos || []).map((curso: any) => ({
-        id: curso.id,
-        titulo: curso.titulo || "",
-      })),
-      createdAt: aluno.createdAt || "",
-      updatedAt: aluno.updatedAt || "",
-    }));
+    const alunosFormatados: AlunoHabilitado[] = alunos.map(
+      (aluno: {
+        id: number;
+        nome?: string;
+        telefone_aluno?: string;
+        responsavel?: string;
+        telefone_responsavel?: string;
+        cursos?: Array<{ id: number; titulo?: string }>;
+        createdAt?: string;
+        updatedAt?: string;
+      }) => ({
+        id: aluno.id,
+        nome: aluno.nome || "",
+        telefone_aluno: aluno.telefone_aluno || "",
+        responsavel: aluno.responsavel || "",
+        telefone_responsavel: aluno.telefone_responsavel || "",
+        cursos: (aluno.cursos || []).map(
+          (curso: { id: number; titulo?: string }) => ({
+            id: curso.id,
+            titulo: curso.titulo || "",
+          })
+        ),
+        createdAt: aluno.createdAt || "",
+        updatedAt: aluno.updatedAt || "",
+      })
+    );
 
     return NextResponse.json(
       { data: alunosFormatados },

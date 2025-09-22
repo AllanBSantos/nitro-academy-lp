@@ -12,7 +12,6 @@ import {
 } from "@/app/components/ui/popover";
 import { CoursesList } from "@/components/admin/CoursesList";
 import PartnerStudentsList from "./PartnerStudentsList";
-import StudentsReport from "@/components/admin/StudentsReport";
 import ExceededStudentsReport from "@/app/components/admin/ExceededStudentsReport";
 import AllStudentsList from "@/app/components/admin/AllStudentsList";
 
