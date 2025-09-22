@@ -24,7 +24,8 @@
     "cursos": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::curso.curso"
+      "target": "api::curso.curso",
+      "inversedBy": "trilhas"
     }
   }
 }

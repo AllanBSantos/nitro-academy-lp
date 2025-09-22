@@ -23,7 +23,7 @@ export default function TrailGrid({
     async function loadTrails() {
       try {
         setLoading(true);
-        const data = await getTrailsContent(locale);
+        const data = await getTrailsContent();
         setTrailsContent(data);
       } catch (error) {
         console.error("Failed to load trails:", error);

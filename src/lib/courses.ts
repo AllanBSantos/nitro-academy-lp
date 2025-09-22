@@ -111,9 +111,7 @@ export async function getCardsContent(
   });
 }
 
-export async function getTrailsContent(
-  locale: string = "pt"
-): Promise<TrailCardProps[]> {
+export async function getTrailsContent(): Promise<TrailCardProps[]> {
   // Sempre usar pt-BR para buscar dados do Strapi, independente do locale da interface
   const strapiLocale = "pt-BR";
 

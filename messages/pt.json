@@ -49,6 +49,26 @@
     "courses_title": "Nossos Cursos",
     "trails_subtitle": "Expolore nossas trilhas, você pode escolher cursos de qualquer trilha",
     "courses_subtitle": "Escolha seu projeto e desenvolva habilidades práticas com mentores experientes",
+    "trail_courses": "Cursos da Trilha",
+    "view_details": "Ver detalhes",
+    "level": "Nível",
+    "model": "Modelo",
+    "language": {
+      "label": "Idioma",
+      "portuguese": "Português do Brasil",
+      "english": "Inglês"
+    },
+    "students": "estudantes",
+    "courses": "cursos",
+    "trail_info": "Informações da Trilha",
+    "complete_trail": "Trilha completa",
+    "lifetime_access": "Acesso vitalício",
+    "mentors_title": "Conheça os mentores dessa trilha",
+    "mentors_subtitle": "Nossos mentores são profissionais qualificados, com vivência prática e paixão por suas carreiras. São selecionados, treinados e gerenciados pela própria Nitro Academy, garantindo mentoria de excelência.",
+    "disciplines_in_trail": "Disciplinas nesta trilha:",
+    "about_mentor": "Sobre o mentor",
+    "reviews": "Avaliações",
+    "practical_projects": "Projetos práticos",
     "trails_development": "Trilhas em Desenvolvimento",
     "trails_development_desc": "Estamos organizando nossos cursos em trilhas temáticas para uma experiência de aprendizado mais estruturada. Em breve você poderá explorar trilhas como:",
     "no_trails_found": "Nenhuma trilha encontrada",
@@ -89,6 +109,8 @@
   "Course": {
     "understand_more": "Entenda mais sobre o curso",
     "you_may_also_like": "Você também pode se interessar por",
+    "trail_courses": "Cursos da Trilha",
+    "view_details": "Ver detalhes",
     "level": {
       "label": "Nível",
       "all": "Aberto a todos"

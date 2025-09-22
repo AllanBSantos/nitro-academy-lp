@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { TrailCardProps } from "../types/card";
 import { Badge } from "../app/components/ui/badge";
 import { useTranslations } from "next-intl";
@@ -10,8 +9,6 @@ interface TrailCardComponentProps extends TrailCardProps {
 }
 
 export default function TrailCard({
-  id,
-  documentId,
   nome,
   descricao,
   imagem,

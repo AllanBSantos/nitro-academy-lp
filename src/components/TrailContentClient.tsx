@@ -20,7 +20,7 @@ export default function TrailContentClient() {
   useEffect(() => {
     async function fetchTrail() {
       try {
-        const trails = await getTrailsContent(locale);
+        const trails = await getTrailsContent();
         const found = trails.find((t) => {
           // Normalizar o nome da trilha para comparar com o slug
           const normalizedName = t.nome

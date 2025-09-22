@@ -49,6 +49,26 @@
     "courses_title": "Our Courses",
     "trails_subtitle": "Explore our carefully organized trails for a complete and structured learning journey.",
     "courses_subtitle": "Choose your project and develop practical skills with experienced mentors",
+    "trail_courses": "Trail Courses",
+    "view_details": "View details",
+    "level": "Level",
+    "model": "Model",
+    "language": {
+      "label": "Language",
+      "portuguese": "Brazilian Portuguese",
+      "english": "English"
+    },
+    "students": "students",
+    "courses": "courses",
+    "trail_info": "Trail Information",
+    "complete_trail": "Complete trail",
+    "lifetime_access": "Lifetime access",
+    "mentors_title": "Meet the mentors of this trail",
+    "mentors_subtitle": "Our mentors are qualified professionals with practical experience and passion for their careers. They are selected, trained and managed by Nitro Academy itself, ensuring excellence in mentoring.",
+    "disciplines_in_trail": "Disciplines in this trail:",
+    "about_mentor": "About the mentor",
+    "reviews": "Reviews",
+    "practical_projects": "Practical projects",
     "trails_development": "Trails in Development",
     "trails_development_desc": "We are organizing our courses into thematic trails for a more structured learning experience. Soon you will be able to explore trails like:",
     "no_trails_found": "No trails found",
@@ -89,6 +109,8 @@
   "Course": {
     "understand_more": "Learn more about the course",
     "you_may_also_like": "You may also like",
+    "trail_courses": "Trail Courses",
+    "view_details": "View details",
     "level": {
       "label": "Level",
       "all": "Open to all"
