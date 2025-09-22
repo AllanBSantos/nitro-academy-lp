@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { TrailCardProps } from "@/types/card";
-import { Badge } from "@/components/ui/badge";
+import { TrailCardProps } from "../types/card";
+import { Badge } from "../app/components/ui/badge";
 import { useTranslations } from "next-intl";
+import { normalizeTrailName } from "../lib/utils";
 
 interface TrailCardComponentProps extends TrailCardProps {
   locale: string;
@@ -20,10 +21,11 @@ export default function TrailCard({
 }: TrailCardComponentProps) {
   const t = useTranslations("TrailCard");
 
+  const trailSlug = normalizeTrailName(nome);
+
   const handleTrailClick = () => {
-    // Por enquanto, vamos redirecionar para a primeira página de cursos
-    // Futuramente pode ser implementada uma página específica de trilha
-    window.location.href = `/${locale}/courses`;
+    // Redirecionar para a página da trilha
+    window.location.href = `/${locale}/trilha/${trailSlug}`;
   };
 
   return (

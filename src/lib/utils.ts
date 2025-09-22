@@ -31,6 +31,17 @@ export function normalizeName(name: string): string {
     .trim();
 }
 
+export function normalizeTrailName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .replace(/[^a-z0-9\s-]/g, "") // Remove caracteres especiais exceto espaços e hífens
+    .replace(/\s+/g, "-") // Substitui espaços por hífens
+    .replace(/-+/g, "-") // Remove hífens duplicados
+    .replace(/^-|-$/g, ""); // Remove hífens do início e fim
+}
+
 /**
  * Formats a phone number for international use
  * If it's a Brazilian number (10-11 digits) without country code, adds 55

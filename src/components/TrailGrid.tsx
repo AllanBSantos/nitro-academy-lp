@@ -44,7 +44,7 @@ export default function TrailGrid({
               Nossas Trilhas de Aprendizado
             </h2>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(6)].map((_, index) => (
               <div
                 key={index}
@@ -127,7 +127,7 @@ export default function TrailGrid({
 
   return (
     <section className="w-full bg-theme-orange py-16">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-9xl mx-auto px-4 md:px-12">
         {showTitle && (
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -139,7 +139,7 @@ export default function TrailGrid({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {trailsContent.map((trail) => (
             <TrailCard key={trail.id} {...trail} locale={locale} />
           ))}
