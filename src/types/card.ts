@@ -44,7 +44,7 @@ export interface CardProps {
   slug: string;
   title: string;
   description: string;
-  mentor: {
+  mentor?: {
     name: string;
     image: string;
     students: number;

@@ -12,7 +12,12 @@ export default function MentorSection({ course }: MentorSectionProps) {
   const [isMentorImageTall, setIsMentorImageTall] = useState(false);
   const t = useTranslations("MentorSection");
 
-  const mentorReviews = course.mentor?.reviews || [];
+  // Não renderizar se não houver mentor
+  if (!course.mentor || !course.mentor.name) {
+    return null;
+  }
+
+  const mentorReviews = course.mentor.reviews || [];
   const mentorRating =
     mentorReviews.length > 0
       ? Number(

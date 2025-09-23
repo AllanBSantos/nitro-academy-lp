@@ -24,7 +24,7 @@ export default function Card({
   const locale = (params?.locale as string) || "pt";
   const isEnglishCourse = lingua === "ingles";
 
-  const mentorReviews = mentor.reviews || [];
+  const mentorReviews = mentor?.reviews || [];
   const mentorRating =
     mentorReviews.length > 0
       ? Number(
@@ -263,48 +263,52 @@ export default function Card({
                 <h2 className="text-lg font-bold text-gray-800 h-[3.5rem] line-clamp-2 mb-2">
                   {title}
                 </h2>
-                <div className="flex items-center gap-2 h-8">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                {mentor && mentor.name && (
+                  <div className="flex items-center gap-2 h-8">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                      <Image
+                        src={mentor.image}
+                        alt={mentor.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-sm text-gray-600 truncate">
+                      {mentor.name}
+                    </span>
                     <Image
-                      src={mentor.image}
-                      alt={mentor.name}
-                      fill
-                      className="object-cover"
+                      src={getFlagSrc(mentor.pais)}
+                      alt={mentor.pais || "Brasil"}
+                      width={20}
+                      height={20}
+                      className="inline w-5 h-5 rounded-sm ml-1"
                     />
                   </div>
-                  <span className="text-sm text-gray-600 truncate">
-                    {mentor.name}
-                  </span>
-                  <Image
-                    src={getFlagSrc(mentor.pais)}
-                    alt={mentor.pais || "Brasil"}
-                    width={20}
-                    height={20}
-                    className="inline w-5 h-5 rounded-sm ml-1"
-                  />
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center gap-1 h-5">
-              {mentorRating > 0 ? (
-                <>
-                  <span className="text-sm text-gray-600 mr-1">
-                    {mentorRating.toFixed(1)}
-                  </span>
-                  {renderStars(mentorRating)}
-                  {mentorReviewCount > 0 && (
-                    <span className="text-xs text-gray-500 ml-1">
-                      ({mentorReviewCount})
+            {mentor && mentor.name && (
+              <div className="flex items-center gap-1 h-5">
+                {mentorRating > 0 ? (
+                  <>
+                    <span className="text-sm text-gray-600 mr-1">
+                      {mentorRating.toFixed(1)}
                     </span>
-                  )}
-                </>
-              ) : (
-                <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                  {commonT("new_mentor")}
-                </span>
-              )}
-            </div>
+                    {renderStars(mentorRating)}
+                    {mentorReviewCount > 0 && (
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({mentorReviewCount})
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                    {commonT("new_mentor")}
+                  </span>
+                )}
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-2">
               <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
@@ -323,12 +327,7 @@ export default function Card({
               <div className="flex flex-col">
                 <span className="text-xs text-gray-500">{t("start_date")}</span>
                 <span className="text-base font-bold text-theme-orange">
-                  {dataInicioText ||
-                    (!isCourseStarted(dataInicio)
-                      ? formatDate(dataInicio)
-                      : locale === "pt"
-                      ? "Aulas em andamento"
-                      : "Classes in progress")}
+                  Março/2026
                 </span>
               </div>
             </div>

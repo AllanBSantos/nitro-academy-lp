@@ -77,9 +77,11 @@ export default function Card({
           <h2 className="text-2xl sm:text-3xl font-bold text-background mb-4 sm:mb-6">
             <strong>{title}</strong>
           </h2>
-          <p className="text-white text-lg sm:text-xl mb-4 sm:mb-6">
-            <strong>Mentor: {mentor.name}</strong>
-          </p>
+          {mentor && mentor.name && (
+            <p className="text-white text-lg sm:text-xl mb-4 sm:mb-6">
+              <strong>Mentor: {mentor.name}</strong>
+            </p>
+          )}
           <p className="text-white text-base sm:text-lg">{description}</p>
         </div>
 
