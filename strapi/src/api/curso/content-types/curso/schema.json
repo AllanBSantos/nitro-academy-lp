@@ -251,6 +251,11 @@
     },
     "habilitado": {
       "type": "boolean"
+    },
+    "campanha": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::campanha.campanha"
     }
   }
 }
