@@ -252,9 +252,9 @@
     "habilitado": {
       "type": "boolean"
     },
-    "campanha": {
+    "campanhas": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::campanha.campanha"
     }
   }
