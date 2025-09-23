@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const locale = request.nextUrl.searchParams.get("locale") || "pt-BR";
 
     // URL para buscar cursos com cronograma
-    const url = `${STRAPI_API_URL}/api/cursos?locale=${locale}&populate=cronograma&fields[0]=id&fields[1]=titulo&sort=createdAt:desc`;
+    const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${locale}&populate=cronograma&fields[0]=id&fields[1]=titulo&sort=createdAt:desc`;
 
     const response = await fetch(url, {
       headers: {

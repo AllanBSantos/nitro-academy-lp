@@ -443,7 +443,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch courses based on user role
-    let coursesUrl = `${STRAPI_URL}/api/cursos?populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&populate[mentor][fields][0]=nome&locale=pt-BR`;
+    let coursesUrl = `${STRAPI_URL}/api/cursos?filters[habilitado][$eq]=true&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&populate[mentor][fields][0]=nome&locale=pt-BR`;
 
     if (userRole.role.type === "mentor") {
       if (userRole.mentorId) {

@@ -248,6 +248,9 @@
     },
     "aviso_matricula": {
       "type": "text"
+    },
+    "habilitado": {
+      "type": "boolean"
     }
   }
 }

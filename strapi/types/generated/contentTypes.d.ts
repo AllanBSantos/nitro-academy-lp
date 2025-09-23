@@ -585,6 +585,7 @@ export interface ApiCampanhaCampanha extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    cursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     inicio_e_fim_aulas: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -684,6 +685,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       'componentes.emenda-resumida',
       true
     >;
+    habilitado: Schema.Attribute.Boolean;
     imagem: Schema.Attribute.Media<'images'> &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
