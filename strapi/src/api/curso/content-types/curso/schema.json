@@ -256,6 +256,13 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::campanha.campanha"
+    },
+    "plano": {
+      "type": "enumeration",
+      "enum": [
+        "Gold",
+        "Black"
+      ]
     }
   }
 }

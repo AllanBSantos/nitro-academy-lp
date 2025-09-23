@@ -733,6 +733,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    plano: Schema.Attribute.Enumeration<['Gold', 'Black']>;
     pre_requisitos: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
