@@ -576,6 +576,10 @@
           "alphabetical": "Name (A-Z)",
           "enrolled_desc": "Enrolled students (highest first)"
         },
+        "filter": {
+          "campaign": "Filter by campaign",
+          "all_campaigns": "All campaigns"
+        },
         "actions": {
           "export_pdf": "Export PDF"
         },

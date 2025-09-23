@@ -577,6 +577,10 @@
           "alphabetical": "Nome (A-Z)",
           "enrolled_desc": "Alunos matriculados (maior primeiro)"
         },
+        "filter": {
+          "campaign": "Filtrar por campanha",
+          "all_campaigns": "Todas as campanhas"
+        },
         "actions": {
           "export_pdf": "Exportar PDF"
         },
