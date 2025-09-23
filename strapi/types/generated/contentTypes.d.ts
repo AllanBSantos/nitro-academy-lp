@@ -688,7 +688,6 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     >;
     habilitado: Schema.Attribute.Boolean;
     imagem: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
