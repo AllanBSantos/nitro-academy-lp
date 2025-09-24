@@ -222,6 +222,7 @@ export async function getTrailsContent(): Promise<TrailCardProps[]> {
             }
             return [];
           })(),
+          plano: fullCourse.plano || undefined,
         } as CardProps;
       })
       .filter(Boolean) as CardProps[];

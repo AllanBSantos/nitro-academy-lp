@@ -42,13 +42,17 @@ function renderStars(rating: number) {
   const empty = 5 - full - (half ? 1 : 0);
 
   for (let i = 0; i < full; i++) {
-    stars.push(<Star key={`f-${i}`} className="w-4 h-4 text-[#FFD700]" />);
+    stars.push(
+      <Star key={`f-${i}`} className="w-4 h-4 text-[#FFD700] fill-[#FFD700]" />
+    );
   }
   if (half) {
-    stars.push(<StarHalf key="h" className="w-4 h-4 text-[#FFD700]" />);
+    stars.push(
+      <StarHalf key="h" className="w-4 h-4 text-[#FFD700] fill-[#FFD700]" />
+    );
   }
   for (let i = 0; i < empty; i++) {
-    stars.push(<Star key={`e-${i}`} className="w-4 h-4 text-[#FFD700]" />);
+    stars.push(<Star key={`e-${i}`} className="w-4 h-4 text-gray-300" />);
   }
   return stars;
 }

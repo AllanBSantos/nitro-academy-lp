@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { TrailCardProps } from "@/types/card";
 import { useTranslations } from "next-intl";
+import { EM_BREVE } from "@/config/features";
 
 interface TrailCoursesListProps {
   trail: TrailCardProps;
@@ -48,12 +49,18 @@ export default function TrailCoursesList({ trail }: TrailCoursesListProps) {
                   <h3 className="text-xl font-bold text-[#1e1b4b] flex-1">
                     {curso.title}
                   </h3>
-                  <Link
-                    href={`/pt/curso/${curso.slug}`}
-                    className="text-theme-orange hover:text-orange-600 font-semibold text-sm ml-4"
-                  >
-                    {t("view_details")} →
-                  </Link>
+                  {EM_BREVE ? (
+                    <span className="text-gray-400 font-semibold text-sm ml-4 cursor-not-allowed">
+                      {t("view_details")} (em breve) →
+                    </span>
+                  ) : (
+                    <Link
+                      href={`/pt/curso/${curso.slug}`}
+                      className="text-theme-orange hover:text-orange-600 font-semibold text-sm ml-4"
+                    >
+                      {t("view_details")} →
+                    </Link>
+                  )}
                 </div>
 
                 <p className="text-gray-600 mb-4 line-clamp-3">
@@ -81,7 +88,7 @@ export default function TrailCoursesList({ trail }: TrailCoursesListProps) {
                 </div>
 
                 {/* Mentor do curso */}
-                {curso.mentor && (
+                {curso.mentor && curso.mentor.name && curso.mentor.image && (
                   <div className="border-t pt-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
@@ -111,18 +118,6 @@ export default function TrailCoursesList({ trail }: TrailCoursesListProps) {
                             {curso.mentor.profissao}
                           </p>
                         )}
-                        <div className="flex items-center gap-4 mt-1">
-                          {curso.mentor.students > 0 && (
-                            <span className="text-xs text-gray-500">
-                              {curso.mentor.students} {t("students")}
-                            </span>
-                          )}
-                          {curso.mentor.courses > 0 && (
-                            <span className="text-xs text-gray-500">
-                              {curso.mentor.courses} {t("courses")}
-                            </span>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>

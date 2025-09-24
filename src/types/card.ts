@@ -114,7 +114,7 @@ export interface CardProps {
     rating: number;
     comment: string;
   }>;
-  plano?: "gold" | "black";
+  plano?: "Gold" | "Black";
 }
 
 export interface TrailCardProps {

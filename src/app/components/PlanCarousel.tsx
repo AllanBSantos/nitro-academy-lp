@@ -11,7 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import CardVariant from "@/components/CardVariant";
+import CourseCard from "@/app/components/CourseCard";
 
 interface PlanCarouselProps {
   locale: string;
@@ -91,11 +91,7 @@ export default function PlanCarousel({ locale, planType }: PlanCarouselProps) {
                   className="pl-2 md:pl-4 basis-[90%] md:basis-[40%] lg:basis-[25%]"
                 >
                   <div className="h-full">
-                    <CardVariant
-                      {...course}
-                      title={course.title}
-                      description={course.description}
-                    />
+                    <CourseCard {...course} />
                   </div>
                 </CarouselItem>
               ))}
