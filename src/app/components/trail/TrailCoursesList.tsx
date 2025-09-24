@@ -10,6 +10,7 @@ interface TrailCoursesListProps {
 
 export default function TrailCoursesList({ trail }: TrailCoursesListProps) {
   const t = useTranslations("TrailCard");
+  const commonT = useTranslations("common");
 
   const getFlagSrc = (pais?: string) => {
     const brazilFlag = "/en/brasil-flag.png";
@@ -85,6 +86,29 @@ export default function TrailCoursesList({ trail }: TrailCoursesListProps) {
                     <span className="font-medium">{t("model")}:</span>
                     <span>{curso.modelo || "Projetos + Discussão"}</span>
                   </div>
+                  {curso.plano && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium text-gray-600">Plano:</span>
+                      <div
+                        className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                          curso.plano.toLowerCase() === "gold"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            curso.plano.toLowerCase() === "gold"
+                              ? "bg-yellow-500"
+                              : "bg-gray-500"
+                          }`}
+                        ></div>
+                        {curso.plano.toLowerCase() === "gold"
+                          ? commonT("plan_gold")
+                          : commonT("plan_black")}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Mentor do curso */}
