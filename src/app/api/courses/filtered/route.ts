@@ -21,10 +21,6 @@ const safeFetch = async (url: string, options: RequestInit = {}) => {
 
 async function verifyUserRole(token: string) {
   try {
-    console.log(
-      "verifyUserRole called with token:",
-      token.substring(0, 20) + "..."
-    );
     const tokenParts = token.split(".");
     if (tokenParts.length !== 3) {
       throw new Error("Token inválido");
@@ -33,8 +29,6 @@ async function verifyUserRole(token: string) {
     const payload = JSON.parse(atob(tokenParts[1]));
     const userId = payload.id;
     const userEmail = payload.email;
-
-    console.log("Token payload:", { userId, userEmail });
 
     if (!userId) {
       throw new Error("Token não contém ID do usuário");
@@ -49,17 +43,11 @@ async function verifyUserRole(token: string) {
 
     // Check if this is a WhatsApp user (ID 999)
     if (userId === 999 && userEmail && userEmail.includes("@whatsapp.user")) {
-      console.log("Processing WhatsApp user:", userEmail);
       // This is a WhatsApp user, extract WhatsApp number
       const whatsappNumber = userEmail.replace("@whatsapp.user", "");
-      console.log("WhatsApp number:", whatsappNumber);
 
       // Try to find student by WhatsApp number (try both formats)
       try {
-        console.log(
-          "Searching for student with WhatsApp number:",
-          whatsappNumber
-        );
         const studentResponse = await safeFetch(
           `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${whatsappNumber}`,
           {
@@ -76,10 +64,6 @@ async function verifyUserRole(token: string) {
           // If not found, try without country code
           if (studentData.data && studentData.data.length === 0) {
             const withoutCountryCode = whatsappNumber.replace(/^55/, "");
-            console.log(
-              "Trying student search without country code:",
-              withoutCountryCode
-            );
             const newStudentResponse = await safeFetch(
               `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
               {
@@ -96,7 +80,6 @@ async function verifyUserRole(token: string) {
         }
 
         if (studentData && studentData.data && studentData.data.length > 0) {
-          console.log("Student found:", studentData.data[0].id);
           // Student found
           return {
             userId: 999,
@@ -116,10 +99,6 @@ async function verifyUserRole(token: string) {
 
       // Try to find mentor by WhatsApp number (try both formats)
       try {
-        console.log(
-          "Searching for mentor with WhatsApp number:",
-          whatsappNumber
-        );
         const mentorResponse = await safeFetch(
           `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${whatsappNumber}&locale=pt-BR`,
           {
@@ -136,10 +115,6 @@ async function verifyUserRole(token: string) {
           // If not found, try without country code
           if (mentorData.data && mentorData.data.length === 0) {
             const withoutCountryCode = whatsappNumber.replace(/^55/, "");
-            console.log(
-              "Trying mentor search without country code:",
-              withoutCountryCode
-            );
             const newMentorResponse = await safeFetch(
               `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
               {
@@ -156,7 +131,6 @@ async function verifyUserRole(token: string) {
         }
 
         if (mentorData && mentorData.data && mentorData.data.length > 0) {
-          console.log("Mentor found:", mentorData.data[0].id);
           // Mentor found
           return {
             userId: 999,
@@ -176,10 +150,6 @@ async function verifyUserRole(token: string) {
 
       // Try to find admin by WhatsApp number (try both formats)
       try {
-        console.log(
-          "Searching for admin with WhatsApp number:",
-          whatsappNumber
-        );
         const adminResponse = await safeFetch(
           `${STRAPI_URL}/api/admins?filters[celular][$eq]=${whatsappNumber}`,
           {
@@ -196,10 +166,6 @@ async function verifyUserRole(token: string) {
           // If not found, try without country code
           if (adminData.data && adminData.data.length === 0) {
             const withoutCountryCode = whatsappNumber.replace(/^55/, "");
-            console.log(
-              "Trying admin search without country code:",
-              withoutCountryCode
-            );
             const newAdminResponse = await safeFetch(
               `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
               {
@@ -216,7 +182,6 @@ async function verifyUserRole(token: string) {
         }
 
         if (adminData && adminData.data && adminData.data.length > 0) {
-          console.log("Admin found:", adminData.data[0].id);
           // Admin found
           return {
             userId: 999,
@@ -235,9 +200,6 @@ async function verifyUserRole(token: string) {
         console.error("Error searching for admin:", error);
       }
 
-      console.log(
-        "No user found for WhatsApp number, returning authenticated role"
-      );
       // If not found, return authenticated role
       return {
         userId: 999,
@@ -253,17 +215,16 @@ async function verifyUserRole(token: string) {
     }
 
     // Original logic for regular Strapi users
-    console.log("Processing regular Strapi user:", userId);
     const userResponse = await safeFetch(
       `${STRAPI_URL}/api/users/${userId}?populate=*`,
       {
         headers: {
-          //  Authorization: `Bearer ${ADMIN_TOKEN}`,
+          // Temporarily removing auth for public endpoints
+          // Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
 
-    console.log("User response status:", userResponse?.status);
     if (!userResponse || !userResponse.ok) {
       const errorText = userResponse
         ? await userResponse.text()
@@ -277,25 +238,18 @@ async function verifyUserRole(token: string) {
     }
 
     const userData = await userResponse.json();
-    console.log("User data received:", {
-      id: userData.id,
-      roleId: userData.role?.id,
-      hasMentor: !!userData.mentor,
-      hasStudent: !!userData.student,
-    });
 
     // Get user's role details
-    console.log("Fetching role details for role ID:", userData.role.id);
     const roleResponse = await safeFetch(
       `${STRAPI_URL}/api/users-permissions/roles/${userData.role.id}`,
       {
         headers: {
+          // Temporarily removing auth for public endpoints
           // Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
 
-    console.log("Role response status:", roleResponse?.status);
     if (!roleResponse || !roleResponse.ok) {
       const errorText = roleResponse
         ? await roleResponse.text()
@@ -309,11 +263,6 @@ async function verifyUserRole(token: string) {
     }
 
     const roleData = await roleResponse.json();
-    console.log("Role data received:", {
-      roleId: roleData.role?.id,
-      roleType: roleData.role?.type,
-      roleName: roleData.role?.name,
-    });
 
     return {
       userId: userData.id,
@@ -349,12 +298,6 @@ export async function POST(request: NextRequest) {
     const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
 
-    console.log("Environment check:", {
-      STRAPI_URL: STRAPI_URL ? "SET" : "NOT SET",
-      ADMIN_TOKEN: ADMIN_TOKEN ? "SET" : "NOT SET",
-      NODE_ENV: process.env.NODE_ENV,
-    });
-
     if (!STRAPI_URL || !ADMIN_TOKEN) {
       console.error("Missing environment variables:", {
         STRAPI_URL: !!STRAPI_URL,
@@ -375,17 +318,16 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      console.log("Testing Strapi connectivity...");
       const healthResponse = await safeFetch(
         `${STRAPI_URL}/api/cursos?pagination[limit]=1`,
         {
           headers: {
+            // Temporarily removing auth for public endpoints
             // Authorization: `Bearer ${ADMIN_TOKEN}`,
           },
         }
       );
 
-      console.log("Strapi health check status:", healthResponse?.status);
       if (!healthResponse || !healthResponse.ok) {
         const errorText = healthResponse
           ? await healthResponse.text()
@@ -420,17 +362,7 @@ export async function POST(request: NextRequest) {
     // Verify user role using helper function
     let userRole;
     try {
-      console.log(
-        "Starting role verification for token:",
-        token.substring(0, 20) + "..."
-      );
       userRole = await verifyUserRole(token);
-      console.log("Role verification successful:", {
-        userId: userRole.userId,
-        roleType: userRole.role.type,
-        mentorId: userRole.mentorId,
-        studentId: userRole.studentId,
-      });
     } catch (error) {
       console.error("Role verification failed:", error);
       return NextResponse.json(
@@ -443,14 +375,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch courses based on user role
-    let coursesUrl = `${STRAPI_URL}/api/cursos?populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&populate[mentor][fields][0]=nome&populate[campanha][fields][0]=id&populate[campanha][fields][1]=nome&populate[campanha][fields][2]=createdAt&locale=pt-BR`;
+    let coursesUrl = `${STRAPI_URL}/api/cursos?populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&populate[mentor][fields][0]=nome&populate[campanhas][fields][0]=id&populate[campanhas][fields][1]=nome&populate[campanhas][fields][2]=createdAt&locale=pt-BR`;
 
     if (userRole.role.type === "mentor") {
       // Mentor: filter by habilitado = true and mentor ID
       coursesUrl += `&filters[habilitado][$eq]=true`;
       if (userRole.mentorId) {
         coursesUrl += `&filters[mentor][id][$eq]=${userRole.mentorId}`;
-        console.log("Mentor courses URL:", coursesUrl);
       } else {
         // Mentor without mentorId: deny access - needs to complete identification
         return NextResponse.json(
@@ -471,14 +402,12 @@ export async function POST(request: NextRequest) {
     }
     // Admin: show all courses (including habilitado = false)
 
-    console.log("Fetching courses from URL:", coursesUrl);
     const coursesResponse = await safeFetch(coursesUrl, {
       headers: {
         // Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
 
-    console.log("Courses response status:", coursesResponse?.status);
     if (!coursesResponse || !coursesResponse.ok) {
       const errorText = coursesResponse
         ? await coursesResponse.text()
@@ -495,10 +424,6 @@ export async function POST(request: NextRequest) {
     }
 
     const coursesData = await coursesResponse.json();
-    console.log("Courses data received:", {
-      dataLength: coursesData.data?.length || 0,
-      hasData: !!coursesData.data,
-    });
 
     return NextResponse.json({
       courses: coursesData.data || [],

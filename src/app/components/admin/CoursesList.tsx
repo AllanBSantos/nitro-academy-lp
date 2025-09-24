@@ -23,11 +23,13 @@ interface CourseStats {
   studentCount: number;
   totalSpots: number;
   availableSpots: number;
-  campanha?: {
-    id: number;
-    nome: string;
-    createdAt: string;
-  } | null;
+  campanhas?:
+    | {
+        id: number;
+        nome: string;
+        createdAt: string;
+      }[]
+    | null;
 }
 
 interface Course {
@@ -36,11 +38,13 @@ interface Course {
   documentId: string;
   alunos: unknown[];
   cronograma: unknown[];
-  campanha?: {
-    id: number;
-    nome: string;
-    createdAt: string;
-  } | null;
+  campanhas?:
+    | {
+        id: number;
+        nome: string;
+        createdAt: string;
+      }[]
+    | null;
 }
 
 interface Campaign {
@@ -128,7 +132,7 @@ export function CoursesList() {
             studentCount,
             totalSpots,
             availableSpots,
-            campanha: course.campanha,
+            campanhas: course.campanhas,
           };
         });
 
@@ -168,8 +172,11 @@ export function CoursesList() {
   // Filter courses by selected campaign
   const filteredCourseStats = courseStats.filter((course) => {
     if (selectedCampaign === "all") return true;
-    if (selectedCampaign === "no-campaign") return !course.campanha;
-    return course.campanha?.id.toString() === selectedCampaign;
+    if (selectedCampaign === "no-campaign")
+      return !course.campanhas || course.campanhas.length === 0;
+    return course.campanhas?.some(
+      (campanha) => campanha.id.toString() === selectedCampaign
+    );
   });
 
   const sortedCourseStats = [...filteredCourseStats].sort((a, b) => {
