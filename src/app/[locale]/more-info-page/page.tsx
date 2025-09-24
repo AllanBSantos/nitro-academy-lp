@@ -1,6 +1,5 @@
 import Header from "@/app/components/Header";
 import { ReactNode } from "react";
-import CarouselClient from "@/app/components/CarouselClient";
 import PlanCarousel from "@/app/components/PlanCarousel";
 import Footer from "@/app/components/Footer";
 import MentorsGrid from "@/app/components/MentorsGrid";

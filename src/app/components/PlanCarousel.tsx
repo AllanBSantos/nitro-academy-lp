@@ -41,8 +41,6 @@ export default function PlanCarousel({ locale, planType }: PlanCarouselProps) {
   }, [locale, planType]);
 
   const planTitle = planType === "gold" ? t("plan_gold") : t("plan_black");
-  const planColor = planType === "gold" ? "yellow" : "gray";
-  const planBgColor = planType === "gold" ? "bg-yellow-50" : "bg-gray-50";
   const planTextColor =
     planType === "gold" ? "text-yellow-800" : "text-gray-800";
   const planBorderColor =
