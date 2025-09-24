@@ -236,7 +236,9 @@
     "course_in_english": "Course in English",
     "course_in_portuguese": "Course in Portuguese",
     "new_course": "New course",
-    "new_mentor": "New mentor"
+    "new_mentor": "New mentor",
+    "plan_gold": "Gold Plan",
+    "plan_black": "Black Plan"
   },
   "TimeSelection": {
     "only": "Only",
@@ -478,6 +480,11 @@
       "competencies": {
         "title": "Developed Competencies",
         "default": "Creativity, critical thinking, problem-solving"
+      },
+      "plan": {
+        "title": "Plan",
+        "gold": "Gold Plan - Complete access to all resources and premium support",
+        "black": "Black Plan - Premium experience with exclusive resources and personalized mentoring"
       },
       "final_project": {
         "title": "Final Project",

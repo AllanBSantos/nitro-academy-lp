@@ -223,4 +223,5 @@ export interface Course {
     nome: string;
     data: string;
   }> | null;
+  plano?: "gold" | "black";
 }

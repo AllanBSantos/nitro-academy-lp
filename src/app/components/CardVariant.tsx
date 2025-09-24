@@ -16,6 +16,7 @@ export default function Card({
   badge,
   lingua,
   alunos = [],
+  plano,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
@@ -265,6 +266,19 @@ export default function Card({
               <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
                 {faixaEtaria}
               </span>
+              {plano && (
+                <span
+                  className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    plano?.toLowerCase().trim() === "gold"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-gray-800 text-white"
+                  }`}
+                >
+                  {plano?.toLowerCase().trim() === "gold"
+                    ? commonT("plan_gold")
+                    : commonT("plan_black")}
+                </span>
+              )}
               {allClassesFull ? (
                 <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">
                   {t("class_full")}

@@ -234,7 +234,9 @@
     "course_in_english": "Curso em Inglês",
     "course_in_portuguese": "Curso em Português",
     "new_course": "Curso novo",
-    "new_mentor": "Mentor novo"
+    "new_mentor": "Mentor novo",
+    "plan_gold": "Plano Gold",
+    "plan_black": "Plano Black"
   },
   "TimeSelection": {
     "only": "Apenas",
@@ -479,6 +481,11 @@
       "competencies": {
         "title": "Competências Desenvolvidas",
         "default": "Criatividade, pensamento crítico, resolução de problemas"
+      },
+      "plan": {
+        "title": "Plano",
+        "gold": "Plano Gold - Acesso completo a todos os recursos e suporte premium",
+        "black": "Plano Black - Experiência premium com recursos exclusivos e mentoria personalizada"
       },
       "final_project": {
         "title": "Projetos",

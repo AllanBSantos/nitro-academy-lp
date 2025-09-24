@@ -114,4 +114,5 @@ export interface CardProps {
     rating: number;
     comment: string;
   }>;
+  plano?: "gold" | "black";
 }
