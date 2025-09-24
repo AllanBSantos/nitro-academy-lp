@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CardProps } from "@/types/card";
+import { EM_BREVE } from "@/config/features";
 
 export default function Card({
   slug,
@@ -161,144 +162,156 @@ export default function Card({
     }
   };
 
-  return (
+  const CardContent = () => (
+    <div className="relative group h-full">
+      <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+        <div className="relative h-[140px] w-full flex-shrink-0">
+          {image ? (
+            <Image
+              src={image}
+              alt={title || ""}
+              fill
+              className="object-cover"
+              priority
+              onError={(e) => {
+                console.error("Error loading image:", image);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500">No image available</span>
+            </div>
+          )}
+
+          {/* Language label */}
+          <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 shadow-sm">
+            <svg
+              className="w-3 h-3 text-[#3B82F6]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+              />
+            </svg>
+            <span className="text-xs font-medium text-[#1e1b4b]">
+              {isEnglishCourse ? "EN" : "PT-BR"}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 flex flex-col gap-3 flex-grow">
+          <div className="flex items-start justify-between">
+            <div className="flex-grow">
+              <h2 className="text-lg font-bold text-gray-800 h-[3.5rem] line-clamp-2 mb-2">
+                {title}
+              </h2>
+              {mentor && mentor.name && (
+                <div className="flex items-center gap-2 h-8">
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                    <Image
+                      src={mentor.image}
+                      alt={mentor.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-sm text-gray-600 truncate">
+                    {mentor.name}
+                  </span>
+                  <Image
+                    src={getFlagSrc(mentor.pais)}
+                    alt={mentor.pais || "Brasil"}
+                    width={20}
+                    height={20}
+                    className="inline w-5 h-5 rounded-sm ml-1"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {mentor && mentor.name && (
+            <div className="flex items-center gap-1 h-5">
+              {mentorRating > 0 ? (
+                <>
+                  <span className="text-sm text-gray-600 mr-1">
+                    {mentorRating.toFixed(1)}
+                  </span>
+                  {renderStars(mentorRating)}
+                  {mentorReviewCount > 0 && (
+                    <span className="text-xs text-gray-500 ml-1">
+                      ({mentorReviewCount})
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                  {commonT("new_mentor")}
+                </span>
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+              {faixaEtaria}
+            </span>
+            {plano && (
+              <span
+                className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  plano?.toLowerCase().trim() === "gold"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-800 text-white"
+                }`}
+              >
+                {plano?.toLowerCase().trim() === "gold"
+                  ? commonT("plan_gold")
+                  : commonT("plan_black")}
+              </span>
+            )}
+            {EM_BREVE ? (
+              <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                Em breve
+              </span>
+            ) : allClassesFull ? (
+              <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">
+                {t("class_full")}
+              </span>
+            ) : (
+              renderBadge()
+            )}
+          </div>
+
+          <div className="mt-auto">
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">{t("start_date")}</span>
+              <span className="text-base font-bold text-theme-orange">
+                Março/2026
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return EM_BREVE ? (
+    <div className="block h-[420px]">
+      <CardContent />
+    </div>
+  ) : (
     <Link
       id="card-link"
       href={`/${locale}/curso/${slug}`}
       className="block h-[420px] transition-transform hover:scale-[1.02] duration-200"
     >
-      <div className="relative group h-full">
-        <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-          <div className="relative h-[140px] w-full flex-shrink-0">
-            {image ? (
-              <Image
-                src={image}
-                alt={title || ""}
-                fill
-                className="object-cover"
-                priority
-                onError={(e) => {
-                  console.error("Error loading image:", image);
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
-                <span className="text-gray-500">No image available</span>
-              </div>
-            )}
-
-            {/* Language label */}
-            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 shadow-sm">
-              <svg
-                className="w-3 h-3 text-[#3B82F6]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                />
-              </svg>
-              <span className="text-xs font-medium text-[#1e1b4b]">
-                {isEnglishCourse ? "EN" : "PT-BR"}
-              </span>
-            </div>
-          </div>
-
-          <div className="p-4 flex flex-col gap-3 flex-grow">
-            <div className="flex items-start justify-between">
-              <div className="flex-grow">
-                <h2 className="text-lg font-bold text-gray-800 h-[3.5rem] line-clamp-2 mb-2">
-                  {title}
-                </h2>
-                {mentor && mentor.name && (
-                  <div className="flex items-center gap-2 h-8">
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                      <Image
-                        src={mentor.image}
-                        alt={mentor.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <span className="text-sm text-gray-600 truncate">
-                      {mentor.name}
-                    </span>
-                    <Image
-                      src={getFlagSrc(mentor.pais)}
-                      alt={mentor.pais || "Brasil"}
-                      width={20}
-                      height={20}
-                      className="inline w-5 h-5 rounded-sm ml-1"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {mentor && mentor.name && (
-              <div className="flex items-center gap-1 h-5">
-                {mentorRating > 0 ? (
-                  <>
-                    <span className="text-sm text-gray-600 mr-1">
-                      {mentorRating.toFixed(1)}
-                    </span>
-                    {renderStars(mentorRating)}
-                    {mentorReviewCount > 0 && (
-                      <span className="text-xs text-gray-500 ml-1">
-                        ({mentorReviewCount})
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                    {commonT("new_mentor")}
-                  </span>
-                )}
-              </div>
-            )}
-
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
-                {faixaEtaria}
-              </span>
-              {plano && (
-                <span
-                  className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    plano?.toLowerCase().trim() === "gold"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-gray-800 text-white"
-                  }`}
-                >
-                  {plano?.toLowerCase().trim() === "gold"
-                    ? commonT("plan_gold")
-                    : commonT("plan_black")}
-                </span>
-              )}
-              {allClassesFull ? (
-                <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">
-                  {t("class_full")}
-                </span>
-              ) : (
-                renderBadge()
-              )}
-            </div>
-
-            <div className="mt-auto">
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500">{t("start_date")}</span>
-                <span className="text-base font-bold text-theme-orange">
-                  Março/2026
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CardContent />
     </Link>
   );
 }
