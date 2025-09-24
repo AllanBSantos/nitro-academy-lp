@@ -14,7 +14,6 @@ export default function Card({
   image,
   cronograma,
   badge,
-  data_inicio_curso,
   lingua,
   alunos = [],
 }: CardProps) {
@@ -71,8 +70,6 @@ export default function Card({
     return stars;
   };
   const faixaEtaria = "De 12 a 17 anos";
-  const dataInicioText = data_inicio_curso || null;
-  const dataInicio = data_inicio_curso || cronograma?.[0]?.data_inicio || "";
 
   const maxStudentsPerClass = parseInt(
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "15"
@@ -86,65 +83,19 @@ export default function Card({
         maxStudentsPerClass
     );
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [year, month, day] = dateString.split("-");
-    const months = {
-      pt: {
-        "01": "Janeiro",
-        "02": "Fevereiro",
-        "03": "Março",
-        "04": "Abril",
-        "05": "Maio",
-        "06": "Junho",
-        "07": "Julho",
-        "08": "Agosto",
-        "09": "Setembro",
-        "10": "Outubro",
-        "11": "Novembro",
-        "12": "Dezembro",
-      },
-      en: {
-        "01": "January",
-        "02": "February",
-        "03": "March",
-        "04": "April",
-        "05": "May",
-        "06": "June",
-        "07": "July",
-        "08": "August",
-        "09": "September",
-        "10": "October",
-        "11": "November",
-        "12": "December",
-      },
-    };
-    const currentLocale = locale === "pt" ? "pt" : "en";
-    return `${day} ${currentLocale === "pt" ? "de" : ""} ${
-      months[currentLocale][month as keyof typeof months.pt]
-    }`;
-  };
-
-  const getDaysRemaining = (startDate: string) => {
+  const getDaysRemaining = () => {
     const today = new Date();
-    const start = new Date(startDate);
+    const start = new Date("2026-03-01"); // Março/2026
     const diffTime = start.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
-  };
-
-  const isCourseStarted = (startDate: string) => {
-    const today = new Date();
-    const start = new Date(startDate);
-    return today > start;
   };
 
   const renderBadge = () => {
     const badges: JSX.Element[] = [];
 
     if (badge && badge !== "nenhum") {
-      const daysRemaining = getDaysRemaining(dataInicio);
+      const daysRemaining = getDaysRemaining();
       if (badge === "dias_faltantes" && daysRemaining < 0)
         return badges.length > 0 ? badges : null;
 
