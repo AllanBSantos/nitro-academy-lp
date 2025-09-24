@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import PlanCarousel from "@/app/components/PlanCarousel";
 import Footer from "@/app/components/Footer";
 import MentorsGrid from "@/app/components/MentorsGrid";
+import CoursesTrailsToggle from "@/app/components/CoursesTrailsToggle";
 import { fetchCurrentCampaign } from "@/lib/strapi";
 import { useTranslations } from "next-intl";
 import ImpactStats from "@/app/components/ImpactStats";
@@ -526,27 +527,8 @@ export default function MoreInfoPage({
       {/* @ts-ignore Async Server Component */}
       <ScheduleSection />
 
-      {/* Courses Section  */}
-      {/* Courses Section - Separated by Plans */}
-      <section className="bg-white">
-        <div className="w-full px-6 md:px-10 lg:px-20 py-10 sm:py-14">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Nossos Cursos
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Escolha o plano que melhor se adapta às suas necessidades e
-              descubra cursos incríveis para desenvolver seus adolescentes
-            </p>
-          </div>
-
-          {/* Gold Plan Courses */}
-          <PlanCarousel locale={params.locale} planType="gold" />
-
-          {/* Black Plan Courses */}
-          <PlanCarousel locale={params.locale} planType="black" />
-        </div>
-      </section>
+      {/* Courses and Trails Section */}
+      <CoursesTrailsToggle locale={params.locale} />
 
       {/* Testimonials Section */}
       <Reviews />
