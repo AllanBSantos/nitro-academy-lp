@@ -106,6 +106,7 @@ export async function getCardsContent(
         }
         return [];
       })(),
+      plano: course.plano || undefined,
     };
     return mappedCourse;
   });

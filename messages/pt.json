@@ -278,7 +278,9 @@
     "course_in_english": "Curso em Inglês",
     "course_in_portuguese": "Curso em Português",
     "new_course": "Curso novo",
-    "new_mentor": "Mentor novo"
+    "new_mentor": "Mentor novo",
+    "plan_gold": "Plano Gold",
+    "plan_black": "Plano Black"
   },
   "TimeSelection": {
     "only": "Apenas",
@@ -524,6 +526,11 @@
         "title": "Competências Desenvolvidas",
         "default": "Criatividade, pensamento crítico, resolução de problemas"
       },
+      "plan": {
+        "title": "Plano",
+        "gold": "Plano Gold - Acesso completo a todos os recursos e suporte premium",
+        "black": "Plano Black - Experiência premium com recursos exclusivos e mentoria personalizada"
+      },
       "final_project": {
         "title": "Projetos",
         "default": "Projeto prático aplicando os conhecimentos adquiridos"
@@ -620,6 +627,10 @@
           "label": "Ordenar por",
           "alphabetical": "Nome (A-Z)",
           "enrolled_desc": "Alunos matriculados (maior primeiro)"
+        },
+        "filter": {
+          "campaign": "Filtrar por campanha",
+          "all_campaigns": "Todas as campanhas"
         },
         "actions": {
           "export_pdf": "Exportar PDF"
@@ -769,6 +780,22 @@
       "phone": "Telefone",
       "birth_date": "Data de Nascimento",
       "created_at": "Data de Criação"
+    },
+    "allStudentsList": {
+      "title": "Listagem de Alunos",
+      "description": "Todos os alunos habilitados no sistema",
+      "loading": "Carregando lista de alunos...",
+      "try_again": "Tentar novamente",
+      "refresh": "Atualizar",
+      "download_csv": "Baixar CSV",
+      "no_students_found": "Nenhum aluno habilitado encontrado",
+      "all_students_tab": "Listagem de Alunos",
+      "unlinked_students_tab": "Alunos sem Vínculos",
+      "student_name": "Nome do Aluno",
+      "student_phone": "Telefone do Aluno",
+      "responsible_name": "Nome do Responsável",
+      "responsible_phone": "Telefone do Responsável",
+      "courses": "Cursos"
     }
   },
   "CourseRating": {
@@ -827,7 +854,7 @@
       "show_more": "Mostrar mais",
       "full_text": {
         "p1": "Atualmente, os adolescentes vivem imersos em tecnologia cercados por redes sociais, jogos, filmes, séries e distrações digitais que só aumentam.",
-        "p2": "Com isso, cresce também a ansiedade, o imediatismo e a dificuldade de se manterem focados em algo que exige constância e propósito.\n\nMuitas famílias se preocupam com esse cenário, especialmente diante de um mundo em constante transformação, impulsionado pelo avanço acelerado da tecnologia.\n\nSão pais que desejam mais do que o ensino escolar tradicional; que procuram alternativas educativas, divertidas e alinhadas com a realidade atual, mas enfrentam o desafio de encontrar soluções que realmente façam sentido para a rotina e os interesses dos filhos.\n\nA Nitro Academy foi fundada exatamente por esses motivos, por dois pais que viram seus próprios filhos desperdiçando tempo precioso em telas.\n\nA Nitro oferece mentorias online e síncronas com profissionais experientes, cursos que respeitam os interesses de cada adolescente e projetos que desenvolvem competências essenciais para o futuro, como criatividade, autonomia, pensamento crítico e trabalho em equipe.\n\nEntre os cursos oferecidos estão temas atuais e relevantes como liderança, comunicação, empreendedorismo, fotografia, nutrição e saúde, todos conectados com o mundo real e voltados para despertar o potencial de cada adolescente.\n\nMais do que auxiliar nas escolhas do curso que será realizado na faculdade, a Nitro ajuda os adolescentes a encontrar seu caminho com propósito, usando seus talentos para contribuir com a sociedade."
+        "p2": "Com isso, cresce também a ansiedade, o imediatismo e a dificuldade de se manterem focados em algo que exige constância e propósito.\n\nMuitas famílias se preocupam com esse cenário, especialmente diante de um mundo em constante transformação, impulsionado pelo avanço acelerado da tecnologia.\n\nSão pais que desejam mais do que o ensino escolar tradicional; que procuram alternativas educativas, divertidas e alinhadas com a realidade atual, mas enfrentam o desafio de encontrar soluções que realmente façam sentido para a rotina e os interesses dos filhos.\n\nA Nitro Academy foi fundada exatamente por esses motivos, por dois pais que viram seus próprios filhos desperdiçando tempo precioso em telas.\n\nA Nitro oferece mentorias online e síncronas com profissionais experientes, cursos que respeitam os interesses de cada adolescente e projetos que desenvolvem competências essenciais para o futuro, como criatividade, autonomia, pensamento crítico e trabalho em equipe.\n\nEntre os cursos oferecidos estão temas atuais relevantes , como liderança, comunicação, empreendedorismo, inteligência artificial, entre outros, todos conectados com o mundo real e voltados para despertar o potencial e as habilidades empreendedoras de cada adolescente.\n\nMais do que auxiliar nas escolhas do curso que será realizado na faculdade, a Nitro ajuda os adolescentes a encontrar seu caminho com propósito, usando seus talentos para contribuir com a sociedade."
       },
       "parents_challenge": {
         "title": "O Desafio dos Pais Modernos",

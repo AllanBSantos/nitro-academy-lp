@@ -23,6 +23,11 @@ interface CourseStats {
   studentCount: number;
   totalSpots: number;
   availableSpots: number;
+  campanha?: {
+    id: number;
+    nome: string;
+    createdAt: string;
+  } | null;
 }
 
 interface Course {
@@ -31,6 +36,17 @@ interface Course {
   documentId: string;
   alunos: unknown[];
   cronograma: unknown[];
+  campanha?: {
+    id: number;
+    nome: string;
+    createdAt: string;
+  } | null;
+}
+
+interface Campaign {
+  id: number;
+  nome: string;
+  createdAt: string;
 }
 
 export function CoursesList() {
@@ -38,10 +54,12 @@ export function CoursesList() {
   const router = useRouter();
   const params = useParams();
   const [courseStats, setCourseStats] = useState<CourseStats[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   type SortOption = "alphabetical" | "enrolled";
   const [sortOption, setSortOption] = useState<SortOption>("alphabetical");
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
 
   useEffect(() => {
     const loadData = async () => {
@@ -53,20 +71,32 @@ export function CoursesList() {
           return;
         }
 
-        // Use secure filtered courses API
-        const response = await fetch("/api/courses/filtered", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
+        // Load campaigns and courses in parallel
+        const [campaignsResponse, coursesResponse] = await Promise.all([
+          fetch(`/api/campaigns?locale=${params.locale}`),
+          fetch("/api/courses/filtered", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+          }),
+        ]);
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
+        // Handle campaigns response
+        if (campaignsResponse.ok) {
+          const campaignsData = await campaignsResponse.json();
+          setCampaigns(campaignsData.data || []);
+        } else {
+          console.error("Error loading campaigns:", campaignsResponse.status);
+        }
+
+        // Handle courses response
+        if (!coursesResponse.ok) {
+          const errorData = await coursesResponse.json().catch(() => ({}));
 
           // Check if mentor needs identification
-          if (response.status === 403 && errorData.needsIdentification) {
+          if (coursesResponse.status === 403 && errorData.needsIdentification) {
             router.replace(`/${params.locale}/identify`);
             return;
           }
@@ -76,7 +106,7 @@ export function CoursesList() {
           return;
         }
 
-        const data = await response.json();
+        const data = await coursesResponse.json();
 
         const maxStudentsPerClass = parseInt(
           process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
@@ -98,6 +128,7 @@ export function CoursesList() {
             studentCount,
             totalSpots,
             availableSpots,
+            campanha: course.campanha,
           };
         });
 
@@ -134,7 +165,14 @@ export function CoursesList() {
     );
   }
 
-  const sortedCourseStats = [...courseStats].sort((a, b) => {
+  // Filter courses by selected campaign
+  const filteredCourseStats = courseStats.filter((course) => {
+    if (selectedCampaign === "all") return true;
+    if (selectedCampaign === "no-campaign") return !course.campanha;
+    return course.campanha?.id.toString() === selectedCampaign;
+  });
+
+  const sortedCourseStats = [...filteredCourseStats].sort((a, b) => {
     if (sortOption === "alphabetical") {
       return a.courseTitle.localeCompare(b.courseTitle, undefined, {
         sensitivity: "base",
@@ -195,23 +233,45 @@ export function CoursesList() {
           >
             <Download className="h-4 w-4" /> {t("actions.export_pdf")}
           </Button>
-          <span className="text-sm text-gray-600">{t("sort.label")}</span>
-          <Select
-            value={sortOption}
-            onValueChange={(value) => setSortOption(value as SortOption)}
-          >
-            <SelectTrigger className="w-64 text-gray-900 data-[placeholder]:text-gray-500">
-              <SelectValue placeholder={t("sort.label")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="alphabetical">
-                {t("sort.alphabetical")}
-              </SelectItem>
-              <SelectItem value="enrolled">
-                {t("sort.enrolled_desc")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">
+              {t("filter.campaign")}
+            </span>
+            <Select
+              value={selectedCampaign}
+              onValueChange={setSelectedCampaign}
+            >
+              <SelectTrigger className="w-64 text-gray-900 data-[placeholder]:text-gray-500">
+                <SelectValue placeholder={t("filter.campaign")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("filter.all_campaigns")}</SelectItem>
+                <SelectItem value="no-campaign">Sem campanha</SelectItem>
+                {campaigns.map((campaign) => (
+                  <SelectItem key={campaign.id} value={campaign.id.toString()}>
+                    {campaign.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-gray-600">{t("sort.label")}</span>
+            <Select
+              value={sortOption}
+              onValueChange={(value) => setSortOption(value as SortOption)}
+            >
+              <SelectTrigger className="w-64 text-gray-900 data-[placeholder]:text-gray-500">
+                <SelectValue placeholder={t("sort.label")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alphabetical">
+                  {t("sort.alphabetical")}
+                </SelectItem>
+                <SelectItem value="enrolled">
+                  {t("sort.enrolled_desc")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">

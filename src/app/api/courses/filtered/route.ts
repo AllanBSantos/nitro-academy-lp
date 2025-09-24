@@ -443,11 +443,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch courses based on user role
-    let coursesUrl = `${STRAPI_URL}/api/cursos?populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&populate[mentor][fields][0]=nome&locale=pt-BR`;
+    let coursesUrl = `${STRAPI_URL}/api/cursos?populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&populate[mentor][fields][0]=nome&populate[campanha][fields][0]=id&populate[campanha][fields][1]=nome&populate[campanha][fields][2]=createdAt&locale=pt-BR`;
 
     if (userRole.role.type === "mentor") {
+      // Mentor: filter by habilitado = true and mentor ID
+      coursesUrl += `&filters[habilitado][$eq]=true`;
       if (userRole.mentorId) {
-        // Mentor with mentorId: filter by mentor ID
         coursesUrl += `&filters[mentor][id][$eq]=${userRole.mentorId}`;
         console.log("Mentor courses URL:", coursesUrl);
       } else {
@@ -468,7 +469,7 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
-    // Admin: show all courses (no filter)
+    // Admin: show all courses (including habilitado = false)
 
     console.log("Fetching courses from URL:", coursesUrl);
     const coursesResponse = await safeFetch(coursesUrl, {

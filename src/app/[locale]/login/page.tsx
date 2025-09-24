@@ -128,7 +128,7 @@ export default function LoginPage() {
         Cookies.set("whatsapp_number", data.data.whatsapp, {
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
-          expires: 7, // 7 days
+          expires: 7, //  7 days
         });
       }
 

@@ -391,7 +391,7 @@ export default function CourseExchangeForm() {
                         <Badge variant="secondary">{course.nivel}</Badge>
                       </div>
 
-                      {course.mentor && (
+                      {course.mentor && course.mentor.nome && (
                         <p className="text-sm text-gray-600 mb-2">
                           <span className="font-medium">{t("mentor")}:</span>{" "}
                           {course.mentor.nome}

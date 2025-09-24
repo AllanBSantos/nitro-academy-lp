@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Star, StarHalf } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CardProps } from "@/types/card";
+import { EM_BREVE } from "@/config/features";
 
 export default function CourseCard({
   slug,
@@ -14,9 +15,9 @@ export default function CourseCard({
   image,
   cronograma,
   badge,
-  data_inicio_curso,
   lingua,
   alunos = [],
+  plano,
 }: CardProps) {
   const commonT = useTranslations("common");
   const t = useTranslations("TimeSelection");
@@ -24,7 +25,7 @@ export default function CourseCard({
   const locale = (params?.locale as string) || "pt";
   const isEnglishCourse = lingua === "ingles";
 
-  const mentorReviews = mentor.reviews || [];
+  const mentorReviews = mentor?.reviews || [];
   const mentorRating =
     mentorReviews.length > 0
       ? Number(
@@ -71,8 +72,6 @@ export default function CourseCard({
     return stars;
   };
   const faixaEtaria = "De 12 a 17 anos";
-  const dataInicioText = data_inicio_curso || null;
-  const dataInicio = data_inicio_curso || cronograma?.[0]?.data_inicio || "";
 
   const maxStudentsPerClass = parseInt(
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "15"
@@ -86,65 +85,19 @@ export default function CourseCard({
         maxStudentsPerClass
     );
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [year, month, day] = dateString.split("-");
-    const months = {
-      pt: {
-        "01": "Janeiro",
-        "02": "Fevereiro",
-        "03": "Março",
-        "04": "Abril",
-        "05": "Maio",
-        "06": "Junho",
-        "07": "Julho",
-        "08": "Agosto",
-        "09": "Setembro",
-        "10": "Outubro",
-        "11": "Novembro",
-        "12": "Dezembro",
-      },
-      en: {
-        "01": "January",
-        "02": "February",
-        "03": "March",
-        "04": "April",
-        "05": "May",
-        "06": "June",
-        "07": "July",
-        "08": "August",
-        "09": "September",
-        "10": "October",
-        "11": "November",
-        "12": "December",
-      },
-    };
-    const currentLocale = locale === "pt" ? "pt" : "en";
-    return `${day} ${currentLocale === "pt" ? "de" : ""} ${
-      months[currentLocale][month as keyof typeof months.pt]
-    }`;
-  };
-
-  const getDaysRemaining = (startDate: string) => {
+  const getDaysRemaining = () => {
     const today = new Date();
-    const start = new Date(startDate);
+    const start = new Date("2026-03-01"); // Março/2026
     const diffTime = start.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
-  };
-
-  const isCourseStarted = (startDate: string) => {
-    const today = new Date();
-    const start = new Date(startDate);
-    return today > start;
   };
 
   const renderBadge = () => {
     const badges: JSX.Element[] = [];
 
     if (badge && badge !== "nenhum") {
-      const daysRemaining = getDaysRemaining(dataInicio);
+      const daysRemaining = getDaysRemaining();
       if (badge === "dias_faltantes" && daysRemaining < 0)
         return badges.length > 0 ? badges : null;
 
@@ -209,60 +162,56 @@ export default function CourseCard({
     }
   };
 
-  return (
-    <Link
-      id="card-link"
-      href={`/${locale}/curso/${slug}`}
-      className="block h-[420px] transition-transform hover:scale-[1.02] duration-200"
-    >
-      <div className="relative group h-full">
-        <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-          <div className="relative h-[140px] w-full flex-shrink-0">
-            {image ? (
-              <Image
-                src={image}
-                alt={title || ""}
-                fill
-                className="object-cover"
-                priority
-                onError={(e) => {
-                  console.error("Error loading image:", image);
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
-                <span className="text-gray-500">No image available</span>
-              </div>
-            )}
-
-            {/* Language label */}
-            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 shadow-sm">
-              <svg
-                className="w-3 h-3 text-[#3B82F6]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                />
-              </svg>
-              <span className="text-xs font-medium text-[#1e1b4b]">
-                {isEnglishCourse ? "EN" : "PT-BR"}
-              </span>
+  const CardContent = () => (
+    <div className="relative group h-full">
+      <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+        <div className="relative h-[140px] w-full flex-shrink-0">
+          {image ? (
+            <Image
+              src={image}
+              alt={title || ""}
+              fill
+              className="object-cover"
+              priority
+              onError={(e) => {
+                console.error("Error loading image:", image);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500">No image available</span>
             </div>
-          </div>
+          )}
 
-          <div className="p-4 flex flex-col gap-3 flex-grow">
-            <div className="flex items-start justify-between">
-              <div className="flex-grow">
-                <h2 className="text-lg font-bold text-gray-800 h-[3.5rem] line-clamp-2 mb-2">
-                  {title}
-                </h2>
+          {/* Language label */}
+          <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1 shadow-sm">
+            <svg
+              className="w-3 h-3 text-[#3B82F6]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+              />
+            </svg>
+            <span className="text-xs font-medium text-[#1e1b4b]">
+              {isEnglishCourse ? "EN" : "PT-BR"}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 flex flex-col gap-3 flex-grow">
+          <div className="flex items-start justify-between">
+            <div className="flex-grow">
+              <h2 className="text-lg font-bold text-gray-800 h-[3.5rem] line-clamp-2 mb-2">
+                {title}
+              </h2>
+              {mentor && mentor.name && (
                 <div className="flex items-center gap-2 h-8">
                   <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
                     <Image
@@ -283,9 +232,11 @@ export default function CourseCard({
                     className="inline w-5 h-5 rounded-sm ml-1"
                   />
                 </div>
-              </div>
+              )}
             </div>
+          </div>
 
+          {mentor && mentor.name && (
             <div className="flex items-center gap-1 h-5">
               {mentorRating > 0 ? (
                 <>
@@ -305,36 +256,62 @@ export default function CourseCard({
                 </span>
               )}
             </div>
+          )}
 
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
-                {faixaEtaria}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+              {faixaEtaria}
+            </span>
+            {plano && (
+              <span
+                className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  plano?.toLowerCase().trim() === "gold"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-800 text-white"
+                }`}
+              >
+                {plano?.toLowerCase().trim() === "gold"
+                  ? commonT("plan_gold")
+                  : commonT("plan_black")}
               </span>
-              {allClassesFull ? (
-                <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">
-                  {t("class_full")}
-                </span>
-              ) : (
-                renderBadge()
-              )}
-            </div>
+            )}
+            {EM_BREVE ? (
+              <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                Em breve
+              </span>
+            ) : allClassesFull ? (
+              <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full font-medium">
+                {t("class_full")}
+              </span>
+            ) : (
+              renderBadge()
+            )}
+          </div>
 
-            <div className="mt-auto">
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500">{t("start_date")}</span>
-                <span className="text-base font-bold text-theme-orange">
-                  {dataInicioText ||
-                    (!isCourseStarted(dataInicio)
-                      ? formatDate(dataInicio)
-                      : locale === "pt"
-                      ? "Aulas em andamento"
-                      : "Classes in progress")}
-                </span>
-              </div>
+          <div className="mt-auto">
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">{t("start_date")}</span>
+              <span className="text-base font-bold text-theme-orange">
+                Março/2026
+              </span>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  return EM_BREVE ? (
+    <div className="block h-[420px]">
+      <CardContent />
+    </div>
+  ) : (
+    <Link
+      id="card-link"
+      href={`/${locale}/curso/${slug}`}
+      className="block h-[420px] transition-transform hover:scale-[1.02] duration-200"
+    >
+      <CardContent />
     </Link>
   );
 }

@@ -37,7 +37,7 @@
     "imagem": {
       "type": "media",
       "multiple": false,
-      "required": true,
+      "required": false,
       "allowedTypes": ["images"],
       "pluginOptions": {
         "i18n": {
@@ -241,6 +241,18 @@
       "relation": "manyToMany",
       "target": "api::trilha.trilha",
       "mappedBy": "cursos"
+    },
+    "habilitado": {
+      "type": "boolean"
+    },
+    "campanhas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::campanha.campanha"
+    },
+    "plano": {
+      "type": "enumeration",
+      "enum": ["Gold", "Black"]
     }
   }
 }

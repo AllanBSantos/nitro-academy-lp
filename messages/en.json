@@ -280,7 +280,9 @@
     "course_in_english": "Course in English",
     "course_in_portuguese": "Course in Portuguese",
     "new_course": "New course",
-    "new_mentor": "New mentor"
+    "new_mentor": "New mentor",
+    "plan_gold": "Gold Plan",
+    "plan_black": "Black Plan"
   },
   "TimeSelection": {
     "only": "Only",
@@ -523,6 +525,11 @@
         "title": "Developed Competencies",
         "default": "Creativity, critical thinking, problem-solving"
       },
+      "plan": {
+        "title": "Plan",
+        "gold": "Gold Plan - Complete access to all resources and premium support",
+        "black": "Black Plan - Premium experience with exclusive resources and personalized mentoring"
+      },
       "final_project": {
         "title": "Final Project",
         "default": "Practical project applying acquired knowledge"
@@ -619,6 +626,10 @@
           "label": "Sort by",
           "alphabetical": "Name (A-Z)",
           "enrolled_desc": "Enrolled students (highest first)"
+        },
+        "filter": {
+          "campaign": "Filter by campaign",
+          "all_campaigns": "All campaigns"
         },
         "actions": {
           "export_pdf": "Export PDF"
@@ -771,6 +782,22 @@
       "phone": "Phone",
       "birth_date": "Birth Date",
       "created_at": "Created At"
+    },
+    "allStudentsList": {
+      "title": "Students Listing",
+      "description": "All enabled students in the system",
+      "loading": "Loading students list...",
+      "try_again": "Try again",
+      "refresh": "Refresh",
+      "download_csv": "Download CSV",
+      "no_students_found": "No enabled students found",
+      "all_students_tab": "Students Listing",
+      "unlinked_students_tab": "Unlinked Students",
+      "student_name": "Student Name",
+      "student_phone": "Student Phone",
+      "responsible_name": "Responsible Name",
+      "responsible_phone": "Responsible Phone",
+      "courses": "Courses"
     }
   },
   "CourseRating": {
@@ -829,7 +856,7 @@
       "show_more": "Show more",
       "full_text": {
         "p1": "Nowadays, teenagers live immersed in technology, surrounded by social media, games, movies, series, and ever-growing digital distractions. As a result, anxiety, immediacy, and difficulty in staying focused on activities that require consistency and purpose also increase. Many families are concerned about this scenario, especially in a world that is constantly changing, driven by the rapid advancement of technology. These are parents who want more than traditional school education; they seek educational, enjoyable alternatives aligned with today's reality, but face the challenge of finding solutions that truly fit their children's routines and interests.",
-        "p2": "Nitro Academy was founded precisely for these reasons, by two parents who saw their own children wasting precious time on screens. Nitro offers online, synchronous mentorships with experienced professionals, courses that respect each teenager's interests, and projects that develop essential future skills such as creativity, autonomy, critical thinking, and teamwork. Among the courses offered are current and relevant topics such as leadership, communication, entrepreneurship, photography, nutrition, and health — all connected to the real world and aimed at awakening each teenager's potential. More than assisting in choosing a college major, Nitro helps teenagers find their path with purpose, using their talents to contribute to society."
+        "p2": "Nitro Academy was founded precisely for these reasons, by two parents who saw their own children wasting precious time on screens. Nitro offers online, synchronous mentorships with experienced professionals, courses that respect each teenager's interests, and projects that develop essential future skills such as creativity, autonomy, critical thinking, and teamwork. Among the courses offered are current relevant topics, such as leadership, communication, entrepreneurship, artificial intelligence, among others — all connected to the real world and aimed at awakening each teenager's potential and entrepreneurial skills. More than assisting in choosing a college major, Nitro helps teenagers find their path with purpose, using their talents to contribute to society."
       }
     },
     "parents_challenge": {

@@ -12,8 +12,8 @@ import {
 } from "@/app/components/ui/popover";
 import { CoursesList } from "@/components/admin/CoursesList";
 import PartnerStudentsList from "./PartnerStudentsList";
-import StudentsReport from "@/components/admin/StudentsReport";
 import ExceededStudentsReport from "@/app/components/admin/ExceededStudentsReport";
+import AllStudentsList from "@/app/components/admin/AllStudentsList";
 
 function AdminLayout() {
   const t = useTranslations("Admin.panel");
@@ -117,7 +117,7 @@ function AdminLayout() {
       case "partner-students":
         return <PartnerStudentsList />;
       case "students-report":
-        return <StudentsReport />;
+        return <AllStudentsList />;
       case "exceeded-students-report":
         return <ExceededStudentsReport />;
       default:

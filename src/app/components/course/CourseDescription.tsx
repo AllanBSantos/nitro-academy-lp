@@ -22,31 +22,33 @@ export default function CourseDescription({ course }: CourseDescriptionProps) {
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               {course.title || ""}
             </h1>
-            <div className="mb-6">
-              <button
-                onClick={() => {
-                  document
-                    .getElementById("mentor-section")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-              >
-                <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                  <Image
-                    src={course.mentor.image}
-                    alt={course.mentor.name}
-                    width={40}
-                    height={40}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <span className="text-xl font-medium">
-                    {course.mentor.name}
-                  </span>
-                </div>
-              </button>
-            </div>
+            {course.mentor && course.mentor.name && (
+              <div className="mb-6">
+                <button
+                  onClick={() => {
+                    document
+                      .getElementById("mentor-section")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                    <Image
+                      src={course.mentor.image}
+                      alt={course.mentor.name}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xl font-medium">
+                      {course.mentor.name}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            )}
             <p className="text-lg md:text-xl opacity-90 mb-8 whitespace-pre-line">
               {course.description || ""}
             </p>

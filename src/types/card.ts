@@ -44,7 +44,7 @@ export interface CardProps {
   slug: string;
   title: string;
   description: string;
-  mentor: {
+  mentor?: {
     name: string;
     image: string;
     students: number;
@@ -114,6 +114,7 @@ export interface CardProps {
     rating: number;
     comment: string;
   }>;
+  plano?: "gold" | "black";
 }
 
 export interface TrailCardProps {

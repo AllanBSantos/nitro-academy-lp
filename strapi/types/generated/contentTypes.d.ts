@@ -585,6 +585,7 @@ export interface ApiCampanhaCampanha extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    cursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     inicio_e_fim_aulas: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -660,6 +661,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     badge: Schema.Attribute.Enumeration<
       ['nenhum', 'poucos_dias', 'poucas_vagas', 'dias_faltantes']
     >;
+    campanhas: Schema.Attribute.Relation<'oneToMany', 'api::campanha.campanha'>;
     competencias: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -684,8 +686,8 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
       'componentes.emenda-resumida',
       true
     >;
+    habilitado: Schema.Attribute.Boolean;
     imagem: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -731,6 +733,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    plano: Schema.Attribute.Enumeration<['Gold', 'Black']>;
     pre_requisitos: Schema.Attribute.Text &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{

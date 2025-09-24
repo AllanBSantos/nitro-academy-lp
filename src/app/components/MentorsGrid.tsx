@@ -98,8 +98,8 @@ export default function MentorsGrid({ locale }: MentorsGridProps) {
       const courses = await getCardsContent(locale);
       const map = new Map<string, MentorItem>();
       for (const course of courses) {
-        const key = course.mentor.name || "";
-        if (!key) continue;
+        if (!course.mentor || !course.mentor.name) continue;
+        const key = course.mentor.name;
         const existing = map.get(key);
         const item: MentorItem = existing || {
           name: course.mentor.name,
