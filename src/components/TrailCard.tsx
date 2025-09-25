@@ -28,8 +28,6 @@ export default function TrailCard({
     (course) => course.plano?.toLowerCase() === "black"
   );
 
-  const coursesWithoutPlan = cursos.filter((course) => !course.plano);
-
   const hasPlans = goldCourses.length > 0 || blackCourses.length > 0;
 
   const handleTrailClick = () => {
