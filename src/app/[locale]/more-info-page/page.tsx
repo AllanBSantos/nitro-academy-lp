@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import ImpactStats from "@/app/components/ImpactStats";
 import { Badge } from "@/app/components/ui/badge";
 import Reviews from "@/app/components/Reviews";
+import OurClients from "../../../components/OurClients";
 import {
   Dialog,
   DialogContent,
@@ -550,6 +551,9 @@ export default function MoreInfoPage({
 
       {/* Testimonials Section */}
       <Reviews />
+
+      {/* Our Partners Section */}
+      <OurClients />
 
       {/* Differentiators Section */}
       <Section className="bg-slate-50">

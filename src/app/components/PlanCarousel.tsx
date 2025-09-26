@@ -70,6 +70,11 @@ export default function PlanCarousel({ locale, planType }: PlanCarouselProps) {
               }`}
             ></div>
           </div>
+          {planType === "black" && (
+            <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">
+              {t("plan_black_description")}
+            </p>
+          )}
         </div>
 
         {/* Carrossel */}

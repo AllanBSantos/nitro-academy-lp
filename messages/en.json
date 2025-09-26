@@ -238,7 +238,8 @@
     "new_course": "New course",
     "new_mentor": "New mentor",
     "plan_gold": "Gold Plan",
-    "plan_black": "Black Plan"
+    "plan_black": "Black Plan",
+    "plan_black_description": "The Black Plan includes all Gold Plan courses plus the following courses:"
   },
   "TimeSelection": {
     "only": "Only",
@@ -926,7 +927,7 @@
     "admin_role": "Administrator"
   },
   "OurClients": {
-    "title": "Our Clients",
+    "title": "Our Partners",
     "subtitle": "Schools powered by Nitro Academy"
   }
 }
