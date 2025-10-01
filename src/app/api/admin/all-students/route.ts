@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 
@@ -12,11 +12,13 @@ interface AlunoHabilitado {
     id: number;
     titulo: string;
   }>;
+  escola_parceira?: string;
+  turma?: number;
   createdAt: string;
   updatedAt: string;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     if (!STRAPI_API_URL) {
       return NextResponse.json(
@@ -25,15 +27,40 @@ export async function GET() {
       );
     }
 
+    // Extrair parâmetros de filtro da query string
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search");
+    const curso = searchParams.get("curso");
+    const escola = searchParams.get("escola");
+
+    // Construir URL base
+    let url = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&fields[0]=nome&fields[1]=telefone_aluno&fields[2]=responsavel&fields[3]=telefone_responsavel&fields[4]=escola_parceira&fields[5]=turma&fields[6]=createdAt&fields[7]=updatedAt&pagination[pageSize]=1000&publicationState=preview`;
+
+    // Adicionar filtro de pesquisa por nome
+    if (search) {
+      url += `&filters[nome][$containsi]=${encodeURIComponent(search)}`;
+    }
+
+    // Adicionar filtro por curso
+    if (curso) {
+      url += `&filters[cursos][titulo][$containsi]=${encodeURIComponent(
+        curso
+      )}`;
+    }
+
+    // Adicionar filtro por escola
+    if (escola) {
+      url += `&filters[escola_parceira][$containsi]=${encodeURIComponent(
+        escola
+      )}`;
+    }
+
     // Buscar todos os alunos habilitados com os dados necessários
-    const response = await fetch(
-      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&fields[0]=nome&fields[1]=telefone_aluno&fields[2]=responsavel&fields[3]=telefone_responsavel&fields[4]=createdAt&fields[5]=updatedAt&pagination[pageSize]=1000&publicationState=preview`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!response.ok) {
       console.error(`HTTP error! status: ${response.status}`);
@@ -52,6 +79,8 @@ export async function GET() {
         responsavel?: string;
         telefone_responsavel?: string;
         cursos?: Array<{ id: number; titulo?: string }>;
+        escola_parceira?: string;
+        turma?: number;
         createdAt?: string;
         updatedAt?: string;
       }) => ({
@@ -66,6 +95,8 @@ export async function GET() {
             titulo: curso.titulo || "",
           })
         ),
+        escola_parceira: aluno.escola_parceira || "",
+        turma: aluno.turma || undefined,
         createdAt: aluno.createdAt || "",
         updatedAt: aluno.updatedAt || "",
       })

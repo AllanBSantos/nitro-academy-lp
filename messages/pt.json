@@ -610,7 +610,7 @@
       "logout_action": "Deslogar",
       "dashboard": "Dashboard",
       "partner_students": "Lista de Alunos Escola Parceira",
-      "students_report": "Relatório de Alunos",
+      "students_report": "Lista de Alunos",
       "exceeded_students_report": "Alunos Excedentes"
     },
     "exceededStudentsReport": {

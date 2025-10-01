@@ -609,7 +609,7 @@
       "logout_action": "Logout",
       "dashboard": "Dashboard",
       "partner_students": "Partner School Students List",
-      "students_report": "Students Report",
+      "students_report": "Students List",
       "exceeded_students_report": "Exceeded Students"
     },
     "exceededStudentsReport": {
