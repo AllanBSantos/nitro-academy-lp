@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { normalizeName } from "@/lib/formatters";
 
 interface Aluno {
   id: number;
@@ -84,7 +85,9 @@ export default function StudentsReport() {
     const headers = ["Nome"];
     const csvContent = [
       headers.join(","),
-      ...reportData.alunos.map((aluno) => [`"${aluno.nome}"`].join(",")),
+      ...reportData.alunos.map((aluno) =>
+        [`"${normalizeName(aluno.nome)}"`].join(",")
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -228,7 +231,9 @@ export default function StudentsReport() {
                   <tbody>
                     {reportData.alunos.map((aluno) => (
                       <tr key={aluno.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{aluno.nome}</td>
+                        <td className="py-3 px-4">
+                          {normalizeName(aluno.nome)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

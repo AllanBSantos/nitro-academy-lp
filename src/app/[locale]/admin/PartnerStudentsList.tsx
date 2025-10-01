@@ -27,6 +27,7 @@ import {
   FileDown,
 } from "lucide-react";
 import Papa from "papaparse";
+import { normalizeName, formatPhone } from "@/lib/formatters";
 
 interface PartnerStudent {
   id: number;
@@ -556,7 +557,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
 
       // Table data
       const tableData = allStudents.map((student) => [
-        student.nome,
+        normalizeName(student.nome),
         student.cpf || "-",
         student.escola,
         student.turma || "-",
@@ -978,7 +979,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
                     {allStudents.map((student) => (
                       <tr key={student.id} className="hover:bg-gray-50">
                         <td className="border border-gray-200 px-4 py-2">
-                          {student.nome}
+                          {normalizeName(student.nome)}
                         </td>
                         <td className="border border-gray-200 px-4 py-2">
                           {student.cpf || "-"}

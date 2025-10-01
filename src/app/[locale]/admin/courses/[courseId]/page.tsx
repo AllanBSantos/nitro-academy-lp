@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl";
 import CourseEditForm from "../../../../components/admin/CourseEditForm";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { normalizeName, formatPhone } from "@/lib/formatters";
 
 interface StudentDetails {
   nome: string;
@@ -286,11 +287,15 @@ export default function CourseDashboard() {
 
     // Preparar dados para a tabela
     const tableData = sortedAlunos.map((aluno) => [
-      aluno.nome || "-",
+      normalizeName(aluno.nome || "-"),
       `Turma ${aluno.turma}`,
       aluno.escola_parceira || "-",
       formatDate(aluno.createdAt),
-      showPhone ? aluno.telefone_aluno || "-" : "-",
+      showPhone
+        ? aluno.telefone_aluno
+          ? formatPhone(aluno.telefone_aluno)
+          : "-"
+        : "-",
     ]);
 
     // Cabeçalhos da tabela
@@ -498,7 +503,9 @@ export default function CourseDashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {sortedAlunos.map((student) => {
-                    const studentName = student.nome || t("loading");
+                    const studentName = normalizeName(
+                      student.nome || t("loading")
+                    );
                     const studentInitial = studentName.charAt(0).toUpperCase();
 
                     return (
@@ -538,7 +545,9 @@ export default function CourseDashboard() {
                         {showPhone && (
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">
-                              {student.telefone_aluno || "-"}
+                              {student.telefone_aluno
+                                ? formatPhone(student.telefone_aluno)
+                                : "-"}
                             </div>
                           </td>
                         )}

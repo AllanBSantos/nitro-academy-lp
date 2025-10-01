@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Download, RefreshCw, Search, Filter, X } from "lucide-react";
 import StudentsReport from "./StudentsReport";
+import { normalizeName, formatPhone } from "@/lib/formatters";
 
 interface AlunoHabilitado {
   id: number;
@@ -170,10 +171,10 @@ export default function AllStudentsList() {
       headers.join(","),
       ...alunos.map((aluno) =>
         [
-          `"${aluno.nome}"`,
-          `"${aluno.telefone_aluno || ""}"`,
-          `"${aluno.responsavel}"`,
-          `"${aluno.telefone_responsavel}"`,
+          `"${normalizeName(aluno.nome)}"`,
+          `"${aluno.telefone_aluno ? formatPhone(aluno.telefone_aluno) : ""}"`,
+          `"${normalizeName(aluno.responsavel)}"`,
+          `"${formatPhone(aluno.telefone_responsavel)}"`,
           `"${aluno.cursos.map((c) => c.titulo).join("; ")}"`,
           `"${aluno.escola_parceira || ""}"`,
           `"${aluno.turma || ""}"`,
@@ -405,13 +406,19 @@ export default function AllStudentsList() {
                   <tbody>
                     {alunos.map((aluno) => (
                       <tr key={aluno.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{aluno.nome}</td>
                         <td className="py-3 px-4">
-                          {aluno.telefone_aluno || "-"}
+                          {normalizeName(aluno.nome)}
                         </td>
-                        <td className="py-3 px-4">{aluno.responsavel}</td>
                         <td className="py-3 px-4">
-                          {aluno.telefone_responsavel}
+                          {aluno.telefone_aluno
+                            ? formatPhone(aluno.telefone_aluno)
+                            : "-"}
+                        </td>
+                        <td className="py-3 px-4">
+                          {normalizeName(aluno.responsavel)}
+                        </td>
+                        <td className="py-3 px-4">
+                          {formatPhone(aluno.telefone_responsavel)}
                         </td>
                         <td className="py-3 px-4">
                           {aluno.cursos.length > 0 ? (
