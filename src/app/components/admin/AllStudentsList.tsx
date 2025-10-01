@@ -44,7 +44,7 @@ export default function AllStudentsList() {
   const [availableCourses, setAvailableCourses] = useState<string[]>([]);
   const [availableSchools, setAvailableSchools] = useState<string[]>([]);
 
-  const fetchAlunos = async () => {
+  const fetchAlunos = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -91,11 +91,11 @@ export default function AllStudentsList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedSearchName, selectedCourse, selectedSchool]);
 
   useEffect(() => {
     fetchAlunos();
-  }, [debouncedSearchName, selectedCourse, selectedSchool]);
+  }, [fetchAlunos]);
 
   // Debounce para o campo de pesquisa
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function AllStudentsList() {
               aluno.cursos.map((curso) => curso.titulo)
             )
           )
-        ).sort();
+        ).sort() as string[];
 
         // Extrair escolas únicas
         const schools = Array.from(
@@ -129,7 +129,7 @@ export default function AllStudentsList() {
               .map((aluno: AlunoHabilitado) => aluno.escola_parceira)
               .filter(Boolean)
           )
-        ).sort();
+        ).sort() as string[];
 
         setAvailableCourses(courses);
         setAvailableSchools(schools);

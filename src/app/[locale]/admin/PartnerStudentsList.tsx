@@ -27,7 +27,7 @@ import {
   FileDown,
 } from "lucide-react";
 import Papa from "papaparse";
-import { normalizeName, formatPhone } from "@/lib/formatters";
+import { normalizeName } from "@/lib/formatters";
 
 interface PartnerStudent {
   id: number;
