@@ -231,7 +231,12 @@ export default function CourseDashboard() {
   const availableSchools = course
     ? Array.from(
         new Set(
-          course.alunos.map((aluno) => aluno.escola_parceira).filter(Boolean)
+          course.alunos
+            .map((aluno) => aluno.escola_parceira)
+            .filter((escola: string | undefined): escola is string =>
+              Boolean(escola)
+            )
+            .map((escola: string) => normalizeName(escola))
         )
       ).sort()
     : [];
@@ -241,7 +246,8 @@ export default function CourseDashboard() {
       const turmaMatch =
         selectedTurma === "all" || aluno.turma === selectedTurma;
       const schoolMatch =
-        selectedSchool === "all" || aluno.escola_parceira === selectedSchool;
+        selectedSchool === "all" ||
+        normalizeName(aluno.escola_parceira || "") === selectedSchool;
       return turmaMatch && schoolMatch;
     }) || [];
 
@@ -289,7 +295,7 @@ export default function CourseDashboard() {
     const tableData = sortedAlunos.map((aluno) => [
       normalizeName(aluno.nome || "-"),
       `Turma ${aluno.turma}`,
-      aluno.escola_parceira || "-",
+      aluno.escola_parceira ? normalizeName(aluno.escola_parceira) : "-",
       formatDate(aluno.createdAt),
       showPhone
         ? aluno.telefone_aluno
@@ -534,7 +540,9 @@ export default function CourseDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
-                            {student.escola_parceira || "-"}
+                            {student.escola_parceira
+                              ? normalizeName(student.escola_parceira)
+                              : "-"}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

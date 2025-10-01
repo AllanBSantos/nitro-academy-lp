@@ -127,7 +127,10 @@ export default function AllStudentsList() {
           new Set(
             result.data
               .map((aluno: AlunoHabilitado) => aluno.escola_parceira)
-              .filter(Boolean)
+              .filter((escola: string | undefined): escola is string =>
+                Boolean(escola)
+              )
+              .map((escola: string) => normalizeName(escola))
           )
         ).sort() as string[];
 
@@ -176,7 +179,9 @@ export default function AllStudentsList() {
           `"${normalizeName(aluno.responsavel)}"`,
           `"${formatPhone(aluno.telefone_responsavel)}"`,
           `"${aluno.cursos.map((c) => c.titulo).join("; ")}"`,
-          `"${aluno.escola_parceira || ""}"`,
+          `"${
+            aluno.escola_parceira ? normalizeName(aluno.escola_parceira) : ""
+          }"`,
           `"${aluno.turma || ""}"`,
         ].join(",")
       ),
@@ -437,7 +442,9 @@ export default function AllStudentsList() {
                           )}
                         </td>
                         <td className="py-3 px-4">
-                          {aluno.escola_parceira || "-"}
+                          {aluno.escola_parceira
+                            ? normalizeName(aluno.escola_parceira)
+                            : "-"}
                         </td>
                         <td className="py-3 px-4">{aluno.turma || "-"}</td>
                       </tr>

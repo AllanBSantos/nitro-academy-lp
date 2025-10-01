@@ -559,7 +559,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
       const tableData = allStudents.map((student) => [
         normalizeName(student.nome),
         student.cpf || "-",
-        student.escola,
+        normalizeName(student.escola),
         student.turma || "-",
         student.isEnrolled ? "Matriculado" : "Não Matriculado",
         student.isEnrolled && student.courseInfo
@@ -985,7 +985,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
                           {student.cpf || "-"}
                         </td>
                         <td className="border border-gray-200 px-4 py-2">
-                          {student.escola}
+                          {normalizeName(student.escola)}
                         </td>
                         <td className="border border-gray-200 px-4 py-2">
                           {student.turma || "-"}
