@@ -622,7 +622,7 @@ export default function MoreInfoPage({
             <p>
               A jornada pedagógica da Nitro Academy será estruturada em projetos
               coletivos semestrais. A cada semestre, o aluno participará de um
-              projeto de 6 semanas, desenvolvendo habilidades práticas e
+              projeto de 9 semanas, desenvolvendo habilidades práticas e
               colaborativas.
             </p>
             <p>
