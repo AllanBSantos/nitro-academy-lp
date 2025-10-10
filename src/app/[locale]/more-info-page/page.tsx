@@ -1,7 +1,5 @@
-import Header from "@/app/components/Header";
 import { ReactNode } from "react";
 import PlanCarousel from "@/app/components/PlanCarousel";
-import Footer from "@/app/components/Footer";
 import MentorsGrid from "@/app/components/MentorsGrid";
 import { fetchCurrentCampaign } from "@/lib/strapi";
 import { useTranslations } from "next-intl";
@@ -302,8 +300,6 @@ export default function MoreInfoPage({
 
   return (
     <main className="min-h-screen flex flex-col bg-background">
-      <Header />
-
       {/* Hero Section */}
       <section className="relative h-[46rem] flex items-center justify-center overflow-hidden">
         {/* Background Image */}
@@ -687,8 +683,6 @@ export default function MoreInfoPage({
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

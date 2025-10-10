@@ -1,6 +1,5 @@
 "use client";
 
-import { Navigation } from "./Navigation";
 import { Hero } from "./Hero";
 import { WhatIsNitro } from "./WhatIsNitro";
 import { Program } from "./Program";
@@ -13,7 +12,6 @@ import { Reviews } from "./Reviews";
 import { PricingCTA } from "./PricingCTA";
 import { MentorCTA } from "./MentorCTA";
 import { SchoolCTA } from "./SchoolCTA";
-import { Footer } from "./Footer";
 
 interface NewHomePageProps {
   locale?: string;
@@ -22,8 +20,7 @@ interface NewHomePageProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
   return (
-    <div className="min-h-screen">
-      <Navigation />
+    <>
       <Hero />
       <WhatIsNitro />
       <Program />
@@ -36,7 +33,6 @@ export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
       <PricingCTA />
       <MentorCTA />
       <SchoolCTA />
-      <Footer />
-    </div>
+    </>
   );
 }

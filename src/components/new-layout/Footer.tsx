@@ -1,9 +1,22 @@
+"use client";
+
 import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
 const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Footer() {
+  const locale = useLocale();
+  const pathname = usePathname();
+
   const scrollToSection = (id: string) => {
+    // Se não estiver na homepage, navegar para lá primeiro
+    if (pathname !== `/${locale}` && pathname !== `/${locale}/`) {
+      window.location.href = `/${locale}#${id}`;
+      return;
+    }
+
     const element = document.getElementById(id);
     if (element) {
       const offset = 80;

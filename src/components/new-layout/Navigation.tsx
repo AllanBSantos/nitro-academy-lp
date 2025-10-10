@@ -1,15 +1,19 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
 const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const locale = useLocale();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +24,12 @@ export function Navigation() {
   }, []);
 
   const scrollToSection = (id: string) => {
+    // Se não estiver na homepage, navegar para lá primeiro
+    if (pathname !== `/${locale}` && pathname !== `/${locale}/`) {
+      window.location.href = `/${locale}#${id}`;
+      return;
+    }
+
     const element = document.getElementById(id);
     if (element) {
       const offset = 80;
