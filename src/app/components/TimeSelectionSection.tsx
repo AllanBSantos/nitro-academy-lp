@@ -233,16 +233,6 @@ export default function TimeSelectionSection({
               </p>
             </div>
           </div>
-
-          <div className="absolute -bottom-12 -right-16 hidden sm:block">
-            <Image
-              src={`/${locale}/garantia-30-dias.png`}
-              alt={t("warranty_alt")}
-              width={120}
-              height={120}
-              className="w-32 h-32"
-            />
-          </div>
         </div>
 
         {course.turmas?.map((turma: Turma) => (
