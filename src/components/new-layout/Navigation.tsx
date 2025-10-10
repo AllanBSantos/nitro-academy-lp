@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
-// Logo placeholder - replace with actual logo path
-const logoImage = "/logo.png";
+import Image from "next/image";
+const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,9 +50,11 @@ export function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <img
+            <Image
               src={logoImage}
               alt="Nitro Academy"
+              width={120}
+              height={40}
               className="h-10 w-auto cursor-pointer"
               onClick={() => scrollToSection("home")}
             />

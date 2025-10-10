@@ -19,6 +19,7 @@ interface NewHomePageProps {
   locale?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
   return (
     <div className="min-h-screen">

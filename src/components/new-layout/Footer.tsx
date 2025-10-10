@@ -1,6 +1,6 @@
 import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
-// Logo placeholder - replace with actual logo path
-const logoImage = "/logo.png";
+import Image from "next/image";
+const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Footer() {
   const scrollToSection = (id: string) => {
@@ -38,7 +38,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Logo and Description */}
           <div className="space-y-4">
-            <img src={logoImage} alt="Nitro Academy" className="h-10 w-auto" />
+            <Image
+              src={logoImage}
+              alt="Nitro Academy"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
             <p className="text-[#f9f9fa]/70">
               Acelerando talentos e preparando futuros através de educação
               prática e inovadora.
