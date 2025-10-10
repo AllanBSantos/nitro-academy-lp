@@ -15,6 +15,11 @@ export function Navigation() {
   const locale = useLocale();
   const pathname = usePathname();
 
+  const whiteBackgroundPages = [`/${locale}/about-us`, `/${locale}/termos`];
+  const hasWhiteBackground = whiteBackgroundPages.some((page) =>
+    pathname.startsWith(page)
+  );
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -55,7 +60,7 @@ export function Navigation() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+        isScrolled || hasWhiteBackground
           ? "bg-[#19184b]/95 backdrop-blur-md shadow-lg"
           : "bg-transparent"
       }`}
@@ -88,7 +93,7 @@ export function Navigation() {
               ) : (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
+                  onClick={() => item.id && scrollToSection(item.id)}
                   className="text-[#f9f9fa] hover:text-[#f54a12] transition-colors duration-200"
                 >
                   {item.label}
@@ -136,7 +141,7 @@ export function Navigation() {
               ) : (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
+                  onClick={() => item.id && scrollToSection(item.id)}
                   className="block w-full text-left px-3 py-2 text-[#f9f9fa] hover:text-[#f54a12] hover:bg-[#1e1b4b] rounded-md transition-colors"
                 >
                   {item.label}
