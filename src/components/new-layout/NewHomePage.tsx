@@ -1,0 +1,37 @@
+"use client";
+
+import { Navigation } from "./Navigation";
+import { Hero } from "./Hero";
+import { WhatIsNitro } from "./WhatIsNitro";
+import { Program } from "./Program";
+import { Competencies } from "./Competencies";
+import { Differentials } from "./Differentials";
+import { Projects } from "./Projects";
+import { Mentors } from "./Mentors";
+import { PartnerSchools } from "./PartnerSchools";
+import { Reviews } from "./Reviews";
+import { PricingCTA } from "./PricingCTA";
+import { MentorCTA } from "./MentorCTA";
+import { SchoolCTA } from "./SchoolCTA";
+import { Footer } from "./Footer";
+
+export default function NewHomePage() {
+  return (
+    <div className="min-h-screen">
+      <Navigation />
+      <Hero />
+      <WhatIsNitro />
+      <Program />
+      <Competencies />
+      <Differentials />
+      <Projects />
+      <Mentors />
+      <PartnerSchools />
+      <Reviews />
+      <PricingCTA />
+      <MentorCTA />
+      <SchoolCTA />
+      <Footer />
+    </div>
+  );
+}

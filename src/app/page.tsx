@@ -1,6 +1,5 @@
-'use client';
-import { useRedirect } from "./hooks/useRedirect";
+import NewHomePage from "../components/new-layout/NewHomePage";
 
 export default function Page() {
-  useRedirect();
+  return <NewHomePage />;
 }
