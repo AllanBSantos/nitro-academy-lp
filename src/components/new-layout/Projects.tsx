@@ -75,17 +75,10 @@ export function Projects() {
     { value: "terca", label: "Terça-feira" },
     { value: "quarta", label: "Quarta-feira" },
     { value: "quinta", label: "Quinta-feira" },
-    { value: "sexta", label: "Sexta-feira" },
-    { value: "sabado", label: "Sábado" },
   ];
 
   const times = [
     { value: "todos", label: "Todos os horários" },
-    { value: "08h", label: "08h" },
-    { value: "09h", label: "09h" },
-    { value: "10h", label: "10h" },
-    { value: "11h", label: "11h" },
-    { value: "13h", label: "13h" },
     { value: "14h", label: "14h" },
     { value: "15h", label: "15h" },
     { value: "16h", label: "16h" },
@@ -99,17 +92,30 @@ export function Projects() {
     { value: "todos", label: "Todos os idiomas" },
     { value: "portugues", label: "Português" },
     { value: "ingles", label: "Inglês" },
-    { value: "espanhol", label: "Espanhol" },
   ];
 
+  // Generate mentors list from actual courses
   const mentors = [
     { value: "todos", label: "Todos os mentores" },
-    { value: "ana-silva", label: "Ana Silva" },
-    { value: "carlos-mendes", label: "Carlos Mendes" },
-    { value: "fernanda-costa", label: "Fernanda Costa" },
-    { value: "pedro-oliveira", label: "Pedro Oliveira" },
-    { value: "juliana-santos", label: "Juliana Santos" },
+    ...Array.from(
+      new Set(
+        courses
+          .filter((course) => course.mentor?.name)
+          .map((course) => ({
+            value: course.mentor!.name.toLowerCase().replace(/\s+/g, "-"),
+            label: course.mentor!.name,
+          }))
+      )
+    ),
   ];
+
+  // Helper function to remove accents for search
+  const removeAccents = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  };
 
   // Transform CardProps to the format expected by the component
   const transformCourseToProject = (course: CardProps) => {
@@ -355,9 +361,9 @@ export function Projects() {
 
   // Filter logic
   const filteredProjects = projects.filter((project) => {
-    const matchesName = project.title
-      .toLowerCase()
-      .includes(searchName.toLowerCase());
+    const matchesName = removeAccents(project.title).includes(
+      removeAccents(searchName)
+    );
     const matchesDay = selectedDay === "todos" || project.day === selectedDay;
     const matchesTime =
       selectedTime === "todos" || project.time === selectedTime;
@@ -531,7 +537,7 @@ export function Projects() {
                         placeholder="Buscar..."
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
-                        className="pl-10 bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all"
+                        className="pl-10 bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900"
                       />
                     </div>
                   </div>
@@ -542,7 +548,7 @@ export function Projects() {
                       Dia da Semana
                     </label>
                     <Select value={selectedDay} onValueChange={setSelectedDay}>
-                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all">
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
                         <SelectValue placeholder="Selecione o dia" />
                       </SelectTrigger>
                       <SelectContent>
@@ -564,7 +570,7 @@ export function Projects() {
                       value={selectedTime}
                       onValueChange={setSelectedTime}
                     >
-                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all">
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
                         <SelectValue placeholder="Selecione o horário" />
                       </SelectTrigger>
                       <SelectContent>
@@ -586,7 +592,7 @@ export function Projects() {
                       value={selectedLanguage}
                       onValueChange={setSelectedLanguage}
                     >
-                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all">
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
                         <SelectValue placeholder="Selecione o idioma" />
                       </SelectTrigger>
                       <SelectContent>
@@ -611,7 +617,7 @@ export function Projects() {
                       value={selectedMentor}
                       onValueChange={setSelectedMentor}
                     >
-                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all">
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
                         <SelectValue placeholder="Selecione o mentor" />
                       </SelectTrigger>
                       <SelectContent>
