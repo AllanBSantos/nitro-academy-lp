@@ -3,16 +3,16 @@
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { CardProps } from "@/types/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Checkbox } from "@/app/components/ui/checkbox";
 import { Search, X, Filter, ChevronUp } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+} from "@/app/components/ui/popover";
+import { Badge } from "@/app/components/ui/badge";
 
 interface CourseFiltersProps {
   courses: CardProps[];

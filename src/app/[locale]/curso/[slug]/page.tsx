@@ -1,4 +1,4 @@
-import CourseContentClient from "@/components/CourseContentClient";
+import CourseContentClient from "@/app/components/CourseContentClient";
 
 export default function CourseDetails() {
   return (

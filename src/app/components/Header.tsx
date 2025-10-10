@@ -1,13 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import LocaleSwitch from "@/components/LocaleSwitch";
-import TeacherDialog from "@/components/TeacherDialog";
+import LocaleSwitch from "@/app/components/LocaleSwitch";
+import TeacherDialog from "@/app/components/TeacherDialog";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { Menu, User, LogOut, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {

@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/app/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { PropsWithChildren } from "react";

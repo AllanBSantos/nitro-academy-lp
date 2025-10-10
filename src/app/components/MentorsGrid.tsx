@@ -11,7 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-} from "@/components/ui/carousel";
+} from "@/app/components/ui/carousel";
 import { Dialog, DialogContent, DialogTitle } from "@/app/components/ui/dialog";
 import { Star, StarHalf } from "lucide-react";
 

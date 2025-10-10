@@ -6,10 +6,10 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/app/components/ui/carousel";
 import { CardProps } from "@/types/card";
-import CardVariant from "@/components/CardVariant";
-import CourseFilters from "@/components/CourseFilters";
+import CardVariant from "@/app/components/CardVariant";
+import CourseFilters from "@/app/components/CourseFilters";
 
 interface CarouselContentWrapperProps {
   cardsContent: CardProps[];

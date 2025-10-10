@@ -1,6 +1,6 @@
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 
 export default function Faq() {
   const t = useTranslations("Faq");
