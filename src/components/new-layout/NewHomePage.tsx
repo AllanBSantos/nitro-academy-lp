@@ -15,7 +15,11 @@ import { MentorCTA } from "./MentorCTA";
 import { SchoolCTA } from "./SchoolCTA";
 import { Footer } from "./Footer";
 
-export default function NewHomePage() {
+interface NewHomePageProps {
+  locale?: string;
+}
+
+export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
   return (
     <div className="min-h-screen">
       <Navigation />

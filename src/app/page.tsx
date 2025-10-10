@@ -1,5 +1,5 @@
-import NewHomePage from "../components/new-layout/NewHomePage";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return <NewHomePage />;
+export default function RootPage() {
+  redirect("/pt/");
 }
