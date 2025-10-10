@@ -1,12 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import LocaleSwitch from "@/app/components/LocaleSwitch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Navigation() {
@@ -14,11 +23,27 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const locale = useLocale();
   const pathname = usePathname();
+  const { user, isAuthenticated, loading, logout } = useAuth();
+  const headerT = useTranslations("Header");
 
   const whiteBackgroundPages = [`/${locale}/about-us`, `/${locale}/termos`];
   const hasWhiteBackground = whiteBackgroundPages.some((page) =>
     pathname.startsWith(page)
   );
+
+  // Function to get translated role name
+  const getRoleName = (roleType: string) => {
+    switch (roleType) {
+      case "student":
+        return headerT("student_role");
+      case "mentor":
+        return headerT("mentor_role");
+      case "admin":
+        return headerT("admin_role");
+      default:
+        return roleType;
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,7 +75,6 @@ export function Navigation() {
 
   const menuItems = [
     { label: "Home", id: "home" },
-    { label: "O Programa", id: "programa" },
     { label: "Projetos", id: "projetos" },
     { label: "Seja Mentor", id: "mentor" },
     { label: "Sobre Nós", href: `/${locale}/about-us` },
@@ -65,10 +89,10 @@ export function Navigation() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 pl-4 sm:pl-6 lg:pl-8">
             <Image
               src={logoImage}
               alt="Nitro Academy"
@@ -106,6 +130,92 @@ export function Navigation() {
             >
               Quero a Nitro na minha Escola
             </Button>
+          </div>
+
+          {/* Right Side - User Auth & Locale */}
+          <div className="hidden md:flex items-center space-x-4 pr-4 sm:pr-6 lg:pr-8">
+            {/* User Authentication Section */}
+            {loading ? (
+              <div className="flex items-center gap-2 text-[#f9f9fa]">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9f9fa]"></div>
+                <span className="text-sm">Carregando...</span>
+              </div>
+            ) : isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="text-[#f9f9fa] hover:bg-white/10 flex items-center gap-2"
+                  >
+                    <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+                      <User className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {user?.name || "Usuário"}
+                    </span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-medium">
+                    {getRoleName(user?.role?.type || "")}
+                  </div>
+                  <DropdownMenuSeparator />
+                  {user?.role?.type === "student" && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/${locale}/student`}
+                        className="cursor-pointer"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        <span>{headerT("student_area")}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {user?.role?.type === "mentor" && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/${locale}/admin`}
+                        className="cursor-pointer"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        <span>{headerT("mentor_area")}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {user?.role?.type === "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/${locale}/admin`}
+                        className="cursor-pointer"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        <span>{headerT("admin_area")}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logout(locale)}
+                    className="cursor-pointer text-red-600"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sair</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href={`/${locale}/login`}>
+                <Button
+                  variant="ghost"
+                  className="text-[#f9f9fa] hover:bg-white/10"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
+
+            <LocaleSwitch />
           </div>
 
           {/* Mobile Menu Button */}
@@ -154,6 +264,66 @@ export function Navigation() {
             >
               Quero a Nitro na minha Escola
             </Button>
+
+            {/* Mobile User Authentication Section */}
+            <div className="mt-4 pt-4 border-t border-[#599fe9]/20">
+              {loading ? (
+                <div className="flex items-center justify-center gap-2 text-[#f9f9fa] py-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9f9fa]"></div>
+                  <span className="text-sm">Carregando...</span>
+                </div>
+              ) : isAuthenticated ? (
+                <div className="space-y-2">
+                  <div className="text-center text-sm text-[#f9f9fa]/70 mb-2">
+                    {user?.name || "Usuário"} -{" "}
+                    {getRoleName(user?.role?.type || "")}
+                  </div>
+                  {user?.role?.type === "student" && (
+                    <Link href={`/${locale}/student`}>
+                      <button className="w-full font-bold px-4 py-2 border border-white bg-transparent text-white hover:bg-white hover:text-background transition-colors rounded flex items-center justify-center gap-2">
+                        <User className="h-5 w-5" />
+                        {headerT("student_area")}
+                      </button>
+                    </Link>
+                  )}
+                  {user?.role?.type === "mentor" && (
+                    <Link href={`/${locale}/admin`}>
+                      <button className="w-full font-bold px-4 py-2 border border-white bg-transparent text-white hover:bg-white hover:text-background transition-colors rounded flex items-center justify-center gap-2">
+                        <User className="h-5 w-5" />
+                        {headerT("mentor_area")}
+                      </button>
+                    </Link>
+                  )}
+                  {user?.role?.type === "admin" && (
+                    <Link href={`/${locale}/admin`}>
+                      <button className="w-full font-bold px-4 py-2 border border-white bg-transparent text-white hover:bg-white hover:text-background transition-colors rounded flex items-center justify-center gap-2">
+                        <User className="h-5 w-5" />
+                        {headerT("admin_area")}
+                      </button>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => logout(locale)}
+                    className="w-full font-bold px-4 py-2 border border-red-500 bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition-colors rounded flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Sair
+                  </button>
+                </div>
+              ) : (
+                <Link href={`/${locale}/login`}>
+                  <button className="w-full font-bold px-4 py-2 border border-white bg-transparent text-white hover:bg-white hover:text-background transition-colors rounded flex items-center justify-center gap-2">
+                    <User className="h-5 w-5" />
+                    Login
+                  </button>
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile Locale Switch */}
+            <div className="mt-4 pt-4 border-t border-[#599fe9]/20">
+              <LocaleSwitch />
+            </div>
           </div>
         </div>
       )}
