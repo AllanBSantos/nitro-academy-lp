@@ -22,13 +22,14 @@ export function Competencies() {
       { threshold: 0.2 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    const currentSectionRef = sectionRef.current;
+    if (currentSectionRef) {
+      observer.observe(currentSectionRef);
     }
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (currentSectionRef) {
+        observer.unobserve(currentSectionRef);
       }
     };
   }, []);
@@ -41,7 +42,8 @@ export function Competencies() {
             Competências <span className="text-[#f54a12]">Empreendedoras</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            A cada semestre os estudantes têm acesso a projetos guiados por mentores experientes, que despertam competências como: 
+            A cada semestre os estudantes têm acesso a projetos guiados por
+            mentores experientes, que despertam competências como:
           </p>
         </div>
 
@@ -49,9 +51,9 @@ export function Competencies() {
           {/* Desktop: Circular Layout */}
           <div className="hidden md:block relative h-[500px]">
             {/* Center Circle */}
-            <div 
+            <div
               className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-br from-[#f54a12] to-[#d43e0f] rounded-full flex items-center justify-center shadow-2xl z-10 transition-all duration-700 ${
-                isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
               }`}
             >
               <span className="text-white text-center px-4">Estudante</span>
@@ -69,10 +71,10 @@ export function Competencies() {
                   {/* Connection Line */}
                   <svg
                     className={`absolute top-1/2 left-1/2 w-full h-full pointer-events-none transition-opacity duration-700`}
-                    style={{ 
+                    style={{
                       transform: "translate(-50%, -50%)",
                       opacity: isVisible ? 0.3 : 0,
-                      transitionDelay: `${400 + index * 100}ms`
+                      transitionDelay: `${400 + index * 100}ms`,
                     }}
                   >
                     <line
@@ -88,11 +90,11 @@ export function Competencies() {
                   {/* Node */}
                   <div
                     className={`absolute top-1/2 left-1/2 group cursor-pointer transition-all duration-700 ${
-                      isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                      isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
                     }`}
                     style={{
                       transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                      transitionDelay: `${300 + index * 100}ms`
+                      transitionDelay: `${300 + index * 100}ms`,
                     }}
                   >
                     <div className="relative">
@@ -102,7 +104,9 @@ export function Competencies() {
                           background: `linear-gradient(135deg, ${comp.color} 0%, ${comp.color}dd 100%)`,
                         }}
                       >
-                        <span className="text-white text-center px-3">{comp.name}</span>
+                        <span className="text-white text-center px-3">
+                          {comp.name}
+                        </span>
                       </div>
                       {/* Pulse effect on hover */}
                       <div
@@ -122,12 +126,14 @@ export function Competencies() {
           {/* Mobile: Circular Layout (smaller) */}
           <div className="md:hidden relative h-[350px]">
             {/* Center Circle */}
-            <div 
+            <div
               className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-[#f54a12] to-[#d43e0f] rounded-full flex items-center justify-center shadow-2xl z-10 transition-all duration-700 ${
-                isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
               }`}
             >
-              <span className="text-white text-center px-2 text-sm">Estudante</span>
+              <span className="text-white text-center px-2 text-sm">
+                Estudante
+              </span>
             </div>
 
             {/* Competency Nodes */}
@@ -142,10 +148,10 @@ export function Competencies() {
                   {/* Connection Line */}
                   <svg
                     className={`absolute top-1/2 left-1/2 w-full h-full pointer-events-none transition-opacity duration-700`}
-                    style={{ 
+                    style={{
                       transform: "translate(-50%, -50%)",
                       opacity: isVisible ? 0.3 : 0,
-                      transitionDelay: `${400 + index * 100}ms`
+                      transitionDelay: `${400 + index * 100}ms`,
                     }}
                   >
                     <line
@@ -161,11 +167,11 @@ export function Competencies() {
                   {/* Node */}
                   <div
                     className={`absolute top-1/2 left-1/2 transition-all duration-700 ${
-                      isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                      isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
                     }`}
                     style={{
                       transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                      transitionDelay: `${300 + index * 100}ms`
+                      transitionDelay: `${300 + index * 100}ms`,
                     }}
                   >
                     <div
@@ -174,7 +180,9 @@ export function Competencies() {
                         background: `linear-gradient(135deg, ${comp.color} 0%, ${comp.color}dd 100%)`,
                       }}
                     >
-                      <span className="text-white text-center px-2 text-xs">{comp.name}</span>
+                      <span className="text-white text-center px-2 text-xs">
+                        {comp.name}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -186,7 +194,7 @@ export function Competencies() {
         {/* Description */}
         <div className="mt-16 text-center max-w-2xl mx-auto">
           <p className="text-gray-600">
-            Cada competência é trabalhada de forma integrada nos projetos, 
+            Cada competência é trabalhada de forma integrada nos projetos,
             garantindo o desenvolvimento completo do aluno.
           </p>
         </div>

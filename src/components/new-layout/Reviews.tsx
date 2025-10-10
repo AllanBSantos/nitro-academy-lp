@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchTestimonials } from "@/lib/strapi";
 import { ReviewCard } from "@/types/strapi";
@@ -9,7 +8,6 @@ export function Reviews() {
   const [showAll, setShowAll] = useState(false);
   const [reviews, setReviews] = useState<ReviewCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Fetch reviews from Strapi
   useEffect(() => {
@@ -78,10 +76,8 @@ export function Reviews() {
             },
           ]);
         }
-        setError(null);
       } catch (err) {
         console.error("Error loading reviews:", err);
-        setError("Erro ao carregar avaliações");
         // Fallback to mock data if API fails
         setReviews([
           {

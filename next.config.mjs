@@ -57,7 +57,8 @@ const nextConfig = {
       'nitroacademy.com.br',
       'res.cloudinary.com',
       'images.converteai.net',
-      'lh3.googleusercontent.com'
+      'lh3.googleusercontent.com',
+      'images.unsplash.com'
     ],
     remotePatterns: [
       {
@@ -89,6 +90,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
         pathname: '/**',
       }
     ],

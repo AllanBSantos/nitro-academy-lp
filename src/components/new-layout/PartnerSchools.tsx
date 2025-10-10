@@ -8,7 +8,6 @@ export function PartnerSchools() {
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [schools, setSchools] = useState<PartnerSchool[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Fetch schools from Strapi
   useEffect(() => {
@@ -17,10 +16,8 @@ export function PartnerSchools() {
         setLoading(true);
         const schoolsData = await fetchPartnerSchools();
         setSchools(schoolsData);
-        setError(null);
       } catch (err) {
         console.error("Error loading schools:", err);
-        setError("Erro ao carregar escolas parceiras");
         // Fallback to mock data if API fails
         setSchools([
           {
