@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
+import Chatwoot from "../Chatwoot";
 const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Footer() {
@@ -166,6 +167,7 @@ export function Footer() {
           </div>
         </div>
       </div>
+      <Chatwoot />
     </footer>
   );
 }

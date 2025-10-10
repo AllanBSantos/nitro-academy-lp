@@ -12,6 +12,7 @@ import { Reviews } from "./Reviews";
 import { PricingCTA } from "./PricingCTA";
 import { MentorCTA } from "./MentorCTA";
 import { SchoolCTA } from "./SchoolCTA";
+import Chatwoot from "../Chatwoot";
 
 interface NewHomePageProps {
   locale?: string;
@@ -33,6 +34,7 @@ export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
       <PricingCTA />
       <MentorCTA />
       <SchoolCTA />
+      <Chatwoot />
     </>
   );
 }
