@@ -97,14 +97,11 @@ export async function fetchAllMentors(
     }
 
     const data = await response.json();
-    console.log("Raw Strapi mentors response:", data);
 
     // Handle both Strapi v4 structure (data.data) and direct structure (data)
     const mentors = data.data || data;
-    console.log("Processed mentors:", mentors);
 
     if (!Array.isArray(mentors) || mentors.length === 0) {
-      console.log("No mentors found or invalid data structure");
       return [];
     }
 
@@ -112,12 +109,6 @@ export async function fetchAllMentors(
     const processedMentors: Mentor[] = await Promise.all(
       mentors.map(async (mentor) => {
         const mentorData = mentor.attributes || mentor;
-
-        console.log("Processing mentor:", {
-          id: mentor.id,
-          nome: mentorData.nome,
-          hasAttributes: !!mentor.attributes,
-        });
 
         // Buscar cursos deste mentor
         const coursesResponse = await fetch(
@@ -189,7 +180,6 @@ export async function fetchAllMentors(
       })
     );
 
-    console.log("Processed mentors with calculated data:", processedMentors);
     return processedMentors;
   } catch (error) {
     console.error("Error fetching mentors:", error);
@@ -294,14 +284,12 @@ export async function fetchTestimonials(
 
     for (const url of possibleEndpoints) {
       try {
-        console.log(`Trying endpoint: ${url}`);
         const response = await fetch(url, {
           next: { revalidate: 60 },
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log(`Response from ${url}:`, data);
 
           if (data.data && data.data.length > 0) {
             // Transform testimonials to ReviewCard format
@@ -364,13 +352,11 @@ export async function fetchTestimonials(
           }
         }
       } catch {
-        console.log(`Endpoint ${url} not available, trying next...`);
         continue;
       }
     }
 
     // If no testimonials endpoint is found or all are empty, return empty array
-    console.log("No testimonials found in any endpoint, returning empty array");
     return [];
   } catch (error) {
     console.error("Error fetching testimonials:", error);
@@ -487,6 +473,76 @@ export async function fetchCoursesCount(): Promise<number> {
   }
 }
 
+export interface TrilhaWithCount {
+  id: number;
+  nome: string;
+  descricao: string;
+  courseCount: number;
+}
+
+export async function fetchTrilhasWithCourseCount(): Promise<
+  TrilhaWithCount[]
+> {
+  try {
+    // Buscar trilhas com seus cursos relacionados
+    const trilhasResponse = await fetch(
+      `${STRAPI_API_URL}/api/trilhas?populate[cursos][filters][habilitado][$eq]=true&publicationState=preview&locale=pt-BR`,
+      { next: { revalidate: 60 } }
+    );
+
+    if (!trilhasResponse.ok) {
+      throw new Error("Failed to fetch trilhas");
+    }
+
+    const trilhasData = await trilhasResponse.json();
+    const trilhas = trilhasData?.data || [];
+    // Processar trilhas e contar cursos relacionados
+    const trilhasWithCount: TrilhaWithCount[] = trilhas.map((trilha: any) => {
+      return {
+        id: trilha.id,
+        nome: trilha.nome || "",
+        descricao: trilha.descricao || "",
+        courseCount: trilha.cursos?.length || 0,
+      };
+    });
+
+    return trilhasWithCount;
+  } catch (e) {
+    console.error("Error fetching trilhas with course count", e);
+    // Fallback para dados mockados
+    return [
+      {
+        id: 1,
+        nome: "Criatividade e Bem-Estar",
+        descricao:
+          "Desenvolva sua criatividade e aprenda a cuidar do seu bem-estar físico e mental",
+        courseCount: 12,
+      },
+      {
+        id: 2,
+        nome: "Tecnologia",
+        descricao:
+          "Domine as ferramentas digitais e aprenda a criar soluções tecnológicas inovadoras",
+        courseCount: 15,
+      },
+      {
+        id: 3,
+        nome: "Negócios",
+        descricao:
+          "Entenda como funcionam os negócios e desenvolva uma mentalidade empreendedora",
+        courseCount: 10,
+      },
+      {
+        id: 4,
+        nome: "Liderança",
+        descricao:
+          "Aprenda a liderar equipes e projetos com inteligência emocional e visão estratégica",
+        courseCount: 8,
+      },
+    ];
+  }
+}
+
 // Fetch the first upcoming campaign: inscricao_iniciada = false/null AND aulas_iniciadas = false/null
 export async function fetchCurrentCampaign(): Promise<{
   periodo_inscricao?: string | null;
@@ -559,9 +615,7 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
       return null;
     }
 
-    console.log("Buscando aluno no Strapi com CPF:", cpf);
     const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId`;
-    console.log("URL da API:", url);
 
     const response = await fetch(url, {
       headers: {
@@ -569,8 +623,6 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
       },
       cache: "no-store",
     });
-
-    console.log("Status da resposta:", response.status, response.statusText);
 
     if (!response.ok) {
       console.error(
@@ -582,23 +634,14 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
     }
 
     const data = await response.json();
-    console.log("Dados brutos retornados:", data);
 
     if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
-      console.log("Nenhum aluno encontrado ou dados inválidos");
       return null;
     }
 
     const aluno = data.data[0];
     const attributes = aluno?.attributes ?? aluno; // Suporta formatos com e sem 'attributes'
     const cursosRaw = attributes?.cursos?.data ?? attributes?.cursos ?? [];
-
-    console.log("Aluno (raw) para mapeamento:", {
-      id: aluno?.id,
-      attributesKeys: attributes ? Object.keys(attributes) : null,
-      hasCursosData: Array.isArray(attributes?.cursos?.data),
-      cursosLength: Array.isArray(cursosRaw) ? cursosRaw.length : 0,
-    });
 
     // Mapear para a interface Student de forma resiliente
     const student: Student = {
@@ -628,7 +671,6 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
       usou_voucher: attributes?.usou_voucher ?? false,
     };
 
-    console.log("Aluno mapeado:", student);
     return student;
   } catch (error) {
     console.error("Error finding student:", error);

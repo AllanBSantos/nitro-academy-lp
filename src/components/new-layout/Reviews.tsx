@@ -18,10 +18,8 @@ export function Reviews() {
         setLoading(true);
         const reviewsData = await fetchTestimonials("pt-BR");
         if (reviewsData.length > 0) {
-          console.log(`Loaded ${reviewsData.length} reviews from Strapi`);
           setReviews(reviewsData);
         } else {
-          console.log("No reviews found in Strapi, using fallback mock data");
           // Use mock data when Strapi returns empty array
           setReviews([
             {
@@ -85,7 +83,6 @@ export function Reviews() {
         console.error("Error loading reviews:", err);
         setError("Erro ao carregar avaliações");
         // Fallback to mock data if API fails
-        console.log("Using fallback mock data for reviews");
         setReviews([
           {
             id: 1,

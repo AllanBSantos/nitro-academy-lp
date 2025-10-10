@@ -18,8 +18,6 @@ export function Mentors() {
     const loadMentors = async () => {
       try {
         const mentorsData = await fetchAllMentors("pt-BR");
-        console.log("Mentors data from Strapi:", mentorsData);
-        console.log("First mentor structure:", mentorsData[0]);
         setMentors(mentorsData);
       } catch (error) {
         console.error("Error loading mentors:", error);
