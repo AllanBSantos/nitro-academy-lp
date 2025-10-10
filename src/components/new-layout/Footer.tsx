@@ -1,7 +1,8 @@
 "use client";
 
-import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 const logoImage = "/pt/logo_nitro_transparente.png";
@@ -31,18 +32,34 @@ export function Footer() {
 
   const quickLinks = [
     { label: "Home", id: "home" },
-    { label: "Nossa História", id: "sobre" },
     { label: "Nossos Projetos", id: "projetos" },
     { label: "Seja Mentor", id: "mentor" },
     { label: "Quero a Nitro na minha Escola", id: "escola" },
+    { label: "Nossa História", href: `/${locale}/about-us` },
+    { label: "FAQ", href: `/${locale}/faq` },
   ];
 
   const socialLinks = [
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Youtube, href: "#", label: "YouTube" },
+    {
+      icon: Instagram,
+      href: "https://www.instagram.com/nitroacademybr/",
+      label: "Instagram",
+    },
+    {
+      icon: Facebook,
+      href: "https://www.facebook.com/nitroacademybr",
+      label: "Facebook",
+    },
+    {
+      icon: Linkedin,
+      href: "https://www.linkedin.com/company/nitroacademybr/",
+      label: "LinkedIn",
+    },
+    {
+      icon: Youtube,
+      href: "https://www.youtube.com/@nitroacademybr",
+      label: "YouTube",
+    },
   ];
 
   return (
@@ -85,12 +102,21 @@ export function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <button
-                    onClick={() => scrollToSection(link.id)}
-                    className="text-[#f9f9fa]/70 hover:text-[#f54a12] transition-colors duration-200"
-                  >
-                    {link.label}
-                  </button>
+                  {link.href ? (
+                    <Link
+                      href={link.href}
+                      className="text-[#f9f9fa]/70 hover:text-[#f54a12] transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => scrollToSection(link.id!)}
+                      className="text-[#f9f9fa]/70 hover:text-[#f54a12] transition-colors duration-200"
+                    >
+                      {link.label}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -102,7 +128,7 @@ export function Footer() {
             <ul className="space-y-3 text-[#f9f9fa]/70">
               <li>
                 <a
-                  href="mailto:contato@nitro.academy"
+                  href="mailto:barbara@nitro.academy"
                   className="hover:text-[#f54a12] transition-colors"
                 >
                   barbara@nitro.academy
@@ -110,13 +136,14 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="tel:+551199999999"
+                  href="https://wa.me/5511975809082"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-[#f54a12] transition-colors"
                 >
-                  (11) 99999-9999
+                  (11) 97580‑9082
                 </a>
               </li>
-              <li>São Paulo, SP - Brasil</li>
             </ul>
           </div>
         </div>
@@ -129,12 +156,12 @@ export function Footer() {
               reservados.
             </p>
             <div className="flex gap-6 text-sm text-[#f9f9fa]/50">
-              <a href="#" className="hover:text-[#f54a12] transition-colors">
-                Política de Privacidade
-              </a>
-              <a href="#" className="hover:text-[#f54a12] transition-colors">
-                Termos de Uso
-              </a>
+              <Link
+                href={`/${locale}/termos`}
+                className="hover:text-[#f54a12] transition-colors"
+              >
+                Termos de Uso e Política de Privacidade
+              </Link>
             </div>
           </div>
         </div>

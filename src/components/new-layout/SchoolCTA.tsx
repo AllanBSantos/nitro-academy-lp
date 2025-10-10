@@ -1,11 +1,14 @@
 import { Button } from "./ui/button";
-import { School, Mail, Phone, MapPin, Sparkles } from "lucide-react";
+import { School, Mail, Phone, Sparkles } from "lucide-react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
 export function SchoolCTA() {
   return (
-    <section id="escola" className="py-12 md:py-20 bg-gradient-to-br from-[#19184b] via-[#1e1b4b] to-[#19184b] relative overflow-hidden">
+    <section
+      id="escola"
+      className="py-12 md:py-20 bg-gradient-to-br from-[#19184b] via-[#1e1b4b] to-[#19184b] relative overflow-hidden"
+    >
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-64 h-64 bg-[#f54a12] rounded-full blur-3xl"></div>
@@ -22,13 +25,14 @@ export function SchoolCTA() {
             </div>
 
             <h2 className="text-3xl md:text-5xl text-[#f9f9fa]">
-              Leve a <span className="text-[#f54a12]">Nitro Academy</span> para sua escola
+              Leve a <span className="text-[#f54a12]">Nitro Academy</span> para
+              sua escola
             </h2>
 
             <p className="text-lg text-[#f9f9fa]/80">
-              Transforme a experiência educacional dos seus alunos com nossos programas 
-              de aceleração de talentos. Entre em contato e descubra como podemos fazer 
-              parceria.
+              Transforme a experiência educacional dos seus alunos com nossos
+              programas de aceleração de talentos. Entre em contato e descubra
+              como podemos fazer parceria.
             </p>
 
             <div className="space-y-4">
@@ -36,26 +40,22 @@ export function SchoolCTA() {
                 <div className="w-10 h-10 bg-[#599fe9]/20 rounded-lg flex items-center justify-center">
                   <Mail className="w-5 h-5 text-[#599fe9]" />
                 </div>
-                <span>contato@nitro.academy</span>
+                <span>barbara@nitro.academy</span>
               </div>
               <div className="flex items-center gap-3 text-[#f9f9fa]/80">
                 <div className="w-10 h-10 bg-[#599fe9]/20 rounded-lg flex items-center justify-center">
                   <Phone className="w-5 h-5 text-[#599fe9]" />
                 </div>
-                <span>(11) 99999-9999</span>
-              </div>
-              <div className="flex items-center gap-3 text-[#f9f9fa]/80">
-                <div className="w-10 h-10 bg-[#599fe9]/20 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-[#599fe9]" />
-                </div>
-                <span>São Paulo, SP</span>
+                <span>(11) 97580‑9082</span>
               </div>
             </div>
           </div>
 
           {/* Right: Form */}
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-            <h3 className="text-2xl text-[#f9f9fa] mb-6">Solicite uma proposta</h3>
+            <h3 className="text-2xl text-[#f9f9fa] mb-6">
+              Solicite uma proposta
+            </h3>
             <form className="space-y-4">
               <div>
                 <Input
@@ -102,8 +102,9 @@ export function SchoolCTA() {
                   Pacotes Especiais para Escolas
                 </h3>
                 <p className="text-[#f9f9fa]/80">
-                  Instituições de ensino têm condições diferenciadas e descontos progressivos.
-                  Entre em contato para conhecer nossas soluções personalizadas.
+                  Instituições de ensino têm condições diferenciadas e descontos
+                  progressivos. Entre em contato para conhecer nossas soluções
+                  personalizadas.
                 </p>
               </div>
             </div>
