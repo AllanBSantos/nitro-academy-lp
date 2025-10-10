@@ -1,9 +1,79 @@
+"use client";
+
 import { Button } from "./ui/button";
 import { School, Mail, Phone, Sparkles } from "lucide-react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { useState } from "react";
 
 export function SchoolCTA() {
+  const [formData, setFormData] = useState({
+    schoolName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const emailBody = `
+Nova solicitação de proposta para escola:
+
+Nome da Escola: ${formData.schoolName}
+E-mail de Contato: ${formData.email}
+Telefone: ${formData.phone}
+Mensagem: ${formData.message}
+
+---
+Enviado através do site Nitro Academy
+      `;
+
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: "barbara@nitro.academy",
+          subject: `Nova solicitação de proposta - ${formData.schoolName}`,
+          text: emailBody,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send email");
+      }
+
+      setIsSubmitted(true);
+      setFormData({
+        schoolName: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Erro ao enviar solicitação. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section
       id="escola"
@@ -53,40 +123,71 @@ export function SchoolCTA() {
 
           {/* Right: Form */}
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-            <h3 className="text-2xl text-[#f9f9fa] mb-6">
-              Solicite uma proposta
-            </h3>
-            <form className="space-y-4">
-              <div>
-                <Input
-                  placeholder="Nome da Escola"
-                  className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
-                />
+            {isSubmitted ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-8 h-8 text-green-400" />
+                </div>
+                <h3 className="text-xl text-[#f9f9fa] mb-2">
+                  Solicitação Enviada!
+                </h3>
+                <p className="text-[#f9f9fa]/80">
+                  Obrigado pelo seu interesse. Entraremos em contato em breve.
+                </p>
               </div>
-              <div>
-                <Input
-                  type="email"
-                  placeholder="E-mail de Contato"
-                  className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
-                />
-              </div>
-              <div>
-                <Input
-                  placeholder="Telefone"
-                  className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
-                />
-              </div>
-              <div>
-                <Textarea
-                  placeholder="Conte-nos mais sobre sua escola e interesse"
-                  rows={4}
-                  className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
-                />
-              </div>
-              <Button className="w-full bg-[#f54a12] hover:bg-[#d43e0f] text-white py-6 rounded-xl">
-                Enviar Solicitação
-              </Button>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Input
+                    name="schoolName"
+                    value={formData.schoolName}
+                    onChange={handleInputChange}
+                    placeholder="Nome da Escola"
+                    className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <Input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="E-mail de Contato"
+                    className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <Input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="Telefone"
+                    className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <Textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Conte-nos mais sobre sua escola e interesse"
+                    rows={4}
+                    className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#f54a12] hover:bg-[#d43e0f] text-white py-6 rounded-xl disabled:opacity-50"
+                >
+                  {isSubmitting ? "Enviando..." : "Enviar Solicitação"}
+                </Button>
+              </form>
+            )}
           </div>
         </div>
 
