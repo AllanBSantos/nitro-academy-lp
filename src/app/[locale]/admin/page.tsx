@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/app/components/ui/popover";
-import { CoursesList } from "@/components/admin/CoursesList";
+import { CoursesList } from "@/app/components/admin/CoursesList";
 import PartnerStudentsList from "./PartnerStudentsList";
 import ExceededStudentsReport from "@/app/components/admin/ExceededStudentsReport";
 import AllStudentsList from "@/app/components/admin/AllStudentsList";

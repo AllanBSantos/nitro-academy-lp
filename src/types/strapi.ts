@@ -58,13 +58,14 @@ export interface StrapiImage {
 
 export interface Mentor {
   id: number;
-  attributes: {
+  attributes?: {
     nome: string;
     profissao: string;
     descricao: string;
     alunos: number;
     cursos: number;
     instagram: string;
+    pais?: string;
     imagem: StrapiImage;
     reviews: Array<{
       id: number;
@@ -73,11 +74,47 @@ export interface Mentor {
       nome: string;
       data: string;
     }> | null;
+    cursos_relacionados?: Array<{
+      id: number;
+      titulo: string;
+      alunos?: Array<{
+        id: number;
+        nome: string;
+      }>;
+    }>;
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
     locale: string;
   };
+  // Direct structure (without attributes wrapper)
+  nome?: string;
+  profissao?: string;
+  descricao?: string;
+  alunos?: number;
+  cursos?: number;
+  instagram?: string;
+  pais?: string;
+  imagem?: StrapiImage | { url: string };
+  reviews?: Array<{
+    id: number;
+    nota: number;
+    descricao: string;
+    nome: string;
+    data: string;
+  }> | null;
+  cursos_relacionados?: Array<{
+    id: number;
+    titulo: string;
+    alunos?: Array<{
+      id: number;
+      nome: string;
+    }>;
+  }>;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+  locale?: string;
 }
 
 export interface Review {
@@ -94,6 +131,15 @@ export interface Review {
   };
 }
 
+export interface ReviewCard {
+  id: number;
+  name: string;
+  gender: "boy" | "girl";
+  rating: number;
+  comment: string;
+  date: string;
+}
+
 export interface Escola {
   id: number;
   documentId: string;
@@ -106,6 +152,13 @@ export interface Escola {
   updatedAt: string;
   publishedAt: string;
   locale: string;
+}
+
+export interface PartnerSchool {
+  id: number;
+  documentId: string;
+  name: string;
+  logo: string;
 }
 
 export interface Course {

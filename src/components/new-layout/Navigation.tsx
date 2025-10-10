@@ -222,7 +222,7 @@ export function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-[#f9f9fa] hover:text-[#f54a12] transition-colors"
+              className="text-[#f9f9fa] hover:text-[#f54a12] transition-colors mr-4"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />

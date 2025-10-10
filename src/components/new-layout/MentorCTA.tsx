@@ -1,7 +1,17 @@
 import { Button } from "./ui/button";
 import { Lightbulb, Users, TrendingUp, ArrowRight } from "lucide-react";
+import {
+  fetchMentorsCount,
+  fetchStudentsCount,
+  fetchCoursesCount,
+} from "@/lib/strapi";
 
-export function MentorCTA() {
+async function MentorCTAContent() {
+  const [mentorsCount, studentsCount, coursesCount] = await Promise.all([
+    fetchMentorsCount(),
+    fetchStudentsCount(),
+    fetchCoursesCount(),
+  ]);
   const benefits = [
     {
       icon: Lightbulb,
@@ -21,7 +31,10 @@ export function MentorCTA() {
   ];
 
   return (
-    <section id="mentor" className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
+    <section
+      id="mentor"
+      className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-br from-[#19184b] to-[#1e1b4b] rounded-3xl overflow-hidden shadow-2xl">
           <div className="grid md:grid-cols-2 gap-12 p-8 md:p-12">
@@ -31,9 +44,9 @@ export function MentorCTA() {
                 Seja um <span className="text-[#f54a12]">Mentor</span> Nitro
               </h2>
               <p className="text-lg text-[#f9f9fa]/80">
-                Faça parte de uma comunidade de profissionais que acreditam no poder 
-                transformador da educação. Compartilhe sua experiência e ajude jovens 
-                talentos a alcançarem seu potencial máximo.
+                Faça parte de uma comunidade de profissionais que acreditam no
+                poder transformador da educação. Compartilhe sua experiência e
+                ajude jovens talentos a alcançarem seu potencial máximo.
               </p>
 
               <div className="space-y-4">
@@ -46,14 +59,24 @@ export function MentorCTA() {
                       </div>
                       <div>
                         <h4 className="text-[#f9f9fa] mb-1">{benefit.title}</h4>
-                        <p className="text-[#f9f9fa]/70 text-sm">{benefit.description}</p>
+                        <p className="text-[#f9f9fa]/70 text-sm">
+                          {benefit.description}
+                        </p>
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <Button className="bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-xl group">
+              <Button
+                className="bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-xl group"
+                onClick={() =>
+                  window.open(
+                    "https://u4zgaidr6x8.typeform.com/nitroprof?typeform-source=www.nitro.academy",
+                    "_blank"
+                  )
+                }
+              >
                 Quero ser Mentor
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -62,16 +85,22 @@ export function MentorCTA() {
             {/* Right: Stats/Features */}
             <div className="space-y-6">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-                <div className="text-4xl text-[#f54a12] mb-2">100+</div>
+                <div className="text-4xl text-[#f54a12] mb-2">
+                  {mentorsCount}+
+                </div>
                 <p className="text-[#f9f9fa]/80">Mentores ativos</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-                <div className="text-4xl text-[#599fe9] mb-2">500+</div>
+                <div className="text-4xl text-[#599fe9] mb-2">
+                  {studentsCount}+
+                </div>
                 <p className="text-[#f9f9fa]/80">Alunos impactados</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-                <div className="text-4xl text-[#03A9F4] mb-2">6</div>
-                <p className="text-[#f9f9fa]/80">Projetos por aluno</p>
+                <div className="text-4xl text-[#03A9F4] mb-2">
+                  {coursesCount}
+                </div>
+                <p className="text-[#f9f9fa]/80">Projetos</p>
               </div>
             </div>
           </div>
@@ -79,4 +108,8 @@ export function MentorCTA() {
       </div>
     </section>
   );
+}
+
+export function MentorCTA() {
+  return <MentorCTAContent />;
 }

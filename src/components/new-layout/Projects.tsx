@@ -192,7 +192,7 @@ export function Projects() {
       link_pagamento: course.link_pagamento,
       preco: course.price?.total || 0,
       parcelas: course.price?.installments || 1,
-      moeda: course.price?.moeda || "Real",
+      moeda: course.moeda || "Real",
       inscricoes_abertas: course.inscricoes_abertas || false,
     };
   };
@@ -202,6 +202,8 @@ export function Projects() {
     loading || error || courses.length === 0
       ? [
           {
+            id: "mock-1",
+            documentId: "mock-1",
             title: "App de Sustentabilidade",
             description:
               "Desenvolvimento de aplicativo para conscientização ambiental",
@@ -220,8 +222,16 @@ export function Projects() {
             planType: "gold",
             image:
               "https://images.unsplash.com/photo-1712903911017-7c10a3c4b3e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcHJvamVjdCUyMHByZXNlbnRhdGlvbnxlbnwxfHx8fDE3NTk5OTE2OTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "app-sustentabilidade",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-2",
+            documentId: "mock-2",
             title: "Startup Social",
             description: "Projeto de impacto social para comunidades locais",
             category: "Negócios",
@@ -239,8 +249,16 @@ export function Projects() {
             planType: "black",
             image:
               "https://images.unsplash.com/photo-1598618589695-e601731aed51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwdGVlbmFnZXJzJTIwbGVhcm5pbmd8ZW58MXx8fHwxNzYwMDIyMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "startup-social",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-3",
+            documentId: "mock-3",
             title: "Design Thinking Lab",
             description: "Soluções criativas para problemas do dia a dia",
             category: "Design",
@@ -258,8 +276,16 @@ export function Projects() {
             planType: "gold",
             image:
               "https://images.unsplash.com/photo-1758612214848-04e700d192ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWVuYWdlciUyMHN0dWRlbnQlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2MDAyMjI5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "design-thinking-lab",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-4",
+            documentId: "mock-4",
             title: "Inovação Educacional",
             description: "Repensando métodos de ensino e aprendizagem",
             category: "Inovação",
@@ -277,8 +303,16 @@ export function Projects() {
             planType: "black",
             image:
               "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1lbnRvciUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NjAwMjIyOTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "inovacao-educacional",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-5",
+            documentId: "mock-5",
             title: "E-commerce do Futuro",
             description:
               "Plataforma digital com foco em experiência do usuário",
@@ -297,8 +331,16 @@ export function Projects() {
             planType: "gold",
             image:
               "https://images.unsplash.com/photo-1712903911017-7c10a3c4b3e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcHJvamVjdCUyMHByZXNlbnRhdGlvbnxlbnwxfHx8fDE3NTk5OTE2OTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "ecommerce-futuro",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-6",
+            documentId: "mock-6",
             title: "Branding Pessoal",
             description:
               "Construção de marca pessoal para jovens profissionais",
@@ -317,8 +359,16 @@ export function Projects() {
             planType: "black",
             image:
               "https://images.unsplash.com/photo-1598618589695-e601731aed51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwdGVlbmFnZXJzJTIwbGVhcm5pbmd8ZW58MXx8fHwxNzYwMDIyMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "branding-pessoal",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-7",
+            documentId: "mock-7",
             title: "Inteligência Artificial para Iniciantes",
             description: "Introdução prática ao mundo da IA e machine learning",
             category: "Tecnologia",
@@ -336,8 +386,16 @@ export function Projects() {
             planType: "gold",
             image:
               "https://images.unsplash.com/photo-1758612214848-04e700d192ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWVuYWdlciUyMHN0dWRlbnQlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2MDAyMjI5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "ia-iniciantes",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
           {
+            id: "mock-8",
+            documentId: "mock-8",
             title: "Marketing Digital Avançado",
             description: "Estratégias modernas de marketing e growth hacking",
             category: "Negócios",
@@ -355,6 +413,12 @@ export function Projects() {
             planType: "black",
             image:
               "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1lbnRvciUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NjAwMjIyOTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+            slug: "marketing-digital-avancado",
+            link_pagamento: "#",
+            preco: 0,
+            parcelas: 1,
+            moeda: "Real",
+            inscricoes_abertas: false,
           },
         ]
       : courses.map(transformCourseToProject);

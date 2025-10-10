@@ -1,4 +1,12 @@
-import { Course, Mentor, Review, Escola } from "@/types/strapi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  Course,
+  Mentor,
+  Review,
+  Escola,
+  PartnerSchool,
+  ReviewCard,
+} from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
@@ -75,6 +83,120 @@ export async function fetchMentor(id: number): Promise<Mentor> {
   return data;
 }
 
+export async function fetchAllMentors(
+  locale: string = "pt-BR"
+): Promise<Mentor[]> {
+  try {
+    // Primeiro, vamos buscar mentores diretamente do Strapi
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/mentores?populate=*&locale=${locale}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch mentors");
+    }
+
+    const data = await response.json();
+    console.log("Raw Strapi mentors response:", data);
+
+    // Handle both Strapi v4 structure (data.data) and direct structure (data)
+    const mentors = data.data || data;
+    console.log("Processed mentors:", mentors);
+
+    if (!Array.isArray(mentors) || mentors.length === 0) {
+      console.log("No mentors found or invalid data structure");
+      return [];
+    }
+
+    // Para cada mentor, vamos buscar seus cursos para calcular alunos
+    const processedMentors: Mentor[] = await Promise.all(
+      mentors.map(async (mentor) => {
+        const mentorData = mentor.attributes || mentor;
+
+        console.log("Processing mentor:", {
+          id: mentor.id,
+          nome: mentorData.nome,
+          hasAttributes: !!mentor.attributes,
+        });
+
+        // Buscar cursos deste mentor
+        const coursesResponse = await fetch(
+          `${STRAPI_API_URL}/api/cursos?filters[mentor][id][$eq]=${mentor.id}&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&locale=${locale}`
+        );
+
+        let totalCursos = 0;
+        let totalAlunos = 0;
+        const cursosRelacionados: Array<{
+          id: number;
+          titulo: string;
+          alunos?: Array<{ id: number; nome: string }>;
+        }> = [];
+
+        if (coursesResponse.ok) {
+          const coursesData = await coursesResponse.json();
+          const courses = coursesData.data || coursesData;
+
+          if (Array.isArray(courses)) {
+            totalCursos = courses.length;
+            const alunosUnicos = new Set<number>();
+
+            courses.forEach((course) => {
+              const courseData = course.attributes || course;
+              cursosRelacionados.push({
+                id: (courseData as any).id || course.id,
+                titulo: (courseData as any).titulo || "",
+                alunos: (courseData as any).alunos || [],
+              });
+
+              if (
+                (courseData as any).alunos &&
+                Array.isArray((courseData as any).alunos)
+              ) {
+                (courseData as any).alunos.forEach(
+                  (aluno: { id: number; nome: string }) => {
+                    alunosUnicos.add(aluno.id);
+                  }
+                );
+              }
+            });
+
+            totalAlunos = alunosUnicos.size;
+          }
+        }
+
+        // Usar valores dos campos estáticos como fallback se não conseguir calcular
+        if (totalCursos === 0) {
+          totalCursos = mentorData.cursos || 0;
+        }
+        if (totalAlunos === 0) {
+          totalAlunos = mentorData.alunos || 0;
+        }
+
+        return {
+          ...mentor,
+          attributes: mentorData
+            ? {
+                ...mentorData,
+                cursos: totalCursos,
+                alunos: totalAlunos,
+                cursos_relacionados: cursosRelacionados,
+              }
+            : undefined,
+          cursos: totalCursos,
+          alunos: totalAlunos,
+          cursos_relacionados: cursosRelacionados,
+        } as Mentor;
+      })
+    );
+
+    console.log("Processed mentors with calculated data:", processedMentors);
+    return processedMentors;
+  } catch (error) {
+    console.error("Error fetching mentors:", error);
+    return [];
+  }
+}
+
 export async function fetchReviews(courseId: string): Promise<Review[]> {
   const response = await fetch(
     `${STRAPI_API_URL}/api/avaliacoes?filters[curso][id][$eq]=${courseId}&populate=*&locale=pt-BR`
@@ -86,6 +208,197 @@ export async function fetchReviews(courseId: string): Promise<Review[]> {
 
   const { data } = await response.json();
   return data;
+}
+
+export async function fetchAllReviews(): Promise<ReviewCard[]> {
+  try {
+    const url = `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc`;
+
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch reviews: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+
+    // Transform reviews to ReviewCard format
+    const reviewCards: ReviewCard[] =
+      data.data?.map((review: any) => {
+        // Determine gender based on name (simple heuristic)
+        const name = review.attributes?.aluno || review.aluno || "Usuário";
+        const firstName = name.split(" ")[0].toLowerCase();
+        const isGirlName = [
+          "maria",
+          "ana",
+          "julia",
+          "beatriz",
+          "marina",
+          "sofia",
+          "lara",
+          "laura",
+          "carolina",
+          "fernanda",
+          "camila",
+          "leticia",
+          "isabella",
+          "valentina",
+          "alessandra",
+          "alice",
+          "anne",
+          "gabrielle",
+        ].includes(firstName);
+
+        // Format date
+        const createdAt = review.attributes?.createdAt || review.createdAt;
+        const date = createdAt ? formatReviewDate(createdAt) : "Recentemente";
+
+        return {
+          id: review.id,
+          name: name,
+          gender: isGirlName ? "girl" : "boy",
+          rating: review.attributes?.nota || review.nota || 5,
+          comment: review.attributes?.descricao || review.descricao || "",
+          date: date,
+        };
+      }) || [];
+
+    return reviewCards;
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return [];
+  }
+}
+
+export async function fetchTestimonials(
+  locale: string = "pt-BR"
+): Promise<ReviewCard[]> {
+  try {
+    // Try different possible endpoints for testimonials
+    const possibleEndpoints = [
+      `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc&locale=${locale}`,
+      `${STRAPI_API_URL}/api/depoimentos?populate=*&sort=createdAt:desc&locale=${locale}`,
+      `${STRAPI_API_URL}/api/testemunhos?populate=*&sort=createdAt:desc&locale=${locale}`,
+      // Try without locale
+      `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc`,
+      `${STRAPI_API_URL}/api/depoimentos?populate=*&sort=createdAt:desc`,
+      `${STRAPI_API_URL}/api/testemunhos?populate=*&sort=createdAt:desc`,
+      // Try with preview state
+      `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc&publicationState=preview`,
+      `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc&locale=${locale}&publicationState=preview`,
+    ];
+
+    for (const url of possibleEndpoints) {
+      try {
+        console.log(`Trying endpoint: ${url}`);
+        const response = await fetch(url, {
+          next: { revalidate: 60 },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`Response from ${url}:`, data);
+
+          if (data.data && data.data.length > 0) {
+            // Transform testimonials to ReviewCard format
+            const testimonials: ReviewCard[] = data.data.map(
+              (testimonial: any) => {
+                // Determine gender based on name (simple heuristic)
+                const name =
+                  testimonial.attributes?.nome ||
+                  testimonial.attributes?.aluno ||
+                  testimonial.nome ||
+                  testimonial.aluno ||
+                  "Usuário";
+                const firstName = name.split(" ")[0].toLowerCase();
+                const isGirlName = [
+                  "maria",
+                  "ana",
+                  "julia",
+                  "beatriz",
+                  "marina",
+                  "sofia",
+                  "lara",
+                  "laura",
+                  "carolina",
+                  "fernanda",
+                  "camila",
+                  "leticia",
+                  "isabella",
+                  "valentina",
+                ].includes(firstName);
+
+                // Format date
+                const createdAt =
+                  testimonial.attributes?.createdAt || testimonial.createdAt;
+                const date = createdAt
+                  ? formatReviewDate(createdAt)
+                  : "Recentemente";
+
+                return {
+                  id: testimonial.id,
+                  name: name,
+                  gender: isGirlName ? "girl" : "boy",
+                  rating:
+                    testimonial.attributes?.nota ||
+                    testimonial.attributes?.rating ||
+                    testimonial.nota ||
+                    testimonial.rating ||
+                    5,
+                  comment:
+                    testimonial.attributes?.descricao ||
+                    testimonial.attributes?.comentario ||
+                    testimonial.descricao ||
+                    testimonial.comentario ||
+                    "",
+                  date: date,
+                };
+              }
+            );
+
+            return testimonials;
+          }
+        }
+      } catch {
+        console.log(`Endpoint ${url} not available, trying next...`);
+        continue;
+      }
+    }
+
+    // If no testimonials endpoint is found or all are empty, return empty array
+    console.log("No testimonials found in any endpoint, returning empty array");
+    return [];
+  } catch (error) {
+    console.error("Error fetching testimonials:", error);
+    return [];
+  }
+}
+
+function formatReviewDate(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 1) {
+    return "Há 1 dia";
+  } else if (diffDays < 7) {
+    return `Há ${diffDays} dias`;
+  } else if (diffDays < 14) {
+    return "Há 1 semana";
+  } else if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return `Há ${weeks} semanas`;
+  } else if (diffDays < 60) {
+    return "Há 1 mês";
+  } else {
+    const months = Math.floor(diffDays / 30);
+    return `Há ${months} meses`;
+  }
 }
 
 // Returns total count of schools (content-type: escola)
@@ -112,7 +425,7 @@ export async function fetchSchoolsCount(): Promise<number> {
 export async function fetchStudentsCount(): Promise<number> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/alunos?pagination[page]=1&pagination[pageSize]=1`,
+      `${STRAPI_API_URL}/api/alunos?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
       { next: { revalidate: 60 } }
     );
     if (!response.ok) {
@@ -123,6 +436,53 @@ export async function fetchStudentsCount(): Promise<number> {
     return typeof total === "number" ? total : 0;
   } catch (e) {
     console.error("Error fetching students count", e);
+    return 0;
+  }
+}
+
+export async function fetchMentorsCount(): Promise<number> {
+  try {
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/mentores?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+      { next: { revalidate: 60 } }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch mentors count");
+    }
+    const json = await response.json();
+    const total = json?.meta?.pagination?.total ?? 0;
+    return typeof total === "number" ? total : 0;
+  } catch (e) {
+    console.error("Error fetching mentors count", e);
+    return 0;
+  }
+}
+
+export async function fetchCoursesCount(): Promise<number> {
+  try {
+    // Primeiro tenta com filtro habilitado
+    let response = await fetch(
+      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+      { next: { revalidate: 60 } }
+    );
+
+    if (!response.ok) {
+      // Se falhar, tenta sem filtro habilitado
+      response = await fetch(
+        `${STRAPI_API_URL}/api/cursos?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+        { next: { revalidate: 60 } }
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch courses count");
+    }
+
+    const json = await response.json();
+    const total = json?.meta?.pagination?.total ?? 0;
+    return typeof total === "number" ? total : 0;
+  } catch (e) {
+    console.error("Error fetching courses count", e);
     return 0;
   }
 }
@@ -437,6 +797,40 @@ export async function fetchSchoolsWithLogo(): Promise<Escola[]> {
     return schoolsWithCliente;
   } catch (error) {
     console.error("Error fetching schools with logo:", error);
+    return [];
+  }
+}
+
+export async function fetchPartnerSchools(): Promise<PartnerSchool[]> {
+  try {
+    const url = `${STRAPI_API_URL}/api/escolas?populate=*`;
+
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch partner schools: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+
+    // Filter schools with cliente=true and transform to PartnerSchool format
+    const partnerSchools: PartnerSchool[] =
+      data.data
+        ?.filter((school: Escola) => school.cliente === true)
+        ?.map((school: Escola) => ({
+          id: school.id,
+          documentId: school.documentId,
+          name: school.nome,
+          logo: school.logo?.url || "",
+        })) || [];
+
+    return partnerSchools;
+  } catch (error) {
+    console.error("Error fetching partner schools:", error);
     return [];
   }
 }
