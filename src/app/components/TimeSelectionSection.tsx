@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 import SuggestionModal from "./SuggestionModal";

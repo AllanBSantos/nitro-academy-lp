@@ -134,9 +134,13 @@ export function Hero() {
           >
             <div className="relative z-10">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1758612214848-04e700d192ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWVuYWdlciUyMHN0dWRlbnQlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2MDAyMjI5M3ww&ixlib=rb-4.1.0&q=80&w=1080"
+                src="https://images.unsplash.com/photo-1758612214848-04e700d192ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWVuYWdlciUyMHN0dWRlbnQlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2MDAyMjI5M3ww&ixlib=rb-4.1.0&q=95&w=1200"
                 alt="Estudante da Nitro Academy"
                 className="w-full h-auto rounded-2xl shadow-2xl"
+                width={1200}
+                height={800}
+                priority={true}
+                quality={95}
               />
             </div>
             {/* Decorative Elements around image */}
