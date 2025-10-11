@@ -10,8 +10,8 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
-import CardVariant from "@/components/CardVariant";
+} from "@/app/components/ui/carousel";
+import CardVariant from "@/app/components/CardVariant";
 
 interface PlanCarouselProps {
   locale: string;

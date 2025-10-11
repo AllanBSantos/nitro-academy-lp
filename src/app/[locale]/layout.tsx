@@ -1,10 +1,11 @@
-import { routing } from '@/i18n/routing';
+import { routing } from "@/i18n/routing";
 
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { notFound } from 'next/navigation';
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { notFound } from "next/navigation";
 
-import { setRequestLocale } from 'next-intl/server';
-
+import { setRequestLocale } from "next-intl/server";
+import { Navigation } from "@/components/new-layout/Navigation";
+import { Footer } from "@/components/new-layout/Footer";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -12,7 +13,7 @@ export function generateStaticParams() {
 
 export default function LocaleLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
   params: { locale: string };
@@ -28,6 +29,12 @@ export default function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <NextIntlClientProvider>{children}</NextIntlClientProvider>
+    <NextIntlClientProvider>
+      <div className="min-h-screen">
+        <Navigation />
+        {children}
+        <Footer />
+      </div>
+    </NextIntlClientProvider>
   );
 }

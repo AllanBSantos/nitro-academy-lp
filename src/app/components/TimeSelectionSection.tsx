@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 import SuggestionModal from "./SuggestionModal";
@@ -232,16 +231,6 @@ export default function TimeSelectionSection({
                 </Link>
               </p>
             </div>
-          </div>
-
-          <div className="absolute -bottom-12 -right-16 hidden sm:block">
-            <Image
-              src={`/${locale}/garantia-30-dias.png`}
-              alt={t("warranty_alt")}
-              width={120}
-              height={120}
-              className="w-32 h-32"
-            />
           </div>
         </div>
 

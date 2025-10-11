@@ -6,7 +6,6 @@ import { getCardsContent } from "@/lib/courses";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import TimeSelectionSection from "./TimeSelectionSection";
-import Footer from "./Footer";
 import CourseDescription from "./course/CourseDescription";
 import CourseInformation from "./course/CourseInformation";
 import CourseContentSection from "./course/CourseContentSection";
@@ -153,10 +152,6 @@ export default function CourseContent({ course }: CourseContentProps) {
       </div>
 
       <RelatedCourses relatedCourses={relatedCourses} />
-
-      <section className="bg-background">
-        <Footer />
-      </section>
     </>
   );
 }

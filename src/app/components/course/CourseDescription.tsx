@@ -5,7 +5,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/app/components/ui/carousel";
 import { convertToEmbedUrl } from "@/lib/utils";
 import { CardProps } from "@/types/card";
 

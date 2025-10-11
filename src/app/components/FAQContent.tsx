@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { fetchFAQs, FAQ } from "@/lib/strapi";
-import Footer from "@/app/components/Footer";
 
 export default function FAQContent() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
@@ -94,10 +93,6 @@ export default function FAQContent() {
             ))}
           </div>
         </div>
-      </section>
-
-      <section className="bg-background">
-        <Footer />
       </section>
     </>
   );

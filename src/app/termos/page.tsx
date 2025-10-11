@@ -1,6 +1,3 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-
 export default function TermsPage({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   params: { locale },
@@ -9,7 +6,6 @@ export default function TermsPage({
 }) {
   return (
     <div className="min-h-screen bg-[#1e1b4b] text-white">
-      <Header />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-4xl font-gilroy-extrabold sm:text-6xl mb-8 text-orange-600">
           Termos de Uso da Nitro Academy
@@ -363,9 +359,6 @@ export default function TermsPage({
           <p className="mb-8">E-mail: barbara@nitro.academy</p>
         </div>
       </div>
-      <section className="bg-background">
-        <Footer />
-      </section>
     </div>
   );
 }
