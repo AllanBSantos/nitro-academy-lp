@@ -22,7 +22,7 @@ interface NewHomePageProps {
 export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
   return (
     <>
-      <Hero />
+      <Hero locale={locale} />
       <WhatIsNitro />
       <Program />
       <Competencies />

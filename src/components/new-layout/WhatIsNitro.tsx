@@ -19,10 +19,10 @@ export function WhatIsNitro() {
             O que é a <span className="text-[#f54a12]">Nitro Academy</span>?
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Aceleradora de jovens talentos que complementa o ensino tradicional
-            com disciplinas práticas alinhadas com o interesse dos estudantes,
-            desenvolvendo habilidades empreendedoras essenciais para qualquer
-            carreira no novo mercado de trabalho
+            Aceleradora de jovens talentos de 12 a 17 anos que complementa o
+            ensino tradicional com disciplinas práticas alinhadas com o
+            interesse dos estudantes, desenvolvendo habilidades empreendedoras
+            essenciais para qualquer carreira no novo mercado de trabalho
           </p>
         </motion.div>
 
@@ -45,8 +45,8 @@ export function WhatIsNitro() {
             <Quote className="w-12 h-12 mb-4 text-white/30" />
             <p className="text-lg md:text-xl mb-6">
               &ldquo;A educação tradicional precisa evoluir. Na Nitro,
-              preparamos os jovens para os desafios reais do mercado de
-              trabalho.&rdquo;
+              preparamos um curriculo complementar que prepara os jovens para os
+              desafios reais de suas vidas.&rdquo;
             </p>
             <div>
               <p className="text-white">Vahid Sherafat</p>
