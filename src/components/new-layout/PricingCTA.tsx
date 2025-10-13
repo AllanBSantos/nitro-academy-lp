@@ -85,7 +85,15 @@ export function PricingCTA() {
 
           {/* CTA Button */}
           <div className="mt-8">
-            <Button className="w-full bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-2xl shadow-2xl hover:shadow-[0_20px_60px_rgba(245,74,18,0.4)] transition-all duration-300 hover:scale-105">
+            <Button
+              onClick={() =>
+                window.open(
+                  "https://www.asaas.com/c/kem15ghizhrc0x1c",
+                  "_blank"
+                )
+              }
+              className="w-full bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-2xl shadow-2xl hover:shadow-[0_20px_60px_rgba(245,74,18,0.4)] transition-all duration-300 hover:scale-105"
+            >
               Adquirir o Programa
             </Button>
             <p className="text-sm text-white/60 mt-4">
