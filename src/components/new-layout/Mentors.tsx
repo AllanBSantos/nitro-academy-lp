@@ -4,8 +4,10 @@ import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { fetchAllMentors } from "@/lib/strapi";
 import { Mentor, StrapiImage } from "@/types/strapi";
+import { useTranslations } from "next-intl";
 
 export function Mentors() {
+  const t = useTranslations("NewHome.Mentors");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [mentors, setMentors] = useState<Mentor[]>([]);
@@ -116,11 +118,14 @@ export function Mentors() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 space-y-4">
             <h2 className="text-3xl md:text-5xl text-[#19184b]">
-              Nossos <span className="text-[#f54a12]">Mentores</span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="text-[#f54a12]">{chunks}</span>
+                ),
+              })}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Profissionais de alto nível que compartilham experiências reais do
-              mercado
+              {t("subtitle")}
             </p>
           </div>
           <div className="flex justify-center">
@@ -137,16 +142,17 @@ export function Mentors() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 space-y-4">
             <h2 className="text-3xl md:text-5xl text-[#19184b]">
-              Nossos <span className="text-[#f54a12]">Mentores</span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="text-[#f54a12]">{chunks}</span>
+                ),
+              })}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Profissionais de alto nível que compartilham experiências reais do
-              mercado
+              {t("subtitle")}
             </p>
           </div>
-          <div className="text-center text-gray-500">
-            Nenhum mentor encontrado.
-          </div>
+          <div className="text-center text-gray-500">{t("empty")}</div>
         </div>
       </section>
     );
@@ -159,11 +165,14 @@ export function Mentors() {
         <div className="mb-20">
           <div className="text-center mb-12 space-y-4">
             <h2 className="text-3xl md:text-5xl text-[#19184b]">
-              Nossos <span className="text-[#f54a12]">Mentores</span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="text-[#f54a12]">{chunks}</span>
+                ),
+              })}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Profissionais de alto nível que compartilham experiências reais do
-              mercado
+              {t("subtitle")}
             </p>
           </div>
 
@@ -218,7 +227,7 @@ export function Mentors() {
                               {mentorData.profissao}
                             </p>
                             <div className="inline-block px-2 py-1 bg-[#599fe9]/10 text-[#599fe9] rounded-full text-xs">
-                              {mentorData.cursos} cursos
+                              {t("badges.courses", { count: mentorData.cursos || 0 })}
                             </div>
                           </div>
                         </div>
@@ -237,7 +246,7 @@ export function Mentors() {
                                 }}
                                 className="text-[#f54a12] hover:text-[#e03d0f] text-sm font-medium mt-2 transition-colors"
                               >
-                                Ver mais
+                                {t("cta.readMore")}
                               </button>
                             )}
                         </div>
@@ -253,12 +262,12 @@ export function Mentors() {
                                 </span>
                               </div>
                               <span className="text-sm text-gray-500">
-                                ({count} avaliações)
+                                {t("rating.reviews", { count })}
                               </span>
                             </>
                           ) : (
                             <div className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                              Novo mentor
+                              {t("badges.new")}
                             </div>
                           )}
                         </div>
@@ -353,7 +362,7 @@ export function Mentors() {
               {/* Description */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-[#19184b] mb-3">
-                  Sobre o mentor
+                  {t("modal.about")}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
                   {(selectedMentor.attributes ?? selectedMentor).descricao}
@@ -366,20 +375,20 @@ export function Mentors() {
                   <div className="text-2xl font-bold text-[#19184b]">
                     {(selectedMentor.attributes ?? selectedMentor).alunos || 0}
                   </div>
-                  <div className="text-sm text-gray-600">Alunos</div>
+                  <div className="text-sm text-gray-600">{t("modal.students")}</div>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-[#19184b]">
                     {(selectedMentor.attributes ?? selectedMentor).cursos || 0}
                   </div>
-                  <div className="text-sm text-gray-600">Cursos</div>
+                  <div className="text-sm text-gray-600">{t("modal.courses")}</div>
                 </div>
               </div>
 
               {/* Reviews */}
               <div>
                 <h3 className="text-lg font-semibold text-[#19184b] mb-4">
-                  Avaliações
+                  {t("modal.reviews")}
                 </h3>
                 {(() => {
                   const mentorData =
@@ -391,11 +400,9 @@ export function Mentors() {
                     return (
                       <div className="text-center py-8">
                         <div className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                          Novo mentor
+                          {t("badges.new")}
                         </div>
-                        <p className="text-gray-500 mt-2">
-                          Este mentor ainda não possui avaliações
-                        </p>
+                        <p className="text-gray-500 mt-2">{t("modal.noReviews")}</p>
                       </div>
                     );
                   }
@@ -410,7 +417,7 @@ export function Mentors() {
                           </span>
                         </div>
                         <span className="text-gray-600">
-                          ({count} avaliações)
+                          {t("rating.reviews", { count })}
                         </span>
                       </div>
 

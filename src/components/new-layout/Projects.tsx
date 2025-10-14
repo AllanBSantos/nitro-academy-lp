@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -32,8 +32,12 @@ import {
 } from "./ui/tooltip";
 import { getCardsContent } from "@/lib/courses";
 import { CardProps } from "@/types/card";
+import { useTranslations, useLocale } from "next-intl";
 
 export function Projects() {
+  const t = useTranslations("NewHome.Projects");
+  const locale = useLocale();
+
   // Fetch courses from Strapi using existing function
   const [courses, setCourses] = useState<CardProps[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,11 +58,11 @@ export function Projects() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getCardsContent("pt");
+        const data = await getCardsContent(locale);
         setCourses(data);
       } catch (err) {
         console.error("Failed to load courses:", err);
-        setError("Erro ao carregar cursos");
+        setError(t("errors.generic"));
         setCourses([]);
       } finally {
         setLoading(false);
@@ -66,48 +70,98 @@ export function Projects() {
     }
 
     loadCourses();
-  }, []);
+  }, [locale, t]);
 
   // Filter options
-  const days = [
-    { value: "todos", label: "Todos os dias" },
-    { value: "segunda", label: "Segunda-feira" },
-    { value: "terca", label: "Terça-feira" },
-    { value: "quarta", label: "Quarta-feira" },
-    { value: "quinta", label: "Quinta-feira" },
-  ];
+  const days = useMemo(
+    () => [
+      { value: "todos", label: t("filters.allDays") },
+      { value: "segunda", label: t("filters.days.monday") },
+      { value: "terca", label: t("filters.days.tuesday") },
+      { value: "quarta", label: t("filters.days.wednesday") },
+      { value: "quinta", label: t("filters.days.thursday") },
+      { value: "sexta", label: t("filters.days.friday") },
+      { value: "sabado", label: t("filters.days.saturday") },
+      { value: "domingo", label: t("filters.days.sunday") },
+    ],
+    [t]
+  );
 
-  const times = [
-    { value: "todos", label: "Todos os horários" },
-    { value: "14h", label: "14h" },
-    { value: "15h", label: "15h" },
-    { value: "16h", label: "16h" },
-    { value: "17h", label: "17h" },
-    { value: "18h", label: "18h" },
-    { value: "19h", label: "19h" },
-    { value: "20h", label: "20h" },
-  ];
+  const times = useMemo(
+    () => [
+      { value: "todos", label: t("filters.allTimes") },
+      { value: "manhã", label: t("filters.periods.morning") },
+      { value: "tarde", label: t("filters.periods.afternoon") },
+      { value: "noite", label: t("filters.periods.evening") },
+      { value: "14h", label: "14h" },
+      { value: "15h", label: "15h" },
+      { value: "16h", label: "16h" },
+      { value: "17h", label: "17h" },
+      { value: "18h", label: "18h" },
+      { value: "19h", label: "19h" },
+      { value: "20h", label: "20h" },
+    ],
+    [t]
+  );
 
-  const languages = [
-    { value: "todos", label: "Todos os idiomas" },
-    { value: "portugues", label: "Português" },
-    { value: "ingles", label: "Inglês" },
-  ];
+  const languages = useMemo(
+    () => [
+      { value: "todos", label: t("filters.allLanguages") },
+      { value: "portugues", label: t("filters.languages.portuguese") },
+      { value: "ingles", label: t("filters.languages.english") },
+      { value: "espanhol", label: t("filters.languages.spanish") },
+    ],
+    [t]
+  );
 
   // Generate mentors list from actual courses
-  const mentors = [
-    { value: "todos", label: "Todos os mentores" },
-    ...Array.from(
-      new Set(
-        courses
-          .filter((course) => course.mentor?.name)
-          .map((course) => ({
-            value: course.mentor!.name.toLowerCase().replace(/\s+/g, "-"),
-            label: course.mentor!.name,
-          }))
-      )
-    ),
-  ];
+  const mentors = useMemo(
+    () => [
+      { value: "todos", label: t("filters.allMentors") },
+      ...Array.from(
+        new Map(
+          courses
+            .filter((course) => course.mentor?.name)
+            .map((course) => {
+              const label = course.mentor!.name;
+              return [label.toLowerCase().replace(/\s+/g, "-"), label] as const;
+            })
+        )
+      ).map(([value, label]) => ({ value, label })),
+    ],
+    [courses, t]
+  );
+
+  const dateLocale = locale === "pt" ? "pt-BR" : "en-US";
+
+  const getLanguageBadge = (language: string) => {
+    switch (language) {
+      case "ingles":
+        return "EN";
+      case "espanhol":
+        return "ES";
+      default:
+        return "PT-BR";
+    }
+  };
+
+  const getLanguageTooltip = (language: string) => {
+    switch (language) {
+      case "ingles":
+        return t("language.tooltip.english");
+      case "espanhol":
+        return t("language.tooltip.spanish");
+      default:
+        return t("language.tooltip.portuguese");
+    }
+  };
+
+  const getPlanTooltip = (planType: string | undefined) => {
+    if (planType === "black") {
+      return t("plans.black");
+    }
+    return t("plans.gold");
+  };
 
   // Helper function to remove accents for search
   const removeAccents = (str: string) => {
@@ -130,6 +184,16 @@ export function Projects() {
       "Quarta-Feira": "quarta",
       "Quinta-Feira": "quinta",
       "Sexta-Feira": "sexta",
+      "Sábado": "sabado",
+      "Sabado": "sabado",
+      "Domingo": "domingo",
+      Monday: "segunda",
+      Tuesday: "terca",
+      Wednesday: "quarta",
+      Thursday: "quinta",
+      Friday: "sexta",
+      Saturday: "sabado",
+      Sunday: "domingo",
     };
 
     // Extract time from schedule
@@ -139,8 +203,12 @@ export function Projects() {
     // Map language
     const languageMap: Record<string, string> = {
       portugues: "portugues",
+      "português": "portugues",
+      portuguese: "portugues",
       ingles: "ingles",
+      english: "ingles",
       espanhol: "espanhol",
+      spanish: "espanhol",
     };
 
     // Map mentor name to slug
@@ -151,21 +219,21 @@ export function Projects() {
     const category =
       course.tags && course.tags.length > 0
         ? course.tags[0].nome
-        : "Tecnologia";
+        : t("fallbacks.category");
 
     // Format start date
     const startDate = cronograma?.data_inicio
-      ? new Date(cronograma.data_inicio).toLocaleDateString("pt-BR", {
+      ? new Date(cronograma.data_inicio).toLocaleDateString(dateLocale, {
           month: "long",
           year: "2-digit",
         })
-      : "Março/26";
+      : t("labels.defaultStartDate");
 
     return {
       id: course.id,
       documentId: course.documentId,
-      title: course.title || "Curso",
-      description: course.description || "Descrição do curso",
+      title: course.title || t("fallbacks.courseTitle"),
+      description: course.description || t("fallbacks.courseDescription"),
       category,
       day: cronograma?.dia_semana
         ? dayMap[cronograma.dia_semana] || "segunda"
@@ -174,7 +242,7 @@ export function Projects() {
       startDate,
       language: languageMap[course.lingua || "portugues"] || "portugues",
       mentor: mentorSlug,
-      mentorName: course.mentor?.name || "Mentor",
+      mentorName: course.mentor?.name || t("mentor.placeholder"),
       mentorPhoto:
         course.mentor?.image ||
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
@@ -200,227 +268,7 @@ export function Projects() {
   // Use real courses from Strapi or fallback to mock data
   const projects =
     loading || error || courses.length === 0
-      ? [
-          {
-            id: "mock-1",
-            documentId: "mock-1",
-            title: "App de Sustentabilidade",
-            description:
-              "Desenvolvimento de aplicativo para conscientização ambiental",
-            category: "Tecnologia",
-            day: "segunda",
-            time: "14h",
-            startDate: "Março/26",
-            language: "portugues",
-            mentor: "ana-silva",
-            mentorName: "Ana Silva",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-            mentorCountry: "BR",
-            mentorRating: 4.8,
-            mentorReviews: 127,
-            planType: "gold",
-            image:
-              "https://images.unsplash.com/photo-1712903911017-7c10a3c4b3e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcHJvamVjdCUyMHByZXNlbnRhdGlvbnxlbnwxfHx8fDE3NTk5OTE2OTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "app-sustentabilidade",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-2",
-            documentId: "mock-2",
-            title: "Startup Social",
-            description: "Projeto de impacto social para comunidades locais",
-            category: "Negócios",
-            day: "terca",
-            time: "10h",
-            startDate: "Abril/26",
-            language: "portugues",
-            mentor: "carlos-mendes",
-            mentorName: "Carlos Mendes",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-            mentorCountry: "PT",
-            mentorRating: 4.9,
-            mentorReviews: 203,
-            planType: "black",
-            image:
-              "https://images.unsplash.com/photo-1598618589695-e601731aed51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwdGVlbmFnZXJzJTIwbGVhcm5pbmd8ZW58MXx8fHwxNzYwMDIyMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "startup-social",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-3",
-            documentId: "mock-3",
-            title: "Design Thinking Lab",
-            description: "Soluções criativas para problemas do dia a dia",
-            category: "Design",
-            day: "quarta",
-            time: "15h",
-            startDate: "Março/26",
-            language: "ingles",
-            mentor: "fernanda-costa",
-            mentorName: "Fernanda Costa",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-            mentorCountry: "US",
-            mentorRating: 4.7,
-            mentorReviews: 156,
-            planType: "gold",
-            image:
-              "https://images.unsplash.com/photo-1758612214848-04e700d192ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWVuYWdlciUyMHN0dWRlbnQlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2MDAyMjI5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "design-thinking-lab",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-4",
-            documentId: "mock-4",
-            title: "Inovação Educacional",
-            description: "Repensando métodos de ensino e aprendizagem",
-            category: "Inovação",
-            day: "quinta",
-            time: "19h",
-            startDate: "Maio/26",
-            language: "portugues",
-            mentor: "pedro-oliveira",
-            mentorName: "Pedro Oliveira",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
-            mentorCountry: "BR",
-            mentorRating: 5.0,
-            mentorReviews: 89,
-            planType: "black",
-            image:
-              "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1lbnRvciUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NjAwMjIyOTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "inovacao-educacional",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-5",
-            documentId: "mock-5",
-            title: "E-commerce do Futuro",
-            description:
-              "Plataforma digital com foco em experiência do usuário",
-            category: "Tecnologia",
-            day: "sexta",
-            time: "16h",
-            startDate: "Abril/26",
-            language: "ingles",
-            mentor: "juliana-santos",
-            mentorName: "Juliana Santos",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
-            mentorCountry: "CA",
-            mentorRating: 4.6,
-            mentorReviews: 142,
-            planType: "gold",
-            image:
-              "https://images.unsplash.com/photo-1712903911017-7c10a3c4b3e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcHJvamVjdCUyMHByZXNlbnRhdGlvbnxlbnwxfHx8fDE3NTk5OTE2OTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "ecommerce-futuro",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-6",
-            documentId: "mock-6",
-            title: "Branding Pessoal",
-            description:
-              "Construção de marca pessoal para jovens profissionais",
-            category: "Design",
-            day: "segunda",
-            time: "09h",
-            startDate: "Junho/26",
-            language: "portugues",
-            mentor: "ana-silva",
-            mentorName: "Ana Silva",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-            mentorCountry: "BR",
-            mentorRating: 4.8,
-            mentorReviews: 127,
-            planType: "black",
-            image:
-              "https://images.unsplash.com/photo-1598618589695-e601731aed51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwdGVlbmFnZXJzJTIwbGVhcm5pbmd8ZW58MXx8fHwxNzYwMDIyMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "branding-pessoal",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-7",
-            documentId: "mock-7",
-            title: "Inteligência Artificial para Iniciantes",
-            description: "Introdução prática ao mundo da IA e machine learning",
-            category: "Tecnologia",
-            day: "sabado",
-            time: "11h",
-            startDate: "Março/26",
-            language: "espanhol",
-            mentor: "carlos-mendes",
-            mentorName: "Carlos Mendes",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-            mentorCountry: "PT",
-            mentorRating: 4.9,
-            mentorReviews: 203,
-            planType: "gold",
-            image:
-              "https://images.unsplash.com/photo-1758612214848-04e700d192ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWVuYWdlciUyMHN0dWRlbnQlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2MDAyMjI5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "ia-iniciantes",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-          {
-            id: "mock-8",
-            documentId: "mock-8",
-            title: "Marketing Digital Avançado",
-            description: "Estratégias modernas de marketing e growth hacking",
-            category: "Negócios",
-            day: "quarta",
-            time: "20h",
-            startDate: "Maio/26",
-            language: "portugues",
-            mentor: "fernanda-costa",
-            mentorName: "Fernanda Costa",
-            mentorPhoto:
-              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-            mentorCountry: "US",
-            mentorRating: 4.7,
-            mentorReviews: 156,
-            planType: "black",
-            image:
-              "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1lbnRvciUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NjAwMjIyOTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-            slug: "marketing-digital-avancado",
-            link_pagamento: "#",
-            preco: 0,
-            parcelas: 1,
-            moeda: "Real",
-            inscricoes_abertas: false,
-          },
-        ]
+      ? []
       : courses.map(transformCourseToProject);
 
   // Filter logic
@@ -514,10 +362,14 @@ export function Projects() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-3xl md:text-5xl text-[#19184b]">
-            Nossos <span className="text-[#f54a12]">Projetos</span>
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Conheça os projetos desenvolvidos pelos nossos alunos
+            {t("subtitle")}
           </p>
         </div>
 
@@ -532,20 +384,20 @@ export function Projects() {
                 </div>
                 <div>
                   <h3 className="font-medium text-[#19184b]">
-                    Filtros de Busca
+                    {t("filters.title")}
                   </h3>
                   <p className="hidden md:block text-sm text-gray-500">
                     {hasActiveFilters
-                      ? `${
-                          [
+                      ? t("filters.activeCount", {
+                          count: [
                             searchName !== "",
                             selectedDay !== "todos",
                             selectedTime !== "todos",
                             selectedLanguage !== "todos",
                             selectedMentor !== "todos",
-                          ].filter(Boolean).length
-                        } filtro(s) ativo(s)`
-                      : "Refine sua busca por projetos"}
+                          ].filter(Boolean).length,
+                        })
+                      : t("filters.hint")}
                   </p>
                 </div>
               </div>
@@ -559,7 +411,7 @@ export function Projects() {
                     className="text-[#f54a12] hover:text-[#d43e0f] hover:bg-[#f54a12]/10"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Limpar
+                    {t("filters.clear")}
                   </Button>
                 )}
 
@@ -572,12 +424,12 @@ export function Projects() {
                     {isFiltersOpen ? (
                       <>
                         <ChevronUp className="w-5 h-5 mr-2" />
-                        Ocultar filtros
+                        {t("filters.hide")}
                       </>
                     ) : (
                       <>
                         <ChevronDown className="w-5 h-5 mr-2" />
-                        Mostrar filtros
+                        {t("filters.show")}
                       </>
                     )}
                   </Button>
@@ -592,13 +444,13 @@ export function Projects() {
                   {/* Search by Name */}
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700 font-medium">
-                      Nome do Projeto
+                      {t("filters.labels.projectName")}
                     </label>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
                         type="text"
-                        placeholder="Buscar..."
+                        placeholder={t("filters.placeholders.search")}
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
                         className="pl-10 bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900"
@@ -609,11 +461,12 @@ export function Projects() {
                   {/* Day of Week */}
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700 font-medium">
-                      Dia da Semana
+                      {t("filters.labels.day")}
                     </label>
                     <Select value={selectedDay} onValueChange={setSelectedDay}>
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder="Selecione o dia" />
+                        <SelectValue placeholder={t("filters.placeholders.day")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {days.map((day) => (
@@ -628,14 +481,14 @@ export function Projects() {
                   {/* Time */}
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700 font-medium">
-                      Horário
+                      {t("filters.labels.time")}
                     </label>
                     <Select
                       value={selectedTime}
                       onValueChange={setSelectedTime}
                     >
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder="Selecione o horário" />
+                        <SelectValue placeholder={t("filters.placeholders.time")} />
                       </SelectTrigger>
                       <SelectContent>
                         {times.map((time) => (
@@ -650,14 +503,14 @@ export function Projects() {
                   {/* Language */}
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700 font-medium">
-                      Idioma
+                      {t("filters.labels.language")}
                     </label>
                     <Select
                       value={selectedLanguage}
                       onValueChange={setSelectedLanguage}
                     >
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder="Selecione o idioma" />
+                        <SelectValue placeholder={t("filters.placeholders.language")} />
                       </SelectTrigger>
                       <SelectContent>
                         {languages.map((language) => (
@@ -675,14 +528,14 @@ export function Projects() {
                   {/* Mentor */}
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700 font-medium">
-                      Mentor
+                      {t("filters.labels.mentor")}
                     </label>
                     <Select
                       value={selectedMentor}
                       onValueChange={setSelectedMentor}
                     >
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder="Selecione o mentor" />
+                        <SelectValue placeholder={t("filters.placeholders.mentor")} />
                       </SelectTrigger>
                       <SelectContent>
                         {mentors.map((mentor) => (
@@ -699,7 +552,7 @@ export function Projects() {
                 {hasActiveFilters && (
                   <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-200">
                     <span className="text-sm text-gray-600">
-                      Filtros ativos:
+                      {t("filters.activeLabel")}
                     </span>
                     {searchName !== "" && (
                       <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#f54a12]/10 text-[#f54a12] rounded-full text-sm">
@@ -769,19 +622,14 @@ export function Projects() {
             <div className="px-5 py-3 bg-white/60 backdrop-blur-sm border-t border-gray-200 text-center text-sm text-gray-600">
               {filteredProjects.length === projects.length ? (
                 <span>
-                  Mostrando{" "}
-                  <span className="text-[#f54a12] font-medium">
-                    {filteredProjects.length}
-                  </span>{" "}
-                  projetos
+                  {t("results.all", { count: filteredProjects.length })}
                 </span>
               ) : (
                 <span>
-                  Encontrado{" "}
-                  <span className="text-[#f54a12] font-medium">
-                    {filteredProjects.length}
-                  </span>{" "}
-                  de {projects.length} projetos
+                  {t("results.filtered", {
+                    count: filteredProjects.length,
+                    total: projects.length,
+                  })}
                 </span>
               )}
             </div>
@@ -793,7 +641,7 @@ export function Projects() {
           <div className="text-center py-12">
             <div className="inline-flex items-center gap-2 text-gray-600">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#f54a12]"></div>
-              Carregando projetos...
+              {t("messages.loading")}
             </div>
           </div>
         )}
@@ -802,7 +650,7 @@ export function Projects() {
         {error && (
           <div className="text-center py-12">
             <div className="text-red-600 mb-4">
-              <p className="text-lg font-medium">Erro ao carregar projetos</p>
+              <p className="text-lg font-medium">{t("errors.title")}</p>
               <p className="text-sm">{error}</p>
             </div>
             <Button
@@ -810,7 +658,7 @@ export function Projects() {
               variant="outline"
               className="border-[#f54a12] text-[#f54a12] hover:bg-[#f54a12] hover:text-white"
             >
-              Tentar novamente
+              {t("errors.retry")}
             </Button>
           </div>
         )}
@@ -836,25 +684,11 @@ export function Projects() {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="absolute top-4 left-4 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg cursor-pointer hover:bg-blue-600 transition-colors">
-                            {project.language === "portugues"
-                              ? "PT-BR"
-                              : project.language === "ingles"
-                              ? "EN"
-                              : project.language === "espanhol"
-                              ? "ES"
-                              : "PT-BR"}
+                            {getLanguageBadge(project.language)}
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>
-                            {project.language === "portugues"
-                              ? "Curso em Português"
-                              : project.language === "ingles"
-                              ? "Curso em Inglês"
-                              : project.language === "espanhol"
-                              ? "Curso em Espanhol"
-                              : "Curso em Português"}
-                          </p>
+                          <p>{getLanguageTooltip(project.language)}</p>
                         </TooltipContent>
                       </Tooltip>
                       <Tooltip>
@@ -872,11 +706,7 @@ export function Projects() {
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>
-                            {project.planType === "gold"
-                              ? "Plano Gold"
-                              : "Plano Black"}
-                          </p>
+                          <p>{getPlanTooltip(project.planType)}</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -895,7 +725,7 @@ export function Projects() {
                       </div>
                       <div className="mb-4 text-sm text-gray-600">
                         <span className="inline-flex items-center gap-1">
-                          <span className="font-medium">Inicia em:</span>{" "}
+                          <span className="font-medium">{t("labels.starts")}</span>{" "}
                           {project.startDate}
                         </span>
                       </div>
@@ -931,12 +761,14 @@ export function Projects() {
                                     </div>
                                     <span className="text-gray-400">•</span>
                                     <span className="text-gray-500">
-                                      ({project.mentorReviews} reviews)
+                                      {t("mentor.reviews", {
+                                        count: project.mentorReviews,
+                                      })}
                                     </span>
                                   </>
                                 ) : (
                                   <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                                    Novo mentor
+                                    {t("mentor.new")}
                                   </span>
                                 )}
                               </div>
@@ -949,10 +781,10 @@ export function Projects() {
                             </div>
                             <div className="flex-1">
                               <p className="text-sm text-gray-500 font-medium">
-                                Mentor em definição
+                                {t("mentor.pending")}
                               </p>
                               <p className="text-xs text-gray-400">
-                                Em breve anunciaremos o mentor deste curso
+                                {t("mentor.comingSoon")}
                               </p>
                             </div>
                           </div>
@@ -960,10 +792,10 @@ export function Projects() {
                       </div>
 
                       <Link
-                        href={`/pt/curso/${project.slug}`}
+                        href={`/${locale}/curso/${project.slug}`}
                         className="flex items-center gap-2 text-[#f54a12] group-hover:gap-3 transition-all duration-300"
                       >
-                        Saiba mais
+                        {t("cta.learnMore")}
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                     </div>
@@ -977,16 +809,16 @@ export function Projects() {
               <Search className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-xl text-[#19184b] mb-2">
-              Nenhum projeto encontrado
+              {t("empty.title")}
             </h3>
             <p className="text-gray-600 mb-6">
-              Tente ajustar os filtros para ver mais resultados
+              {t("empty.description")}
             </p>
             <Button
               onClick={clearFilters}
               className="bg-[#f54a12] hover:bg-[#d43e0f] text-white"
             >
-              Limpar todos os filtros
+              {t("empty.clear")}
             </Button>
           </div>
         )}
@@ -998,7 +830,7 @@ export function Projects() {
               onClick={() => setDisplayedCount((prev) => prev + 6)}
               className="bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-xl"
             >
-              Carregar mais
+              {t("cta.loadMore")}
             </Button>
           </div>
         )}

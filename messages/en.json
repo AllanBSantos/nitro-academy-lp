@@ -207,7 +207,6 @@
         "name": "Samareh Sherafat",
         "desc": "Graduated in International Relations from Facamp and has previous experience as a teacher, headhunter and human resources leader. She was a volunteer in Gambia, Guinea Bissau and Israel in social projects."
       },
-
       "barbara": {
         "name": "Bárbara de Padua",
         "desc": "Publicity and Advertising student at Uninter, has previous experience with customer service and development of new projects."
@@ -929,5 +928,406 @@
   "OurClients": {
     "title": "Our Partners",
     "subtitle": "Schools powered by Nitro Academy"
+  },
+  "NewHome": {
+    "Hero": {
+      "title": "Accelerating <highlightTalents>talents</highlightTalents><lineBreak/>preparing <highlightFutures>futures</highlightFutures>.",
+      "description": "We complement traditional education with practical subjects and top-tier mentors, preparing teenagers for the new job market.",
+      "viewProjects": "View Projects",
+      "bringNitroToSchool": "Bring Nitro to my school",
+      "studentAlt": "Nitro Academy student"
+    },
+    "WhatIsNitro": {
+      "title": "What is <highlight>Nitro Academy</highlight>?",
+      "description": "An accelerator for young talents from 12 to 17 years old that complements traditional education with practical subjects aligned with students' interests, developing entrepreneurial skills essential for any career in the new job market.",
+      "quote": "“Traditional education needs to evolve. At Nitro, we design a complementary curriculum that prepares young people for the real challenges of their lives.”",
+      "author": "Vahid Sherafat",
+      "authorRole": "Founder, Nitro Academy"
+    },
+    "Program": {
+      "title": "The <highlight>program</highlight>",
+      "description": "Over 3 years, students explore 6 projects that build essential skills for the future, with access to 4 specialized learning tracks:",
+      "courseCount": "{count, plural, one {# course} other {# courses}}",
+      "exploreTrack": "Explore Track",
+      "tracks": {
+        "creativity": {
+          "name": "Creativity & Well-Being",
+          "description": "Boost your creativity and learn how to take care of your physical and mental well-being"
+        },
+        "technology": {
+          "name": "Technology",
+          "description": "Master digital tools and learn how to create innovative technological solutions"
+        },
+        "business": {
+          "name": "Business",
+          "description": "Understand how businesses work and develop an entrepreneurial mindset"
+        },
+        "leadership": {
+          "name": "Leadership",
+          "description": "Learn to lead teams and projects with emotional intelligence and strategic vision"
+        }
+      },
+      "fallbackTracks": [
+        {
+          "id": 1,
+          "key": "creativity",
+          "courseCount": 12
+        },
+        {
+          "id": 2,
+          "key": "technology",
+          "courseCount": 15
+        },
+        {
+          "id": 3,
+          "key": "business",
+          "courseCount": 10
+        },
+        {
+          "id": 4,
+          "key": "leadership",
+          "courseCount": 8
+        }
+      ],
+      "fallbacks": {
+        "courseTitle": "Course",
+        "courseDescription": "Course description",
+        "category": "Technology"
+      },
+      "labels": {
+        "starts": "Starts on:",
+        "defaultStartDate": "March/26"
+      }
+    },
+    "Competencies": {
+      "title": "Entrepreneurial <highlight>Competencies</highlight>",
+      "description": "Each semester students join mentor-led projects that unlock competencies such as:",
+      "items": {
+        "leadership": "Leadership",
+        "creativity": "Creativity",
+        "communication": "Communication",
+        "innovation": "Innovation",
+        "criticalThinking": "Critical Thinking"
+      },
+      "footer": "Each competency is developed in an integrated way within the projects, ensuring the student's complete growth."
+    },
+    "Differentials": {
+      "title": "Nitro <highlight>Differentials</highlight>",
+      "items": [
+        "classSize",
+        "methodology",
+        "competencies",
+        "mentors"
+      ],
+      "titles": {
+        "classSize": "Classes of 15 to 25 students",
+        "methodology": "Project-based methodology",
+        "competencies": "Entrepreneurial skills for life",
+        "mentors": "Top-tier mentors"
+      },
+      "descriptions": {
+        "classSize": "Small groups allow individual follow-up, active participation, and a dynamic, collaborative, and welcoming learning environment.",
+        "methodology": "Each project is structured around real challenges that foster creativity, problem-solving, and teamwork.",
+        "competencies": "More than future professionals, Nitro shapes conscious, creative young entrepreneurs. Classes develop core competencies for any path the student chooses.",
+        "mentors": "Entrepreneurs, coaches, and market specialists who bring practical knowledge and real-world experiences that captivate teenagers."
+      }
+    },
+    "Projects": {
+      "title": "Our <highlight>Projects</highlight>",
+      "subtitle": "Discover the projects developed by our students",
+      "filters": {
+        "title": "Search Filters",
+        "activeCount": "{count, plural, one {# active filter} other {# active filters}}",
+        "hint": "Refine your project search",
+        "clear": "Clear",
+        "hide": "Hide filters",
+        "show": "Show filters",
+        "activeLabel": "Active filters:",
+        "labels": {
+          "projectName": "Project name",
+          "day": "Day of the week",
+          "time": "Time",
+          "language": "Language",
+          "mentor": "Mentor"
+        },
+        "placeholders": {
+          "search": "Search...",
+          "day": "Select a day",
+          "time": "Select a time",
+          "language": "Select a language",
+          "mentor": "Select a mentor"
+        },
+        "allDays": "All days",
+        "allTimes": "All times",
+        "allLanguages": "All languages",
+        "allMentors": "All mentors",
+        "days": {
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        },
+        "periods": {
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening"
+        },
+        "languages": {
+          "portuguese": "Portuguese",
+          "english": "English",
+          "spanish": "Spanish"
+        }
+      },
+      "results": {
+        "all": "Showing {count} {count, plural, one {project} other {projects}}",
+        "filtered": "Found {count} of {total} {total, plural, one {project} other {projects}}"
+      },
+      "messages": {
+        "loading": "Loading projects..."
+      },
+      "errors": {
+        "title": "Error loading projects",
+        "retry": "Try again",
+        "generic": "Unable to load projects."
+      },
+      "empty": {
+        "title": "No projects found",
+        "description": "Try adjusting the filters to see more results",
+        "clear": "Clear all filters"
+      },
+      "cta": {
+        "learnMore": "Learn more",
+        "loadMore": "Load more"
+      },
+      "mentor": {
+        "reviews": "{count, plural, one {(#) review} other {(#) reviews}}",
+        "new": "New mentor",
+        "pending": "Mentor coming soon",
+        "comingSoon": "We'll announce this course's mentor soon",
+        "placeholder": "Mentor"
+      },
+      "language": {
+        "tooltip": {
+          "portuguese": "Course in Portuguese",
+          "english": "Course in English",
+          "spanish": "Course in Spanish"
+        }
+      },
+      "plans": {
+        "gold": "Gold Plan",
+        "black": "Black Plan"
+      },
+      "labels": {
+        "starts": "Starts on:",
+        "defaultStartDate": "March/26"
+      },
+      "fallbacks": {
+        "courseTitle": "Course",
+        "courseDescription": "Course description",
+        "category": "Technology"
+      }
+    },
+    "PartnerSchools": {
+      "title": "Partner <highlight>Schools</highlight>",
+      "subtitle": "Education institutions that trust Nitro Academy",
+      "logoAlt": "{name} logo",
+      "fallback": [
+        {
+          "id": 1,
+          "documentId": "mock-1",
+          "name": "Excellence School",
+          "logo": "🏫"
+        },
+        {
+          "id": 2,
+          "documentId": "mock-2",
+          "name": "Educational Institute",
+          "logo": "🎓"
+        },
+        {
+          "id": 3,
+          "documentId": "mock-3",
+          "name": "Future School",
+          "logo": "🚀"
+        },
+        {
+          "id": 4,
+          "documentId": "mock-4",
+          "name": "Premium Academy",
+          "logo": "⭐"
+        },
+        {
+          "id": 5,
+          "documentId": "mock-5",
+          "name": "Learning Center",
+          "logo": "📚"
+        },
+        {
+          "id": 6,
+          "documentId": "mock-6",
+          "name": "Innovation School",
+          "logo": "💡"
+        }
+      ]
+    },
+    "Reviews": {
+      "title": "Reviews & <highlight>Feedback</highlight>",
+      "subtitle": "See what students and families say about Nitro Academy",
+      "cta": {
+        "showLess": "Show less",
+        "showMore": "Show more reviews"
+      },
+      "fallback": [
+        {
+          "id": 1,
+          "name": "Lucas Martins",
+          "gender": "boy",
+          "rating": 5,
+          "comment": "Nitro changed how I see education. I learned much more than I imagined!",
+          "date": "2 weeks ago"
+        },
+        {
+          "id": 2,
+          "name": "Julia Santos",
+          "gender": "girl",
+          "rating": 5,
+          "comment": "The projects are incredible and the mentors are truly inspiring. I recommend it!",
+          "date": "1 month ago"
+        },
+        {
+          "id": 3,
+          "name": "Pedro Oliveira",
+          "gender": "boy",
+          "rating": 5,
+          "comment": "I'm developing skills that I'll use for the rest of my life.",
+          "date": "3 weeks ago"
+        },
+        {
+          "id": 4,
+          "name": "Beatriz Costa",
+          "gender": "girl",
+          "rating": 5,
+          "comment": "The methodology is unlike anything I've seen. I learn by doing!",
+          "date": "1 week ago"
+        },
+        {
+          "id": 5,
+          "name": "Gabriel Ferreira",
+          "gender": "boy",
+          "rating": 5,
+          "comment": "The mentors are real professionals sharing real experiences.",
+          "date": "2 months ago"
+        },
+        {
+          "id": 6,
+          "name": "Marina Silva",
+          "gender": "girl",
+          "rating": 5,
+          "comment": "My daughter is much more engaged and motivated to study.",
+          "date": "3 weeks ago"
+        }
+      ]
+    },
+    "PricingCTA": {
+      "title": "Invest in Your Child's <highlight>Future</highlight>",
+      "subtitle": "A complete 3-year program with 6 transformative courses",
+      "benefits": [
+        "3 years of a complete program",
+        "6 courses, one per semester",
+        "Certificate of completion",
+        "1 hour each week"
+      ],
+      "labels": {
+        "totalInvestment": "Total Investment",
+        "installmentsIntro": "or up to",
+        "of": "of",
+        "installmentsNote": "interest-free on your credit card"
+      },
+      "cta": {
+        "button": "Purchase the Program",
+        "guarantee": "30-day satisfaction guarantee"
+      },
+      "footer": "Transform your child's future with world-class education and international mentorship."
+    },
+    "MentorCTA": {
+      "title": "Become a <highlight>Nitro Mentor</highlight>",
+      "description": "Join a community of professionals who believe in the transformative power of education. Share your experience and help young talents reach their full potential.",
+      "cta": "I want to be a Mentor",
+      "stats": {
+        "mentors": "Active mentors",
+        "students": "Students impacted",
+        "projects": "Projects"
+      },
+      "benefits": [
+        {
+          "icon": "knowledge",
+          "title": "Share knowledge",
+          "description": "Inspire the next generation of talent"
+        },
+        {
+          "icon": "network",
+          "title": "Expand your network",
+          "description": "Connect with other professionals"
+        },
+        {
+          "icon": "growth",
+          "title": "Develop yourself",
+          "description": "Strengthen your leadership skills"
+        }
+      ]
+    },
+    "SchoolCTA": {
+      "badge": "For Schools",
+      "title": "Bring <highlight>Nitro Academy</highlight> to your school",
+      "description": "Transform your students' educational experience with our talent acceleration programs. Get in touch and discover how we can partner together.",
+      "email": {
+        "body": "New partnership request for schools:\n\nSchool Name: {schoolName}\nContact Email: {email}\nPhone: {phone}\nMessage: {message}\n\n---\nSent through the Nitro Academy website",
+        "subject": "New school proposal request - {schoolName}"
+      },
+      "errors": {
+        "submit": "Failed to send the request. Please try again."
+      },
+      "success": {
+        "title": "Request sent!",
+        "message": "Thank you for your interest. We'll get in touch soon."
+      },
+      "form": {
+        "schoolName": "School name",
+        "email": "Contact email",
+        "phone": "Phone",
+        "message": "Tell us more about your school and goals",
+        "submit": "Send request",
+        "sending": "Sending..."
+      },
+      "packages": {
+        "title": "Special packages for schools",
+        "description": "Education institutions receive differentiated conditions and progressive discounts. Contact us to discover our tailor-made solutions."
+      }
+    },
+    "Mentors": {
+      "title": "Our <highlight>Mentors</highlight>",
+      "subtitle": "Top-level professionals who share real market experiences",
+      "empty": "No mentors found.",
+      "badges": {
+        "courses": "{count, plural, one {# course} other {# courses}}",
+        "new": "New mentor"
+      },
+      "cta": {
+        "readMore": "Read more"
+      },
+      "rating": {
+        "reviews": "{count, plural, one {(#) review} other {(#) reviews}}"
+      },
+      "modal": {
+        "about": "About the mentor",
+        "students": "Students",
+        "courses": "Courses",
+        "reviews": "Reviews",
+        "noReviews": "This mentor has not received any reviews yet"
+      }
+    }
   }
 }

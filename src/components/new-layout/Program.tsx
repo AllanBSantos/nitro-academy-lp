@@ -1,72 +1,113 @@
 import { Palette, Code, Briefcase, Users, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { fetchTrilhasWithCourseCount, TrilhaWithCount } from "@/lib/strapi";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+
+type TrackKey = "creativity" | "technology" | "business" | "leadership";
+
+type TrackWithMeta = TrilhaWithCount & {
+  trackKey?: TrackKey;
+};
+
+const trackStyles: Record<TrackKey, { icon: typeof Palette; color: string }> = {
+  creativity: { icon: Palette, color: "#f54a12" },
+  technology: { icon: Code, color: "#599fe9" },
+  business: { icon: Briefcase, color: "#3B82F6" },
+  leadership: { icon: Users, color: "#03A9F4" },
+};
+
+const normalizeTrackName = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[-–]/g, " ")
+    .trim();
+
+const trackNameMap: Record<string, TrackKey> = {
+  "criatividade e bem estar": "creativity",
+  "criatividade e bem-estar": "creativity",
+  "creativity and well being": "creativity",
+  "creativity and well-being": "creativity",
+  tecnologia: "technology",
+  technology: "technology",
+  negocios: "business",
+  negócios: "business",
+  "business and entrepreneurship": "business",
+  business: "business",
+  lideranca: "leadership",
+  liderança: "leadership",
+  leadership: "leadership",
+};
+
+const resolveTrackKey = (name: string): TrackKey | undefined => {
+  const normalized = normalizeTrackName(name);
+  return trackNameMap[normalized];
+};
 
 export function Program() {
-  const [tracks, setTracks] = useState<TrilhaWithCount[]>([]);
+  const t = useTranslations("NewHome.Program");
+  const [tracks, setTracks] = useState<TrackWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const fallbackTracks = useMemo(() => {
+    const rawFallback = t.raw("fallbackTracks") as {
+      id: number;
+      key: TrackKey;
+      courseCount: number;
+    }[];
+
+    return rawFallback.map((track) => ({
+      id: track.id,
+      nome: t(`tracks.${track.key}.name`),
+      descricao: t(`tracks.${track.key}.description`),
+      courseCount: track.courseCount,
+      trackKey: track.key,
+    } satisfies TrackWithMeta));
+  }, [t]);
+
+  const translateTrack = useCallback(
+    (track: TrilhaWithCount): TrackWithMeta => {
+      const trackKey = resolveTrackKey(track.nome);
+      if (trackKey) {
+        return {
+          ...track,
+          nome: t(`tracks.${trackKey}.name`),
+          descricao: t(`tracks.${trackKey}.description`),
+          trackKey,
+        };
+      }
+
+      return { ...track };
+    },
+    [t]
+  );
 
   useEffect(() => {
     const loadTrilhas = async () => {
       try {
         const trilhasData = await fetchTrilhasWithCourseCount();
-        setTracks(trilhasData);
+        if (trilhasData.length === 0) {
+          setTracks(fallbackTracks);
+          return;
+        }
+        setTracks(trilhasData.map(translateTrack));
       } catch (error) {
         console.error("Error loading trilhas:", error);
-        // Fallback para dados mockados
-        setTracks([
-          {
-            id: 1,
-            nome: "Criatividade e Bem-Estar",
-            descricao:
-              "Desenvolva sua criatividade e aprenda a cuidar do seu bem-estar físico e mental",
-            courseCount: 12,
-          },
-          {
-            id: 2,
-            nome: "Tecnologia",
-            descricao:
-              "Domine as ferramentas digitais e aprenda a criar soluções tecnológicas inovadoras",
-            courseCount: 15,
-          },
-          {
-            id: 3,
-            nome: "Negócios",
-            descricao:
-              "Entenda como funcionam os negócios e desenvolva uma mentalidade empreendedora",
-            courseCount: 10,
-          },
-          {
-            id: 4,
-            nome: "Liderança",
-            descricao:
-              "Aprenda a liderar equipes e projetos com inteligência emocional e visão estratégica",
-            courseCount: 8,
-          },
-        ]);
+        setTracks(fallbackTracks);
       } finally {
         setLoading(false);
       }
     };
 
     loadTrilhas();
-  }, []);
+  }, [fallbackTracks, translateTrack]);
 
   // Mapear ícones e cores para cada trilha
-  const getTrackConfig = (nome: string) => {
-    switch (nome.toLowerCase()) {
-      case "criatividade e bem-estar":
-        return { icon: Palette, color: "#f54a12" };
-      case "tecnologia":
-        return { icon: Code, color: "#599fe9" };
-      case "negócios":
-        return { icon: Briefcase, color: "#3B82F6" };
-      case "liderança":
-        return { icon: Users, color: "#03A9F4" };
-      default:
-        return { icon: Palette, color: "#f54a12" };
-    }
+  const getTrackConfig = (track: TrackWithMeta) => {
+    const key = track.trackKey ?? resolveTrackKey(track.nome) ?? "creativity";
+    return trackStyles[key];
   };
 
   return (
@@ -89,12 +130,14 @@ export function Program() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-5xl text-[#f9f9fa]">
-            O <span className="text-[#f54a12]">programa</span>
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="text-lg md:text-xl text-[#f9f9fa]/80 max-w-3xl mx-auto">
-            Ao longo de 3 anos, os estudantes exploram 6 projetos, desenvolvendo
-            habilidades essenciais para o futuro. Podendo participar de projetos
-            de 4 trilhas de conhecimento especializadas:
+            {t("description")}
           </p>
         </motion.div>
 
@@ -107,7 +150,7 @@ export function Program() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4">
               {tracks.map((item, index) => {
-                const config = getTrackConfig(item.nome);
+                const config = getTrackConfig(item);
                 const Icon = config.icon;
                 return (
                   <motion.div
@@ -136,7 +179,7 @@ export function Program() {
                         <p className="text-[#f9f9fa]/70">{item.descricao}</p>
                         <div className="pt-2">
                           <span className="text-[#f9f9fa]/60 text-sm">
-                            {item.courseCount} cursos
+                            {t("courseCount", { count: item.courseCount })}
                           </span>
                         </div>
                       </div>
@@ -157,7 +200,7 @@ export function Program() {
                             config.color + "40";
                         }}
                       >
-                        Explorar Trilha
+                        {t("exploreTrack")}
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                       </button>
                     </motion.div>

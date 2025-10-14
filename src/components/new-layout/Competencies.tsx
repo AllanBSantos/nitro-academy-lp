@@ -1,16 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function Competencies() {
+  const t = useTranslations("NewHome.Competencies");
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const competencies = [
-    { name: "Liderança", x: 0, y: -220, color: "#f54a12" },
-    { name: "Criatividade", x: 0, y: 220, color: "#f54a12" },
-    { name: "Comunicação", x: -220, y: 0, color: "#599fe9" },
-    { name: "Inovação", x: 0, y: 0, color: "#03A9F4" },
-    { name: "Pensamento Crítico", x: 220, y: 0, color: "#3B82F6" },
-  ];
+  const competencies = useMemo(
+    () => [
+      { name: t("items.leadership"), x: 0, y: -220, color: "#f54a12" },
+      { name: t("items.creativity"), x: 0, y: 220, color: "#f54a12" },
+      { name: t("items.communication"), x: -220, y: 0, color: "#599fe9" },
+      { name: t("items.innovation"), x: 0, y: 0, color: "#03A9F4" },
+      { name: t("items.criticalThinking"), x: 220, y: 0, color: "#3B82F6" },
+    ],
+    [t]
+  );
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -39,11 +44,14 @@ export function Competencies() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-3xl md:text-5xl text-[#19184b]">
-            Competências <span className="text-[#f54a12]">Empreendedoras</span>
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            A cada semestre os estudantes têm acesso a projetos guiados por
-            mentores experientes, que despertam competências como:
+            {t("description")}
           </p>
         </div>
 
@@ -241,10 +249,7 @@ export function Competencies() {
 
         {/* Description */}
         <div className="mt-16 text-center max-w-2xl mx-auto">
-          <p className="text-gray-600">
-            Cada competência é trabalhada de forma integrada nos projetos,
-            garantindo o desenvolvimento completo do aluno.
-          </p>
+          <p className="text-gray-600">{t("footer")}</p>
         </div>
       </div>
     </section>

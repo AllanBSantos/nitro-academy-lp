@@ -1,13 +1,28 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchTestimonials } from "@/lib/strapi";
 import { ReviewCard } from "@/types/strapi";
+import { useTranslations } from "next-intl";
 
 export function Reviews() {
+  const t = useTranslations("NewHome.Reviews");
   const [showAll, setShowAll] = useState(false);
   const [reviews, setReviews] = useState<ReviewCard[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const fallbackReviews = useMemo(
+    () =>
+      (t.raw("fallback") as ReviewCard[]).map((item, index) => ({
+        id: item.id ?? index + 1,
+        name: item.name,
+        gender: item.gender,
+        rating: item.rating ?? 5,
+        comment: item.comment,
+        date: item.date,
+      })),
+    [t]
+  );
 
   // Fetch reviews from Strapi
   useEffect(() => {
@@ -18,130 +33,18 @@ export function Reviews() {
         if (reviewsData.length > 0) {
           setReviews(reviewsData);
         } else {
-          // Use mock data when Strapi returns empty array
-          setReviews([
-            {
-              id: 1,
-              name: "Lucas Martins",
-              gender: "boy",
-              rating: 5,
-              comment:
-                "A Nitro mudou minha visão sobre educação. Aprendi muito mais do que imaginava!",
-              date: "Há 2 semanas",
-            },
-            {
-              id: 2,
-              name: "Julia Santos",
-              gender: "girl",
-              rating: 5,
-              comment:
-                "Os projetos são incríveis e os mentores são super inspiradores. Recomendo!",
-              date: "Há 1 mês",
-            },
-            {
-              id: 3,
-              name: "Pedro Oliveira",
-              gender: "boy",
-              rating: 5,
-              comment:
-                "Desenvolvimento de habilidades que vou usar para o resto da vida.",
-              date: "Há 3 semanas",
-            },
-            {
-              id: 4,
-              name: "Beatriz Costa",
-              gender: "girl",
-              rating: 5,
-              comment:
-                "A metodologia é diferente de tudo que já vi. Aprendo fazendo!",
-              date: "Há 1 semana",
-            },
-            {
-              id: 5,
-              name: "Gabriel Ferreira",
-              gender: "boy",
-              rating: 5,
-              comment:
-                "Os mentores são profissionais de verdade, compartilhando experiências reais.",
-              date: "Há 2 meses",
-            },
-            {
-              id: 6,
-              name: "Marina Silva",
-              gender: "girl",
-              rating: 5,
-              comment:
-                "Minha filha está muito mais engajada e motivada com os estudos.",
-              date: "Há 3 semanas",
-            },
-          ]);
+          setReviews(fallbackReviews);
         }
       } catch (err) {
         console.error("Error loading reviews:", err);
-        // Fallback to mock data if API fails
-        setReviews([
-          {
-            id: 1,
-            name: "Lucas Martins",
-            gender: "boy",
-            rating: 5,
-            comment:
-              "A Nitro mudou minha visão sobre educação. Aprendi muito mais do que imaginava!",
-            date: "Há 2 semanas",
-          },
-          {
-            id: 2,
-            name: "Julia Santos",
-            gender: "girl",
-            rating: 5,
-            comment:
-              "Os projetos são incríveis e os mentores são super inspiradores. Recomendo!",
-            date: "Há 1 mês",
-          },
-          {
-            id: 3,
-            name: "Pedro Oliveira",
-            gender: "boy",
-            rating: 5,
-            comment:
-              "Desenvolvimento de habilidades que vou usar para o resto da vida.",
-            date: "Há 3 semanas",
-          },
-          {
-            id: 4,
-            name: "Beatriz Costa",
-            gender: "girl",
-            rating: 5,
-            comment:
-              "A metodologia é diferente de tudo que já vi. Aprendo fazendo!",
-            date: "Há 1 semana",
-          },
-          {
-            id: 5,
-            name: "Gabriel Ferreira",
-            gender: "boy",
-            rating: 5,
-            comment:
-              "Os mentores são profissionais de verdade, compartilhando experiências reais.",
-            date: "Há 2 meses",
-          },
-          {
-            id: 6,
-            name: "Marina Silva",
-            gender: "girl",
-            rating: 5,
-            comment:
-              "Minha filha está muito mais engajada e motivada com os estudos.",
-            date: "Há 3 semanas",
-          },
-        ]);
+        setReviews(fallbackReviews);
       } finally {
         setLoading(false);
       }
     };
 
     loadReviews();
-  }, []);
+  }, [fallbackReviews]);
 
   const displayedReviews = showAll ? reviews : reviews.slice(0, 2);
 
@@ -168,10 +71,14 @@ export function Reviews() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-5xl text-[#19184b]">
-              Avaliações e <span className="text-[#f54a12]">Feedbacks</span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="text-[#f54a12]">{chunks}</span>
+                ),
+              })}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Veja o que alunos e pais dizem sobre a Nitro Academy
+              {t("subtitle")}
             </p>
           </motion.div>
           <div className="flex justify-center items-center py-12">
@@ -196,10 +103,14 @@ export function Reviews() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-5xl text-[#19184b]">
-            Avaliações e <span className="text-[#f54a12]">Feedbacks</span>
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Veja o que alunos e pais dizem sobre a Nitro Academy
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -254,7 +165,7 @@ export function Reviews() {
               onClick={() => setShowAll(!showAll)}
               className="inline-flex items-center gap-2 px-6 py-3 border border-[#f54a12] text-[#f54a12] bg-white rounded-full font-medium hover:bg-[#f54a12] hover:text-white transition-all duration-300"
             >
-              {showAll ? "Ver menos" : "Ver mais avaliações"}
+              {showAll ? t("cta.showLess") : t("cta.showMore")}
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-300 ${
                   showAll ? "rotate-180" : ""

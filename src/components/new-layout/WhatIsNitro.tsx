@@ -1,9 +1,11 @@
 import { Quote } from "lucide-react";
 import { motion } from "motion/react";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 export function WhatIsNitro() {
   const ref = useRef(null);
+  const t = useTranslations("NewHome.WhatIsNitro");
 
   return (
     <section ref={ref} className="py-12 md:py-20 bg-white">
@@ -16,13 +18,14 @@ export function WhatIsNitro() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-5xl text-[#19184b]">
-            O que é a <span className="text-[#f54a12]">Nitro Academy</span>?
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Aceleradora de jovens talentos de 12 a 17 anos que complementa o
-            ensino tradicional com disciplinas práticas alinhadas com o
-            interesse dos estudantes, desenvolvendo habilidades empreendedoras
-            essenciais para qualquer carreira no novo mercado de trabalho
+            {t("description")}
           </p>
         </motion.div>
 
@@ -44,13 +47,11 @@ export function WhatIsNitro() {
           >
             <Quote className="w-12 h-12 mb-4 text-white/30" />
             <p className="text-lg md:text-xl mb-6">
-              &ldquo;A educação tradicional precisa evoluir. Na Nitro,
-              preparamos um curriculo complementar que prepara os jovens para os
-              desafios reais de suas vidas.&rdquo;
+              {t("quote")}
             </p>
             <div>
-              <p className="text-white">Vahid Sherafat</p>
-              <p className="text-white/80">Fundador Nitro Academy</p>
+              <p className="text-white">{t("author")}</p>
+              <p className="text-white/80">{t("authorRole")}</p>
             </div>
           </motion.div>
         </motion.div>
