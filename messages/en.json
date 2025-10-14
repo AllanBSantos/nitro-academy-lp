@@ -526,6 +526,11 @@
     },
     "level": "Level",
     "language": "Language",
+    "plan_label": "Plan",
+    "plan": {
+      "gold": "Gold",
+      "black": "Black"
+    },
     "see_classes": "See all classes",
     "see_classes_mobile": "View classes",
     "course_info": "Course information"

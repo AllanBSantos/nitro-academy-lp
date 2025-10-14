@@ -17,7 +17,7 @@ export default function CourseDescription({ course }: CourseDescriptionProps) {
   return (
     <section className="relative bg-gradient-to-r from-[#1e1b4b] to-[#3B82F6] text-white py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        <div className="flex flex-col lg:flex-row items-start gap-12">
+        <div className="flex flex-col lg:flex-row items-center gap-12">
           <div className="flex-1 max-w-2xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               {course.title || ""}
@@ -55,7 +55,7 @@ export default function CourseDescription({ course }: CourseDescriptionProps) {
           </div>
 
           {course.videos && course.videos.length > 0 && (
-            <div className="w-full lg:w-[500px]">
+            <div className="w-full lg:w-[600px] flex justify-center">
               <Carousel
                 opts={{
                   align: "start",
@@ -81,14 +81,6 @@ export default function CourseDescription({ course }: CourseDescriptionProps) {
                             allowFullScreen
                             className="w-full h-full"
                           ></iframe>
-                        </div>
-                        <div className="p-4">
-                          <h3 className="text-lg font-semibold text-[#1e1b4b] mb-2">
-                            {video.titulo}
-                          </h3>
-                          <p className="text-gray-600 text-sm">
-                            {video.descricao}
-                          </p>
                         </div>
                       </div>
                     </CarouselItem>

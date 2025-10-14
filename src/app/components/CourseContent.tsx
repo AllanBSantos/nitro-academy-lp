@@ -110,6 +110,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                   ? t("language.english")
                   : t("language.portuguese")
               }
+              plano={course.plano}
               onEnrollClick={() => {
                 document
                   .getElementById("time-selection")
@@ -131,6 +132,7 @@ export default function CourseContent({ course }: CourseContentProps) {
                   ? t("language.english")
                   : t("language.portuguese")
               }
+              plano={course.plano}
               onEnrollClick={() => {
                 document
                   .getElementById("time-selection")

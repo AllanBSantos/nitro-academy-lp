@@ -527,6 +527,11 @@
     },
     "level": "Nível",
     "language": "Idioma",
+    "plan_label": "Plano",
+    "plan": {
+      "gold": "Gold",
+      "black": "Black"
+    },
     "see_classes": "Veja todas as turmas",
     "see_classes_mobile": "Ver turmas",
     "course_info": "Informações do curso"
