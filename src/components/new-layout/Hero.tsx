@@ -1,13 +1,17 @@
+"use client";
+
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 
 interface HeroProps {
   locale?: string;
 }
 
 export function Hero({ locale = "pt" }: HeroProps) {
+  const t = useTranslations("NewHome.Hero");
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -91,8 +95,13 @@ export function Hero({ locale = "pt" }: HeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Acelerando <span className="text-[#f54a12]">talentos</span>,<br />
-              preparando <span className="text-[#599fe9]">futuros</span>.
+              {t("titleLine1")}
+              <br />
+              <span className="text-[#f54a12]">{t("titleLine2")}</span>
+              <br />
+              {t("titleLine3")}
+              <br />
+              <span className="text-[#599fe9]">{t("titleLine4")}</span>
             </motion.h1>
 
             <motion.p
@@ -101,9 +110,7 @@ export function Hero({ locale = "pt" }: HeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Complementamos o ensino tradicional com disciplinas práticas e
-              mentores de alto nível, preparando adolescentes para o novo
-              mercado de trabalho.
+              {t("description")}
             </motion.p>
 
             <motion.div
@@ -116,7 +123,7 @@ export function Hero({ locale = "pt" }: HeroProps) {
                 onClick={() => scrollToSection("projetos")}
                 className="bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-xl group"
               >
-                Ver Projetos
+                {t("viewProjects")}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button
@@ -124,7 +131,7 @@ export function Hero({ locale = "pt" }: HeroProps) {
                 variant="outline"
                 className="border-[#599fe9] text-[#599fe9] hover:bg-[#599fe9] hover:text-white px-8 py-6 rounded-xl"
               >
-                Quero a Nitro na minha escola
+                {t("bringNitroToSchool")}
               </Button>
             </motion.div>
           </motion.div>
@@ -139,7 +146,7 @@ export function Hero({ locale = "pt" }: HeroProps) {
             <div className="relative z-10">
               <ImageWithFallback
                 src={`/${locale}/imagem_mona.png`}
-                alt="Estudante da Nitro Academy"
+                alt={t("studentAlt")}
                 className="w-full h-auto rounded-2xl shadow-2xl scale-x-[-1]"
                 width={1200}
                 height={800}

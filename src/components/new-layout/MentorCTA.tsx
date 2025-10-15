@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "./ui/button";
 import { Lightbulb, Users, TrendingUp, ArrowRight } from "lucide-react";
 import {
@@ -5,30 +7,53 @@ import {
   fetchStudentsCount,
   fetchCoursesCount,
 } from "@/lib/strapi";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
-async function MentorCTAContent() {
-  const [mentorsCount, studentsCount, coursesCount] = await Promise.all([
-    fetchMentorsCount(),
-    fetchStudentsCount(),
-    fetchCoursesCount(),
-  ]);
-  const benefits = [
-    {
-      icon: Lightbulb,
-      title: "Compartilhe Conhecimento",
-      description: "Inspire a próxima geração de talentos",
-    },
-    {
-      icon: Users,
-      title: "Faça Networking",
-      description: "Conecte-se com outros profissionais",
-    },
-    {
-      icon: TrendingUp,
-      title: "Desenvolva-se",
-      description: "Aprimore suas habilidades de liderança",
-    },
-  ];
+export function MentorCTA() {
+  const t = useTranslations("NewHome.MentorCTA");
+  const [mentorsCount, setMentorsCount] = useState(0);
+  const [studentsCount, setStudentsCount] = useState(0);
+  const [coursesCount, setCoursesCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [mentors, students, courses] = await Promise.all([
+          fetchMentorsCount(),
+          fetchStudentsCount(),
+          fetchCoursesCount(),
+        ]);
+        setMentorsCount(mentors);
+        setStudentsCount(students);
+        setCoursesCount(courses);
+      } catch (error) {
+        console.error("Failed to load stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, []);
+
+  const benefits = (
+    t.raw("benefits") as Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>
+  ).map((benefit) => ({
+    icon:
+      benefit.icon === "knowledge"
+        ? Lightbulb
+        : benefit.icon === "network"
+        ? Users
+        : TrendingUp,
+    title: benefit.title,
+    description: benefit.description,
+  }));
 
   return (
     <section
@@ -41,13 +66,13 @@ async function MentorCTAContent() {
             {/* Left: Content */}
             <div className="space-y-6">
               <h2 className="text-3xl md:text-4xl text-[#f9f9fa]">
-                Seja um <span className="text-[#f54a12]">Mentor</span> Nitro
+                {t.rich("title", {
+                  highlight: (chunks) => (
+                    <span className="text-[#f54a12]">{chunks}</span>
+                  ),
+                })}
               </h2>
-              <p className="text-lg text-[#f9f9fa]/80">
-                Faça parte de uma comunidade de profissionais que acreditam no
-                poder transformador da educação. Compartilhe sua experiência e
-                ajude jovens talentos a alcançarem seu potencial máximo.
-              </p>
+              <p className="text-lg text-[#f9f9fa]/80">{t("description")}</p>
 
               <div className="space-y-4">
                 {benefits.map((benefit, index) => {
@@ -77,7 +102,7 @@ async function MentorCTAContent() {
                   )
                 }
               >
-                Quero ser Mentor
+                {t("cta")}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -86,21 +111,21 @@ async function MentorCTAContent() {
             <div className="space-y-6">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                 <div className="text-4xl text-[#f54a12] mb-2">
-                  {mentorsCount}+
+                  {loading ? "..." : `${mentorsCount}+`}
                 </div>
-                <p className="text-[#f9f9fa]/80">Mentores ativos</p>
+                <p className="text-[#f9f9fa]/80">{t("stats.mentors")}</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                 <div className="text-4xl text-[#599fe9] mb-2">
-                  {studentsCount}+
+                  {loading ? "..." : `${studentsCount}+`}
                 </div>
-                <p className="text-[#f9f9fa]/80">Alunos impactados</p>
+                <p className="text-[#f9f9fa]/80">{t("stats.students")}</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                 <div className="text-4xl text-[#03A9F4] mb-2">
-                  {coursesCount}
+                  {loading ? "..." : coursesCount}
                 </div>
-                <p className="text-[#f9f9fa]/80">Projetos</p>
+                <p className="text-[#f9f9fa]/80">{t("stats.projects")}</p>
               </div>
             </div>
           </div>
@@ -108,8 +133,4 @@ async function MentorCTAContent() {
       </div>
     </section>
   );
-}
-
-export function MentorCTA() {
-  return <MentorCTAContent />;
 }

@@ -5,8 +5,10 @@ import { School, Mail, Phone, Sparkles } from "lucide-react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function SchoolCTA() {
+  const t = useTranslations("NewHome.SchoolCTA");
   const [formData, setFormData] = useState({
     schoolName: "",
     email: "",
@@ -31,17 +33,12 @@ export function SchoolCTA() {
     setIsSubmitting(true);
 
     try {
-      const emailBody = `
-Nova solicitação de proposta para escola:
-
-Nome da Escola: ${formData.schoolName}
-E-mail de Contato: ${formData.email}
-Telefone: ${formData.phone}
-Mensagem: ${formData.message}
-
----
-Enviado através do site Nitro Academy
-      `;
+      const emailBody = t("email.body", {
+        schoolName: formData.schoolName,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+      });
 
       const response = await fetch("/api/send-email", {
         method: "POST",
@@ -50,7 +47,7 @@ Enviado através do site Nitro Academy
         },
         body: JSON.stringify({
           to: "barbara@nitro.academy",
-          subject: `Nova solicitação de proposta - ${formData.schoolName}`,
+          subject: t("email.subject", { schoolName: formData.schoolName }),
           text: emailBody,
         }),
       });
@@ -68,7 +65,7 @@ Enviado através do site Nitro Academy
       });
     } catch (error) {
       console.error("Error sending email:", error);
-      alert("Erro ao enviar solicitação. Tente novamente.");
+      alert(t("errors.submit"));
     } finally {
       setIsSubmitting(false);
     }
@@ -91,18 +88,19 @@ Enviado através do site Nitro Academy
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#f54a12]/10 border border-[#f54a12]/20 rounded-full">
               <School className="w-4 h-4 text-[#f54a12]" />
-              <span className="text-sm text-[#f54a12]">Para Escolas</span>
+              <span className="text-sm text-[#f54a12]">{t("badge")}</span>
             </div>
 
             <h2 className="text-3xl md:text-5xl text-[#f9f9fa]">
-              Leve a <span className="text-[#f54a12]">Nitro Academy</span> para
-              sua escola
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="text-[#f54a12]">{chunks}</span>
+                ),
+              })}
             </h2>
 
             <p className="text-lg text-[#f9f9fa]/80">
-              Transforme a experiência educacional dos seus alunos com nossos
-              programas de aceleração de talentos. Entre em contato e descubra
-              como podemos fazer parceria.
+              {t("description")}
             </p>
 
             <div className="space-y-4">
@@ -128,12 +126,8 @@ Enviado através do site Nitro Academy
                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Mail className="w-8 h-8 text-green-400" />
                 </div>
-                <h3 className="text-xl text-[#f9f9fa] mb-2">
-                  Solicitação Enviada!
-                </h3>
-                <p className="text-[#f9f9fa]/80">
-                  Obrigado pelo seu interesse. Entraremos em contato em breve.
-                </p>
+                <h3 className="text-xl text-[#f9f9fa] mb-2">{t("success.title")}</h3>
+                <p className="text-[#f9f9fa]/80">{t("success.message")}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -142,7 +136,7 @@ Enviado através do site Nitro Academy
                     name="schoolName"
                     value={formData.schoolName}
                     onChange={handleInputChange}
-                    placeholder="Nome da Escola"
+                    placeholder={t("form.schoolName")}
                     className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
                     required
                   />
@@ -153,7 +147,7 @@ Enviado através do site Nitro Academy
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="E-mail de Contato"
+                    placeholder={t("form.email")}
                     className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
                     required
                   />
@@ -163,7 +157,7 @@ Enviado através do site Nitro Academy
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="Telefone"
+                    placeholder={t("form.phone")}
                     className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
                     required
                   />
@@ -173,7 +167,7 @@ Enviado através do site Nitro Academy
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
-                    placeholder="Conte-nos mais sobre sua escola e interesse"
+                    placeholder={t("form.message")}
                     rows={4}
                     className="bg-white/10 border-white/20 text-[#f9f9fa] placeholder:text-[#f9f9fa]/50"
                     required
@@ -184,7 +178,7 @@ Enviado através do site Nitro Academy
                   disabled={isSubmitting}
                   className="w-full bg-[#f54a12] hover:bg-[#d43e0f] text-white py-6 rounded-xl disabled:opacity-50"
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar Solicitação"}
+                  {isSubmitting ? t("form.sending") : t("form.submit")}
                 </Button>
               </form>
             )}
@@ -199,14 +193,8 @@ Enviado através do site Nitro Academy
                 <Sparkles className="w-6 h-6 text-[#f54a12]" />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <h3 className="text-xl text-[#f9f9fa] mb-2">
-                  Pacotes Especiais para Escolas
-                </h3>
-                <p className="text-[#f9f9fa]/80">
-                  Instituições de ensino têm condições diferenciadas e descontos
-                  progressivos. Entre em contato para conhecer nossas soluções
-                  personalizadas.
-                </p>
+                <h3 className="text-xl text-[#f9f9fa] mb-2">{t("packages.title")}</h3>
+                <p className="text-[#f9f9fa]/80">{t("packages.description")}</p>
               </div>
             </div>
           </div>

@@ -1,17 +1,17 @@
+"use client";
+
 import { Check } from "lucide-react";
 import { Button } from "./ui/button";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 export function PricingCTA() {
+  const t = useTranslations("NewHome.PricingCTA");
   const totalPrice = "10.260";
   const installments = "855";
   const installmentCount = 12;
 
-  const benefits = [
-    "3 anos de programa completo",
-    "6 cursos, 1 por semestre",
-    "Certificado de conclusão",
-    "1h semanalmente",
-  ];
+  const benefits = useMemo(() => t.raw("benefits") as string[], [t]);
 
   return (
     <section className="relative py-12 md:py-24 overflow-hidden bg-gradient-to-br from-[#19184b] via-[#2d2b6b] to-[#599fe9]">
@@ -26,7 +26,11 @@ export function PricingCTA() {
 
         {/* Main Title */}
         <h2 className="text-4xl md:text-6xl text-white mb-6 animate-fade-in-up">
-          Invista no Futuro do <span className="text-[#f54a12]">Seu Filho</span>
+          {t.rich("title", {
+            highlight: (chunks) => (
+              <span className="text-[#f54a12]">{chunks}</span>
+            ),
+          })}
         </h2>
 
         {/* Subtitle */}
@@ -34,7 +38,7 @@ export function PricingCTA() {
           className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto animate-fade-in-up"
           style={{ animationDelay: "0.1s" }}
         >
-          Programa completo de 3 anos com 6 cursos transformadores
+          {t("subtitle")}
         </p>
 
         {/* Benefits Grid */}
@@ -62,7 +66,7 @@ export function PricingCTA() {
         >
           {/* Price */}
           <div className="mb-6">
-            <p className="text-white/80 mb-2">Investimento Total</p>
+            <p className="text-white/80 mb-2">{t("labels.totalInvestment")}</p>
             <div className="flex items-start justify-center gap-2">
               <span className="text-2xl md:text-3xl text-white mt-1">R$</span>
               <span className="text-4xl md:text-5xl text-white">
@@ -73,13 +77,15 @@ export function PricingCTA() {
 
           {/* Installments */}
           <div className="py-6 border-t border-b border-white/20">
-            <p className="text-white/80 mb-2">ou em até</p>
+            <p className="text-white/80 mb-2">
+              {t("labels.installmentsIntro")}
+            </p>
             <div className="text-2xl md:text-3xl text-white">
-              {installmentCount}x de{" "}
+              {installmentCount}x {t("labels.of")}{" "}
               <span className="text-[#f54a12]">R$ {installments}</span>
             </div>
             <p className="text-sm text-white/60 mt-2">
-              sem juros no cartão de crédito
+              {t("labels.installmentsNote")}
             </p>
           </div>
 
@@ -94,11 +100,9 @@ export function PricingCTA() {
               }
               className="w-full bg-[#f54a12] hover:bg-[#d43e0f] text-white px-8 py-6 rounded-2xl shadow-2xl hover:shadow-[0_20px_60px_rgba(245,74,18,0.4)] transition-all duration-300 hover:scale-105"
             >
-              Adquirir o Programa
+              {t("cta.button")}
             </Button>
-            <p className="text-sm text-white/60 mt-4">
-              Garantia de satisfação de 30 dias
-            </p>
+            <p className="text-sm text-white/60 mt-4">{t("cta.guarantee")}</p>
           </div>
         </div>
 
@@ -107,8 +111,7 @@ export function PricingCTA() {
           className="text-white/70 max-w-2xl mx-auto animate-fade-in"
           style={{ animationDelay: "0.4s" }}
         >
-          Transforme o futuro do seu filho com educação de excelência e mentoria
-          internacional de primeira classe
+          {t("footer")}
         </p>
       </div>
     </section>

@@ -1,13 +1,28 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import { fetchPartnerSchools } from "@/lib/strapi";
 import { PartnerSchool } from "@/types/strapi";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export function PartnerSchools() {
+  const t = useTranslations("NewHome.PartnerSchools");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [schools, setSchools] = useState<PartnerSchool[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const fallbackSchools = useMemo(
+    () =>
+      (t.raw("fallback") as PartnerSchool[]).map((school, index) => ({
+        id: school.id ?? index + 1,
+        documentId: school.documentId ?? `mock-${index + 1}`,
+        name: school.name,
+        logo: school.logo ?? "🏫",
+      })),
+    [t]
+  );
 
   // Fetch schools from Strapi
   useEffect(() => {
@@ -15,40 +30,21 @@ export function PartnerSchools() {
       try {
         setLoading(true);
         const schoolsData = await fetchPartnerSchools();
-        setSchools(schoolsData);
+        if (schoolsData.length > 0) {
+          setSchools(schoolsData);
+        } else {
+          setSchools(fallbackSchools);
+        }
       } catch (err) {
         console.error("Error loading schools:", err);
-        // Fallback to mock data if API fails
-        setSchools([
-          {
-            id: 1,
-            documentId: "mock-1",
-            name: "Colégio Excellence",
-            logo: "🏫",
-          },
-          {
-            id: 2,
-            documentId: "mock-2",
-            name: "Instituto Educacional",
-            logo: "🎓",
-          },
-          { id: 3, documentId: "mock-3", name: "Escola do Futuro", logo: "🚀" },
-          { id: 4, documentId: "mock-4", name: "Academia Premium", logo: "⭐" },
-          {
-            id: 5,
-            documentId: "mock-5",
-            name: "Centro Educacional",
-            logo: "📚",
-          },
-          { id: 6, documentId: "mock-6", name: "Escola Inovação", logo: "💡" },
-        ]);
+        setSchools(fallbackSchools);
       } finally {
         setLoading(false);
       }
     };
 
     loadSchools();
-  }, []);
+  }, [fallbackSchools]);
 
   // Detectar tamanho da tela para responsividade
   useEffect(() => {
@@ -86,10 +82,14 @@ export function PartnerSchools() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 space-y-4">
             <h2 className="text-3xl md:text-5xl text-[#19184b]">
-              Escolas <span className="text-[#f54a12]">Parceiras</span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="text-[#f54a12]">{chunks}</span>
+                ),
+              })}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Instituições de ensino que confiam na Nitro Academy
+              {t("subtitle")}
             </p>
           </div>
           <div className="flex justify-center items-center py-12">
@@ -110,10 +110,14 @@ export function PartnerSchools() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-3xl md:text-5xl text-[#19184b]">
-            Escolas <span className="text-[#f54a12]">Parceiras</span>
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Instituições de ensino que confiam na Nitro Academy
+            {t("subtitle")}
           </p>
         </div>
 
@@ -137,7 +141,7 @@ export function PartnerSchools() {
                       {school.logo && school.logo.startsWith("http") ? (
                         <Image
                           src={school.logo}
-                          alt={`Logo da ${school.name}`}
+                          alt={t("logoAlt", { name: school.name })}
                           width={80}
                           height={80}
                           className="max-h-20 max-w-40 object-contain"
