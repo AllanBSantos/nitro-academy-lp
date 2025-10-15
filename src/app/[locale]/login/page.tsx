@@ -1,22 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/app/components/ui/card";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
+import { motion } from "motion/react";
+import { Button } from "@/components/new-layout/ui/button";
+import { Input } from "@/components/new-layout/ui/input";
 import { Phone, ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -27,7 +18,7 @@ axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.withCredentials = true; // Important for CORS
 
 export default function LoginPage() {
-  const [whatsapp, setWhatsapp] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -39,13 +30,22 @@ export default function LoginPage() {
   const locale = useLocale();
   const t = useTranslations("Login");
 
-  const formatWhatsApp = (value: string) => {
+  // Check if user is already logged in
+  useEffect(() => {
+    const authToken = Cookies.get("auth_token");
+    if (authToken) {
+      // User is already logged in, redirect to admin
+      router.push(`/${locale}/admin`);
+    }
+  }, [router, locale]);
+
+  const formatPhone = (value: string) => {
     return formatPhoneForDisplay(value);
   };
 
-  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatWhatsApp(e.target.value);
-    setWhatsapp(formatted);
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    setPhoneNumber(formatted);
   };
 
   const handleSendCode = async (e: React.FormEvent) => {
@@ -55,15 +55,15 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const whatsappDigits = whatsapp.replace(/\D/g, "");
+      const phoneDigits = phoneNumber.replace(/\D/g, "");
 
-      if (whatsappDigits.length < 8 || whatsappDigits.length > 15) {
+      if (phoneDigits.length < 8 || phoneDigits.length > 15) {
         setError(t("invalid_whatsapp"));
         return;
       }
 
       const { data } = await axios.post("/api/auth-code/create", {
-        whatsapp: whatsappDigits,
+        whatsapp: phoneDigits,
       });
 
       if (!data.success) {
@@ -99,7 +99,7 @@ export default function LoginPage() {
     setIsVerifying(true);
 
     try {
-      const whatsappDigits = whatsapp.replace(/\D/g, "");
+      const phoneDigits = phoneNumber.replace(/\D/g, "");
 
       if (!code.trim()) {
         setError(t("code_required"));
@@ -107,7 +107,7 @@ export default function LoginPage() {
       }
 
       const { data } = await axios.post("/api/auth-code/validate", {
-        whatsapp: whatsappDigits,
+        whatsapp: phoneDigits,
         code: code.trim(),
       });
 
@@ -202,10 +202,10 @@ export default function LoginPage() {
     setIsResending(true);
 
     try {
-      const whatsappDigits = whatsapp.replace(/\D/g, "");
+      const phoneDigits = phoneNumber.replace(/\D/g, "");
 
       const { data } = await axios.post("/api/auth-code/create", {
-        whatsapp: whatsappDigits,
+        whatsapp: phoneDigits,
       });
 
       if (!data.success) {
@@ -257,155 +257,263 @@ export default function LoginPage() {
   */
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#1e1b4b] to-[#3B82F6] py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md border-0 shadow-2xl bg-white">
-        <CardHeader className="text-center space-y-6">
-          {/* Logo */}
-          <div className="flex justify-center">
-            <Image
-              src={`/${locale}/logo_nitro_transparente.png`}
-              alt="Nitro Academy"
-              width={250}
-              height={70}
-              className="h-14 w-auto"
-              unoptimized
-            />
+    <div className="min-h-screen bg-[#19184b] relative overflow-hidden flex items-center justify-center">
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Animated gradient orbs */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#f54a12] rounded-full opacity-20 blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 100, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#599fe9] rounded-full opacity-20 blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [0, -80, 0],
+            y: [0, -60, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-96 h-96 bg-[#599fe9] rounded-full opacity-10 blur-3xl"
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </div>
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(#f54a12 1px, transparent 1px), linear-gradient(90deg, #f54a12 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 w-full max-w-md px-6 mt-20">
+        {/* Login Card */}
+        <motion.div
+          className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+        >
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl text-white mb-3">{t("welcome_back")}</h2>
+            <p className="text-white/60 text-lg">
+              {t("welcome_back_description")}
+            </p>
           </div>
 
-          <CardTitle className="text-3xl font-bold text-gray-900">
-            {t("welcome_title")}
-          </CardTitle>
-          <CardDescription className="text-lg text-gray-600">
-            {t("welcome_description")}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
           {!codeSent ? (
-            // Step 1: Enter WhatsApp number
-            <form onSubmit={handleSendCode} className="space-y-4">
+            // Step 1: Enter phone number
+            <form onSubmit={handleSendCode} className="space-y-6">
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <motion.div
+                  className="bg-red-500/20 border border-red-500/30 rounded-2xl p-4 text-red-200 text-sm"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  {error}
+                </motion.div>
               )}
               {success && (
-                <Alert>
-                  <AlertDescription>{success}</AlertDescription>
-                </Alert>
+                <motion.div
+                  className="bg-green-500/20 border border-green-500/30 rounded-2xl p-4 text-green-200 text-sm"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  {success}
+                </motion.div>
               )}
 
-              <div className="space-y-2">
-                <Label
-                  htmlFor="whatsapp"
-                  className="text-sm font-medium text-gray-900"
-                >
-                  {t("whatsapp_label")}
-                </Label>
+              {/* Phone Number Field */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <label htmlFor="phone" className="block text-white/80 mb-3">
+                  {t("phone_label")}
+                </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                   <Input
-                    id="whatsapp"
+                    id="phone"
                     type="tel"
-                    placeholder={t("whatsapp_placeholder")}
-                    value={whatsapp}
-                    onChange={handleWhatsAppChange}
-                    className="pl-10 h-12 text-base"
+                    placeholder={t("phone_placeholder")}
+                    value={phoneNumber}
+                    onChange={handlePhoneChange}
+                    className="pl-12 bg-white/10 border-white/20 text-white placeholder:text-white/40 h-16 rounded-2xl focus:border-[#599fe9] focus:ring-[#599fe9]/20 transition-all"
                     required
                   />
                 </div>
-              </div>
+                <p className="mt-3 text-white/50 text-sm">
+                  {t("phone_description")}
+                </p>
+              </motion.div>
 
-              <Button
-                type="submit"
-                className="w-full h-12 bg-theme-orange hover:bg-theme-orange/90 text-white font-medium group"
-                disabled={isLoading}
+              {/* Submit Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
               >
-                {isLoading ? t("sending_code") : t("send_code")}
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Button>
+                <Button
+                  type="submit"
+                  className="w-full h-16 bg-gradient-to-r from-[#f54a12] to-[#f54a12]/80 hover:from-[#f54a12]/90 hover:to-[#f54a12]/70 text-white rounded-2xl group shadow-lg shadow-[#f54a12]/20 hover:shadow-xl hover:shadow-[#f54a12]/30 transition-all"
+                  disabled={isLoading}
+                >
+                  <span className="text-lg">
+                    {isLoading ? t("sending_code") : t("send_code")}
+                  </span>
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </motion.div>
             </form>
           ) : (
             // Step 2: Enter verification code
-            <form onSubmit={handleVerifyCode} className="space-y-4">
+            <form onSubmit={handleVerifyCode} className="space-y-6">
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <motion.div
+                  className="bg-red-500/20 border border-red-500/30 rounded-2xl p-4 text-red-200 text-sm"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  {error}
+                </motion.div>
               )}
               {success && (
-                <Alert>
-                  <AlertDescription>{success}</AlertDescription>
-                </Alert>
+                <motion.div
+                  className="bg-green-500/20 border border-green-500/30 rounded-2xl p-4 text-green-200 text-sm"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
+                  {success}
+                </motion.div>
               )}
 
-              <div className="space-y-2">
-                <Label
-                  htmlFor="code"
-                  className="text-sm font-medium text-gray-900"
-                >
+              {/* Code Field */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <label htmlFor="code" className="block text-white/80 mb-3">
                   {t("code_label")}
-                </Label>
+                </label>
                 <Input
                   id="code"
                   type="text"
                   placeholder={t("code_placeholder")}
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  required
-                  className="text-center text-lg tracking-widest h-12"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-16 rounded-2xl focus:border-[#599fe9] focus:ring-[#599fe9]/20 transition-all text-center text-lg tracking-widest"
                   maxLength={5}
+                  required
                 />
-              </div>
+              </motion.div>
 
-              <div className="text-center">
+              {/* Resend Code Button */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
                 <Button
                   type="button"
                   variant="link"
                   onClick={handleResendCode}
                   disabled={isResending}
-                  className="text-sm text-theme-orange hover:text-theme-orange/80"
+                  className="text-[#599fe9] hover:text-[#f54a12] transition-colors"
                 >
                   {isResending ? t("resending_code") : t("resend_code")}
                 </Button>
-              </div>
+              </motion.div>
 
-              <Button
-                type="submit"
-                className="w-full h-12 bg-theme-orange hover:bg-theme-orange/90 text-white font-medium"
-                disabled={isVerifying}
+              {/* Verify Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
               >
-                {isVerifying ? t("verifying_code") : t("verify_code")}
-              </Button>
+                <Button
+                  type="submit"
+                  className="w-full h-16 bg-gradient-to-r from-[#f54a12] to-[#f54a12]/80 hover:from-[#f54a12]/90 hover:to-[#f54a12]/70 text-white rounded-2xl group shadow-lg shadow-[#f54a12]/20 hover:shadow-xl hover:shadow-[#f54a12]/30 transition-all"
+                  disabled={isVerifying}
+                >
+                  <span className="text-lg">
+                    {isVerifying ? t("verifying_code") : t("verify_code")}
+                  </span>
+                </Button>
+              </motion.div>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-12"
-                onClick={() => {
-                  setCodeSent(false);
-                  setCode("");
-                  setError("");
-                  setSuccess("");
-                }}
+              {/* Back Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
               >
-                {t("back")}
-              </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-16 border-white/20 text-white hover:bg-white/10 rounded-2xl"
+                  onClick={() => {
+                    setCodeSent(false);
+                    setCode("");
+                    setError("");
+                    setSuccess("");
+                  }}
+                >
+                  {t("back")}
+                </Button>
+              </motion.div>
             </form>
           )}
 
-          {/* Footer Text */}
-          <p className="text-center text-sm text-gray-500 mt-6">
-            {t("terms_text")}{" "}
-            <Link
-              href={`/${locale}/termos`}
-              className="text-theme-orange hover:underline font-medium"
-            >
-              {t("terms_and_privacy")}
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+          {/* Additional Info */}
+          <motion.div
+            className="mt-8 pt-8 border-t border-white/10 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            <p className="text-white/50 text-sm">
+              {t("terms_agreement")}{" "}
+              <Link
+                href={`/${locale}/termos`}
+                className="text-[#599fe9] hover:text-[#f54a12] transition-colors"
+              >
+                {t("terms_link")}
+              </Link>
+            </p>
+          </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

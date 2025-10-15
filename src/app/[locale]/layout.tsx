@@ -4,8 +4,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 
 import { setRequestLocale } from "next-intl/server";
-import { Navigation } from "@/components/new-layout/Navigation";
-import { Footer } from "@/components/new-layout/Footer";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -30,11 +29,7 @@ export default function LocaleLayout({
 
   return (
     <NextIntlClientProvider>
-      <div className="min-h-screen">
-        <Navigation />
-        {children}
-        <Footer />
-      </div>
+      <LayoutWrapper>{children}</LayoutWrapper>
     </NextIntlClientProvider>
   );
 }

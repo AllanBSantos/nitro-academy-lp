@@ -9,22 +9,19 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import LocaleSwitch from "@/app/components/LocaleSwitch";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 const logoImage = "/pt/logo_nitro_transparente.png";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const locale = useLocale();
   const pathname = usePathname();
   const { user, isAuthenticated, loading, logout } = useAuth();
   const headerT = useTranslations("Header");
+
+  // Debug logs
+  console.log("Navigation Debug:", { user, isAuthenticated, loading });
 
   const whiteBackgroundPages = [`/${locale}/about-us`, `/${locale}/termos`];
   const hasWhiteBackground = whiteBackgroundPages.some((page) =>
@@ -52,6 +49,21 @@ export function Navigation() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isUserMenuOpen) {
+        const target = event.target as Element;
+        if (!target.closest(".user-menu-container")) {
+          setIsUserMenuOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isUserMenuOpen]);
 
   const scrollToSection = (id: string) => {
     // Se não estiver na homepage, navegar para lá primeiro
@@ -141,69 +153,74 @@ export function Navigation() {
                 <span className="text-sm">Carregando...</span>
               </div>
             ) : isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="text-[#f9f9fa] hover:bg-white/10 flex items-center gap-2"
-                  >
-                    <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-                      <User className="h-4 w-4" />
-                    </div>
-                    <span className="text-sm font-medium">
-                      {user?.name || "Usuário"}
-                    </span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-2 py-1.5 text-sm font-medium">
-                    {getRoleName(user?.role?.type || "")}
+              <div className="relative user-menu-container">
+                <Button
+                  variant="ghost"
+                  className="text-[#f9f9fa] hover:bg-white/10 flex items-center gap-2"
+                  onClick={() => {
+                    setIsUserMenuOpen(!isUserMenuOpen);
+                  }}
+                >
+                  <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <User className="h-4 w-4" />
                   </div>
-                  <DropdownMenuSeparator />
-                  {user?.role?.type === "student" && (
-                    <DropdownMenuItem asChild>
+                  <span className="text-sm font-medium">
+                    {user?.name || "Usuário"}
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+
+                {/* Dropdown manual */}
+                {isUserMenuOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 shadow-lg rounded-md z-[60] p-2">
+                    <div className="px-2 py-1.5 text-sm font-medium text-gray-900">
+                      {getRoleName(user?.role?.type || "")}
+                    </div>
+                    <div className="border-t border-gray-200 my-1"></div>
+                    {user?.role?.type === "student" && (
                       <Link
                         href={`/${locale}/student`}
-                        className="cursor-pointer"
+                        className="block px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                        onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>{headerT("student_area")}</span>
+                        <User className="inline mr-2 h-4 w-4" />
+                        {headerT("student_area")}
                       </Link>
-                    </DropdownMenuItem>
-                  )}
-                  {user?.role?.type === "mentor" && (
-                    <DropdownMenuItem asChild>
+                    )}
+                    {user?.role?.type === "mentor" && (
                       <Link
                         href={`/${locale}/admin`}
-                        className="cursor-pointer"
+                        className="block px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                        onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>{headerT("mentor_area")}</span>
+                        <User className="inline mr-2 h-4 w-4" />
+                        {headerT("mentor_area")}
                       </Link>
-                    </DropdownMenuItem>
-                  )}
-                  {user?.role?.type === "admin" && (
-                    <DropdownMenuItem asChild>
+                    )}
+                    {user?.role?.type === "admin" && (
                       <Link
                         href={`/${locale}/admin`}
-                        className="cursor-pointer"
+                        className="block px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                        onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>{headerT("admin_area")}</span>
+                        <User className="inline mr-2 h-4 w-4" />
+                        {headerT("admin_area")}
                       </Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => logout(locale)}
-                    className="cursor-pointer text-red-600"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sair</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    )}
+                    <div className="border-t border-gray-200 my-1"></div>
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        logout(locale);
+                      }}
+                      className="block w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                    >
+                      <LogOut className="inline mr-2 h-4 w-4" />
+                      Sair
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link href={`/${locale}/login`}>
                 <Button
@@ -236,7 +253,7 @@ export function Navigation() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#19184b] border-t border-[#599fe9]/20">
+        <div className="md:hidden bg-[#19184b] border-t border-[#599fe9]/20 z-[60]">
           <div className="px-4 pt-2 pb-4 space-y-2">
             {menuItems.map((item) =>
               item.href ? (
