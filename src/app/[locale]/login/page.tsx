@@ -165,7 +165,7 @@ export default function LoginPage() {
             linkedType,
             fullData: data.data,
             environment: process.env.NODE_ENV,
-            whatsapp: whatsappDigits,
+            whatsapp: phoneDigits,
             code: code.trim(),
           }
         );
