@@ -3,7 +3,7 @@
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import Chatwoot from "../Chatwoot";
 const logoImage = "/pt/logo_nitro_transparente.png";
@@ -11,6 +11,7 @@ const logoImage = "/pt/logo_nitro_transparente.png";
 export function Footer() {
   const locale = useLocale();
   const pathname = usePathname();
+  const t = useTranslations("Footer");
 
   const scrollToSection = (id: string) => {
     // Se não estiver na homepage, navegar para lá primeiro
@@ -32,12 +33,12 @@ export function Footer() {
   };
 
   const quickLinks = [
-    { label: "Home", id: "home" },
-    { label: "Nossos Projetos", id: "projetos" },
-    { label: "Seja Mentor", id: "mentor" },
-    { label: "Quero a Nitro na minha Escola", id: "escola" },
-    { label: "Nossa História", href: `/${locale}/about-us` },
-    { label: "FAQ", href: `/${locale}/faq` },
+    { label: t("home"), id: "home" },
+    { label: t("ourProjects"), id: "projetos" },
+    { label: t("beMentor"), id: "mentor" },
+    { label: t("bringNitroToSchool"), id: "escola" },
+    { label: t("ourHistory"), href: `/${locale}/about-us` },
+    { label: t("faq"), href: `/${locale}/faq` },
   ];
 
   const socialLinks = [
@@ -76,10 +77,7 @@ export function Footer() {
               height={40}
               className="h-10 w-auto"
             />
-            <p className="text-[#f9f9fa]/70">
-              Acelerando talentos e preparando futuros através de educação
-              prática e inovadora.
-            </p>
+            <p className="text-[#f9f9fa]/70">{t("description")}</p>
             <div className="flex gap-4">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
@@ -99,7 +97,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl mb-6">Acesso Rápido</h3>
+            <h3 className="text-xl mb-6">{t("quickAccess")}</h3>
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
@@ -125,7 +123,7 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl mb-6">Contato</h3>
+            <h3 className="text-xl mb-6">{t("contact")}</h3>
             <ul className="space-y-3 text-[#f9f9fa]/70">
               <li>
                 <a
@@ -153,15 +151,14 @@ export function Footer() {
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-[#f9f9fa]/50 text-sm">
-              © {new Date().getFullYear()} Nitro Academy. Todos os direitos
-              reservados.
+              © {new Date().getFullYear()} Nitro Academy. {t("copyright")}
             </p>
             <div className="flex gap-6 text-sm text-[#f9f9fa]/50">
               <Link
                 href={`/${locale}/termos`}
                 className="hover:text-[#f54a12] transition-colors"
               >
-                Termos de Uso e Política de Privacidade
+                {t("termsAndPrivacy")}
               </Link>
             </div>
           </div>

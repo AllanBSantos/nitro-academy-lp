@@ -1,3 +1,5 @@
+"use client";
+
 import { Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { useTranslations } from "next-intl";
@@ -9,10 +11,7 @@ export function PricingCTA() {
   const installments = "855";
   const installmentCount = 12;
 
-  const benefits = useMemo(
-    () => t.raw("benefits") as string[],
-    [t]
-  );
+  const benefits = useMemo(() => t.raw("benefits") as string[], [t]);
 
   return (
     <section className="relative py-12 md:py-24 overflow-hidden bg-gradient-to-br from-[#19184b] via-[#2d2b6b] to-[#599fe9]">
@@ -78,7 +77,9 @@ export function PricingCTA() {
 
           {/* Installments */}
           <div className="py-6 border-t border-b border-white/20">
-            <p className="text-white/80 mb-2">{t("labels.installmentsIntro")}</p>
+            <p className="text-white/80 mb-2">
+              {t("labels.installmentsIntro")}
+            </p>
             <div className="text-2xl md:text-3xl text-white">
               {installmentCount}x {t("labels.of")}{" "}
               <span className="text-[#f54a12]">R$ {installments}</span>
@@ -101,9 +102,7 @@ export function PricingCTA() {
             >
               {t("cta.button")}
             </Button>
-            <p className="text-sm text-white/60 mt-4">
-              {t("cta.guarantee")}
-            </p>
+            <p className="text-sm text-white/60 mt-4">{t("cta.guarantee")}</p>
           </div>
         </div>
 

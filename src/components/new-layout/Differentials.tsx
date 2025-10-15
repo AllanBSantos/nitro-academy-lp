@@ -1,3 +1,5 @@
+"use client";
+
 import { Users, Lightbulb, Brain, Award } from "lucide-react";
 import { motion } from "motion/react";
 import { useMemo } from "react";
@@ -64,7 +66,10 @@ export function Differentials() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
+                whileHover={{
+                  y: -8,
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                }}
               >
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
@@ -77,8 +82,12 @@ export function Differentials() {
                     <Icon className="w-8 h-8 text-white" />
                   </div>
 
-                  <h3 className="text-xl md:text-2xl text-[#19184b] mb-4">{item.title}</h3>
-                  <p className="text-gray-600 text-base md:text-lg leading-relaxed">{item.description}</p>
+                  <h3 className="text-xl md:text-2xl text-[#19184b] mb-4">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
 
                 <div className="absolute top-4 right-4 w-2 h-2 bg-[#f54a12] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

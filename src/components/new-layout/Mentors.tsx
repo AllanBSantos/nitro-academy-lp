@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Star, X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -227,7 +229,9 @@ export function Mentors() {
                               {mentorData.profissao}
                             </p>
                             <div className="inline-block px-2 py-1 bg-[#599fe9]/10 text-[#599fe9] rounded-full text-xs">
-                              {t("badges.courses", { count: mentorData.cursos || 0 })}
+                              {t("badges.courses", {
+                                count: mentorData.cursos || 0,
+                              })}
                             </div>
                           </div>
                         </div>
@@ -375,13 +379,17 @@ export function Mentors() {
                   <div className="text-2xl font-bold text-[#19184b]">
                     {(selectedMentor.attributes ?? selectedMentor).alunos || 0}
                   </div>
-                  <div className="text-sm text-gray-600">{t("modal.students")}</div>
+                  <div className="text-sm text-gray-600">
+                    {t("modal.students")}
+                  </div>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-[#19184b]">
                     {(selectedMentor.attributes ?? selectedMentor).cursos || 0}
                   </div>
-                  <div className="text-sm text-gray-600">{t("modal.courses")}</div>
+                  <div className="text-sm text-gray-600">
+                    {t("modal.courses")}
+                  </div>
                 </div>
               </div>
 
@@ -402,7 +410,9 @@ export function Mentors() {
                         <div className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                           {t("badges.new")}
                         </div>
-                        <p className="text-gray-500 mt-2">{t("modal.noReviews")}</p>
+                        <p className="text-gray-500 mt-2">
+                          {t("modal.noReviews")}
+                        </p>
                       </div>
                     );
                   }

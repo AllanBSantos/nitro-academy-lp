@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useMemo } from "react";
 import { fetchPartnerSchools } from "@/lib/strapi";
 import { PartnerSchool } from "@/types/strapi";
@@ -106,18 +108,18 @@ export function PartnerSchools() {
   return (
     <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 space-y-4">
-            <h2 className="text-3xl md:text-5xl text-[#19184b]">
-              {t.rich("title", {
-                highlight: (chunks) => (
-                  <span className="text-[#f54a12]">{chunks}</span>
-                ),
-              })}
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              {t("subtitle")}
-            </p>
-          </div>
+        <div className="text-center mb-12 space-y-4">
+          <h2 className="text-3xl md:text-5xl text-[#19184b]">
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="text-[#f54a12]">{chunks}</span>
+              ),
+            })}
+          </h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+            {t("subtitle")}
+          </p>
+        </div>
 
         {/* Carousel */}
         <div className="relative overflow-hidden">
@@ -137,9 +139,9 @@ export function PartnerSchools() {
                   <div className="text-center">
                     <div className="mb-4 h-20 flex items-center justify-center">
                       {school.logo && school.logo.startsWith("http") ? (
-                          <Image
-                            src={school.logo}
-                            alt={t("logoAlt", { name: school.name })}
+                        <Image
+                          src={school.logo}
+                          alt={t("logoAlt", { name: school.name })}
                           width={80}
                           height={80}
                           className="max-h-20 max-w-40 object-contain"

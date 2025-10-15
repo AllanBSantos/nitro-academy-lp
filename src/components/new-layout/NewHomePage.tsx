@@ -1,5 +1,3 @@
-"use client";
-
 import { Hero } from "./Hero";
 import { WhatIsNitro } from "./WhatIsNitro";
 import { Program } from "./Program";
@@ -13,13 +11,25 @@ import { PricingCTA } from "./PricingCTA";
 import { MentorCTA } from "./MentorCTA";
 import { SchoolCTA } from "./SchoolCTA";
 import Chatwoot from "../Chatwoot";
+import { getCardsContent } from "@/lib/courses";
+import { CardProps } from "@/types/card";
 
 interface NewHomePageProps {
   locale?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
+export default async function NewHomePage({ locale = "pt" }: NewHomePageProps) {
+  // Fetch courses data on the server
+  let courses: CardProps[] = [];
+  let coursesError: string | null = null;
+
+  try {
+    courses = await getCardsContent(locale);
+  } catch (error) {
+    console.error("Failed to load courses:", error);
+    coursesError = "Failed to load courses";
+  }
+
   return (
     <>
       <Hero locale={locale} />
@@ -27,7 +37,7 @@ export default function NewHomePage({ locale = "pt" }: NewHomePageProps) {
       <Program />
       <Competencies />
       <Differentials />
-      <Projects />
+      <Projects courses={courses} error={coursesError} />
       <Mentors />
       <PartnerSchools />
       <Reviews />

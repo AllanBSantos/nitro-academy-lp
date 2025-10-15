@@ -1,3 +1,5 @@
+"use client";
+
 import { Palette, Code, Briefcase, Users, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { fetchTrilhasWithCourseCount, TrilhaWithCount } from "@/lib/strapi";
@@ -58,13 +60,16 @@ export function Program() {
       courseCount: number;
     }[];
 
-    return rawFallback.map((track) => ({
-      id: track.id,
-      nome: t(`tracks.${track.key}.name`),
-      descricao: t(`tracks.${track.key}.description`),
-      courseCount: track.courseCount,
-      trackKey: track.key,
-    } satisfies TrackWithMeta));
+    return rawFallback.map(
+      (track) =>
+        ({
+          id: track.id,
+          nome: t(`tracks.${track.key}.name`),
+          descricao: t(`tracks.${track.key}.description`),
+          courseCount: track.courseCount,
+          trackKey: track.key,
+        } satisfies TrackWithMeta)
+    );
   }, [t]);
 
   const translateTrack = useCallback(

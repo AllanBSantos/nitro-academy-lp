@@ -448,11 +448,6 @@
       }
     }
   },
-  "Footer": {
-    "home": "Início",
-    "about_us": "Sobre nós",
-    "faq": "Perguntas Frequentes"
-  },
   "CourseContent": {
     "title": "Conteúdo do curso",
     "syllabus": {
@@ -944,13 +939,29 @@
     "mentor_role": "Mentor",
     "admin_role": "Administrador"
   },
+  "Footer": {
+    "description": "Acelerando talentos e preparando futuros através de educação prática e inovadora.",
+    "quickAccess": "Acesso Rápido",
+    "contact": "Contato",
+    "home": "Home",
+    "ourProjects": "Nossos Projetos",
+    "beMentor": "Seja Mentor",
+    "bringNitroToSchool": "Quero a Nitro na minha Escola",
+    "ourHistory": "Nossa História",
+    "faq": "FAQ",
+    "copyright": "Todos os direitos reservados.",
+    "termsAndPrivacy": "Termos de Uso e Política de Privacidade"
+  },
   "OurClients": {
     "title": "Nossos Parceiros",
     "subtitle": "Escolas powered by Nitro Academy"
   },
   "NewHome": {
     "Hero": {
-      "title": "Acelerando <highlightTalents>talentos</highlightTalents><lineBreak/>preparando <highlightFutures>futuros</highlightFutures>.",
+      "titleLine1": "Acelerando",
+      "titleLine2": "talentos",
+      "titleLine3": "preparando",
+      "titleLine4": "futuros.",
       "description": "Complementamos o ensino tradicional com disciplinas práticas e mentores de alto nível, preparando adolescentes para o novo mercado de trabalho.",
       "viewProjects": "Ver Projetos",
       "bringNitroToSchool": "Quero a Nitro na minha escola",
@@ -1032,12 +1043,7 @@
     },
     "Differentials": {
       "title": "Diferenciais <highlight>Nitro</highlight>",
-      "items": [
-        "classSize",
-        "methodology",
-        "competencies",
-        "mentors"
-      ],
+      "items": ["classSize", "methodology", "competencies", "mentors"],
       "titles": {
         "classSize": "Turmas de 15 a 25 alunos",
         "methodology": "Metodologia baseada em projetos práticos",

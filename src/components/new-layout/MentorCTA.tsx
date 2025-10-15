@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "./ui/button";
 import { Lightbulb, Users, TrendingUp, ArrowRight } from "lucide-react";
 import {
@@ -5,17 +7,43 @@ import {
   fetchStudentsCount,
   fetchCoursesCount,
 } from "@/lib/strapi";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
-async function MentorCTAContent() {
-  const t = await getTranslations("NewHome.MentorCTA");
-  const [mentorsCount, studentsCount, coursesCount] = await Promise.all([
-    fetchMentorsCount(),
-    fetchStudentsCount(),
-    fetchCoursesCount(),
-  ]);
+export function MentorCTA() {
+  const t = useTranslations("NewHome.MentorCTA");
+  const [mentorsCount, setMentorsCount] = useState(0);
+  const [studentsCount, setStudentsCount] = useState(0);
+  const [coursesCount, setCoursesCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [mentors, students, courses] = await Promise.all([
+          fetchMentorsCount(),
+          fetchStudentsCount(),
+          fetchCoursesCount(),
+        ]);
+        setMentorsCount(mentors);
+        setStudentsCount(students);
+        setCoursesCount(courses);
+      } catch (error) {
+        console.error("Failed to load stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, []);
+
   const benefits = (
-    t.raw("benefits") as Array<{ icon: string; title: string; description: string }>
+    t.raw("benefits") as Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>
   ).map((benefit) => ({
     icon:
       benefit.icon === "knowledge"
@@ -83,19 +111,19 @@ async function MentorCTAContent() {
             <div className="space-y-6">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                 <div className="text-4xl text-[#f54a12] mb-2">
-                  {mentorsCount}+
+                  {loading ? "..." : `${mentorsCount}+`}
                 </div>
                 <p className="text-[#f9f9fa]/80">{t("stats.mentors")}</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                 <div className="text-4xl text-[#599fe9] mb-2">
-                  {studentsCount}+
+                  {loading ? "..." : `${studentsCount}+`}
                 </div>
                 <p className="text-[#f9f9fa]/80">{t("stats.students")}</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                 <div className="text-4xl text-[#03A9F4] mb-2">
-                  {coursesCount}
+                  {loading ? "..." : coursesCount}
                 </div>
                 <p className="text-[#f9f9fa]/80">{t("stats.projects")}</p>
               </div>
@@ -105,8 +133,4 @@ async function MentorCTAContent() {
       </div>
     </section>
   );
-}
-
-export function MentorCTA() {
-  return <MentorCTAContent />;
 }

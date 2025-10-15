@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
@@ -93,15 +95,13 @@ export function Hero({ locale = "pt" }: HeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              {t.rich("title", {
-                highlightTalents: (chunks) => (
-                  <span className="text-[#f54a12]">{chunks}</span>
-                ),
-                highlightFutures: (chunks) => (
-                  <span className="text-[#599fe9]">{chunks}</span>
-                ),
-                lineBreak: () => <br />,
-              })}
+              {t("titleLine1")}
+              <br />
+              <span className="text-[#f54a12]">{t("titleLine2")}</span>
+              <br />
+              {t("titleLine3")}
+              <br />
+              <span className="text-[#599fe9]">{t("titleLine4")}</span>
             </motion.h1>
 
             <motion.p

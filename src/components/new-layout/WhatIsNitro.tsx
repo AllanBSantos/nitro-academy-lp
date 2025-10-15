@@ -1,3 +1,5 @@
+"use client";
+
 import { Quote } from "lucide-react";
 import { motion } from "motion/react";
 import { useRef } from "react";
@@ -46,9 +48,7 @@ export function WhatIsNitro() {
             transition={{ duration: 0.3 }}
           >
             <Quote className="w-12 h-12 mb-4 text-white/30" />
-            <p className="text-lg md:text-xl mb-6">
-              {t("quote")}
-            </p>
+            <p className="text-lg md:text-xl mb-6">{t("quote")}</p>
             <div>
               <p className="text-white">{t("author")}</p>
               <p className="text-white/80">{t("authorRole")}</p>

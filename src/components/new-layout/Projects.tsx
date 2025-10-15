@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -30,18 +32,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { getCardsContent } from "@/lib/courses";
 import { CardProps } from "@/types/card";
 import { useTranslations, useLocale } from "next-intl";
 
-export function Projects() {
+interface ProjectsProps {
+  courses: CardProps[];
+  loading?: boolean;
+  error?: string | null;
+}
+
+export function Projects({
+  courses,
+  loading = false,
+  error = null,
+}: ProjectsProps) {
   const t = useTranslations("NewHome.Projects");
   const locale = useLocale();
-
-  // Fetch courses from Strapi using existing function
-  const [courses, setCourses] = useState<CardProps[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Filter states
   const [searchName, setSearchName] = useState("");
@@ -51,26 +57,6 @@ export function Projects() {
   const [selectedMentor, setSelectedMentor] = useState("todos");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(6);
-
-  // Load courses on component mount
-  useEffect(() => {
-    async function loadCourses() {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getCardsContent(locale);
-        setCourses(data);
-      } catch (err) {
-        console.error("Failed to load courses:", err);
-        setError(t("errors.generic"));
-        setCourses([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadCourses();
-  }, [locale, t]);
 
   // Filter options
   const days = useMemo(
@@ -184,9 +170,9 @@ export function Projects() {
       "Quarta-Feira": "quarta",
       "Quinta-Feira": "quinta",
       "Sexta-Feira": "sexta",
-      "Sábado": "sabado",
-      "Sabado": "sabado",
-      "Domingo": "domingo",
+      Sábado: "sabado",
+      Sabado: "sabado",
+      Domingo: "domingo",
       Monday: "segunda",
       Tuesday: "terca",
       Wednesday: "quarta",
@@ -203,7 +189,7 @@ export function Projects() {
     // Map language
     const languageMap: Record<string, string> = {
       portugues: "portugues",
-      "português": "portugues",
+      português: "portugues",
       portuguese: "portugues",
       ingles: "ingles",
       english: "ingles",
@@ -465,7 +451,8 @@ export function Projects() {
                     </label>
                     <Select value={selectedDay} onValueChange={setSelectedDay}>
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder={t("filters.placeholders.day")}
+                        <SelectValue
+                          placeholder={t("filters.placeholders.day")}
                         />
                       </SelectTrigger>
                       <SelectContent>
@@ -488,7 +475,9 @@ export function Projects() {
                       onValueChange={setSelectedTime}
                     >
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder={t("filters.placeholders.time")} />
+                        <SelectValue
+                          placeholder={t("filters.placeholders.time")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {times.map((time) => (
@@ -510,7 +499,9 @@ export function Projects() {
                       onValueChange={setSelectedLanguage}
                     >
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder={t("filters.placeholders.language")} />
+                        <SelectValue
+                          placeholder={t("filters.placeholders.language")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {languages.map((language) => (
@@ -535,7 +526,9 @@ export function Projects() {
                       onValueChange={setSelectedMentor}
                     >
                       <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
-                        <SelectValue placeholder={t("filters.placeholders.mentor")} />
+                        <SelectValue
+                          placeholder={t("filters.placeholders.mentor")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {mentors.map((mentor) => (
@@ -725,7 +718,9 @@ export function Projects() {
                       </div>
                       <div className="mb-4 text-sm text-gray-600">
                         <span className="inline-flex items-center gap-1">
-                          <span className="font-medium">{t("labels.starts")}</span>{" "}
+                          <span className="font-medium">
+                            {t("labels.starts")}
+                          </span>{" "}
                           {project.startDate}
                         </span>
                       </div>
@@ -808,12 +803,8 @@ export function Projects() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
               <Search className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-xl text-[#19184b] mb-2">
-              {t("empty.title")}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {t("empty.description")}
-            </p>
+            <h3 className="text-xl text-[#19184b] mb-2">{t("empty.title")}</h3>
+            <p className="text-gray-600 mb-6">{t("empty.description")}</p>
             <Button
               onClick={clearFilters}
               className="bg-[#f54a12] hover:bg-[#d43e0f] text-white"
