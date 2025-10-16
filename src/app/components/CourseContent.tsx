@@ -103,8 +103,6 @@ export default function CourseContent({ course }: CourseContentProps) {
             <CourseSummaryCard
               title={course.title}
               weeklyClasses={1}
-              modelo={course.modelo}
-              nivel={course.nivel}
               idioma={
                 course.lingua === "ingles"
                   ? t("language.english")

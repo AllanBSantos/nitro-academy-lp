@@ -103,12 +103,6 @@ export default function TimeSelectionSection({
               </p>
             )}
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <p className="text-blue-800 text-sm text-center">
-                {t("seats_warning")}
-              </p>
-            </div>
-
             <div className="space-y-4 max-w-md mx-auto mb-8">
               {schedules.map((schedule, index) => {
                 const classNumber = (index + 1).toString();

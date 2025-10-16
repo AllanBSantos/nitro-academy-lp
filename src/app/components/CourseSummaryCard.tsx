@@ -1,12 +1,10 @@
 import { Button } from "./ui/button";
-import { CalendarDays, Video, BookOpen, Languages, Crown } from "lucide-react";
+import { CalendarDays, Languages, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface CourseSummaryCardProps {
   title: string;
   weeklyClasses: number;
-  modelo: string;
-  nivel: string;
   idioma: string;
   plano?: "gold" | "black";
   onEnrollClick: () => void;
@@ -16,8 +14,6 @@ interface CourseSummaryCardProps {
 export default function CourseSummaryCard({
   title,
   weeklyClasses,
-  modelo,
-  nivel,
   idioma,
   plano,
   onEnrollClick,
@@ -58,16 +54,6 @@ export default function CourseSummaryCard({
               {weeklyClasses === 1
                 ? t("classes_per_week.one")
                 : t("classes_per_week.other")}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Video className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">{modelo}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">
-              {t("level")}: {nivel}
             </span>
           </div>
           <div className="flex items-center gap-2">
