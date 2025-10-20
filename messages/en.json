@@ -969,7 +969,7 @@
     },
     "Program": {
       "title": "The <highlight>program</highlight>",
-      "description": "Over 3 years, students explore 6 projects that build essential skills for the future, with access to 4 specialized learning tracks:",
+      "description": "Over 3 years, students explore 6 projects in online and synchronous classes, building essential skills for the future, with access to 4 specialized learning tracks:",
       "courseCount": "{count, plural, one {# course} other {# courses}}",
       "exploreTrack": "Explore Track",
       "tracks": {

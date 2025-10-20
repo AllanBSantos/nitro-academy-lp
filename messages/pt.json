@@ -988,7 +988,7 @@
     },
     "Program": {
       "title": "O <highlight>programa</highlight>",
-      "description": "Ao longo de 3 anos, os estudantes exploram 6 projetos, desenvolvendo habilidades essenciais para o futuro. Podendo participar de projetos de 4 trilhas de conhecimento especializadas:",
+      "description": "Ao longo de 3 anos, os estudantes exploram 6 projetos em aulas online e síncronas, desenvolvendo habilidades essenciais para o futuro. Podendo participar de projetos de 4 trilhas de conhecimento especializadas:",
       "courseCount": "{count, plural, one {# curso} other {# cursos}}",
       "exploreTrack": "Explorar Trilha",
       "tracks": {
