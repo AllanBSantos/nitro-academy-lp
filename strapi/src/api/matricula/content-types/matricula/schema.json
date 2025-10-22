@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "matriculas",
+  "info": {
+    "singularName": "matricula",
+    "pluralName": "matriculas",
+    "displayName": "matricula"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "aluno": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::aluno.aluno",
+      "inversedBy": "matriculas"
+    },
+    "curso": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::curso.curso",
+      "inversedBy": "matriculas"
+    },
+    "campanha": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::campanha.campanha",
+      "inversedBy": "matriculas"
+    },
+    "status_matricula": {
+      "type": "enumeration",
+      "enum": [
+        "Inscrito",
+        "Cursando",
+        "Concluído",
+        "Trancado",
+        "Reprovado"
+      ],
+      "default": "Inscrito"
+    }
+  }
+}

@@ -24,6 +24,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::curso.curso"
+    },
+    "matriculas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::matricula.matricula",
+      "mappedBy": "campanha"
     }
   }
 }

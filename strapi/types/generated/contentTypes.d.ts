@@ -465,6 +465,10 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'> &
       Schema.Attribute.Private;
+    matriculas: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::matricula.matricula'
+    >;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
     pais: Schema.Attribute.String & Schema.Attribute.Required;
     portador_deficiencia: Schema.Attribute.Boolean &
@@ -594,6 +598,10 @@ export interface ApiCampanhaCampanha extends Struct.CollectionTypeSchema {
       'api::campanha.campanha'
     > &
       Schema.Attribute.Private;
+    matriculas: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::matricula.matricula'
+    >;
     nome: Schema.Attribute.String;
     periodo_inscricao: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -704,6 +712,10 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     material_complementar: Schema.Attribute.Boolean;
+    matriculas: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::matricula.matricula'
+    >;
     mentor: Schema.Attribute.Relation<'manyToOne', 'api::mentor.mentor'>;
     modelo: Schema.Attribute.Text &
       Schema.Attribute.Required &
@@ -817,6 +829,40 @@ export interface ApiEscolaEscola extends Struct.CollectionTypeSchema {
     logo: Schema.Attribute.Media<'images'>;
     nome: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiMatriculaMatricula extends Struct.CollectionTypeSchema {
+  collectionName: 'matriculas';
+  info: {
+    displayName: 'matricula';
+    pluralName: 'matriculas';
+    singularName: 'matricula';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    aluno: Schema.Attribute.Relation<'manyToOne', 'api::aluno.aluno'>;
+    campanha: Schema.Attribute.Relation<'manyToOne', 'api::campanha.campanha'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    curso: Schema.Attribute.Relation<'manyToOne', 'api::curso.curso'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::matricula.matricula'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    status_matricula: Schema.Attribute.Enumeration<
+      ['Inscrito', 'Cursando', 'Conclu\u00EDdo', 'Trancado', 'Reprovado']
+    > &
+      Schema.Attribute.DefaultTo<'Inscrito'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1572,6 +1618,7 @@ declare module '@strapi/strapi' {
       'api::cupom.cupom': ApiCupomCupom;
       'api::curso.curso': ApiCursoCurso;
       'api::escola.escola': ApiEscolaEscola;
+      'api::matricula.matricula': ApiMatriculaMatricula;
       'api::mentor.mentor': ApiMentorMentor;
       'api::pergunta-frequente.pergunta-frequente': ApiPerguntaFrequentePerguntaFrequente;
       'api::sugestao.sugestao': ApiSugestaoSugestao;

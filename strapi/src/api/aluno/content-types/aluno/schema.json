@@ -85,6 +85,12 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::campanha.campanha"
+    },
+    "matriculas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::matricula.matricula",
+      "mappedBy": "aluno"
     }
   }
 }
