@@ -448,6 +448,7 @@ export interface ApiAlunoAluno extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    campanha: Schema.Attribute.Relation<'oneToOne', 'api::campanha.campanha'>;
     cidade: Schema.Attribute.String & Schema.Attribute.Required;
     cpf_aluno: Schema.Attribute.String & Schema.Attribute.Required;
     cpf_responsavel: Schema.Attribute.String & Schema.Attribute.Required;

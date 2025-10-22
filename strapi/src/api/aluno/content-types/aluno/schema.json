@@ -80,6 +80,11 @@
     "habilitado": {
       "type": "boolean",
       "default": true
+    },
+    "campanha": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::campanha.campanha"
     }
   }
 }
