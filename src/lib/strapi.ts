@@ -16,7 +16,7 @@ export async function fetchCourses(
 ): Promise<Course[]> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=pais&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=faixa_etaria&populate[cronograma][fields][3]=dia_semana&populate[cronograma][fields][4]=horario_aula&populate[cronograma][fields][5]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=${locale}`
+      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=pais&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=faixa_etaria&populate[cronograma][fields][3]=dia_semana&populate[cronograma][fields][4]=horario_aula&populate[cronograma][fields][5]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&populate[campanhas][fields][0]=nome&populate[campanhas][fields][1]=periodo_inscricao&populate[campanhas][fields][2]=inicio_e_fim_aulas&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=${locale}`
       /* {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
@@ -32,6 +32,126 @@ export async function fetchCourses(
     return data.data;
   } catch (error) {
     console.error("Error fetching courses:", error);
+    return [];
+  }
+}
+
+// Função para buscar cursos com dados de matrícula para o dashboard admin
+export async function fetchCoursesWithEnrollment(): Promise<
+  Array<{
+    id: string;
+    name: string;
+    campaign: string;
+    enrolled: number;
+    available: number;
+    total: number;
+  }>
+> {
+  try {
+    // Usar a função existente fetchCourses com locale pt-BR
+    const courses = await fetchCourses("pt-BR");
+
+    return courses.map((course: any) => {
+      const enrolled = course.alunos?.length || 0;
+      const totalSlots = 50; // Valor padrão, pode ser ajustado conforme necessário
+      const available = Math.max(0, totalSlots - enrolled);
+
+      // Usar a campanha real do Strapi ou fallback para data de início
+      let campaign = "2024.1"; // Valor padrão
+
+      if (course.campanhas && course.campanhas.length > 0) {
+        // Usar o nome da primeira campanha encontrada
+        campaign = course.campanhas[0].nome || campaign;
+      } else if (course.cronograma?.[0]?.data_inicio) {
+        // Fallback para data de início se não houver campanha
+        const startDate = course.cronograma[0].data_inicio;
+        const date = new Date(startDate);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        campaign = `${year}.${month <= 6 ? 1 : 2}`;
+      }
+
+      return {
+        id: course.id.toString(),
+        name: course.titulo,
+        campaign,
+        enrolled,
+        available,
+        total: totalSlots,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching courses with enrollment:", error);
+    return [];
+  }
+}
+
+// Função para buscar cursos com progresso do aluno (mockado por enquanto)
+export async function fetchStudentCoursesWithProgress(
+  studentId?: string
+): Promise<
+  Array<{
+    id: number;
+    name: string;
+    mentor: string;
+    progress: number;
+    totalLessons: number;
+    completedLessons: number;
+    spinners: number;
+    image: string;
+    status: "active" | "completed" | "locked";
+    nextLesson: string | null;
+  }>
+> {
+  try {
+    // Usar a função existente fetchCourses com locale pt-BR
+    const courses = await fetchCourses("pt-BR");
+
+    return courses.map((course: any, index: number) => {
+      // Simular progresso baseado no índice (para demonstração)
+      const progressValues = [68, 45, 100, 22];
+      const totalLessonsValues = [24, 20, 18, 16];
+      const completedLessonsValues = [16, 9, 18, 3];
+      const spinnersValues = [850, 420, 950, 180];
+      const statusValues: Array<"active" | "completed" | "locked"> = [
+        "active",
+        "active",
+        "completed",
+        "active",
+      ];
+      const nextLessonValues = [
+        "Machine Learning Básico",
+        "Validação de Ideias",
+        null,
+        "Comunicação Eficaz",
+      ];
+
+      const progress = progressValues[index % progressValues.length];
+      const totalLessons =
+        totalLessonsValues[index % totalLessonsValues.length];
+      const completedLessons =
+        completedLessonsValues[index % completedLessonsValues.length];
+      const spinners = spinnersValues[index % spinnersValues.length];
+      const status = statusValues[index % statusValues.length];
+      const nextLesson = nextLessonValues[index % nextLessonValues.length];
+
+      return {
+        id: course.id,
+        name: course.titulo,
+        mentor: course.mentor?.nome || "Professor",
+        progress,
+        totalLessons,
+        completedLessons,
+        spinners,
+        image:
+          course.imagem?.url ||
+          "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=250&fit=crop",
+        status,
+        nextLesson,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching student courses with progress:", error);
     return [];
   }
 }

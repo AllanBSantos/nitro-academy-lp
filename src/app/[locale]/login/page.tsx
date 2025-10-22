@@ -145,6 +145,8 @@ export default function LoginPage() {
           router.push(`/${locale}/admin`);
         } else if (linkedType === "admin") {
           router.push(`/${locale}/admin`);
+        } else if (linkedType === "director") {
+          router.push(`/${locale}/director`);
         } else {
           router.push(`/${locale}/admin`);
         }
@@ -154,6 +156,8 @@ export default function LoginPage() {
         router.push(`/${locale}/admin`);
       } else if (userType === "admin") {
         router.push(`/${locale}/admin`);
+      } else if (userType === "director") {
+        router.push(`/${locale}/director`);
       } else {
         // If userType is "new_user" or undefined, this should not happen
         console.error(

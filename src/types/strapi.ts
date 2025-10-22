@@ -276,5 +276,10 @@ export interface Course {
     nome: string;
     data: string;
   }> | null;
+  campanhas: Array<{
+    nome: string;
+    periodo_inscricao: string;
+    inicio_e_fim_aulas: string;
+  }> | null;
   plano?: "gold" | "black";
 }

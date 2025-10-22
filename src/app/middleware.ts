@@ -8,8 +8,8 @@ const intlMiddleware = createIntlMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Handle admin routes first
-  if (pathname.match(/^\/[a-z]{2}\/admin/)) {
+  // Handle admin and director routes first
+  if (pathname.match(/^\/[a-z]{2}\/(admin|director)/)) {
     const token = request.cookies.get("auth_token")?.value;
     if (!token) {
       const locale = pathname.split("/")[1];
