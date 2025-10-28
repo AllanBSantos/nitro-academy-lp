@@ -1066,19 +1066,22 @@
           "day": "Day of the week",
           "time": "Time",
           "language": "Language",
-          "mentor": "Mentor"
+          "mentor": "Mentor",
+          "trilha": "Track"
         },
         "placeholders": {
           "search": "Search...",
           "day": "Select a day",
           "time": "Select a time",
           "language": "Select a language",
-          "mentor": "Select a mentor"
+          "mentor": "Select a mentor",
+          "trilha": "Select a track"
         },
         "allDays": "All days",
         "allTimes": "All times",
         "allLanguages": "All languages",
         "allMentors": "All mentors",
+        "allTrilhas": "All tracks",
         "days": {
           "monday": "Monday",
           "tuesday": "Tuesday",

@@ -34,6 +34,7 @@ import {
 } from "./ui/tooltip";
 import { CardProps } from "@/types/card";
 import { useTranslations, useLocale } from "next-intl";
+import { fetchTrilhasWithCourseCount } from "@/lib/strapi";
 
 interface ProjectsProps {
   courses: CardProps[];
@@ -55,8 +56,18 @@ export function Projects({
   const [selectedTime, setSelectedTime] = useState("todos");
   const [selectedLanguage, setSelectedLanguage] = useState("todos");
   const [selectedMentor, setSelectedMentor] = useState("todos");
+  const [selectedTrilha, setSelectedTrilha] = useState("todos");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(6);
+  const [trilhasData, setTrilhasData] = useState<
+    Array<{
+      id: number;
+      nome: string;
+      descricao: string;
+      courseCount: number;
+      cursoIds?: number[];
+    }>
+  >([]);
 
   // Filter options
   const days = useMemo(
@@ -66,9 +77,6 @@ export function Projects({
       { value: "terca", label: t("filters.days.tuesday") },
       { value: "quarta", label: t("filters.days.wednesday") },
       { value: "quinta", label: t("filters.days.thursday") },
-      { value: "sexta", label: t("filters.days.friday") },
-      { value: "sabado", label: t("filters.days.saturday") },
-      { value: "domingo", label: t("filters.days.sunday") },
     ],
     [t]
   );
@@ -90,12 +98,30 @@ export function Projects({
     [t]
   );
 
+  // Helper function to determine period of day based on hour
+  const getPeriodFromTime = (timeString: string): string => {
+    const timeMatch = timeString.match(/(\d{2}):(\d{2})/);
+    if (!timeMatch) return "14h";
+
+    const hour = parseInt(timeMatch[1]);
+
+    // Manhã: 6h - 11h59
+    if (hour >= 6 && hour < 12) {
+      return "manhã";
+    }
+    // Tarde: 12h - 17h59
+    if (hour >= 12 && hour < 18) {
+      return "tarde";
+    }
+    // Noite: 18h - 23h59 ou 0h - 5h59
+    return "noite";
+  };
+
   const languages = useMemo(
     () => [
       { value: "todos", label: t("filters.allLanguages") },
       { value: "portugues", label: t("filters.languages.portuguese") },
       { value: "ingles", label: t("filters.languages.english") },
-      { value: "espanhol", label: t("filters.languages.spanish") },
     ],
     [t]
   );
@@ -117,6 +143,32 @@ export function Projects({
     ],
     [courses, t]
   );
+
+  // Generate trilhas list - combine Strapi trilhas with tags from courses
+  const trilhas = useMemo(() => {
+    // Get all unique tag names from courses
+    const courseTags = Array.from(
+      new Set(
+        courses
+          .filter((course) => course.tags && course.tags.length > 0)
+          .flatMap((course) => course.tags!.map((tag) => tag.nome))
+      )
+    );
+
+    // Prioritize Strapi trilhas, but also include unique tags from courses
+    const allTrilhas = [
+      ...trilhasData.map((t) => t.nome),
+      ...courseTags.filter((tag) => !trilhasData.some((t) => t.nome === tag)),
+    ];
+
+    return [
+      { value: "todos", label: t("filters.allTrilhas") },
+      ...allTrilhas.map((nome) => ({
+        value: nome.toLowerCase().replace(/\s+/g, "-"),
+        label: nome,
+      })),
+    ];
+  }, [trilhasData, courses, t]);
 
   const dateLocale = locale === "pt" ? "pt-BR" : "en-US";
 
@@ -186,6 +238,9 @@ export function Projects({
     const timeMatch = cronograma?.horario_aula?.match(/(\d{2}):(\d{2})/);
     const time = timeMatch ? `${timeMatch[1]}h` : "14h";
 
+    // Determine period based on time
+    const period = getPeriodFromTime(cronograma?.horario_aula || "14:00");
+
     // Map language
     const languageMap: Record<string, string> = {
       portugues: "portugues",
@@ -225,6 +280,7 @@ export function Projects({
         ? dayMap[cronograma.dia_semana] || "segunda"
         : "segunda",
       time,
+      period, // Add period field for filtering by morning/afternoon/evening
       startDate,
       language: languageMap[course.lingua || "portugues"] || "portugues",
       mentor: mentorSlug,
@@ -257,25 +313,47 @@ export function Projects({
       ? []
       : courses.map(transformCourseToProject);
 
+  // Create a map of trilha slug to course IDs
+  const trilhaToCourseIds = useMemo(() => {
+    const map = new Map<string, number[]>();
+    trilhasData.forEach((trilha) => {
+      if (trilha.cursoIds && trilha.cursoIds.length > 0) {
+        const slug = trilha.nome.toLowerCase().replace(/\s+/g, "-");
+        map.set(slug, trilha.cursoIds);
+      }
+    });
+    return map;
+  }, [trilhasData]);
+
   // Filter logic
   const filteredProjects = projects.filter((project) => {
     const matchesName = removeAccents(project.title).includes(
       removeAccents(searchName)
     );
     const matchesDay = selectedDay === "todos" || project.day === selectedDay;
+    // Match time: check for specific hour or period
     const matchesTime =
-      selectedTime === "todos" || project.time === selectedTime;
+      selectedTime === "todos" ||
+      project.time === selectedTime ||
+      project.period === selectedTime;
     const matchesLanguage =
       selectedLanguage === "todos" || project.language === selectedLanguage;
     const matchesMentor =
       selectedMentor === "todos" || project.mentor === selectedMentor;
+
+    // Match trilha: check if course ID is in the trilha's course IDs list
+    const matchesTrilha =
+      selectedTrilha === "todos" ||
+      (trilhaToCourseIds.has(selectedTrilha) &&
+        trilhaToCourseIds.get(selectedTrilha)?.includes(parseInt(project.id)));
 
     return (
       matchesName &&
       matchesDay &&
       matchesTime &&
       matchesLanguage &&
-      matchesMentor
+      matchesMentor &&
+      matchesTrilha
     );
   });
 
@@ -286,6 +364,7 @@ export function Projects({
     setSelectedTime("todos");
     setSelectedLanguage("todos");
     setSelectedMentor("todos");
+    setSelectedTrilha("todos");
     setDisplayedCount(6);
   };
 
@@ -295,12 +374,73 @@ export function Projects({
     selectedDay !== "todos" ||
     selectedTime !== "todos" ||
     selectedLanguage !== "todos" ||
-    selectedMentor !== "todos";
+    selectedMentor !== "todos" ||
+    selectedTrilha !== "todos";
+
+  // Load trilhas from Strapi
+  useEffect(() => {
+    const loadTrilhas = async () => {
+      try {
+        const trilhas = await fetchTrilhasWithCourseCount();
+        setTrilhasData(trilhas);
+      } catch (error) {
+        console.error("Error loading trilhas:", error);
+        setTrilhasData([]);
+      }
+    };
+
+    loadTrilhas();
+  }, []);
+
+  // Listen for filter by trilha event from other components
+  useEffect(() => {
+    const handleFilterByTrilha = (event: CustomEvent<{ trilha: string }>) => {
+      const trilhaSlug = event.detail.trilha;
+      setSelectedTrilha(trilhaSlug);
+
+      // Open filters if closed
+      setIsFiltersOpen(true);
+
+      // Small delay to ensure smooth scroll is complete
+      setTimeout(() => {
+        // Scroll a bit more to account for filter section opening
+        const projetosSection = document.getElementById("projetos");
+        if (projetosSection) {
+          const offset = 100;
+          const elementPosition = projetosSection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      }, 300);
+    };
+
+    window.addEventListener(
+      "filterByTrilha",
+      handleFilterByTrilha as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "filterByTrilha",
+        handleFilterByTrilha as EventListener
+      );
+    };
+  }, []);
 
   // Reset displayed count when filters change
   useEffect(() => {
     setDisplayedCount(6);
-  }, [searchName, selectedDay, selectedTime, selectedLanguage, selectedMentor]);
+  }, [
+    searchName,
+    selectedDay,
+    selectedTime,
+    selectedLanguage,
+    selectedMentor,
+    selectedTrilha,
+  ]);
 
   // Helper function to get country flag emoji
   const getCountryFlag = (countryCode: string) => {
@@ -381,6 +521,7 @@ export function Projects({
                             selectedTime !== "todos",
                             selectedLanguage !== "todos",
                             selectedMentor !== "todos",
+                            selectedTrilha !== "todos",
                           ].filter(Boolean).length,
                         })
                       : t("filters.hint")}
@@ -426,7 +567,7 @@ export function Projects({
             {/* Collapsible Filter Content */}
             <CollapsibleContent>
               <div className="p-6 pt-4 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                   {/* Search by Name */}
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700 font-medium">
@@ -539,6 +680,30 @@ export function Projects({
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Trilha */}
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-700 font-medium">
+                      {t("filters.labels.trilha")}
+                    </label>
+                    <Select
+                      value={selectedTrilha}
+                      onValueChange={setSelectedTrilha}
+                    >
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-[#f54a12] focus:ring-[#f54a12] transition-all text-gray-900">
+                        <SelectValue
+                          placeholder={t("filters.placeholders.trilha")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {trilhas.map((trilha) => (
+                          <SelectItem key={trilha.value} value={trilha.value}>
+                            {trilha.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Active filters badges */}
@@ -600,6 +765,17 @@ export function Projects({
                         {mentors.find((m) => m.value === selectedMentor)?.label}
                         <button
                           onClick={() => setSelectedMentor("todos")}
+                          className="ml-1 hover:bg-[#599fe9]/20 rounded-full p-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
+                    {selectedTrilha !== "todos" && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#599fe9]/10 text-[#599fe9] rounded-full text-sm">
+                        {trilhas.find((t) => t.value === selectedTrilha)?.label}
+                        <button
+                          onClick={() => setSelectedTrilha("todos")}
                           className="ml-1 hover:bg-[#599fe9]/20 rounded-full p-0.5"
                         >
                           <X className="w-3 h-3" />

@@ -598,6 +598,7 @@ export interface TrilhaWithCount {
   nome: string;
   descricao: string;
   courseCount: number;
+  cursoIds?: number[];
 }
 
 export async function fetchTrilhasWithCourseCount(): Promise<
@@ -623,6 +624,7 @@ export async function fetchTrilhasWithCourseCount(): Promise<
         nome: trilha.nome || "",
         descricao: trilha.descricao || "",
         courseCount: trilha.cursos?.length || 0,
+        cursoIds: trilha.cursos?.map((curso: any) => curso.id) || [],
       };
     });
 

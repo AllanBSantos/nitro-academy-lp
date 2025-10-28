@@ -6,6 +6,23 @@ import { fetchTrilhasWithCourseCount, TrilhaWithCount } from "@/lib/strapi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+const scrollToSection = (sectionId: string, trilha?: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    // Scroll to element
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Trigger custom event with trilha info if provided
+    if (trilha) {
+      setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent("filterByTrilha", { detail: { trilha } })
+        );
+      }, 500);
+    }
+  }
+};
+
 type TrackKey = "creativity" | "technology" | "business" | "leadership";
 
 type TrackWithMeta = TrilhaWithCount & {
@@ -189,6 +206,12 @@ export function Program() {
                         </div>
                       </div>
                       <button
+                        onClick={() => {
+                          const trilhaSlug = item.nome
+                            .toLowerCase()
+                            .replace(/\s+/g, "-");
+                          scrollToSection("projetos", trilhaSlug);
+                        }}
                         className="mt-6 w-full bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg px-4 py-2.5 text-[#f9f9fa] transition-all duration-300 flex items-center justify-center gap-2 group"
                         style={{
                           borderColor: config.color + "40",
