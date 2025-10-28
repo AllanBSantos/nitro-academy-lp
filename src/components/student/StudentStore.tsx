@@ -1,20 +1,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../new-layout/ui/tabs";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "../new-layout/ui/dialog";
 import {
   ShoppingBag,
@@ -22,11 +16,7 @@ import {
   Sparkles,
   Gift,
   Trophy,
-  Shirt,
-  BookOpen,
-  Users,
   CheckCircle2,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SpinnerIcon } from "../SpinnerIcon";
@@ -306,9 +296,11 @@ export function StudentStore() {
               <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden group cursor-pointer h-full flex flex-col">
                 {/* Image */}
                 <div className="relative aspect-video overflow-hidden bg-gray-100">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.name}
+                    width={400}
+                    height={225}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   {item.popular && (
@@ -407,9 +399,11 @@ export function StudentStore() {
               </DialogHeader>
 
               <div className="space-y-4">
-                <img
+                <Image
                   src={selectedItem.image}
                   alt={selectedItem.name}
+                  width={600}
+                  height={256}
                   className="w-full h-64 object-cover rounded-xl"
                 />
 

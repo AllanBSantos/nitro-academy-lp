@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
@@ -16,9 +15,7 @@ import {
   CheckCircle,
   ClipboardList,
   AlertCircle,
-  MessageSquare,
   Video,
-  Star,
   Edit,
 } from "lucide-react";
 

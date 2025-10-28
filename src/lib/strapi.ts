@@ -87,9 +87,7 @@ export async function fetchCoursesWithEnrollment(): Promise<
 }
 
 // Função para buscar cursos com progresso do aluno (mockado por enquanto)
-export async function fetchStudentCoursesWithProgress(
-  studentId?: string
-): Promise<
+export async function fetchStudentCoursesWithProgress(): Promise<
   Array<{
     id: number;
     name: string;

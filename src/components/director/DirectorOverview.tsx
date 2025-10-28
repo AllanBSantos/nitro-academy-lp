@@ -1,18 +1,29 @@
 import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Badge } from "../new-layout/ui/badge";
-import { 
-  Users, 
-  GraduationCap, 
-  Award, 
+import {
+  Users,
+  GraduationCap,
+  Award,
   TrendingUp,
   Calendar,
-  Clock,
   Trophy,
   Star,
-  CheckCircle
 } from "lucide-react";
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const attendanceData = [
   { month: "Jan", taxa: 92 },
@@ -60,7 +71,9 @@ export function DirectorOverview() {
         className="mb-8"
       >
         <h1 className="text-3xl text-gray-900 mb-2">Bem-vindo, Diretor! 👋</h1>
-        <p className="text-gray-600">Acompanhe o desempenho geral da sua escola</p>
+        <p className="text-gray-600">
+          Acompanhe o desempenho geral da sua escola
+        </p>
       </motion.div>
 
       {/* Stats Cards */}
@@ -142,7 +155,9 @@ export function DirectorOverview() {
                 </div>
                 <TrendingUp className="w-5 h-5 text-white/60" />
               </div>
-              <p className="text-white/80 text-sm mb-1">Certificados Emitidos</p>
+              <p className="text-white/80 text-sm mb-1">
+                Certificados Emitidos
+              </p>
               <p className="text-3xl mb-2">124</p>
               <p className="text-xs text-white/60">Este mês: 18 novos</p>
             </div>
@@ -162,7 +177,9 @@ export function DirectorOverview() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-[#599fe9]" />
-                  <h2 className="text-xl text-gray-900">Evolução da Frequência</h2>
+                  <h2 className="text-xl text-gray-900">
+                    Evolução da Frequência
+                  </h2>
                 </div>
                 <Badge className="bg-green-100 text-green-700 border-0">
                   Crescimento
@@ -175,20 +192,20 @@ export function DirectorOverview() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="month" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" domain={[80, 100]} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#19184b', 
-                      border: 'none', 
-                      borderRadius: '12px',
-                      color: '#fff'
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#19184b",
+                      border: "none",
+                      borderRadius: "12px",
+                      color: "#fff",
                     }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="taxa" 
-                    stroke="#10b981" 
+                  <Line
+                    type="monotone"
+                    dataKey="taxa"
+                    stroke="#10b981"
                     strokeWidth={3}
-                    dot={{ fill: '#10b981', r: 5 }}
+                    dot={{ fill: "#10b981", r: 5 }}
                     activeDot={{ r: 7 }}
                   />
                 </LineChart>
@@ -207,7 +224,9 @@ export function DirectorOverview() {
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-[#599fe9]" />
-                <h2 className="text-xl text-gray-900">Distribuição de Desempenho</h2>
+                <h2 className="text-xl text-gray-900">
+                  Distribuição de Desempenho
+                </h2>
               </div>
             </div>
             <div className="p-6">
@@ -218,7 +237,13 @@ export function DirectorOverview() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={(props) => {
+                      type PieLabelExtras = { name?: string; percent?: number };
+                      const { name, percent } =
+                        props as unknown as PieLabelExtras;
+                      const pct = typeof percent === "number" ? percent : 0;
+                      return `${name ?? ""}: ${(pct * 100).toFixed(0)}%`;
+                    }}
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
@@ -227,12 +252,12 @@ export function DirectorOverview() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#19184b', 
-                      border: 'none', 
-                      borderRadius: '12px',
-                      color: '#fff'
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#19184b",
+                      border: "none",
+                      borderRadius: "12px",
+                      color: "#fff",
                     }}
                   />
                 </PieChart>
@@ -260,14 +285,20 @@ export function DirectorOverview() {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={coursesData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="name" stroke="#6b7280" angle={-20} textAnchor="end" height={80} />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#6b7280"
+                    angle={-20}
+                    textAnchor="end"
+                    height={80}
+                  />
                   <YAxis stroke="#6b7280" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#19184b', 
-                      border: 'none', 
-                      borderRadius: '12px',
-                      color: '#fff'
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#19184b",
+                      border: "none",
+                      borderRadius: "12px",
+                      color: "#fff",
                     }}
                   />
                   <Bar dataKey="alunos" fill="#599fe9" radius={[8, 8, 0, 0]} />
@@ -301,10 +332,18 @@ export function DirectorOverview() {
                     className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex items-center gap-1 min-w-[40px]">
-                      {index === 0 && <Trophy className="w-5 h-5 text-yellow-500" />}
-                      {index === 1 && <Trophy className="w-5 h-5 text-gray-400" />}
-                      {index === 2 && <Trophy className="w-5 h-5 text-amber-600" />}
-                      <span className="text-sm text-gray-500">#{index + 1}</span>
+                      {index === 0 && (
+                        <Trophy className="w-5 h-5 text-yellow-500" />
+                      )}
+                      {index === 1 && (
+                        <Trophy className="w-5 h-5 text-gray-400" />
+                      )}
+                      {index === 2 && (
+                        <Trophy className="w-5 h-5 text-amber-600" />
+                      )}
+                      <span className="text-sm text-gray-500">
+                        #{index + 1}
+                      </span>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#599fe9] to-[#4a8ed9] flex items-center justify-center text-white flex-shrink-0">
                       {student.avatar}
@@ -315,7 +354,9 @@ export function DirectorOverview() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-[#f54a12]" />
-                      <span className="text-sm text-gray-900">{student.points}</span>
+                      <span className="text-sm text-gray-900">
+                        {student.points}
+                      </span>
                     </div>
                   </motion.div>
                 ))}

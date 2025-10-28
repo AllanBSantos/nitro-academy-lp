@@ -30,7 +30,10 @@ const addMinutes = (time: string, minutes: number): string => {
   const totalMinutes = hours * 60 + mins + minutes;
   const newHours = Math.floor(totalMinutes / 60) % 24;
   const newMins = totalMinutes % 60;
-  return `${String(newHours).padStart(2, "0")}:${String(newMins).padStart(2, "0")}`;
+  return `${String(newHours).padStart(2, "0")}:${String(newMins).padStart(
+    2,
+    "0"
+  )}`;
 };
 
 const dayLabels: { [key: string]: string } = {
@@ -80,14 +83,19 @@ const DraggableSchedule = ({
     },
   });
 
-  const occupancyPercentage = (schedule.currentStudents / schedule.maxStudents) * 100;
+  const occupancyPercentage =
+    (schedule.currentStudents / schedule.maxStudents) * 100;
   const isFull = schedule.currentStudents >= schedule.maxStudents;
   const endTime = addMinutes(schedule.startTime, 50);
 
   return (
     <div
-      ref={(node) => drag(drop(node))}
-      className={`transition-opacity ${isDragging ? "opacity-50" : "opacity-100"}`}
+      ref={(node) => {
+        drag(drop(node));
+      }}
+      className={`transition-opacity ${
+        isDragging ? "opacity-50" : "opacity-100"
+      }`}
     >
       <Card
         className={`bg-white border-gray-200 p-6 hover:shadow-md transition-all ${
@@ -96,7 +104,13 @@ const DraggableSchedule = ({
       >
         <div className="flex items-start gap-4">
           {/* Drag Handle or Lock Icon */}
-          <div className={`pt-1 ${isLocked ? "text-gray-400" : "cursor-move text-gray-400 hover:text-gray-600"}`}>
+          <div
+            className={`pt-1 ${
+              isLocked
+                ? "text-gray-400"
+                : "cursor-move text-gray-400 hover:text-gray-600"
+            }`}
+          >
             {isLocked ? (
               <Lock className="w-5 h-5" />
             ) : (
@@ -156,7 +170,9 @@ const DraggableSchedule = ({
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Ocupação</span>
-                <span className="text-gray-900">{Math.round(occupancyPercentage)}%</span>
+                <span className="text-gray-900">
+                  {Math.round(occupancyPercentage)}%
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div
@@ -207,12 +223,12 @@ export function CourseSchedules() {
     // Prevent moving if either schedule is locked
     const dragSchedule = schedules[dragIndex];
     const hoverSchedule = schedules[hoverIndex];
-    
+
     if (dragSchedule.currentStudents > 0 || hoverSchedule.currentStudents > 0) {
       toast.error("Não é possível reordenar turmas com alunos matriculados");
       return;
     }
-    
+
     const updatedSchedules = [...schedules];
     const [removed] = updatedSchedules.splice(dragIndex, 1);
     updatedSchedules.splice(hoverIndex, 0, removed);
@@ -250,7 +266,7 @@ export function CourseSchedules() {
     const allPreviousFull = schedules
       .slice(0, index)
       .every((s) => s.currentStudents >= s.maxStudents);
-    
+
     // This schedule is active if all previous are full AND this one is not full
     return allPreviousFull && schedule.currentStudents < schedule.maxStudents;
   });
@@ -263,8 +279,8 @@ export function CourseSchedules() {
           <div>
             <h2 className="text-xl text-gray-900 mb-2">Turmas Disponíveis</h2>
             <p className="text-gray-600">
-              Organize as turmas por ordem de prioridade. A primeira turma não lotada
-              será exibida no site.
+              Organize as turmas por ordem de prioridade. A primeira turma não
+              lotada será exibida no site.
             </p>
           </div>
           <AddScheduleDialog onAdd={handleAddSchedule} />
@@ -276,14 +292,16 @@ export function CourseSchedules() {
             <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="space-y-1 text-sm text-gray-900">
               <p>
-                <span className="font-medium">Como funciona:</span> As turmas são exibidas
-                no site pela ordem de prioridade. Quando uma turma fica lotada, a próxima
-                da lista automaticamente fica disponível para novas matrículas.
+                <span className="font-medium">Como funciona:</span> As turmas
+                são exibidas no site pela ordem de prioridade. Quando uma turma
+                fica lotada, a próxima da lista automaticamente fica disponível
+                para novas matrículas.
               </p>
               <p className="text-gray-700 mt-2">
-                💡 <span className="font-medium">Dica:</span> Arraste os cards para
-                reorganizar a ordem de prioridade. Turmas com alunos matriculados ficam
-                bloqueadas e não podem ser movidas ou removidas.
+                💡 <span className="font-medium">Dica:</span> Arraste os cards
+                para reorganizar a ordem de prioridade. Turmas com alunos
+                matriculados ficam bloqueadas e não podem ser movidas ou
+                removidas.
               </p>
             </div>
           </div>
@@ -303,7 +321,9 @@ export function CourseSchedules() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
               <Calendar className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg text-gray-900 mb-2">Nenhuma turma cadastrada</h3>
+            <h3 className="text-lg text-gray-900 mb-2">
+              Nenhuma turma cadastrada
+            </h3>
             <p className="text-gray-500 mb-6">
               Comece adicionando a primeira turma disponível para o curso.
             </p>
@@ -315,9 +335,13 @@ export function CourseSchedules() {
               const isLocked = schedule.currentStudents > 0;
               return (
                 <div key={schedule.id} className="flex items-start gap-4">
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-medium mt-3 ${
-                    isLocked ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
-                  }`}>
+                  <div
+                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-medium mt-3 ${
+                      isLocked
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
+                  >
                     {index + 1}
                   </div>
                   <div className="flex-1">

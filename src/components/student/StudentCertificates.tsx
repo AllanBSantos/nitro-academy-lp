@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
-import { Download, Award, Calendar, CheckCircle2, Share2, Star } from "lucide-react";
+import { Download, Award, Calendar, CheckCircle2, Share2 } from "lucide-react";
 
 const mockCertificates = [
   {
@@ -35,15 +35,12 @@ const mockCertificates = [
 ];
 
 export function StudentCertificates() {
-  const totalCertificates = mockCertificates.length;
-  const totalSpinners = mockCertificates.reduce((sum, cert) => sum + cert.spinners, 0);
-
-  const handleDownload = (certificate: typeof mockCertificates[0]) => {
+  const handleDownload = (certificate: (typeof mockCertificates)[0]) => {
     console.log("Downloading certificate:", certificate.certificateNumber);
     // Mock download functionality
   };
 
-  const handleShare = (certificate: typeof mockCertificates[0]) => {
+  const handleShare = (certificate: (typeof mockCertificates)[0]) => {
     console.log("Sharing certificate:", certificate.certificateNumber);
     // Mock share functionality
   };
@@ -56,7 +53,9 @@ export function StudentCertificates() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-3xl text-gray-900 mb-2">Certificados</h1>
-        <p className="text-gray-600">Seus certificados de conclusão e conquistas</p>
+        <p className="text-gray-600">
+          Seus certificados de conclusão e conquistas
+        </p>
       </motion.div>
 
       {/* Certificates List */}
@@ -89,7 +88,9 @@ export function StudentCertificates() {
                         <h3 className="text-xl text-gray-900 mb-1">
                           {certificate.courseName}
                         </h3>
-                        <p className="text-sm text-gray-600">{certificate.mentor}</p>
+                        <p className="text-sm text-gray-600">
+                          {certificate.mentor}
+                        </p>
                       </div>
                       <Badge className="bg-emerald-500/20 text-emerald-700 border-emerald-300">
                         {certificate.grade}
@@ -101,7 +102,9 @@ export function StudentCertificates() {
                         <Calendar className="w-4 h-4" />
                         <div>
                           <p className="text-xs text-gray-500">Conclusão</p>
-                          <p className="text-sm">{certificate.completionDate}</p>
+                          <p className="text-sm">
+                            {certificate.completionDate}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -145,7 +148,9 @@ export function StudentCertificates() {
         >
           <Card className="bg-gray-50 border-2 border-dashed border-gray-300 p-12">
             <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl text-gray-600 mb-2">Nenhum certificado ainda</h3>
+            <h3 className="text-xl text-gray-600 mb-2">
+              Nenhum certificado ainda
+            </h3>
             <p className="text-gray-500">
               Complete seus cursos para ganhar certificados!
             </p>

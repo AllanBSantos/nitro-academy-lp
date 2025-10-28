@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
+import Image from "next/image";
 import {
   LayoutDashboard,
-  Users,
   Award,
   TrendingUp,
   Calendar,
@@ -11,12 +11,7 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
-  GraduationCap,
   Star,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Trophy,
 } from "lucide-react";
 import { DirectorOverview } from "./DirectorOverview";
 import { DirectorAttendance } from "./DirectorAttendance";
@@ -72,9 +67,11 @@ export function DirectorDashboard() {
           >
             {!sidebarCollapsed && (
               <div>
-                <img
+                <Image
                   src="/pt/logo_nitro_transparente.png"
                   alt="Nitro Academy"
+                  width={150}
+                  height={40}
                   className="h-10 w-auto"
                 />
                 <p className="mt-2 text-white/40 text-sm">Painel do Diretor</p>
@@ -189,9 +186,11 @@ export function DirectorDashboard() {
           {/* Logo */}
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
             <div>
-              <img
+              <Image
                 src="/pt/logo_nitro_transparente.png"
                 alt="Nitro Academy"
+                width={150}
+                height={40}
                 className="h-10 w-auto"
               />
               <p className="mt-2 text-white/40 text-sm">Painel do Diretor</p>

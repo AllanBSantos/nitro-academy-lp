@@ -1,23 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
+import Image from "next/image";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
 import { Progress } from "../new-layout/ui/progress";
 import { Badge } from "../new-layout/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../new-layout/ui/tabs";
-import {
-  BookOpen,
-  Play,
-  Trophy,
-  Clock,
-  CheckCircle2,
-  Star,
-} from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "../new-layout/ui/tabs";
+import { BookOpen, Play, Trophy, Clock, CheckCircle2 } from "lucide-react";
 import { fetchStudentCoursesWithProgress } from "@/lib/strapi";
 
 type Course = {
@@ -131,9 +120,11 @@ export function StudentCourses() {
             <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden group">
               {/* Course Image */}
               <div className="relative h-40 overflow-hidden bg-gray-200">
-                <img
+                <Image
                   src={course.image}
                   alt={course.name}
+                  width={400}
+                  height={160}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

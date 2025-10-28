@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
-import { Progress } from "../new-layout/ui/progress";
 import { Badge } from "../new-layout/ui/badge";
 import {
   Tabs,
@@ -11,26 +9,20 @@ import {
   TabsTrigger,
 } from "../new-layout/ui/tabs";
 import {
-  TrendingUp,
   Calendar,
-  Trophy,
-  Award,
   Clock,
   PlayCircle,
   Star,
-  Sparkles,
   ClipboardList,
   AlertCircle,
   CheckCircle,
-  MessageSquare,
   Video,
+  MessageSquare,
 } from "lucide-react";
-import { SpinnerIcon } from "../SpinnerIcon";
 
 const mockUpcomingClasses = [
   {
     id: 1,
-    course: "Inteligência Artificial",
     title: "Introdução ao Machine Learning",
     date: "Hoje",
     time: "14:00",
@@ -55,13 +47,6 @@ const mockUpcomingClasses = [
     mentor: "Prof. João Oliveira",
     isLive: false,
   },
-];
-
-const mockAchievements = [
-  { id: 1, name: "Primeira Aula", icon: "🎯", unlocked: true },
-  { id: 2, name: "Projeto Completo", icon: "🚀", unlocked: true },
-  { id: 3, name: "Top 10 Ranking", icon: "⭐", unlocked: false },
-  { id: 4, name: "Mentor Destaque", icon: "👑", unlocked: false },
 ];
 
 const mockHomework = [
@@ -191,10 +176,6 @@ const mockPastClasses = [
 ];
 
 export function StudentHome() {
-  const [spinnersToday] = useState(150);
-  const [totalSpinners] = useState(2450);
-  const [progress] = useState(68);
-
   const pendingHomework = mockHomework.filter((hw) => hw.status === "pending");
 
   return (

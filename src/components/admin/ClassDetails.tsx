@@ -25,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "../new-layout/ui/table";
-import { Badge } from "../new-layout/ui/badge";
 import { toast } from "sonner";
 import { StudentCommentDialog } from "./StudentCommentDialog";
 
@@ -57,10 +56,34 @@ interface Material {
 }
 
 const mockStudents: StudentAttendance[] = [
-  { id: 1, name: "Helena Azzi Verri", present: true, spinners: 25, comment: "Excelente participação, fez ótimas perguntas." },
-  { id: 2, name: "Pedro Silva Santos", present: true, spinners: 22, comment: "" },
-  { id: 3, name: "Maria Oliveira Costa", present: false, spinners: 0, comment: "" },
-  { id: 4, name: "João Pedro Alves", present: true, spinners: 28, comment: "Liderou muito bem o grupo durante a atividade prática." },
+  {
+    id: 1,
+    name: "Helena Azzi Verri",
+    present: true,
+    spinners: 25,
+    comment: "Excelente participação, fez ótimas perguntas.",
+  },
+  {
+    id: 2,
+    name: "Pedro Silva Santos",
+    present: true,
+    spinners: 22,
+    comment: "",
+  },
+  {
+    id: 3,
+    name: "Maria Oliveira Costa",
+    present: false,
+    spinners: 0,
+    comment: "",
+  },
+  {
+    id: 4,
+    name: "João Pedro Alves",
+    present: true,
+    spinners: 28,
+    comment: "Liderou muito bem o grupo durante a atividade prática.",
+  },
   { id: 5, name: "Ana Clara Souza", present: true, spinners: 30, comment: "" },
 ];
 
@@ -225,7 +248,9 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
               </div>
             </div>
             <p className="text-gray-600 text-sm mb-1">Percentual de Presença</p>
-            <p className="text-4xl text-gray-900">{attendancePercentage.toFixed(0)}%</p>
+            <p className="text-4xl text-gray-900">
+              {attendancePercentage.toFixed(0)}%
+            </p>
           </Card>
         </motion.div>
       </div>
@@ -244,7 +269,9 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
               <TableRow className="bg-gray-50">
                 <TableHead className="text-gray-700 w-12"></TableHead>
                 <TableHead className="text-gray-700">Aluno</TableHead>
-                <TableHead className="text-gray-700 text-center">Presença</TableHead>
+                <TableHead className="text-gray-700 text-center">
+                  Presença
+                </TableHead>
                 <TableHead className="text-gray-700 text-center">
                   Spinners (0-33)
                 </TableHead>
@@ -268,7 +295,9 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                       </AvatarFallback>
                     </Avatar>
                   </TableCell>
-                  <TableCell className="text-gray-900">{student.name}</TableCell>
+                  <TableCell className="text-gray-900">
+                    {student.name}
+                  </TableCell>
                   <TableCell className="text-center">
                     <div className="flex justify-center">
                       <Checkbox
@@ -299,7 +328,9 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                       <StudentCommentDialog
                         studentName={student.name}
                         comment={student.comment}
-                        onSave={(comment) => handleCommentChange(student.id, comment)}
+                        onSave={(comment) =>
+                          handleCommentChange(student.id, comment)
+                        }
                       />
                     </div>
                   </TableCell>

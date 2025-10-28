@@ -3,19 +3,23 @@ import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../new-layout/ui/tabs";
-import { 
-  ArrowLeft, 
-  PlayCircle, 
-  CheckCircle2, 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../new-layout/ui/tabs";
+import {
+  ArrowLeft,
+  PlayCircle,
+  CheckCircle2,
   Lock,
   Calendar,
   Clock,
   FileText,
   Download,
-  MessageSquare,
   ExternalLink,
-  Star
+  Star,
 } from "lucide-react";
 import { Progress } from "../new-layout/ui/progress";
 
@@ -102,10 +106,12 @@ const mockProjects = [
   },
 ];
 
-export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsProps) {
+export function StudentLessons({ courseName, onBack }: StudentLessonsProps) {
   const [activeTab, setActiveTab] = useState("lessons");
-  
-  const completedLessons = mockLessons.filter(l => l.status === "completed").length;
+
+  const completedLessons = mockLessons.filter(
+    (l) => l.status === "completed"
+  ).length;
   const totalLessons = mockLessons.length;
   const progress = Math.round((completedLessons / totalLessons) * 100);
   const earnedSpinners = completedLessons * 50;
@@ -146,7 +152,9 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
               </div>
             </div>
             <p className="text-gray-600 text-xs mb-1">Aulas Concluídas</p>
-            <p className="text-3xl text-gray-900">{completedLessons}/{totalLessons}</p>
+            <p className="text-3xl text-gray-900">
+              {completedLessons}/{totalLessons}
+            </p>
             <Progress value={progress} className="h-1.5 mt-3 bg-gray-200" />
           </Card>
         </motion.div>
@@ -192,13 +200,22 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
       >
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-gray-100 p-1">
-            <TabsTrigger value="lessons" className="data-[state=active]:bg-white">
+            <TabsTrigger
+              value="lessons"
+              className="data-[state=active]:bg-white"
+            >
               Aulas
             </TabsTrigger>
-            <TabsTrigger value="projects" className="data-[state=active]:bg-white">
+            <TabsTrigger
+              value="projects"
+              className="data-[state=active]:bg-white"
+            >
               Projetos
             </TabsTrigger>
-            <TabsTrigger value="materials" className="data-[state=active]:bg-white">
+            <TabsTrigger
+              value="materials"
+              className="data-[state=active]:bg-white"
+            >
               Materiais
             </TabsTrigger>
           </TabsList>
@@ -213,28 +230,32 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.05 }}
                 >
-                  <Card className={`border-2 transition-all hover:shadow-lg ${
-                    lesson.status === "live"
-                      ? "border-red-300 bg-gradient-to-r from-red-50 to-orange-50"
-                      : lesson.status === "completed"
-                      ? "border-emerald-200 bg-emerald-50/30"
-                      : lesson.status === "locked"
-                      ? "border-gray-200 bg-gray-50 opacity-60"
-                      : "border-gray-200 bg-white"
-                  }`}>
+                  <Card
+                    className={`border-2 transition-all hover:shadow-lg ${
+                      lesson.status === "live"
+                        ? "border-red-300 bg-gradient-to-r from-red-50 to-orange-50"
+                        : lesson.status === "completed"
+                        ? "border-emerald-200 bg-emerald-50/30"
+                        : lesson.status === "locked"
+                        ? "border-gray-200 bg-gray-50 opacity-60"
+                        : "border-gray-200 bg-white"
+                    }`}
+                  >
                     <div className="p-6">
                       <div className="flex items-start gap-4">
                         {/* Icon */}
                         <div className="flex-shrink-0">
-                          <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                            lesson.status === "completed"
-                              ? "bg-emerald-500 text-white"
-                              : lesson.status === "live"
-                              ? "bg-gradient-to-br from-[#f54a12] to-[#ff6b35] text-white"
-                              : lesson.status === "locked"
-                              ? "bg-gray-300 text-gray-600"
-                              : "bg-[#599fe9] text-white"
-                          }`}>
+                          <div
+                            className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                              lesson.status === "completed"
+                                ? "bg-emerald-500 text-white"
+                                : lesson.status === "live"
+                                ? "bg-gradient-to-br from-[#f54a12] to-[#ff6b35] text-white"
+                                : lesson.status === "locked"
+                                ? "bg-gray-300 text-gray-600"
+                                : "bg-[#599fe9] text-white"
+                            }`}
+                          >
                             {lesson.status === "completed" ? (
                               <CheckCircle2 className="w-7 h-7" />
                             ) : lesson.status === "locked" ? (
@@ -249,7 +270,9 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <div className="flex-1">
-                              <h3 className="text-xl text-gray-900 mb-1">{lesson.title}</h3>
+                              <h3 className="text-xl text-gray-900 mb-1">
+                                {lesson.title}
+                              </h3>
                               <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
                                 <div className="flex items-center gap-1">
                                   <Calendar className="w-4 h-4" />
@@ -258,7 +281,9 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                                 <span>•</span>
                                 <div className="flex items-center gap-1">
                                   <Clock className="w-4 h-4" />
-                                  <span>{lesson.time} ({lesson.duration})</span>
+                                  <span>
+                                    {lesson.time} ({lesson.duration})
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -270,8 +295,8 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                               )}
                               {lesson.status === "completed" && (
                                 <Badge className="bg-emerald-500/20 text-emerald-700 border-emerald-300 flex items-center gap-1">
-                                  <Star className="w-3 h-3 fill-emerald-600" />
-                                  +{lesson.spinners}
+                                  <Star className="w-3 h-3 fill-emerald-600" />+
+                                  {lesson.spinners}
                                 </Badge>
                               )}
                             </div>
@@ -296,8 +321,9 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                           {/* Actions */}
                           {lesson.status !== "locked" && (
                             <div className="flex items-center gap-2 mt-4">
-                              {lesson.status === "live" || lesson.status === "upcoming" ? (
-                                <Button 
+                              {lesson.status === "live" ||
+                              lesson.status === "upcoming" ? (
+                                <Button
                                   className={`${
                                     lesson.status === "live"
                                       ? "bg-gradient-to-r from-[#f54a12] to-[#ff6b35] hover:shadow-lg"
@@ -305,10 +331,12 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                                   } text-white`}
                                 >
                                   <ExternalLink className="w-4 h-4 mr-2" />
-                                  {lesson.status === "live" ? "Entrar na Aula" : "Ver Detalhes"}
+                                  {lesson.status === "live"
+                                    ? "Entrar na Aula"
+                                    : "Ver Detalhes"}
                                 </Button>
                               ) : (
-                                <Button 
+                                <Button
                                   variant="outline"
                                   className="border-[#599fe9] text-[#599fe9] hover:bg-[#599fe9] hover:text-white"
                                 >
@@ -341,29 +369,39 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
                     <div className="p-6">
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex-1">
-                          <h3 className="text-xl text-gray-900 mb-2">{project.title}</h3>
-                          <p className="text-gray-600 mb-3">{project.description}</p>
+                          <h3 className="text-xl text-gray-900 mb-2">
+                            {project.title}
+                          </h3>
+                          <p className="text-gray-600 mb-3">
+                            {project.description}
+                          </p>
                           <div className="flex items-center gap-4 text-sm text-gray-600">
                             <div className="flex items-center gap-1">
                               <Calendar className="w-4 h-4" />
                               <span>Prazo: {project.dueDate}</span>
                             </div>
                             <Badge className="bg-amber-500/20 text-amber-700 border-amber-500/30 flex items-center gap-1">
-                              <Star className="w-3 h-3 fill-amber-600" />
-                              +{project.spinners}
+                              <Star className="w-3 h-3 fill-amber-600" />+
+                              {project.spinners}
                             </Badge>
                           </div>
                         </div>
-                        <Badge className={
-                          project.status === "in_progress"
-                            ? "bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30"
-                            : "bg-gray-200 text-gray-700 border-gray-300"
-                        }>
-                          {project.status === "in_progress" ? "Em Andamento" : "Não Iniciado"}
+                        <Badge
+                          className={
+                            project.status === "in_progress"
+                              ? "bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30"
+                              : "bg-gray-200 text-gray-700 border-gray-300"
+                          }
+                        >
+                          {project.status === "in_progress"
+                            ? "Em Andamento"
+                            : "Não Iniciado"}
                         </Badge>
                       </div>
                       <Button className="bg-gradient-to-r from-[#f54a12] to-[#ff6b35] text-white hover:shadow-lg">
-                        {project.status === "in_progress" ? "Continuar Projeto" : "Iniciar Projeto"}
+                        {project.status === "in_progress"
+                          ? "Continuar Projeto"
+                          : "Iniciar Projeto"}
                       </Button>
                     </div>
                   </Card>
@@ -377,9 +415,12 @@ export function StudentLessons({ courseId, courseName, onBack }: StudentLessonsP
             <Card className="bg-white border-gray-200">
               <div className="p-12 text-center">
                 <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl text-gray-600 mb-2">Materiais Complementares</h3>
+                <h3 className="text-xl text-gray-600 mb-2">
+                  Materiais Complementares
+                </h3>
                 <p className="text-gray-500">
-                  Os materiais estarão disponíveis conforme as aulas forem realizadas
+                  Os materiais estarão disponíveis conforme as aulas forem
+                  realizadas
                 </p>
               </div>
             </Card>

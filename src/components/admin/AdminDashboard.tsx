@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
+import Image from "next/image";
 import {
   BookOpen,
   Users,
@@ -55,9 +56,11 @@ export function AdminDashboard() {
           >
             {!sidebarCollapsed && (
               <div>
-                <img
+                <Image
                   src="/pt/logo_nitro_transparente.png"
                   alt="Nitro Academy"
+                  width={150}
+                  height={40}
                   className="h-10 w-auto"
                 />
                 <p className="mt-2 text-white/40 text-sm">
@@ -174,9 +177,11 @@ export function AdminDashboard() {
           {/* Logo */}
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
             <div>
-              <img
+              <Image
                 src="/pt/logo_nitro_transparente.png"
                 alt="Nitro Academy"
+                width={150}
+                height={40}
                 className="h-10 w-auto"
               />
               <p className="mt-2 text-white/40 text-sm">

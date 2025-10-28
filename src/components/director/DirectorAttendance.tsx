@@ -3,118 +3,122 @@ import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
-import { 
-  Calendar,
+import {
   CheckCircle,
   XCircle,
   AlertCircle,
   Download,
-  Filter,
-  Search
+  Search,
 } from "lucide-react";
 import { Input } from "../new-layout/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../new-layout/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../new-layout/ui/select";
 
 const studentsAttendance = [
-  { 
-    id: 1, 
-    name: "Ana Silva", 
-    course: "Inteligência Artificial", 
-    totalClasses: 40, 
-    attended: 39, 
-    missed: 1, 
+  {
+    id: 1,
+    name: "Ana Silva",
+    course: "Inteligência Artificial",
+    totalClasses: 40,
+    attended: 39,
+    missed: 1,
     percentage: 97.5,
-    status: "excelente" 
+    status: "excelente",
   },
-  { 
-    id: 2, 
-    name: "Carlos Santos", 
-    course: "Empreendedorismo", 
-    totalClasses: 36, 
-    attended: 35, 
-    missed: 1, 
+  {
+    id: 2,
+    name: "Carlos Santos",
+    course: "Empreendedorismo",
+    totalClasses: 36,
+    attended: 35,
+    missed: 1,
     percentage: 97.2,
-    status: "excelente" 
+    status: "excelente",
   },
-  { 
-    id: 3, 
-    name: "Mariana Costa", 
-    course: "Marketing Digital", 
-    totalClasses: 38, 
-    attended: 36, 
-    missed: 2, 
+  {
+    id: 3,
+    name: "Mariana Costa",
+    course: "Marketing Digital",
+    totalClasses: 38,
+    attended: 36,
+    missed: 2,
     percentage: 94.7,
-    status: "bom" 
+    status: "bom",
   },
-  { 
-    id: 4, 
-    name: "Pedro Oliveira", 
-    course: "Desenvolvimento Web", 
-    totalClasses: 42, 
-    attended: 39, 
-    missed: 3, 
+  {
+    id: 4,
+    name: "Pedro Oliveira",
+    course: "Desenvolvimento Web",
+    totalClasses: 42,
+    attended: 39,
+    missed: 3,
     percentage: 92.9,
-    status: "bom" 
+    status: "bom",
   },
-  { 
-    id: 5, 
-    name: "Julia Ferreira", 
-    course: "Design UX/UI", 
-    totalClasses: 35, 
-    attended: 32, 
-    missed: 3, 
+  {
+    id: 5,
+    name: "Julia Ferreira",
+    course: "Design UX/UI",
+    totalClasses: 35,
+    attended: 32,
+    missed: 3,
     percentage: 91.4,
-    status: "bom" 
+    status: "bom",
   },
-  { 
-    id: 6, 
-    name: "Roberto Lima", 
-    course: "Inteligência Artificial", 
-    totalClasses: 40, 
-    attended: 34, 
-    missed: 6, 
+  {
+    id: 6,
+    name: "Roberto Lima",
+    course: "Inteligência Artificial",
+    totalClasses: 40,
+    attended: 34,
+    missed: 6,
     percentage: 85.0,
-    status: "regular" 
+    status: "regular",
   },
-  { 
-    id: 7, 
-    name: "Camila Souza", 
-    course: "Marketing Digital", 
-    totalClasses: 38, 
-    attended: 32, 
-    missed: 6, 
+  {
+    id: 7,
+    name: "Camila Souza",
+    course: "Marketing Digital",
+    totalClasses: 38,
+    attended: 32,
+    missed: 6,
     percentage: 84.2,
-    status: "regular" 
+    status: "regular",
   },
-  { 
-    id: 8, 
-    name: "Lucas Mendes", 
-    course: "Empreendedorismo", 
-    totalClasses: 36, 
-    attended: 27, 
-    missed: 9, 
+  {
+    id: 8,
+    name: "Lucas Mendes",
+    course: "Empreendedorismo",
+    totalClasses: 36,
+    attended: 27,
+    missed: 9,
     percentage: 75.0,
-    status: "atencao" 
+    status: "atencao",
   },
-  { 
-    id: 9, 
-    name: "Beatriz Alves", 
-    course: "Desenvolvimento Web", 
-    totalClasses: 42, 
-    attended: 30, 
-    missed: 12, 
+  {
+    id: 9,
+    name: "Beatriz Alves",
+    course: "Desenvolvimento Web",
+    totalClasses: 42,
+    attended: 30,
+    missed: 12,
     percentage: 71.4,
-    status: "atencao" 
+    status: "atencao",
   },
-  { 
-    id: 10, 
-    name: "Gabriel Rocha", 
-    course: "Design UX/UI", 
-    totalClasses: 35, 
-    attended: 24, 
-    missed: 11, 
+  {
+    id: 10,
+    name: "Gabriel Rocha",
+    course: "Design UX/UI",
+    totalClasses: 35,
+    attended: 24,
+    missed: 11,
     percentage: 68.6,
-    status: "atencao" 
+    status: "atencao",
   },
 ];
 
@@ -126,13 +130,29 @@ export function DirectorAttendance() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "excelente":
-        return <Badge className="bg-green-100 text-green-700 border-green-200">Excelente</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-700 border-green-200">
+            Excelente
+          </Badge>
+        );
       case "bom":
-        return <Badge className="bg-blue-100 text-blue-700 border-blue-200">Bom</Badge>;
+        return (
+          <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+            Bom
+          </Badge>
+        );
       case "regular":
-        return <Badge className="bg-amber-100 text-amber-700 border-amber-200">Regular</Badge>;
+        return (
+          <Badge className="bg-amber-100 text-amber-700 border-amber-200">
+            Regular
+          </Badge>
+        );
       case "atencao":
-        return <Badge className="bg-red-100 text-red-700 border-red-200">Atenção</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-700 border-red-200">
+            Atenção
+          </Badge>
+        );
       default:
         return null;
     }
@@ -153,10 +173,14 @@ export function DirectorAttendance() {
     }
   };
 
-  const filteredStudents = studentsAttendance.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCourse = filterCourse === "all" || student.course === filterCourse;
-    const matchesStatus = filterStatus === "all" || student.status === filterStatus;
+  const filteredStudents = studentsAttendance.filter((student) => {
+    const matchesSearch = student.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCourse =
+      filterCourse === "all" || student.course === filterCourse;
+    const matchesStatus =
+      filterStatus === "all" || student.status === filterStatus;
     return matchesSearch && matchesCourse && matchesStatus;
   });
 
@@ -169,8 +193,12 @@ export function DirectorAttendance() {
         className="flex flex-col sm:flex-row justify-between gap-4"
       >
         <div>
-          <h2 className="text-2xl text-gray-900 mb-2">Relatório de Frequência</h2>
-          <p className="text-gray-600">Acompanhe a presença dos alunos nas aulas</p>
+          <h2 className="text-2xl text-gray-900 mb-2">
+            Relatório de Frequência
+          </h2>
+          <p className="text-gray-600">
+            Acompanhe a presença dos alunos nas aulas
+          </p>
         </div>
         <Button className="bg-[#599fe9] hover:bg-[#4a8ed9] text-white self-start sm:self-center">
           <Download className="w-4 h-4 mr-2" />
@@ -289,10 +317,18 @@ export function DirectorAttendance() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os cursos</SelectItem>
-                  <SelectItem value="Inteligência Artificial">Inteligência Artificial</SelectItem>
-                  <SelectItem value="Empreendedorismo">Empreendedorismo</SelectItem>
-                  <SelectItem value="Marketing Digital">Marketing Digital</SelectItem>
-                  <SelectItem value="Desenvolvimento Web">Desenvolvimento Web</SelectItem>
+                  <SelectItem value="Inteligência Artificial">
+                    Inteligência Artificial
+                  </SelectItem>
+                  <SelectItem value="Empreendedorismo">
+                    Empreendedorismo
+                  </SelectItem>
+                  <SelectItem value="Marketing Digital">
+                    Marketing Digital
+                  </SelectItem>
+                  <SelectItem value="Desenvolvimento Web">
+                    Desenvolvimento Web
+                  </SelectItem>
                   <SelectItem value="Design UX/UI">Design UX/UI</SelectItem>
                 </SelectContent>
               </Select>

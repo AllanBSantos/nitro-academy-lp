@@ -2,8 +2,15 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
 import { Badge } from "../new-layout/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../new-layout/ui/tabs";
-import { Bell, MessageCircle, Zap, Trash2, CheckCheck, Trophy, Star } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "../new-layout/ui/tabs";
+import {
+  Bell,
+  MessageCircle,
+  Trash2,
+  CheckCheck,
+  Trophy,
+  Star,
+} from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 
 const mockMessages = [
@@ -11,7 +18,8 @@ const mockMessages = [
     id: 1,
     type: "reward",
     title: "Você ganhou Spinners!",
-    message: "Parabéns! Você completou a aula 'Introdução ao Machine Learning' e ganhou 50 Spinners.",
+    message:
+      "Parabéns! Você completou a aula 'Introdução ao Machine Learning' e ganhou 50 Spinners.",
     timestamp: "Há 2 horas",
     read: false,
     spinners: 50,
@@ -20,7 +28,8 @@ const mockMessages = [
     id: 2,
     type: "mentor",
     title: "Feedback do Mentor",
-    message: "Prof. Carlos Silva comentou em seu projeto: 'Excelente trabalho! Sua apresentação está muito bem estruturada.'",
+    message:
+      "Prof. Carlos Silva comentou em seu projeto: 'Excelente trabalho! Sua apresentação está muito bem estruturada.'",
     timestamp: "Há 5 horas",
     read: false,
     mentor: "Prof. Carlos Silva",
@@ -29,7 +38,8 @@ const mockMessages = [
     id: 3,
     type: "alert",
     title: "Aula ao vivo em breve!",
-    message: "A aula 'Validação de Ideias' do curso de Empreendedorismo começa em 30 minutos.",
+    message:
+      "A aula 'Validação de Ideias' do curso de Empreendedorismo começa em 30 minutos.",
     timestamp: "Há 6 horas",
     read: true,
   },
@@ -37,7 +47,8 @@ const mockMessages = [
     id: 4,
     type: "mentor",
     title: "Novo material disponível",
-    message: "Prof. Maria Santos adicionou novos materiais complementares no curso de Empreendedorismo.",
+    message:
+      "Prof. Maria Santos adicionou novos materiais complementares no curso de Empreendedorismo.",
     timestamp: "Ontem",
     read: true,
     mentor: "Prof. Maria Santos",
@@ -46,7 +57,8 @@ const mockMessages = [
     id: 5,
     type: "alert",
     title: "Prazo de projeto",
-    message: "Lembrete: O projeto final do curso de Marketing Digital deve ser entregue até sexta-feira.",
+    message:
+      "Lembrete: O projeto final do curso de Marketing Digital deve ser entregue até sexta-feira.",
     timestamp: "2 dias atrás",
     read: true,
   },
@@ -56,13 +68,14 @@ export function StudentMessages() {
   const [messages, setMessages] = useState(mockMessages);
   const [filter, setFilter] = useState("all");
 
-  const filteredMessages = filter === "all" 
-    ? messages 
-    : filter === "unread"
-    ? messages.filter(m => !m.read)
-    : messages.filter(m => m.type === filter);
+  const filteredMessages =
+    filter === "all"
+      ? messages
+      : filter === "unread"
+      ? messages.filter((m) => !m.read)
+      : messages.filter((m) => m.type === filter);
 
-  const unreadCount = messages.filter(m => !m.read).length;
+  const unreadCount = messages.filter((m) => !m.read).length;
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -94,15 +107,15 @@ export function StudentMessages() {
   };
 
   const markAsRead = (id: number) => {
-    setMessages(messages.map(m => m.id === id ? { ...m, read: true } : m));
+    setMessages(messages.map((m) => (m.id === id ? { ...m, read: true } : m)));
   };
 
   const deleteMessage = (id: number) => {
-    setMessages(messages.filter(m => m.id !== id));
+    setMessages(messages.filter((m) => m.id !== id));
   };
 
   const markAllAsRead = () => {
-    setMessages(messages.map(m => ({ ...m, read: true })));
+    setMessages(messages.map((m) => ({ ...m, read: true })));
   };
 
   return (
@@ -114,12 +127,17 @@ export function StudentMessages() {
         className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl text-gray-900 mb-2">Mensagens e Notificações</h1>
+          <h1 className="text-3xl text-gray-900 mb-2">
+            Mensagens e Notificações
+          </h1>
           <p className="text-gray-600">
-            {unreadCount > 0 
-              ? `Você tem ${unreadCount} ${unreadCount === 1 ? 'mensagem não lida' : 'mensagens não lidas'}`
-              : 'Você está em dia com suas mensagens!'
-            }
+            {unreadCount > 0
+              ? `Você tem ${unreadCount} ${
+                  unreadCount === 1
+                    ? "mensagem não lida"
+                    : "mensagens não lidas"
+                }`
+              : "Você está em dia com suas mensagens!"}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -179,7 +197,7 @@ export function StudentMessages() {
               <div>
                 <p className="text-xs text-gray-600">Mentores</p>
                 <p className="text-xl text-gray-900">
-                  {messages.filter(m => m.type === "mentor").length}
+                  {messages.filter((m) => m.type === "mentor").length}
                 </p>
               </div>
             </div>
@@ -197,7 +215,11 @@ export function StudentMessages() {
               <div>
                 <p className="text-xs text-gray-600">Recompensas</p>
                 <p className="text-xl text-gray-900">
-                  {messages.filter(m => m.type === "reward" || m.type === "achievement").length}
+                  {
+                    messages.filter(
+                      (m) => m.type === "reward" || m.type === "achievement"
+                    ).length
+                  }
                 </p>
               </div>
             </div>
@@ -216,13 +238,22 @@ export function StudentMessages() {
             <TabsTrigger value="all" className="data-[state=active]:bg-white">
               Todas
             </TabsTrigger>
-            <TabsTrigger value="unread" className="data-[state=active]:bg-white">
+            <TabsTrigger
+              value="unread"
+              className="data-[state=active]:bg-white"
+            >
               Não Lidas {unreadCount > 0 && `(${unreadCount})`}
             </TabsTrigger>
-            <TabsTrigger value="mentor" className="data-[state=active]:bg-white">
+            <TabsTrigger
+              value="mentor"
+              className="data-[state=active]:bg-white"
+            >
               Mentores
             </TabsTrigger>
-            <TabsTrigger value="reward" className="data-[state=active]:bg-white">
+            <TabsTrigger
+              value="reward"
+              className="data-[state=active]:bg-white"
+            >
               Recompensas
             </TabsTrigger>
           </TabsList>
@@ -253,7 +284,12 @@ export function StudentMessages() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 + index * 0.05 }}
             >
-              <Card className={`${getBgColor(message.type, message.read)} border-gray-200 hover:shadow-lg transition-all`}>
+              <Card
+                className={`${getBgColor(
+                  message.type,
+                  message.read
+                )} border-gray-200 hover:shadow-lg transition-all`}
+              >
                 <div className="p-4">
                   <div className="flex items-start gap-4">
                     {/* Icon */}
@@ -264,14 +300,22 @@ export function StudentMessages() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <h3 className={`${!message.read ? "text-gray-900" : "text-gray-700"}`}>
+                        <h3
+                          className={`${
+                            !message.read ? "text-gray-900" : "text-gray-700"
+                          }`}
+                        >
                           {message.title}
                         </h3>
                         <span className="text-xs text-gray-500 flex-shrink-0">
                           {message.timestamp}
                         </span>
                       </div>
-                      <p className={`text-sm mb-2 ${!message.read ? "text-gray-700" : "text-gray-600"}`}>
+                      <p
+                        className={`text-sm mb-2 ${
+                          !message.read ? "text-gray-700" : "text-gray-600"
+                        }`}
+                      >
                         {message.message}
                       </p>
 
@@ -284,8 +328,8 @@ export function StudentMessages() {
                         )}
                         {message.spinners && (
                           <Badge className="bg-amber-500/20 text-amber-700 border-amber-500/30 text-xs flex items-center gap-1">
-                            <Star className="w-3 h-3 fill-amber-600" />
-                            +{message.spinners}
+                            <Star className="w-3 h-3 fill-amber-600" />+
+                            {message.spinners}
                           </Badge>
                         )}
                         {!message.read && (

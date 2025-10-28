@@ -1,16 +1,14 @@
 import { motion } from "motion/react";
 import { Card } from "../new-layout/ui/card";
-import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
-import { 
+import {
   Star,
   Heart,
   MessageSquare,
   Trophy,
   Sparkles,
   Users,
-  Clock,
-  ThumbsUp
+  ThumbsUp,
 } from "lucide-react";
 
 const classHighlights = [
@@ -23,13 +21,13 @@ const classHighlights = [
     highlights: [
       "Discussão muito engajada sobre redes neurais",
       "5 alunos apresentaram projetos incríveis",
-      "Taxa de participação: 100%"
+      "Taxa de participação: 100%",
     ],
     engagement: 98,
     comments: 42,
     likes: 87,
     attendees: 24,
-    category: "excelente"
+    category: "excelente",
   },
   {
     id: 2,
@@ -40,13 +38,13 @@ const classHighlights = [
     highlights: [
       "Alunos criaram 8 protótipos durante a aula",
       "Debate intenso sobre MVP e validação",
-      "3 ideias receberam feedback de mentores externos"
+      "3 ideias receberam feedback de mentores externos",
     ],
     engagement: 95,
     comments: 38,
     likes: 76,
     attendees: 18,
-    category: "excelente"
+    category: "excelente",
   },
   {
     id: 3,
@@ -57,13 +55,13 @@ const classHighlights = [
     highlights: [
       "Case study de startup que cresceu 300%",
       "Alunos criaram 12 campanhas práticas",
-      "Workshop interativo com especialista convidado"
+      "Workshop interativo com especialista convidado",
     ],
     engagement: 92,
     comments: 31,
     likes: 68,
     attendees: 21,
-    category: "bom"
+    category: "bom",
   },
   {
     id: 4,
@@ -74,13 +72,13 @@ const classHighlights = [
     highlights: [
       "Live coding de projeto real",
       "Todos os alunos conseguiram implementar useContext",
-      "Grupo criou biblioteca de hooks customizados"
+      "Grupo criou biblioteca de hooks customizados",
     ],
     engagement: 90,
     comments: 29,
     likes: 64,
     attendees: 22,
-    category: "bom"
+    category: "bom",
   },
   {
     id: 5,
@@ -91,13 +89,13 @@ const classHighlights = [
     highlights: [
       "Criação colaborativa de design system completo",
       "6 alunos apresentaram portfolios impressionantes",
-      "Simulação de apresentação para stakeholders"
+      "Simulação de apresentação para stakeholders",
     ],
     engagement: 88,
     comments: 25,
     likes: 59,
     attendees: 19,
-    category: "bom"
+    category: "bom",
   },
 ];
 
@@ -105,55 +103,58 @@ const topMoments = [
   {
     id: 1,
     student: "Ana Silva",
-    moment: 'Criou um algoritmo de ML que impressionou toda a turma',
+    moment: "Criou um algoritmo de ML que impressionou toda a turma",
     course: "Inteligência Artificial",
     date: "18 Out 2025",
-    reactions: 45
+    reactions: 45,
   },
   {
     id: 2,
     student: "Carlos Santos",
-    moment: 'Apresentou pitch que recebeu standing ovation',
+    moment: "Apresentou pitch que recebeu standing ovation",
     course: "Empreendedorismo",
     date: "17 Out 2025",
-    reactions: 38
+    reactions: 38,
   },
   {
     id: 3,
     student: "Mariana Costa",
-    moment: 'Criou campanha viral que foi compartilhada 500+ vezes',
+    moment: "Criou campanha viral que foi compartilhada 500+ vezes",
     course: "Marketing Digital",
     date: "16 Out 2025",
-    reactions: 42
+    reactions: 42,
   },
   {
     id: 4,
     student: "Pedro Oliveira",
-    moment: 'Desenvolveu componente reutilizável adotado pela turma',
+    moment: "Desenvolveu componente reutilizável adotado pela turma",
     course: "Desenvolvimento Web",
     date: "15 Out 2025",
-    reactions: 35
+    reactions: 35,
   },
 ];
 
 const teacherInsights = [
   {
     teacher: "Prof. Carlos Silva",
-    insight: "Esta turma de IA está entre as melhores que já tive. O nível de engajamento e curiosidade é excepcional!",
+    insight:
+      "Esta turma de IA está entre as melhores que já tive. O nível de engajamento e curiosidade é excepcional!",
     course: "Inteligência Artificial",
-    date: "18 Out 2025"
+    date: "18 Out 2025",
   },
   {
     teacher: "Prof. Marina Costa",
-    insight: "Impressionada com a criatividade dos alunos. Várias ideias de negócio têm potencial real de mercado.",
+    insight:
+      "Impressionada com a criatividade dos alunos. Várias ideias de negócio têm potencial real de mercado.",
     course: "Empreendedorismo",
-    date: "17 Out 2025"
+    date: "17 Out 2025",
   },
   {
     teacher: "Prof. João Santos",
-    insight: "Os alunos estão aplicando conceitos de marketing em projetos reais. Resultados práticos já na primeira semana!",
+    insight:
+      "Os alunos estão aplicando conceitos de marketing em projetos reais. Resultados práticos já na primeira semana!",
     course: "Marketing Digital",
-    date: "16 Out 2025"
+    date: "16 Out 2025",
   },
 ];
 
@@ -166,7 +167,9 @@ export function DirectorHighlights() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h2 className="text-2xl text-gray-900 mb-2">Destaques das Aulas</h2>
-        <p className="text-gray-600">Os melhores momentos e conquistas recentes</p>
+        <p className="text-gray-600">
+          Os melhores momentos e conquistas recentes
+        </p>
       </motion.div>
 
       {/* Summary Cards */}
@@ -184,7 +187,12 @@ export function DirectorHighlights() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-600">Aulas Destaque</p>
-                  <p className="text-2xl text-gray-900">{classHighlights.filter(c => c.category === 'excelente').length}</p>
+                  <p className="text-2xl text-gray-900">
+                    {
+                      classHighlights.filter((c) => c.category === "excelente")
+                        .length
+                    }
+                  </p>
                 </div>
               </div>
               <p className="text-xs text-gray-500">Engajamento &gt; 95%</p>
@@ -205,7 +213,9 @@ export function DirectorHighlights() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-600">Total de Likes</p>
-                  <p className="text-2xl text-gray-900">{classHighlights.reduce((acc, c) => acc + c.likes, 0)}</p>
+                  <p className="text-2xl text-gray-900">
+                    {classHighlights.reduce((acc, c) => acc + c.likes, 0)}
+                  </p>
                 </div>
               </div>
               <p className="text-xs text-gray-500">Nas últimas aulas</p>
@@ -226,7 +236,9 @@ export function DirectorHighlights() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-600">Comentários</p>
-                  <p className="text-2xl text-gray-900">{classHighlights.reduce((acc, c) => acc + c.comments, 0)}</p>
+                  <p className="text-2xl text-gray-900">
+                    {classHighlights.reduce((acc, c) => acc + c.comments, 0)}
+                  </p>
                 </div>
               </div>
               <p className="text-xs text-gray-500">Feedback dos alunos</p>
@@ -277,9 +289,9 @@ export function DirectorHighlights() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
                 className={`p-6 rounded-xl border-2 transition-all hover:shadow-md ${
-                  highlight.category === 'excelente'
-                    ? 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200'
-                    : 'bg-gray-50 border-gray-200'
+                  highlight.category === "excelente"
+                    ? "bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200"
+                    : "bg-gray-50 border-gray-200"
                 }`}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -288,14 +300,16 @@ export function DirectorHighlights() {
                       <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
                         {highlight.course}
                       </Badge>
-                      {highlight.category === 'excelente' && (
+                      {highlight.category === "excelente" && (
                         <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
                           <Trophy className="w-3 h-3 mr-1" />
                           Destaque
                         </Badge>
                       )}
                     </div>
-                    <h4 className="text-lg text-gray-900 mb-1">{highlight.title}</h4>
+                    <h4 className="text-lg text-gray-900 mb-1">
+                      {highlight.title}
+                    </h4>
                     <p className="text-sm text-gray-600">
                       {highlight.teacher} • {highlight.date}
                     </p>
@@ -317,12 +331,14 @@ export function DirectorHighlights() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-[#f54a12] to-[#ff6b35]"
                           style={{ width: `${highlight.engagement}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-600">{highlight.engagement}%</span>
+                      <span className="text-sm text-gray-600">
+                        {highlight.engagement}%
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -366,7 +382,10 @@ export function DirectorHighlights() {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-[#f54a12] to-[#ff6b35] rounded-full flex items-center justify-center text-white flex-shrink-0">
-                        {moment.student.split(" ").map(n => n[0]).join("")}
+                        {moment.student
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </div>
                       <div>
                         <p className="text-gray-900">{moment.student}</p>
@@ -379,7 +398,9 @@ export function DirectorHighlights() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-700 ml-13">{moment.moment}</p>
-                  <p className="text-xs text-gray-500 mt-2 ml-13">{moment.date}</p>
+                  <p className="text-xs text-gray-500 mt-2 ml-13">
+                    {moment.date}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -396,7 +417,9 @@ export function DirectorHighlights() {
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-[#599fe9]" />
-                <h3 className="text-xl text-gray-900">Feedback dos Professores</h3>
+                <h3 className="text-xl text-gray-900">
+                  Feedback dos Professores
+                </h3>
               </div>
             </div>
             <div className="p-6 space-y-4">
@@ -417,7 +440,9 @@ export function DirectorHighlights() {
                       <p className="text-xs text-gray-500">{insight.course}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-700 italic">"{insight.insight}"</p>
+                  <p className="text-sm text-gray-700 italic">
+                    &quot;{insight.insight}&quot;
+                  </p>
                   <p className="text-xs text-gray-500 mt-2">{insight.date}</p>
                 </motion.div>
               ))}

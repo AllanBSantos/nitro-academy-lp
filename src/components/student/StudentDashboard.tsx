@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
 import {
   Home,
   BookOpen,
@@ -11,17 +12,12 @@ import {
   Menu,
   X,
   TrendingUp,
-  Users,
   ShoppingBag,
+  Star,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "../new-layout/ui/avatar";
 import { Badge } from "../new-layout/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../new-layout/ui/tooltip";
+import { TooltipProvider } from "../new-layout/ui/tooltip";
 import { StudentHome } from "./StudentHome";
 import { StudentCourses } from "./StudentCourses";
 import { StudentAchievements } from "./StudentAchievements";
@@ -65,10 +61,6 @@ export function StudentDashboard() {
     window.location.hash = "";
   };
 
-  const handleViewLessons = (courseId: number, courseName: string) => {
-    setLessonsView({ courseId, courseName });
-  };
-
   const handleBackFromLessons = () => {
     setLessonsView(null);
   };
@@ -96,9 +88,11 @@ export function StudentDashboard() {
         <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-72 bg-[#19184b] border-r border-white/10 flex-col">
           {/* Logo & User Info */}
           <div className="p-6 border-b border-white/5">
-            <img
+            <Image
               src="/pt/logo_nitro_transparente.png"
               alt="Nitro Academy"
+              width={150}
+              height={40}
               className="h-10 w-auto mb-6"
             />
 
@@ -200,9 +194,11 @@ export function StudentDashboard() {
                 {/* Logo & User Info */}
                 <div className="p-6 border-b border-white/5">
                   <div className="flex items-center justify-between mb-6">
-                    <img
+                    <Image
                       src="/pt/logo_nitro_transparente.png"
                       alt="Nitro Academy"
+                      width={150}
+                      height={40}
                       className="h-10 w-auto"
                     />
                     <button
@@ -306,9 +302,11 @@ export function StudentDashboard() {
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <img
+              <Image
                 src="/pt/logo_nitro_transparente.png"
                 alt="Nitro Academy"
+                width={120}
+                height={32}
                 className="h-8 w-auto"
               />
               <div className="flex items-center gap-2">
