@@ -31,6 +31,25 @@ export function WhatIsNitro() {
           </p>
         </motion.div>
 
+        {/* Video Section */}
+        <motion.div
+          className="max-w-4xl mx-auto mb-8 md:mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-xl">
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src="https://www.youtube.com/embed/aLHangPmmfA"
+              title="Nitro Academy Video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </motion.div>
+
         {/* Quote Section */}
         <motion.div
           className="max-w-4xl mx-auto"
