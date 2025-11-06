@@ -573,7 +573,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
           : "-",
         student.isEnrolled && student.courseInfo && student.courseInfo.schedule
           ? `${student.courseInfo.schedule.dia_semana || ""} ${
-              student.courseInfo.schedule.horario_aula || ""
+              formatTime(student.courseInfo.schedule.horario_aula) || ""
             }`.trim()
           : "-",
       ]);
