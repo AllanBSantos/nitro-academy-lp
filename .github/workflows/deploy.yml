@@ -21,7 +21,13 @@ jobs:
 
       - name: Run remote deploy script
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "/srv/nitro-monorepo/deploy.sh"
+          ssh -i ~/.ssh/id_rsa \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=20 \
+            -o TCPKeepAlive=yes \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "bash -lc '/srv/nitro-monorepo/deploy.sh'"
+        
 
   notify-n8n:
     runs-on: ubuntu-latest
