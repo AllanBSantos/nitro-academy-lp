@@ -17,17 +17,19 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          # don't fail if keyscan fails
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Run remote deploy script
+        timeout-minutes: 30
         run: |
           ssh -i ~/.ssh/id_rsa \
             -o ServerAliveInterval=30 \
-            -o ServerAliveCountMax=20 \
+            -o ServerAliveCountMax=40 \
             -o TCPKeepAlive=yes \
+            -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "bash -lc '/srv/nitro-monorepo/deploy.sh'"
-        
 
   notify-n8n:
     runs-on: ubuntu-latest
