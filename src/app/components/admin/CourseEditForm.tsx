@@ -138,8 +138,14 @@ export default function CourseEditForm({
       // Transform cronograma data, removing faixa_etaria as it's no longer part of the schema
       const cronograma = course.cronograma?.map(
         (aula: CronogramaAula) => {
-          const { faixa_etaria, ...aulaWithoutFaixaEtaria } = aula as CronogramaAula & { faixa_etaria?: string };
-          return aulaWithoutFaixaEtaria;
+          const aulaWithoutFaixaEtaria: Record<string, unknown> = {};
+          const aulaWithPossibleFaixaEtaria = aula as CronogramaAula & { faixa_etaria?: string };
+          for (const [key, value] of Object.entries(aulaWithPossibleFaixaEtaria)) {
+            if (key !== "faixa_etaria") {
+              aulaWithoutFaixaEtaria[key] = value;
+            }
+          }
+          return aulaWithoutFaixaEtaria as unknown as CronogramaAula;
         }
       );
 
