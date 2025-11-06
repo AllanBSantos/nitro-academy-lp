@@ -653,7 +653,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     singularName: 'curso';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   pluginOptions: {
     i18n: {
