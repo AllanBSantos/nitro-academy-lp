@@ -65,6 +65,9 @@ export interface Mentor {
     alunos: number;
     cursos: number;
     instagram: string;
+    instagram_label?: string;
+    linkedin_url?: string;
+    linkedin_label?: string;
     pais?: string;
     imagem: StrapiImage;
     reviews: Array<{
@@ -94,6 +97,9 @@ export interface Mentor {
   alunos?: number;
   cursos?: number;
   instagram?: string;
+  instagram_label?: string;
+  linkedin_url?: string;
+  linkedin_label?: string;
   pais?: string;
   imagem?: StrapiImage | { url: string };
   reviews?: Array<{
@@ -230,6 +236,8 @@ export interface Course {
     cursos: number | null;
     instagram: string;
     instagram_label: string;
+    linkedin_url?: string;
+    linkedin_label?: string;
     imagem: {
       url: string;
     } | null;

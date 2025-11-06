@@ -39,6 +39,8 @@ export async function getCardsContent(
         descricao: mentor?.descricao || "",
         instagram: mentor?.instagram || "",
         instagram_label: mentor?.instagram_label || "",
+        linkedin_url: mentor?.linkedin_url || "",
+        linkedin_label: mentor?.linkedin_label || "",
         pais: mentor?.pais || "Brasil",
         reviews: mentor?.reviews || null,
       },

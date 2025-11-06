@@ -123,6 +123,12 @@
     },
     "celular": {
       "type": "string"
+    },
+    "linkedin_url": {
+      "type": "string"
+    },
+    "linkedin_label": {
+      "type": "string"
     }
   }
 }
