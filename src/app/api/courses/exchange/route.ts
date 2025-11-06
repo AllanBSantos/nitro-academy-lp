@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Strategy 1: search by documentId using filters (same config as "available" API)
     if (newCourseDocumentId) {
-      const cursoByDocUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${newCourseDocumentId}&locale=pt-BR&publicationState=preview&populate=*`;
+      const cursoByDocUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${newCourseDocumentId}&locale=pt-BR&populate=*`;
       console.log(
         "Trying to fetch course by documentId filter:",
         cursoByDocUrl
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       console.log("Failed with regular ID, trying alternative approaches...");
 
       // Strategy 3A: use the exact "available API" listing pattern
-      const availableApiUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=pt-BR&publicationState=preview&pagination[pageSize]=1000`;
+      const availableApiUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=pt-BR&pagination[pageSize]=1000`;
       console.log(
         "Trying to fetch courses using available API pattern:",
         availableApiUrl
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
 
       // Strategy 3B: global listing fallback if still not found
       if (!foundCurso) {
-        const allCoursesUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?locale=pt-BR&publicationState=preview&populate=*&pagination[pageSize]=1000`;
+        const allCoursesUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?locale=pt-BR&populate=*&pagination[pageSize]=1000`;
         console.log("Trying to fetch all courses:", allCoursesUrl);
 
         const allCoursesResponse = await fetch(allCoursesUrl, {

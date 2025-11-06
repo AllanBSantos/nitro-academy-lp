@@ -572,14 +572,14 @@ export async function fetchCoursesCount(): Promise<number> {
   try {
     // Primeiro tenta com filtro habilitado
     let response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
       { next: { revalidate: 60 } }
     );
 
     if (!response.ok) {
       // Se falhar, tenta sem filtro habilitado
       response = await fetch(
-        `${STRAPI_API_URL}/api/cursos?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+        `${STRAPI_API_URL}/api/cursos?pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
         { next: { revalidate: 60 } }
       );
     }
@@ -611,7 +611,7 @@ export async function fetchTrilhasWithCourseCount(): Promise<
   try {
     // Buscar trilhas com seus cursos relacionados
     const trilhasResponse = await fetch(
-      `${STRAPI_API_URL}/api/trilhas?populate[cursos][filters][habilitado][$eq]=true&publicationState=preview&locale=pt-BR`,
+      `${STRAPI_API_URL}/api/trilhas?populate[cursos][filters][habilitado][$eq]=true&locale=pt-BR`,
       { next: { revalidate: 60 } }
     );
 

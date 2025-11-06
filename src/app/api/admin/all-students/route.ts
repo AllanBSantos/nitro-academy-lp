@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     const escola = searchParams.get("escola");
 
     // Construir URL base
-    let url = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&fields[0]=nome&fields[1]=telefone_aluno&fields[2]=responsavel&fields[3]=telefone_responsavel&fields[4]=escola_parceira&fields[5]=turma&fields[6]=createdAt&fields[7]=updatedAt&pagination[pageSize]=1000&publicationState=preview`;
+    let url = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&fields[0]=nome&fields[1]=telefone_aluno&fields[2]=responsavel&fields[3]=telefone_responsavel&fields[4]=escola_parceira&fields[5]=turma&fields[6]=createdAt&fields[7]=updatedAt&pagination[pageSize]=1000`;
 
     // Adicionar filtro de pesquisa por nome
     if (search) {
