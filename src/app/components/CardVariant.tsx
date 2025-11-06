@@ -71,7 +71,7 @@ export default function Card({
 
     return stars;
   };
-  const faixaEtaria = "De 12 a 17 anos";
+  const faixaEtaria = "De 13 a 17 anos";
 
   const maxStudentsPerClass = parseInt(
     process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "15"

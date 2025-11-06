@@ -135,7 +135,7 @@ export default function TimeSelectionSection({
                     >
                       <div className="flex flex-col items-center">
                         <div className="text-sm text-gray-600 mb-2">
-                          {t("class")} {classNumber} - De 12 a 17 anos
+                          {t("class")} {classNumber} - De 13 a 17 anos
                         </div>
                         <div className="flex flex-col items-center">
                           <div className="text-[#3B82F6] text-lg font-medium">
@@ -256,7 +256,7 @@ export default function TimeSelectionSection({
                     >
                       <div className="flex flex-col items-center">
                         <div className="text-sm text-gray-600 mb-2">
-                          {t("class")} {classNumber} - De 12 a 17 anos
+                          {t("class")} {classNumber} - De 13 a 17 anos
                         </div>
                         <div className="flex flex-col items-center">
                           <div className="text-[#3B82F6] text-lg font-medium">

@@ -16,7 +16,7 @@ export default function TermsEN() {
       <p className="mb-4">
         Nitro Academy is an online platform that connects independent teachers
         with clients who are legal guardians of minors, focusing on educational
-        courses for children and adolescents, typically between 12 and 17 years
+        courses for children and adolescents, typically between 13 and 17 years
         old.
       </p>
       <p className="mb-8">
