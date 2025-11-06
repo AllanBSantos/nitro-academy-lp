@@ -772,7 +772,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     review: Schema.Attribute.Component<'review.review', true>;
     slug: Schema.Attribute.String & Schema.Attribute.Required;
     sugestao_horario: Schema.Attribute.Boolean &
-      Schema.Attribute.DefaultTo<true>;
+      Schema.Attribute.DefaultTo<false>;
     tags: Schema.Attribute.Component<'tags.tags', true> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

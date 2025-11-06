@@ -50,7 +50,6 @@ export interface CronogramaCronograma extends Struct.ComponentSchema {
         'Sexta-Feira',
       ]
     >;
-    faixa_etaria: Schema.Attribute.String;
     horario_aula: Schema.Attribute.Enumeration<
       [
         'BRT 14:00',

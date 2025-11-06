@@ -1362,7 +1362,6 @@ export async function updateCourse(
     cronograma?: Array<{
       data_inicio?: string;
       data_fim?: string;
-      faixa_etaria?: string;
       dia_semana?: string;
       horario_aula?: string;
     }>;
@@ -1414,6 +1413,27 @@ export async function updateCourse(
       return data;
     };
 
+    // Remove faixa_etaria from cronograma items as it's no longer part of the schema
+    const removeFaixaEtariaFromCronograma = (cronograma: unknown): unknown => {
+      if (!Array.isArray(cronograma)) {
+        return cronograma;
+      }
+      return cronograma.map((item) => {
+        if (item && typeof item === "object") {
+          const rest: Record<string, unknown> = {};
+          for (const [key, value] of Object.entries(
+            item as Record<string, unknown>
+          )) {
+            if (key !== "faixa_etaria") {
+              rest[key] = value;
+            }
+          }
+          return rest;
+        }
+        return item;
+      });
+    };
+
     const findResponse = await fetch(
       `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=*`
     );
@@ -1445,7 +1465,9 @@ export async function updateCourse(
         courseData.inscricoes_abertas || currentData.inscricoes_abertas,
       videos: courseData.videos || currentData.videos,
       cronograma: cleanDataRecursively(
-        courseData.cronograma || currentData.cronograma
+        removeFaixaEtariaFromCronograma(
+          courseData.cronograma || currentData.cronograma
+        )
       ),
       ementa_resumida: cleanDataRecursively(
         courseData.ementa_resumida || currentData.ementa_resumida

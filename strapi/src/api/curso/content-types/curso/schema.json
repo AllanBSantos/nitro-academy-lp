@@ -220,7 +220,7 @@
     },
     "sugestao_horario": {
       "type": "boolean",
-      "default": true
+      "default": false
     },
     "inscricoes_abertas": {
       "type": "boolean",
