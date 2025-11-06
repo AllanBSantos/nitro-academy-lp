@@ -53,6 +53,8 @@ export interface CardProps {
     descricao: string;
     instagram: string;
     instagram_label: string;
+    linkedin_url?: string;
+    linkedin_label?: string;
     pais?: string;
     reviews: Array<{
       id: number;

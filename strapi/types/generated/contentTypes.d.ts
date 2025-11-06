@@ -928,6 +928,8 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
         };
       }>;
     instagram_label: Schema.Attribute.String;
+    linkedin_label: Schema.Attribute.String;
+    linkedin_url: Schema.Attribute.String;
     listaCursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::mentor.mentor'>;
