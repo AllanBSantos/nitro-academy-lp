@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
     const base = process.env.NEXT_PUBLIC_STRAPI_API_URL;
     console.log("[Available] STRAPI URL:", base, "locale:", locale);
 
-    // Buscar todos os cursos (preview para garantir retorno, com locale)
-    const cursosUrl = `${base}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=${locale}&publicationState=preview&pagination[pageSize]=1000`;
+    // Buscar todos os cursos (com locale)
+    const cursosUrl = `${base}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=${locale}&pagination[pageSize]=1000`;
 
     const cursosResponse = await fetch(cursosUrl, {
       cache: "no-store",

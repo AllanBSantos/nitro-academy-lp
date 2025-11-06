@@ -572,14 +572,14 @@ export async function fetchCoursesCount(): Promise<number> {
   try {
     // Primeiro tenta com filtro habilitado
     let response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
       { next: { revalidate: 60 } }
     );
 
     if (!response.ok) {
       // Se falhar, tenta sem filtro habilitado
       response = await fetch(
-        `${STRAPI_API_URL}/api/cursos?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
+        `${STRAPI_API_URL}/api/cursos?pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
         { next: { revalidate: 60 } }
       );
     }
@@ -741,7 +741,7 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
       return null;
     }
 
-    const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId`;
+    const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId&publicationState=preview`;
 
     const response = await fetch(url, {
       headers: {
@@ -1006,7 +1006,7 @@ export async function fetchPartnerSchools(): Promise<PartnerSchool[]> {
 export async function fetchAllStudents(): Promise<Student[]> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&fields[0]=turma`
+      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&fields[0]=turma&publicationState=preview`
     );
 
     if (!response.ok) {
@@ -1106,7 +1106,7 @@ export async function getStudentsPerCourse(): Promise<CourseStudentsCount[]> {
 
     // Fetch all students with their courses
     const studentsResponse = await fetch(
-      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id`
+      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview`
     );
 
     if (!studentsResponse.ok) {
