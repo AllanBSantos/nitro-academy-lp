@@ -1,6 +1,6 @@
 module.exports = {
-    locales: ['en', 'pt'],
-    defaultLocale: 'pt',
+    locales: ['en', 'pt', 'pt-BR'],
+    defaultLocale: 'pt-BR',
     modes: ['query'],
     queryParameter: 'lang',
 }; 
