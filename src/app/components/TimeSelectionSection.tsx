@@ -64,6 +64,12 @@ export default function TimeSelectionSection({
     return `${day}/${month}/${year.slice(-2)}`;
   };
 
+  const formatTime = (timeString?: string) => {
+    if (!timeString) return "";
+    // Remove o prefixo "BRT" se existir
+    return timeString.replace(/^BRT\s*/, "");
+  };
+
   const schedules = useMemo(() => course.cronograma || [], [course.cronograma]);
 
   // Seleção automática quando há apenas uma opção de cronograma
@@ -135,7 +141,7 @@ export default function TimeSelectionSection({
                           <div className="text-[#3B82F6] text-lg font-medium">
                             {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
                               schedule.dia_semana}{" "}
-                            {schedule.horario_aula}
+                            {formatTime(schedule.horario_aula)}
                           </div>
                           {classIsFull && (
                             <div className="text-sm mt-1 text-red-600 font-medium">
@@ -256,7 +262,7 @@ export default function TimeSelectionSection({
                           <div className="text-[#3B82F6] text-lg font-medium">
                             {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
                               schedule.dia_semana}{" "}
-                            {schedule.horario_aula}
+                            {formatTime(schedule.horario_aula)}
                           </div>
                         </div>
                       </div>

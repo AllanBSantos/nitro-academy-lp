@@ -87,6 +87,12 @@ export default function PartnerStudentsList() {
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [exporting, setExporting] = useState(false);
 
+  const formatTime = (timeString?: string) => {
+    if (!timeString) return "";
+    // Remove o prefixo "BRT" se existir
+    return timeString.replace(/^BRT\s*/, "");
+  };
+
   useEffect(() => {
     fetchStudents();
     fetchAbsoluteStats();
@@ -1028,7 +1034,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
                                 )}
                               {student.courseInfo.schedule.horario_aula && (
                                 <span>
-                                  {student.courseInfo.schedule.horario_aula}
+                                  {formatTime(student.courseInfo.schedule.horario_aula)}
                                 </span>
                               )}
                             </div>
