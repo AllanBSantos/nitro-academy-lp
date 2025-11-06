@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Extrair  parâmetros de filtro da query string
+    // Extrair parâmetros de filtro da query string
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const curso = searchParams.get("curso");
