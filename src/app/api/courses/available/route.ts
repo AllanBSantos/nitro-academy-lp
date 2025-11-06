@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     console.log("[Available] cursosData count:", cursos.length);
 
     // Buscar alunos habilitados para contar por curso
-    const alunosUrl = `${base}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&pagination[pageSize]=1000`;
+    const alunosUrl = `${base}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview&pagination[pageSize]=1000`;
     const alunosResponse = await fetch(alunosUrl, {
       cache: "no-store",
       headers: { "Content-Type": "application/json" },

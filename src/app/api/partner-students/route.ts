@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       let enrolledStudents: any[] = [];
       try {
         const enrolledStudentsResponse = await fetch(
-          `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*`,
+          `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*&publicationState=preview`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -258,7 +258,7 @@ export async function GET(request: NextRequest) {
     let enrolledStudents: any[] = [];
     try {
       const enrolledStudentsResponse = await fetch(
-        `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*`,
+        `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*&publicationState=preview`,
         {
           headers: {
             "Content-Type": "application/json",

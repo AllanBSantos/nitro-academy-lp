@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
 
     // Count current students in the target course
     const alunosResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[cursos][id][$eq]=${newCourseId}&filters[habilitado][$eq]=true&populate=*&pagination[pageSize]=1000`,
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[cursos][id][$eq]=${newCourseId}&filters[habilitado][$eq]=true&populate=*&publicationState=preview&pagination[pageSize]=1000`,
       {
         cache: "no-store",
         headers: {
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
     // Fetch current student (prefer documentId; fallback to id filter)
     const alunoUrl = studentDocumentId
       ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[documentId][$eq]=${studentDocumentId}&populate=*&publicationState=preview`
-      : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[id][$eq]=${studentId}&populate=*`;
+      : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[id][$eq]=${studentId}&populate=*&publicationState=preview`;
 
     console.log("Fetching aluno with:", alunoUrl);
 
