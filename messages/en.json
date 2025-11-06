@@ -248,7 +248,7 @@
     "payment_options": "in {installments}x interest-free or {total} in cash",
     "select": "Select",
     "best_time": "the best time and click",
-    "enroll": "Apply for a spot",
+    "enroll": "Complete Enrollment",
     "inscricoes_fechadas": "Enrollment closed",
     "seats_warning": "Seats are allocated on a first-come, first-served basis. Once we reach capacity, we'll guide any additional applicants in choosing another course/class.",
     "days": {
@@ -290,7 +290,7 @@
   },
   "EnrollmentModal": {
     "title": "Enrollment Form",
-    "enroll": "Enroll",
+    "enroll": "Complete Enrollment",
     "loading": "Sending...",
     "success": {
       "title": "Enrollment Successful!",
