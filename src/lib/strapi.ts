@@ -611,7 +611,7 @@ export async function fetchTrilhasWithCourseCount(): Promise<
   try {
     // Buscar trilhas com seus cursos relacionados
     const trilhasResponse = await fetch(
-      `${STRAPI_API_URL}/api/trilhas?populate[cursos][filters][habilitado][$eq]=true&locale=pt-BR`,
+      `${STRAPI_API_URL}/api/trilhas?populate[cursos][filters][habilitado][$eq]=true&publicationState=preview&locale=pt-BR`,
       { next: { revalidate: 60 } }
     );
 
