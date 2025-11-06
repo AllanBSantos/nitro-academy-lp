@@ -286,6 +286,12 @@ export default function CourseExchangeForm() {
     return days[day] || day;
   };
 
+  const formatTime = (timeString?: string) => {
+    if (!timeString) return "";
+    // Remove o prefixo "BRT" se existir
+    return timeString.replace(/^BRT\s*/, "");
+  };
+
   return (
     <div className="space-y-6">
       {/* Busca por CPF */}
@@ -410,7 +416,7 @@ export default function CourseExchangeForm() {
                                 {getDayLabel(schedule.dia_semana || "")}
                               </span>
                               <Clock className="w-4 h-4 ml-2" />
-                              <span>{schedule.horario_aula || ""}</span>
+                              <span>{formatTime(schedule.horario_aula)}</span>
                             </div>
                           ))}
                         </div>
