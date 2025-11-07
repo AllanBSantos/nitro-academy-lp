@@ -653,7 +653,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     singularName: 'curso';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   pluginOptions: {
     i18n: {
@@ -772,7 +772,7 @@ export interface ApiCursoCurso extends Struct.CollectionTypeSchema {
     review: Schema.Attribute.Component<'review.review', true>;
     slug: Schema.Attribute.String & Schema.Attribute.Required;
     sugestao_horario: Schema.Attribute.Boolean &
-      Schema.Attribute.DefaultTo<true>;
+      Schema.Attribute.DefaultTo<false>;
     tags: Schema.Attribute.Component<'tags.tags', true> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -928,6 +928,8 @@ export interface ApiMentorMentor extends Struct.CollectionTypeSchema {
         };
       }>;
     instagram_label: Schema.Attribute.String;
+    linkedin_label: Schema.Attribute.String;
+    linkedin_url: Schema.Attribute.String;
     listaCursos: Schema.Attribute.Relation<'oneToMany', 'api::curso.curso'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::mentor.mentor'>;

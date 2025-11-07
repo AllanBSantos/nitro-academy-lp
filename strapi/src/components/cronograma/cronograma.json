@@ -12,9 +12,6 @@
     "data_fim": {
       "type": "date"
     },
-    "faixa_etaria": {
-      "type": "string"
-    },
     "link_aula": {
       "type": "string"
     },

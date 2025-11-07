@@ -30,7 +30,6 @@ interface ResumoAula {
 interface CronogramaAula {
   titulo: string;
   descricao: string;
-  faixa_etaria?: string;
   data_inicio?: string;
   data_fim?: string;
   dia_semana?: string;
@@ -136,12 +135,18 @@ export default function CourseEditForm({
     try {
       const documentId = params.courseId as string;
 
-      // Transform cronograma data to include faixa_etaria from turmas
+      // Transform cronograma data, removing faixa_etaria as it's no longer part of the schema
       const cronograma = course.cronograma?.map(
-        (aula: CronogramaAula, index: number) => ({
-          ...aula,
-          faixa_etaria: turmas[index]?.faixa_etaria || "",
-        })
+        (aula: CronogramaAula) => {
+          const aulaWithoutFaixaEtaria: Record<string, unknown> = {};
+          const aulaWithPossibleFaixaEtaria = aula as CronogramaAula & { faixa_etaria?: string };
+          for (const [key, value] of Object.entries(aulaWithPossibleFaixaEtaria)) {
+            if (key !== "faixa_etaria") {
+              aulaWithoutFaixaEtaria[key] = value;
+            }
+          }
+          return aulaWithoutFaixaEtaria as unknown as CronogramaAula;
+        }
       );
 
       // Map frontend camelCase to backend snake_case

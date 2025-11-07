@@ -20,9 +20,6 @@ export function Navigation() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const headerT = useTranslations("Header");
 
-  // Debug logs
-  console.log("Navigation Debug:", { user, isAuthenticated, loading });
-
   const whiteBackgroundPages = [`/${locale}/about-us`, `/${locale}/termos`];
   const hasWhiteBackground = whiteBackgroundPages.some((page) =>
     pathname.startsWith(page)

@@ -117,7 +117,7 @@ export async function GET(
     // Buscar curso preferindo documentId; fallback para ID. Tratar formatos com/sem attributes
     let curso: any | undefined;
     if (cursoAtual.documentId) {
-      const byDocUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${cursoAtual.documentId}&locale=pt-BR&publicationState=preview&populate=*`;
+      const byDocUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${cursoAtual.documentId}&locale=pt-BR&populate=*`;
       console.log("[Students API] Buscando curso por documentId:", byDocUrl);
       const byDocResp = await fetch(byDocUrl, { cache: "no-store" });
       console.log("[Students API] byDocResp status:", byDocResp.status);
