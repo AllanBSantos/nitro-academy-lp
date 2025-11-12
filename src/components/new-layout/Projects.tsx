@@ -256,11 +256,11 @@ export function Projects({
     const mentorSlug =
       course.mentor?.name?.toLowerCase().replace(/\s+/g, "-") || "mentor";
 
-    // Determine category based on course tags - use specific tag or fallback to first available tag
+    // Determine category based on course tags - use specific tag or empty string
     const category =
       course.tags && course.tags.length > 0
         ? course.tags[0].nome
-        : t("fallbacks.category");
+        : "";
 
     // Format start date
     const startDate = cronograma?.data_inicio
@@ -273,8 +273,8 @@ export function Projects({
     return {
       id: course.id,
       documentId: course.documentId,
-      title: course.title || t("fallbacks.courseTitle"),
-      description: course.description || t("fallbacks.courseDescription"),
+      title: course.title || "",
+      description: course.description || "",
       category,
       day: cronograma?.dia_semana
         ? dayMap[cronograma.dia_semana] || "segunda"

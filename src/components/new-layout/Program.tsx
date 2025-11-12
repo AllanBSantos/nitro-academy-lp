@@ -3,7 +3,7 @@
 import { Palette, Code, Briefcase, Users, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { fetchTrilhasWithCourseCount, TrilhaWithCount } from "@/lib/strapi";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 const scrollToSection = (sectionId: string, trilha?: string) => {
@@ -70,25 +70,6 @@ export function Program() {
   const [tracks, setTracks] = useState<TrackWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fallbackTracks = useMemo(() => {
-    const rawFallback = t.raw("fallbackTracks") as {
-      id: number;
-      key: TrackKey;
-      courseCount: number;
-    }[];
-
-    return rawFallback.map(
-      (track) =>
-        ({
-          id: track.id,
-          nome: t(`tracks.${track.key}.name`),
-          descricao: t(`tracks.${track.key}.description`),
-          courseCount: track.courseCount,
-          trackKey: track.key,
-        } satisfies TrackWithMeta)
-    );
-  }, [t]);
-
   const translateTrack = useCallback(
     (track: TrilhaWithCount): TrackWithMeta => {
       const trackKey = resolveTrackKey(track.nome);
@@ -110,21 +91,17 @@ export function Program() {
     const loadTrilhas = async () => {
       try {
         const trilhasData = await fetchTrilhasWithCourseCount();
-        if (trilhasData.length === 0) {
-          setTracks(fallbackTracks);
-          return;
-        }
         setTracks(trilhasData.map(translateTrack));
       } catch (error) {
         console.error("Error loading trilhas:", error);
-        setTracks(fallbackTracks);
+        setTracks([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadTrilhas();
-  }, [fallbackTracks, translateTrack]);
+  }, [translateTrack]);
 
   // Mapear ícones e cores para cada trilha
   const getTrackConfig = (track: TrackWithMeta) => {
@@ -169,7 +146,7 @@ export function Program() {
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f54a12]"></div>
             </div>
-          ) : (
+          ) : tracks.length === 0 ? null : (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4">
               {tracks.map((item, index) => {
                 const config = getTrackConfig(item);
