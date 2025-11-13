@@ -13,18 +13,11 @@ export function Reviews() {
   const [reviews, setReviews] = useState<ReviewCard[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fallbackReviews = useMemo(
-    () =>
-      (t.raw("fallback") as ReviewCard[]).map((item, index) => ({
-        id: item.id ?? index + 1,
-        name: item.name,
-        gender: item.gender,
-        rating: item.rating ?? 5,
-        comment: item.comment,
-        date: item.date,
-      })),
-    [t]
-  );
+  const fallbackReviews = useMemo(() => {
+    // No fallback data from translations, return empty array
+    // Reviews will be loaded from Strapi
+    return [];
+  }, []);
 
   // Fetch reviews from Strapi
   useEffect(() => {

@@ -1009,33 +1009,6 @@
           "description": "Aprenda a liderar equipes e projetos com inteligência emocional e visão estratégica"
         }
       },
-      "fallbackTracks": [
-        {
-          "id": 1,
-          "key": "creativity",
-          "courseCount": 12
-        },
-        {
-          "id": 2,
-          "key": "technology",
-          "courseCount": 15
-        },
-        {
-          "id": 3,
-          "key": "business",
-          "courseCount": 10
-        },
-        {
-          "id": 4,
-          "key": "leadership",
-          "courseCount": 8
-        }
-      ],
-      "fallbacks": {
-        "courseTitle": "Curso",
-        "courseDescription": "Descrição do curso",
-        "category": "Tecnologia"
-      },
       "labels": {
         "starts": "Inicia em:",
         "defaultStartDate": "Março/26"
@@ -1163,55 +1136,12 @@
       "labels": {
         "starts": "Inicia em:",
         "defaultStartDate": "Março/26"
-      },
-      "fallbacks": {
-        "courseTitle": "Curso",
-        "courseDescription": "Descrição do curso",
-        "category": "Tecnologia"
       }
     },
     "PartnerSchools": {
       "title": "Escolas <highlight>Parceiras</highlight>",
       "subtitle": "Instituições de ensino que confiam na Nitro Academy",
-      "logoAlt": "Logo da {name}",
-      "fallback": [
-        {
-          "id": 1,
-          "documentId": "mock-1",
-          "name": "Colégio Excellence",
-          "logo": "🏫"
-        },
-        {
-          "id": 2,
-          "documentId": "mock-2",
-          "name": "Instituto Educacional",
-          "logo": "🎓"
-        },
-        {
-          "id": 3,
-          "documentId": "mock-3",
-          "name": "Escola do Futuro",
-          "logo": "🚀"
-        },
-        {
-          "id": 4,
-          "documentId": "mock-4",
-          "name": "Academia Premium",
-          "logo": "⭐"
-        },
-        {
-          "id": 5,
-          "documentId": "mock-5",
-          "name": "Centro Educacional",
-          "logo": "📚"
-        },
-        {
-          "id": 6,
-          "documentId": "mock-6",
-          "name": "Escola Inovação",
-          "logo": "💡"
-        }
-      ]
+      "logoAlt": "Logo da {name}"
     },
     "Reviews": {
       "title": "Avaliações e <highlight>Feedbacks</highlight>",
@@ -1219,57 +1149,7 @@
       "cta": {
         "showLess": "Ver menos",
         "showMore": "Ver mais avaliações"
-      },
-      "fallback": [
-        {
-          "id": 1,
-          "name": "Lucas Martins",
-          "gender": "boy",
-          "rating": 5,
-          "comment": "A Nitro mudou minha visão sobre educação. Aprendi muito mais do que imaginava!",
-          "date": "Há 2 semanas"
-        },
-        {
-          "id": 2,
-          "name": "Julia Santos",
-          "gender": "girl",
-          "rating": 5,
-          "comment": "Os projetos são incríveis e os mentores são super inspiradores. Recomendo!",
-          "date": "Há 1 mês"
-        },
-        {
-          "id": 3,
-          "name": "Pedro Oliveira",
-          "gender": "boy",
-          "rating": 5,
-          "comment": "Desenvolvimento de habilidades que vou usar para o resto da vida.",
-          "date": "Há 3 semanas"
-        },
-        {
-          "id": 4,
-          "name": "Beatriz Costa",
-          "gender": "girl",
-          "rating": 5,
-          "comment": "A metodologia é diferente de tudo que já vi. Aprendo fazendo!",
-          "date": "Há 1 semana"
-        },
-        {
-          "id": 5,
-          "name": "Gabriel Ferreira",
-          "gender": "boy",
-          "rating": 5,
-          "comment": "Os mentores são profissionais de verdade, compartilhando experiências reais.",
-          "date": "Há 2 meses"
-        },
-        {
-          "id": 6,
-          "name": "Marina Silva",
-          "gender": "girl",
-          "rating": 5,
-          "comment": "Minha filha está muito mais engajada e motivada com os estudos.",
-          "date": "Há 3 semanas"
-        }
-      ]
+      }
     },
     "PricingCTA": {
       "title": "Invista no Futuro do <highlight>Seu Filho</highlight>",

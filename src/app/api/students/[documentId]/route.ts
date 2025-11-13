@@ -8,23 +8,17 @@ export async function GET(
 ) {
   try {
     const cpf = params.documentId;
-    console.log("[Students API] CPF recebido:", cpf);
 
     if (!cpf) {
-      console.log("[Students API] CPF não fornecido");
       return NextResponse.json({ error: "CPF não fornecido" }, { status: 400 });
     }
 
     const cleanCpf = cpf.replace(/\D/g, "");
     if (cleanCpf.length !== 11) {
-      console.log("[Students API] CPF inválido após limpeza:", cleanCpf);
       return NextResponse.json({ error: "CPF inválido" }, { status: 400 });
     }
 
-    console.log("[Students API] Buscando aluno por CPF limpo:", cleanCpf);
-
     let student = await findStudentByCPF(cleanCpf);
-    console.log("[Students API] Resultado findStudentByCPF:", student);
 
     const needsFallback =
       !student ||
@@ -34,19 +28,8 @@ export async function GET(
       student.cursos.length === 0;
 
     if (needsFallback) {
-      console.log(
-        "[Students API] Fallback: buscando com populate completo (motivo:",
-        {
-          hasStudent: !!student,
-          hasNome: !!student?.nome,
-          hasCpf: !!student?.cpf_aluno,
-          cursosLength: student?.cursos?.length ?? 0,
-        },
-        ")"
-      );
       const fallbackUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cleanCpf}&filters[habilitado][$eq]=true&populate=*&publicationState=preview`;
       const fallbackResponse = await fetch(fallbackUrl, { cache: "no-store" });
-      console.log("[Students API] Fallback status:", fallbackResponse.status);
       if (fallbackResponse.ok) {
         const fb = await fallbackResponse.json();
         const raw = fb?.data?.[0];
@@ -78,11 +61,9 @@ export async function GET(
           };
         }
       }
-      console.log("[Students API] Fallback mapped student:", student);
     }
 
     if (!student) {
-      console.log("[Students API] Aluno não encontrado");
       return NextResponse.json(
         { error: "Aluno não encontrado" },
         { status: 404 }
@@ -90,7 +71,6 @@ export async function GET(
     }
 
     const cursoAtual = student.cursos?.[0];
-    console.log("[Students API] Curso atual (raw):", cursoAtual);
 
     const buildStudentPayload = (curso?: {
       id: number;
@@ -110,7 +90,6 @@ export async function GET(
 
     if (!cursoAtual) {
       const payload = buildStudentPayload();
-      console.log("[Students API] Retornando payload sem curso:", payload);
       return NextResponse.json({ student: payload, success: true });
     }
 
@@ -118,24 +97,16 @@ export async function GET(
     let curso: any | undefined;
     if (cursoAtual.documentId) {
       const byDocUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${cursoAtual.documentId}&locale=pt-BR&populate=*`;
-      console.log("[Students API] Buscando curso por documentId:", byDocUrl);
       const byDocResp = await fetch(byDocUrl, { cache: "no-store" });
-      console.log("[Students API] byDocResp status:", byDocResp.status);
       if (byDocResp.ok) {
         const byDocData = await byDocResp.json();
-        console.log(
-          "[Students API] byDocData length:",
-          byDocData?.data?.length
-        );
         curso = byDocData?.data?.[0];
       }
     }
 
     if (!curso) {
       const byIdUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos/${cursoAtual.id}?populate=*`;
-      console.log("[Students API] Buscando curso por ID:", byIdUrl);
       const byIdResp = await fetch(byIdUrl, { cache: "no-store" });
-      console.log("[Students API] byIdResp status:", byIdResp.status);
       if (byIdResp.ok) {
         const byIdData = await byIdResp.json();
         curso = byIdData?.data;
@@ -151,20 +122,12 @@ export async function GET(
       return NextResponse.json({ student: payload, success: true });
     }
 
-    console.log("[Students API] cursoData recebido:", {
-      id: curso?.id ?? attrs?.id,
-      titulo: attrs?.titulo,
-      slug: attrs?.slug,
-      hasAttributes: !!curso?.attributes,
-    });
-
     const payload = buildStudentPayload({
       id: curso?.id ?? attrs?.id ?? cursoAtual.id,
       titulo: attrs?.titulo ?? "",
       slug: attrs?.slug ?? "",
     });
 
-    console.log("[Students API] Retornando payload final:", payload);
     return NextResponse.json({ student: payload, success: true });
   } catch (error) {
     console.error("[Students API] Erro ao buscar aluno:", error);

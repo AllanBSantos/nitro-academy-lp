@@ -11,31 +11,61 @@ import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-export async function fetchCourses(
-  locale: string = "pt-BR"
-): Promise<Course[]> {
+export async function fetchCourses(): Promise<Course[]> {
   try {
-    const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_responsavel&populate[campanhas][fields][0]=nome&populate[campanhas][fields][1]=periodo_inscricao&populate[campanhas][fields][2]=inicio_e_fim_aulas&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=${locale}`,
-      {
+    // Garantir que sempre use pt-BR (hardcoded)
+    const localeToUse = "pt-BR";
+
+    // No servidor, precisamos usar URL absoluta ou chamar Strapi diretamente
+    // Vamos chamar Strapi diretamente no servidor para evitar problemas com URL relativa
+    const isServer = typeof window === "undefined";
+
+    if (isServer) {
+      // No servidor: chamar Strapi diretamente com autenticação
+      const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[cronograma][fields][2]=data_inicio&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][populate][reviews]=*&populate[imagem][fields][0]=url&populate[tags][fields][0]=nome&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&sort=createdAt:desc`;
+
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
+        },
         next: { revalidate: 60 },
-        /* headers: {
-          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-        }, */
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "");
+        console.error(
+          `Failed to fetch courses from Strapi: ${response.status} ${response.statusText}`,
+          errorText
+        );
+        throw new Error(`Failed to fetch courses: ${response.status}`);
       }
-    );
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => "");
-      console.error(
-        `Failed to fetch courses: ${response.status} ${response.statusText}`,
-        errorText
+      const data = await response.json();
+      return data.data || [];
+    } else {
+      // No cliente: usar rota Next.js
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+      const response = await fetch(
+        `${baseUrl}/api/courses?locale=${localeToUse}`,
+        {
+          next: { revalidate: 60 },
+        }
       );
-      throw new Error(`Failed to fetch courses: ${response.status}`);
-    }
 
-    const data = await response.json();
-    return data.data || [];
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "");
+        console.error(
+          `Failed to fetch courses: ${response.status} ${response.statusText}`,
+          errorText
+        );
+        throw new Error(`Failed to fetch courses: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data || [];
+    }
   } catch (error) {
     console.error("Error fetching courses:", error);
     return [];
@@ -54,8 +84,8 @@ export async function fetchCoursesWithEnrollment(): Promise<
   }>
 > {
   try {
-    // Usar a função existente fetchCourses com locale pt-BR
-    const courses = await fetchCourses("pt-BR");
+    // Usar a função existente fetchCourses
+    const courses = await fetchCourses();
 
     return courses.map((course: any) => {
       const enrolled = course.alunos?.length || 0;
@@ -108,8 +138,8 @@ export async function fetchStudentCoursesWithProgress(): Promise<
   }>
 > {
   try {
-    // Usar a função existente fetchCourses com locale pt-BR
-    const courses = await fetchCourses("pt-BR");
+    // Usar a função existente fetchCourses
+    const courses = await fetchCourses();
 
     return courses.map((course: any, index: number) => {
       // Simular progresso baseado no índice (para demonstração)
@@ -211,10 +241,10 @@ export async function fetchAllMentors(
   locale: string = "pt-BR"
 ): Promise<Mentor[]> {
   try {
-    // Primeiro, vamos buscar mentores diretamente do Strapi
-    const response = await fetch(
-      `${STRAPI_API_URL}/api/mentores?populate=*&locale=${locale}`
-    );
+    // Usar rota Next.js que faz autenticação internamente
+    const response = await fetch(`/api/mentors?locale=${locale}`, {
+      next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch mentors");
@@ -229,80 +259,11 @@ export async function fetchAllMentors(
       return [];
     }
 
-    // Para cada mentor, vamos buscar seus cursos para calcular alunos
-    const processedMentors: Mentor[] = await Promise.all(
-      mentors.map(async (mentor) => {
-        const mentorData = mentor.attributes || mentor;
-
-        // Buscar cursos deste mentor
-        const coursesResponse = await fetch(
-          `${STRAPI_API_URL}/api/cursos?filters[mentor][id][$eq]=${mentor.id}&populate[alunos][fields][0]=id&populate[alunos][fields][1]=nome&locale=${locale}`
-        );
-
-        let totalCursos = 0;
-        let totalAlunos = 0;
-        const cursosRelacionados: Array<{
-          id: number;
-          titulo: string;
-          alunos?: Array<{ id: number; nome: string }>;
-        }> = [];
-
-        if (coursesResponse.ok) {
-          const coursesData = await coursesResponse.json();
-          const courses = coursesData.data || coursesData;
-
-          if (Array.isArray(courses)) {
-            totalCursos = courses.length;
-            const alunosUnicos = new Set<number>();
-
-            courses.forEach((course) => {
-              const courseData = course.attributes || course;
-              cursosRelacionados.push({
-                id: (courseData as any).id || course.id,
-                titulo: (courseData as any).titulo || "",
-                alunos: (courseData as any).alunos || [],
-              });
-
-              if (
-                (courseData as any).alunos &&
-                Array.isArray((courseData as any).alunos)
-              ) {
-                (courseData as any).alunos.forEach(
-                  (aluno: { id: number; nome: string }) => {
-                    alunosUnicos.add(aluno.id);
-                  }
-                );
-              }
-            });
-
-            totalAlunos = alunosUnicos.size;
-          }
-        }
-
-        // Usar valores dos campos estáticos como fallback se não conseguir calcular
-        if (totalCursos === 0) {
-          totalCursos = mentorData.cursos || 0;
-        }
-        if (totalAlunos === 0) {
-          totalAlunos = mentorData.alunos || 0;
-        }
-
-        return {
-          ...mentor,
-          attributes: mentorData
-            ? {
-                ...mentorData,
-                cursos: totalCursos,
-                alunos: totalAlunos,
-                cursos_relacionados: cursosRelacionados,
-              }
-            : undefined,
-          cursos: totalCursos,
-          alunos: totalAlunos,
-          cursos_relacionados: cursosRelacionados,
-        } as Mentor;
-      })
-    );
+    // Os mentores já vêm processados da API com cursos e alunos calculados
+    // Apenas garantir que o formato está correto
+    const processedMentors: Mentor[] = mentors.map((mentor: any) => {
+      return mentor as Mentor;
+    });
 
     return processedMentors;
   } catch (error) {
@@ -392,15 +353,11 @@ export async function fetchTestimonials(
   locale: string = "pt-BR"
 ): Promise<ReviewCard[]> {
   try {
-    // Try different possible endpoints for testimonials
+    // Try different possible endpoints for testimonials (only avaliacoes exists)
     const possibleEndpoints = [
       `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc&locale=${locale}`,
-      `${STRAPI_API_URL}/api/depoimentos?populate=*&sort=createdAt:desc&locale=${locale}`,
-      `${STRAPI_API_URL}/api/testemunhos?populate=*&sort=createdAt:desc&locale=${locale}`,
       // Try without locale
       `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc`,
-      `${STRAPI_API_URL}/api/depoimentos?populate=*&sort=createdAt:desc`,
-      `${STRAPI_API_URL}/api/testemunhos?populate=*&sort=createdAt:desc`,
       // Try with preview state
       `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc&publicationState=preview`,
       `${STRAPI_API_URL}/api/avaliacoes?populate=*&sort=createdAt:desc&locale=${locale}&publicationState=preview`,
@@ -532,18 +489,24 @@ export async function fetchSchoolsCount(): Promise<number> {
 }
 
 // Returns total count of students (content-type: aluno)
+// Uses internal API route that handles authentication
 export async function fetchStudentsCount(): Promise<number> {
   try {
-    const response = await fetch(
-      `${STRAPI_API_URL}/api/alunos?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
-      { next: { revalidate: 60 } }
-    );
+    // No servidor, fetch requer URL absoluta
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+    const url = `${baseUrl}/api/stats/students-count`;
+    
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch students count");
     }
     const json = await response.json();
-    const total = json?.meta?.pagination?.total ?? 0;
-    return typeof total === "number" ? total : 0;
+    return json?.count ?? 0;
   } catch (e) {
     console.error("Error fetching students count", e);
     return 0;
@@ -552,16 +515,21 @@ export async function fetchStudentsCount(): Promise<number> {
 
 export async function fetchMentorsCount(): Promise<number> {
   try {
-    const response = await fetch(
-      `${STRAPI_API_URL}/api/mentores?pagination[page]=1&pagination[pageSize]=1&publicationState=preview&locale=pt-BR`,
-      { next: { revalidate: 60 } }
-    );
+    // No servidor, fetch requer URL absoluta
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+    const url = `${baseUrl}/api/stats/mentors-count`;
+    
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch mentors count");
     }
     const json = await response.json();
-    const total = json?.meta?.pagination?.total ?? 0;
-    return typeof total === "number" ? total : 0;
+    return json?.count ?? 0;
   } catch (e) {
     console.error("Error fetching mentors count", e);
     return 0;
@@ -570,27 +538,21 @@ export async function fetchMentorsCount(): Promise<number> {
 
 export async function fetchCoursesCount(): Promise<number> {
   try {
-    // Primeiro tenta com filtro habilitado
-    let response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
-      { next: { revalidate: 60 } }
-    );
-
-    if (!response.ok) {
-      // Se falhar, tenta sem filtro habilitado
-      response = await fetch(
-        `${STRAPI_API_URL}/api/cursos?pagination[page]=1&pagination[pageSize]=1&locale=pt-BR`,
-        { next: { revalidate: 60 } }
-      );
-    }
-
+    // No servidor, fetch requer URL absoluta
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+    const url = `${baseUrl}/api/stats/courses-count`;
+    
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch courses count");
     }
-
     const json = await response.json();
-    const total = json?.meta?.pagination?.total ?? 0;
-    return typeof total === "number" ? total : 0;
+    return json?.count ?? 0;
   } catch (e) {
     console.error("Error fetching courses count", e);
     return 0;

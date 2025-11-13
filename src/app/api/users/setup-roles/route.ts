@@ -19,8 +19,6 @@ export async function POST() {
       );
     }
 
-    console.log("Setting up roles in Strapi...");
-
     // First, get existing roles to check what's already there
     const existingRolesResponse = await fetch(
       `${STRAPI_URL}/api/users-permissions/roles`,
@@ -36,7 +34,6 @@ export async function POST() {
     }
 
     const existingRoles = await existingRolesResponse.json();
-    console.log("Existing roles:", existingRoles);
 
     // Check if mentor role exists
     const mentorRole = existingRoles.roles?.find(
@@ -50,7 +47,6 @@ export async function POST() {
 
     // Create mentor role if it doesn't exist
     if (!mentorRole) {
-      console.log("Creating mentor role...");
       const mentorResponse = await fetch(
         `${STRAPI_URL}/api/users-permissions/roles`,
         {
@@ -90,7 +86,6 @@ export async function POST() {
       if (mentorResponse.ok) {
         const mentorData = await mentorResponse.json();
         results.mentor = { created: true, data: mentorData };
-        console.log("Mentor role created successfully");
       } else {
         const errorData = await mentorResponse.json().catch(() => ({}));
         results.mentor = { created: false, error: errorData };
@@ -98,12 +93,10 @@ export async function POST() {
       }
     } else {
       results.mentor = { created: false, exists: true, id: mentorRole.id };
-      console.log("Mentor role already exists");
     }
 
     // Create student role if it doesn't exist
     if (!studentRole) {
-      console.log("Creating student role...");
       const studentResponse = await fetch(
         `${STRAPI_URL}/api/users-permissions/roles`,
         {
@@ -134,7 +127,6 @@ export async function POST() {
       if (studentResponse.ok) {
         const studentData = await studentResponse.json();
         results.student = { created: true, data: studentData };
-        console.log("Student role created successfully");
       } else {
         const errorData = await studentResponse.json().catch(() => ({}));
         results.student = { created: false, error: errorData };
@@ -142,10 +134,8 @@ export async function POST() {
       }
     } else {
       results.student = { created: false, exists: true, id: studentRole.id };
-      console.log("Student role already exists");
     }
 
-    console.log("Role setup completed:", results);
     return NextResponse.json({ success: true, results });
   } catch (error) {
     console.error("Error in setup-roles API:", error);

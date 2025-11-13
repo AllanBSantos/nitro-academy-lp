@@ -114,7 +114,6 @@ export function AdminStudents() {
 
   const handleExport = () => {
     // Mock export functionality
-    console.log("Exporting students data...");
   };
 
   const totalStudents = mockStudents.length;

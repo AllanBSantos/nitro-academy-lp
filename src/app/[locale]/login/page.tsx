@@ -26,6 +26,7 @@ export default function LoginPage() {
   const [isResending, setIsResending] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Login");
@@ -38,6 +39,18 @@ export default function LoginPage() {
       router.push(`/${locale}/admin`);
     }
   }, [router, locale]);
+
+  useEffect(() => {
+    if (resendTimer <= 0) {
+      return;
+    }
+
+    const timerId = setTimeout(() => {
+      setResendTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearTimeout(timerId);
+  }, [resendTimer]);
 
   const formatPhone = (value: string) => {
     return formatPhoneForDisplay(value);
@@ -71,6 +84,7 @@ export default function LoginPage() {
       }
 
       setSuccess(t("code_sent"));
+      setResendTimer(30);
       setCodeSent(true);
     } catch (err) {
       console.error("Send code error:", err);
@@ -201,6 +215,10 @@ export default function LoginPage() {
   };
 
   const handleResendCode = async () => {
+    if (resendTimer > 0) {
+      return;
+    }
+
     setError("");
     setSuccess("");
     setIsResending(true);
@@ -217,6 +235,7 @@ export default function LoginPage() {
       }
 
       setSuccess(t("code_sent"));
+      setResendTimer(30);
     } catch (err) {
       console.error("Resend code error:", err);
       if (axios.isAxiosError(err)) {
@@ -452,10 +471,14 @@ export default function LoginPage() {
                   type="button"
                   variant="link"
                   onClick={handleResendCode}
-                  disabled={isResending}
+                  disabled={isResending || resendTimer > 0}
                   className="text-[#599fe9] hover:text-[#f54a12] transition-colors"
                 >
-                  {isResending ? t("resending_code") : t("resend_code")}
+                  {isResending
+                    ? t("resending_code")
+                    : resendTimer > 0
+                    ? `${t("resend_code")} (${resendTimer}s)`
+                    : t("resend_code")}
                 </Button>
               </motion.div>
 

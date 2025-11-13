@@ -25,7 +25,6 @@ export function RegisterClassDialog() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Registering class:", formData);
     setOpen(false);
     setFormData({
       title: "",

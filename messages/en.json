@@ -990,33 +990,6 @@
           "description": "Learn to lead teams and projects with emotional intelligence and strategic vision"
         }
       },
-      "fallbackTracks": [
-        {
-          "id": 1,
-          "key": "creativity",
-          "courseCount": 12
-        },
-        {
-          "id": 2,
-          "key": "technology",
-          "courseCount": 15
-        },
-        {
-          "id": 3,
-          "key": "business",
-          "courseCount": 10
-        },
-        {
-          "id": 4,
-          "key": "leadership",
-          "courseCount": 8
-        }
-      ],
-      "fallbacks": {
-        "courseTitle": "Course",
-        "courseDescription": "Course description",
-        "category": "Technology"
-      },
       "labels": {
         "starts": "Starts on:",
         "defaultStartDate": "March/26"
@@ -1144,55 +1117,12 @@
       "labels": {
         "starts": "Starts on:",
         "defaultStartDate": "March/26"
-      },
-      "fallbacks": {
-        "courseTitle": "Course",
-        "courseDescription": "Course description",
-        "category": "Technology"
       }
     },
     "PartnerSchools": {
       "title": "Partner <highlight>Schools</highlight>",
       "subtitle": "Education institutions that trust Nitro Academy",
-      "logoAlt": "{name} logo",
-      "fallback": [
-        {
-          "id": 1,
-          "documentId": "mock-1",
-          "name": "Excellence School",
-          "logo": "🏫"
-        },
-        {
-          "id": 2,
-          "documentId": "mock-2",
-          "name": "Educational Institute",
-          "logo": "🎓"
-        },
-        {
-          "id": 3,
-          "documentId": "mock-3",
-          "name": "Future School",
-          "logo": "🚀"
-        },
-        {
-          "id": 4,
-          "documentId": "mock-4",
-          "name": "Premium Academy",
-          "logo": "⭐"
-        },
-        {
-          "id": 5,
-          "documentId": "mock-5",
-          "name": "Learning Center",
-          "logo": "📚"
-        },
-        {
-          "id": 6,
-          "documentId": "mock-6",
-          "name": "Innovation School",
-          "logo": "💡"
-        }
-      ]
+      "logoAlt": "{name} logo"
     },
     "Reviews": {
       "title": "Reviews & <highlight>Feedback</highlight>",
@@ -1200,57 +1130,7 @@
       "cta": {
         "showLess": "Show less",
         "showMore": "Show more reviews"
-      },
-      "fallback": [
-        {
-          "id": 1,
-          "name": "Lucas Martins",
-          "gender": "boy",
-          "rating": 5,
-          "comment": "Nitro changed how I see education. I learned much more than I imagined!",
-          "date": "2 weeks ago"
-        },
-        {
-          "id": 2,
-          "name": "Julia Santos",
-          "gender": "girl",
-          "rating": 5,
-          "comment": "The projects are incredible and the mentors are truly inspiring. I recommend it!",
-          "date": "1 month ago"
-        },
-        {
-          "id": 3,
-          "name": "Pedro Oliveira",
-          "gender": "boy",
-          "rating": 5,
-          "comment": "I'm developing skills that I'll use for the rest of my life.",
-          "date": "3 weeks ago"
-        },
-        {
-          "id": 4,
-          "name": "Beatriz Costa",
-          "gender": "girl",
-          "rating": 5,
-          "comment": "The methodology is unlike anything I've seen. I learn by doing!",
-          "date": "1 week ago"
-        },
-        {
-          "id": 5,
-          "name": "Gabriel Ferreira",
-          "gender": "boy",
-          "rating": 5,
-          "comment": "The mentors are real professionals sharing real experiences.",
-          "date": "2 months ago"
-        },
-        {
-          "id": 6,
-          "name": "Marina Silva",
-          "gender": "girl",
-          "rating": 5,
-          "comment": "My daughter is much more engaged and motivated to study.",
-          "date": "3 weeks ago"
-        }
-      ]
+      }
     },
     "PricingCTA": {
       "title": "Invest in Your Child's <highlight>Future</highlight>",

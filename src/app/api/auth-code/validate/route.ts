@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { formatInternationalPhone } from "@/lib/utils";
 
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
 // Simple JWT creation function for WhatsApp users
 function createSimpleJWT(whatsapp: string): string {
   const header = {
@@ -66,6 +69,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!STRAPI_URL || !ADMIN_TOKEN) {
+      return NextResponse.json(
+        { error: "Configuração do servidor incompleta" },
+        { status: 500 }
+      );
+    }
+
+    const strapiHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${ADMIN_TOKEN}`,
+    };
+
     // Call Zazu API to validate auth code
     const response = await fetch(`${ZAZU_URL}/auth-code/validate`, {
       method: "POST",
@@ -91,45 +106,20 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    // Log Zazu response for debugging
-    console.log("Zazu API response:", {
-      userType: data.userType,
-      environment: process.env.NODE_ENV,
-      whatsapp: formattedWhatsapp,
-      fullResponse: data,
-      responseStatus: response.status,
-      responseOk: response.ok,
-    });
-
     // For now, create a simple JWT token for WhatsApp users
     // This will allow them to access the protected routes
     const simpleJWT = createSimpleJWT(formattedWhatsapp);
 
-    console.log("CRITICAL DEBUG: JWT created", {
-      whatsapp: formattedWhatsapp,
-      jwt: simpleJWT,
-      environment: process.env.NODE_ENV,
-    });
-
     // Determine user type from Zazu response
     let userType = data.data?.userType;
 
-    console.log("User type determination:", {
-      zazuUserType: data.data?.userType,
-      determinedUserType: userType,
-      willSearchDatabase: !userType,
-    });
-
     // If Zazu didn't provide a specific user type, try to determine it from database
     if (!userType) {
-      console.log("Searching database for user type...");
       // Try to find admin first
       const adminResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
+        `${STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: strapiHeaders,
         }
       );
 
@@ -143,11 +133,9 @@ export async function POST(request: NextRequest) {
       // If not admin, try to find mentor
       if (!userType) {
         const mentorResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
+          `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: strapiHeaders,
           }
         );
 
@@ -162,11 +150,9 @@ export async function POST(request: NextRequest) {
       // If not mentor, try to find student
       if (!userType) {
         const studentResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
+          `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: strapiHeaders,
           }
         );
 
@@ -184,11 +170,9 @@ export async function POST(request: NextRequest) {
 
         // Try admin without country code
         const adminResponse2 = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+          `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: strapiHeaders,
           }
         );
 
@@ -202,11 +186,9 @@ export async function POST(request: NextRequest) {
         // Try mentor without country code
         if (!userType) {
           const mentorResponse2 = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+            `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -221,11 +203,9 @@ export async function POST(request: NextRequest) {
         // Try student without country code
         if (!userType) {
           const studentResponse2 = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+            `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -246,11 +226,9 @@ export async function POST(request: NextRequest) {
         if (userType === "student") {
           // Try with country code first
           let studentResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
+            `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -260,11 +238,9 @@ export async function POST(request: NextRequest) {
             if (studentData.data && studentData.data.length === 0) {
               const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
               studentResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+                `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
                 {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
+                  headers: strapiHeaders,
                 }
               );
             }
@@ -299,11 +275,9 @@ export async function POST(request: NextRequest) {
         if (userType === "mentor") {
           // Try with country code first
           let mentorResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
+            `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -313,11 +287,9 @@ export async function POST(request: NextRequest) {
             if (mentorData.data && mentorData.data.length === 0) {
               const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
               mentorResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+                `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
                 {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
+                  headers: strapiHeaders,
                 }
               );
             }
@@ -351,11 +323,9 @@ export async function POST(request: NextRequest) {
         // Try to find admin by WhatsApp number (try both formats)
         if (userType === "admin") {
           let adminResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
+            `${STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -365,11 +335,9 @@ export async function POST(request: NextRequest) {
             if (adminData.data && adminData.data.length === 0) {
               const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
               adminResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+                `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
                 {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
+                  headers: strapiHeaders,
                 }
               );
             }
@@ -404,14 +372,6 @@ export async function POST(request: NextRequest) {
         // Continue with normal response if linking fails
       }
     }
-
-    // Log final user type determination
-    console.log("Final user type determination:", {
-      whatsapp: formattedWhatsapp,
-      zazuUserType: data.data?.userType,
-      finalUserType: userType,
-      environment: process.env.NODE_ENV,
-    });
 
     // Default response (if user type not found)
     return NextResponse.json({

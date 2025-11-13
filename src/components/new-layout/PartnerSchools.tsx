@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { fetchPartnerSchools } from "@/lib/strapi";
 import { PartnerSchool } from "@/types/strapi";
 import Image from "next/image";
@@ -13,38 +13,23 @@ export function PartnerSchools() {
   const [schools, setSchools] = useState<PartnerSchool[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fallbackSchools = useMemo(
-    () =>
-      (t.raw("fallback") as PartnerSchool[]).map((school, index) => ({
-        id: school.id ?? index + 1,
-        documentId: school.documentId ?? `mock-${index + 1}`,
-        name: school.name,
-        logo: school.logo ?? "🏫",
-      })),
-    [t]
-  );
-
   // Fetch schools from Strapi
   useEffect(() => {
     const loadSchools = async () => {
       try {
         setLoading(true);
         const schoolsData = await fetchPartnerSchools();
-        if (schoolsData.length > 0) {
-          setSchools(schoolsData);
-        } else {
-          setSchools(fallbackSchools);
-        }
+        setSchools(schoolsData);
       } catch (err) {
         console.error("Error loading schools:", err);
-        setSchools(fallbackSchools);
+        setSchools([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadSchools();
-  }, [fallbackSchools]);
+  }, []);
 
   // Detectar tamanho da tela para responsividade
   useEffect(() => {

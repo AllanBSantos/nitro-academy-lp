@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log("Campanhas encontradas:", data.data?.length || 0);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Erro ao buscar campanhas:", error);

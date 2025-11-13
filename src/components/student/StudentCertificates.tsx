@@ -35,13 +35,13 @@ const mockCertificates = [
 ];
 
 export function StudentCertificates() {
-  const handleDownload = (certificate: (typeof mockCertificates)[0]) => {
-    console.log("Downloading certificate:", certificate.certificateNumber);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDownload = (_certificate: (typeof mockCertificates)[0]) => {
     // Mock download functionality
   };
 
-  const handleShare = (certificate: (typeof mockCertificates)[0]) => {
-    console.log("Sharing certificate:", certificate.certificateNumber);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleShare = (_certificate: (typeof mockCertificates)[0]) => {
     // Mock share functionality
   };
 

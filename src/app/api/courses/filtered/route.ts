@@ -53,6 +53,7 @@ async function verifyUserRole(token: string) {
           {
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${ADMIN_TOKEN}`,
             },
           }
         );
@@ -69,6 +70,7 @@ async function verifyUserRole(token: string) {
               {
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${ADMIN_TOKEN}`,
                 },
               }
             );
@@ -104,6 +106,7 @@ async function verifyUserRole(token: string) {
           {
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${ADMIN_TOKEN}`,
             },
           }
         );
@@ -120,6 +123,7 @@ async function verifyUserRole(token: string) {
               {
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${ADMIN_TOKEN}`,
                 },
               }
             );
@@ -155,6 +159,7 @@ async function verifyUserRole(token: string) {
           {
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${ADMIN_TOKEN}`,
             },
           }
         );
@@ -171,6 +176,7 @@ async function verifyUserRole(token: string) {
               {
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${ADMIN_TOKEN}`,
                 },
               }
             );
@@ -219,8 +225,8 @@ async function verifyUserRole(token: string) {
       `${STRAPI_URL}/api/users/${userId}?populate=*`,
       {
         headers: {
-          // Temporarily removing auth for public endpoints
-          // Authorization: `Bearer ${ADMIN_TOKEN}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
@@ -244,8 +250,8 @@ async function verifyUserRole(token: string) {
       `${STRAPI_URL}/api/users-permissions/roles/${userData.role.id}`,
       {
         headers: {
-          // Temporarily removing auth for public endpoints
-          // Authorization: `Bearer ${ADMIN_TOKEN}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
@@ -322,8 +328,8 @@ export async function POST(request: NextRequest) {
         `${STRAPI_URL}/api/cursos?pagination[limit]=1`,
         {
           headers: {
-            // Temporarily removing auth for public endpoints
-            // Authorization: `Bearer ${ADMIN_TOKEN}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${ADMIN_TOKEN}`,
           },
         }
       );
@@ -404,7 +410,8 @@ export async function POST(request: NextRequest) {
 
     const coursesResponse = await safeFetch(coursesUrl, {
       headers: {
-        // Authorization: `Bearer ${ADMIN_TOKEN}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
 

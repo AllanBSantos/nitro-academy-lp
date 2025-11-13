@@ -3,26 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
+    const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    if (!STRAPI_API_URL || !ADMIN_TOKEN) {
+      return NextResponse.json(
+        { error: "Configuração do servidor incompleta" },
+        { status: 500 }
+      );
+    }
+
     // Use searchParams from NextRequest instead of URL constructor
     const locale = request.nextUrl.searchParams.get("locale") || "pt-BR";
     const maxPerClass = Number(
       process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || 15
     );
 
-    const base = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-    console.log("[Available] STRAPI URL:", base, "locale:", locale);
-
     // Buscar todos os cursos (com locale)
-    const cursosUrl = `${base}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=${locale}&pagination[pageSize]=1000`;
+    const cursosUrl = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=${locale}&pagination[pageSize]=1000`;
 
     const cursosResponse = await fetch(cursosUrl, {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
-
-    console.log("[Available] cursosResponse:", cursosResponse.status);
 
     if (!cursosResponse.ok) {
       return NextResponse.json(
@@ -33,16 +39,16 @@ export async function GET(request: NextRequest) {
 
     const cursosData = await cursosResponse.json();
     const cursos = Array.isArray(cursosData?.data) ? cursosData.data : [];
-    console.log("[Available] cursosData count:", cursos.length);
 
     // Buscar alunos habilitados para contar por curso
-    const alunosUrl = `${base}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview&pagination[pageSize]=1000`;
+    const alunosUrl = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview&pagination[pageSize]=1000`;
     const alunosResponse = await fetch(alunosUrl, {
       cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
+      },
     });
-
-    console.log("[Available] alunosResponse:", alunosResponse.status);
 
     if (!alunosResponse.ok) {
       return NextResponse.json(
@@ -53,7 +59,6 @@ export async function GET(request: NextRequest) {
 
     const alunosData = await alunosResponse.json();
     const alunos = Array.isArray(alunosData?.data) ? alunosData.data : [];
-    console.log("[Available] alunosData count:", alunos.length);
 
     // Contagem de alunos por curso
     const alunosPorCurso: Record<string, number> = {};
@@ -97,20 +102,9 @@ export async function GET(request: NextRequest) {
             : null,
         };
 
-        console.log("[Available] Course mapped:", {
-          id: courseData.id,
-          documentId: courseData.documentId,
-          titulo: courseData.titulo,
-        });
-
         return courseData;
       })
       .sort((a: any, b: any) => a.alunosMatriculados - b.alunosMatriculados);
-
-    console.log(
-      "[Available] cursosDisponiveis count:",
-      cursosDisponiveis.length
-    );
 
     return NextResponse.json({
       courses: cursosDisponiveis,
