@@ -3,6 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    if (!STRAPI_API_URL || !ADMIN_TOKEN) {
+      return NextResponse.json(
+        { error: "Configuração do servidor incompleta" },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { studentId, studentDocumentId, newCourseId, newCourseDocumentId } =
       body;
@@ -12,7 +22,7 @@ export async function POST(request: NextRequest) {
       studentDocumentId,
       newCourseId,
       newCourseDocumentId,
-      env_strapi_url: process.env.NEXT_PUBLIC_STRAPI_API_URL,
+      env_strapi_url: STRAPI_API_URL,
     });
 
     if (!studentId || !newCourseId) {
@@ -34,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Strategy 1: search by documentId using filters (same config as "available" API)
     if (newCourseDocumentId) {
-      const cursoByDocUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${newCourseDocumentId}&locale=pt-BR&populate=*`;
+      const cursoByDocUrl = `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${newCourseDocumentId}&locale=pt-BR&populate=*`;
       console.log(
         "Trying to fetch course by documentId filter:",
         cursoByDocUrl
@@ -44,6 +54,7 @@ export async function POST(request: NextRequest) {
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       });
 
@@ -73,13 +84,14 @@ export async function POST(request: NextRequest) {
 
     // Strategy 2: if not found by documentId, try by numeric ID
     if (!foundCurso) {
-      const cursoByIdUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos/${newCourseId}?populate=*`;
+      const cursoByIdUrl = `${STRAPI_API_URL}/api/cursos/${newCourseId}?populate=*`;
       console.log("Trying to fetch course by ID:", cursoByIdUrl);
 
       cursoResponse = await fetch(cursoByIdUrl, {
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       });
 
@@ -91,7 +103,7 @@ export async function POST(request: NextRequest) {
       console.log("Failed with regular ID, trying alternative approaches...");
 
       // Strategy 3A: use the exact "available API" listing pattern
-      const availableApiUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=pt-BR&pagination[pageSize]=1000`;
+      const availableApiUrl = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=pt-BR&pagination[pageSize]=1000`;
       console.log(
         "Trying to fetch courses using available API pattern:",
         availableApiUrl
@@ -101,6 +113,7 @@ export async function POST(request: NextRequest) {
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       });
 
@@ -147,13 +160,14 @@ export async function POST(request: NextRequest) {
 
       // Strategy 3B: global listing fallback if still not found
       if (!foundCurso) {
-        const allCoursesUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/cursos?locale=pt-BR&populate=*&pagination[pageSize]=1000`;
+        const allCoursesUrl = `${STRAPI_API_URL}/api/cursos?locale=pt-BR&populate=*&pagination[pageSize]=1000`;
         console.log("Trying to fetch all courses:", allCoursesUrl);
 
         const allCoursesResponse = await fetch(allCoursesUrl, {
           cache: "no-store",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${ADMIN_TOKEN}`,
           },
         });
 
@@ -248,11 +262,12 @@ export async function POST(request: NextRequest) {
 
     // Count current students in the target course
     const alunosResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[cursos][id][$eq]=${newCourseId}&filters[habilitado][$eq]=true&populate=*&publicationState=preview&pagination[pageSize]=1000`,
+      `${STRAPI_API_URL}/api/alunos?filters[cursos][id][$eq]=${newCourseId}&filters[habilitado][$eq]=true&populate=*&publicationState=preview&pagination[pageSize]=1000`,
       {
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
         },
       }
     );
@@ -281,8 +296,8 @@ export async function POST(request: NextRequest) {
 
     // Fetch current student (prefer documentId; fallback to id filter)
     const alunoUrl = studentDocumentId
-      ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[documentId][$eq]=${studentDocumentId}&populate=*&publicationState=preview`
-      : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[id][$eq]=${studentId}&populate=*&publicationState=preview`;
+      ? `${STRAPI_API_URL}/api/alunos?filters[documentId][$eq]=${studentDocumentId}&populate=*&publicationState=preview`
+      : `${STRAPI_API_URL}/api/alunos?filters[id][$eq]=${studentId}&populate=*&publicationState=preview`;
 
     console.log("Fetching aluno with:", alunoUrl);
 
@@ -290,6 +305,7 @@ export async function POST(request: NextRequest) {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
 
@@ -361,7 +377,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const updateUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos/${
+    const updateUrl = `${STRAPI_API_URL}/api/alunos/${
       alunoDocumentIdForUpdate || alunoIdForUpdate
     }`;
 
@@ -374,7 +390,7 @@ export async function POST(request: NextRequest) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${process.env.STRAPI_TOKEN}`,
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
       body: JSON.stringify({
         data: {

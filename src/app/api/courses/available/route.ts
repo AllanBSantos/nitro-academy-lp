@@ -3,22 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
+    const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    if (!STRAPI_API_URL || !ADMIN_TOKEN) {
+      return NextResponse.json(
+        { error: "Configuração do servidor incompleta" },
+        { status: 500 }
+      );
+    }
+
     // Use searchParams from NextRequest instead of URL constructor
     const locale = request.nextUrl.searchParams.get("locale") || "pt-BR";
     const maxPerClass = Number(
       process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || 15
     );
 
-    const base = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-    console.log("[Available] STRAPI URL:", base, "locale:", locale);
+    console.log("[Available] STRAPI URL:", STRAPI_API_URL, "locale:", locale);
 
     // Buscar todos os cursos (com locale)
-    const cursosUrl = `${base}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=${locale}&pagination[pageSize]=1000`;
+    const cursosUrl = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&fields[2]=slug&fields[3]=nivel&fields[4]=inscricoes_abertas&fields[5]=documentId&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[mentor][fields][0]=nome&locale=${locale}&pagination[pageSize]=1000`;
 
     const cursosResponse = await fetch(cursosUrl, {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
 
@@ -36,10 +46,13 @@ export async function GET(request: NextRequest) {
     console.log("[Available] cursosData count:", cursos.length);
 
     // Buscar alunos habilitados para contar por curso
-    const alunosUrl = `${base}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview&pagination[pageSize]=1000`;
+    const alunosUrl = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview&pagination[pageSize]=1000`;
     const alunosResponse = await fetch(alunosUrl, {
       cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
+      },
     });
 
     console.log("[Available] alunosResponse:", alunosResponse.status);

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { formatInternationalPhone } from "@/lib/utils";
 
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
 // Simple JWT creation function for WhatsApp users
 function createSimpleJWT(whatsapp: string): string {
   const header = {
@@ -66,6 +69,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!STRAPI_URL || !ADMIN_TOKEN) {
+      return NextResponse.json(
+        { error: "Configuração do servidor incompleta" },
+        { status: 500 }
+      );
+    }
+
+    const strapiHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${ADMIN_TOKEN}`,
+    };
+
     // Call Zazu API to validate auth code
     const response = await fetch(`${ZAZU_URL}/auth-code/validate`, {
       method: "POST",
@@ -125,11 +140,9 @@ export async function POST(request: NextRequest) {
       console.log("Searching database for user type...");
       // Try to find admin first
       const adminResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
+        `${STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: strapiHeaders,
         }
       );
 
@@ -143,11 +156,9 @@ export async function POST(request: NextRequest) {
       // If not admin, try to find mentor
       if (!userType) {
         const mentorResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
+          `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: strapiHeaders,
           }
         );
 
@@ -162,11 +173,9 @@ export async function POST(request: NextRequest) {
       // If not mentor, try to find student
       if (!userType) {
         const studentResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
+          `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: strapiHeaders,
           }
         );
 
@@ -184,11 +193,9 @@ export async function POST(request: NextRequest) {
 
         // Try admin without country code
         const adminResponse2 = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+          `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: strapiHeaders,
           }
         );
 
@@ -202,11 +209,9 @@ export async function POST(request: NextRequest) {
         // Try mentor without country code
         if (!userType) {
           const mentorResponse2 = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+            `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -221,11 +226,9 @@ export async function POST(request: NextRequest) {
         // Try student without country code
         if (!userType) {
           const studentResponse2 = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+            `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -246,11 +249,9 @@ export async function POST(request: NextRequest) {
         if (userType === "student") {
           // Try with country code first
           let studentResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
+            `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${formattedWhatsapp}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -260,11 +261,9 @@ export async function POST(request: NextRequest) {
             if (studentData.data && studentData.data.length === 0) {
               const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
               studentResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
+                `${STRAPI_URL}/api/alunos?filters[telefone_aluno][$eq]=${withoutCountryCode}`,
                 {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
+                  headers: strapiHeaders,
                 }
               );
             }
@@ -299,11 +298,9 @@ export async function POST(request: NextRequest) {
         if (userType === "mentor") {
           // Try with country code first
           let mentorResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
+            `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${formattedWhatsapp}&locale=pt-BR`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -313,11 +310,9 @@ export async function POST(request: NextRequest) {
             if (mentorData.data && mentorData.data.length === 0) {
               const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
               mentorResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
+                `${STRAPI_URL}/api/mentores?filters[celular][$eq]=${withoutCountryCode}&locale=pt-BR`,
                 {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
+                  headers: strapiHeaders,
                 }
               );
             }
@@ -351,11 +346,9 @@ export async function POST(request: NextRequest) {
         // Try to find admin by WhatsApp number (try both formats)
         if (userType === "admin") {
           let adminResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
+            `${STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: strapiHeaders,
             }
           );
 
@@ -365,11 +358,9 @@ export async function POST(request: NextRequest) {
             if (adminData.data && adminData.data.length === 0) {
               const withoutCountryCode = formattedWhatsapp.replace(/^55/, "");
               adminResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
+                `${STRAPI_URL}/api/admins?filters[celular][$eq]=${withoutCountryCode}`,
                 {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
+                  headers: strapiHeaders,
                 }
               );
             }
