@@ -35,10 +35,12 @@ const mockCertificates = [
 ];
 
 export function StudentCertificates() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDownload = (_certificate: (typeof mockCertificates)[0]) => {
     // Mock download functionality
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleShare = (_certificate: (typeof mockCertificates)[0]) => {
     // Mock share functionality
   };

@@ -80,10 +80,13 @@ export async function GET(request: NextRequest) {
 
             courses.forEach((course: { id?: number; attributes?: { id?: number; titulo?: string; alunos?: Array<{ id: number; nome: string }> }; [key: string]: unknown }) => {
               const courseData = course.attributes || course;
+              const courseId = courseData.id ?? course.id ?? 0;
+              const courseTitulo = typeof courseData.titulo === "string" ? courseData.titulo : "";
+              const courseAlunos = Array.isArray(courseData.alunos) ? courseData.alunos : [];
               cursosRelacionados.push({
-                id: courseData.id || course.id,
-                titulo: courseData.titulo || "",
-                alunos: courseData.alunos || [],
+                id: courseId,
+                titulo: courseTitulo,
+                alunos: courseAlunos,
               });
 
               if (courseData.alunos && Array.isArray(courseData.alunos)) {
@@ -99,10 +102,12 @@ export async function GET(request: NextRequest) {
 
         // Usar valores dos campos estáticos como fallback se não conseguir calcular
         if (totalCursos === 0) {
-          totalCursos = mentorData.cursos || 0;
+          const cursosFallback = typeof mentorData.cursos === "number" ? mentorData.cursos : 0;
+          totalCursos = cursosFallback;
         }
         if (totalAlunos === 0) {
-          totalAlunos = mentorData.alunos || 0;
+          const alunosFallback = typeof mentorData.alunos === "number" ? mentorData.alunos : 0;
+          totalAlunos = alunosFallback;
         }
 
         return {
