@@ -492,7 +492,14 @@ export async function fetchSchoolsCount(): Promise<number> {
 // Uses internal API route that handles authentication
 export async function fetchStudentsCount(): Promise<number> {
   try {
-    const response = await fetch("/api/stats/students-count", {
+    // No servidor, fetch requer URL absoluta
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+    const url = `${baseUrl}/api/stats/students-count`;
+    
+    const response = await fetch(url, {
       next: { revalidate: 60 },
     });
     if (!response.ok) {
@@ -508,7 +515,14 @@ export async function fetchStudentsCount(): Promise<number> {
 
 export async function fetchMentorsCount(): Promise<number> {
   try {
-    const response = await fetch("/api/stats/mentors-count", {
+    // No servidor, fetch requer URL absoluta
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+    const url = `${baseUrl}/api/stats/mentors-count`;
+    
+    const response = await fetch(url, {
       next: { revalidate: 60 },
     });
     if (!response.ok) {
@@ -524,7 +538,14 @@ export async function fetchMentorsCount(): Promise<number> {
 
 export async function fetchCoursesCount(): Promise<number> {
   try {
-    const response = await fetch("/api/stats/courses-count", {
+    // No servidor, fetch requer URL absoluta
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+    const url = `${baseUrl}/api/stats/courses-count`;
+    
+    const response = await fetch(url, {
       next: { revalidate: 60 },
     });
     if (!response.ok) {
