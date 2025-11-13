@@ -42,11 +42,6 @@ export async function GET(_request: NextRequest) {
     }
 
     const data = await response.json();
-    const coursesCount = data.data?.length || 0;
-
-    console.log(
-      `[Courses API] Locale: ${locale}, Cursos encontrados: ${coursesCount}`
-    );
 
     return NextResponse.json(data);
   } catch (error) {

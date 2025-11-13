@@ -132,7 +132,6 @@ export default function CourseExchangeForm() {
       }
 
       const studentData = await studentResponse.json();
-      console.log("Student data received:", studentData);
 
       // Buscar cursos disponíveis
       const coursesResponse = await fetch("/api/courses/available", {
@@ -149,7 +148,6 @@ export default function CourseExchangeForm() {
       }
 
       const coursesData = await coursesResponse.json();
-      console.log("Courses data received:", coursesData);
 
       setFormData((prev) => ({
         ...prev,
@@ -197,13 +195,6 @@ export default function CourseExchangeForm() {
     setFormData((prev) => ({ ...prev, submitting: true, error: null }));
 
     try {
-      console.log("Submitting course exchange:", {
-        studentId: formData.student.id,
-        studentDocumentId: formData.student.documentId,
-        newCourseId: formData.selectedCourseId,
-        newCourseDocumentId: formData.selectedCourseDocumentId,
-      });
-
       const response = await fetch("/api/courses/exchange", {
         method: "POST",
         headers: {

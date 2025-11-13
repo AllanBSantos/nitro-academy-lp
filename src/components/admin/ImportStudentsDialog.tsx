@@ -40,14 +40,12 @@ export function ImportStudentsDialog() {
 
   const handleImport = () => {
     if (file) {
-      console.log("Importing file:", file.name);
       // Mock import logic
       setFile(null);
     }
   };
 
   const handleDownloadTemplate = () => {
-    console.log("Downloading template...");
     // Mock download template logic
   };
 

@@ -11,9 +11,7 @@ import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-export async function fetchCourses(
-  locale: string = "pt-BR"
-): Promise<Course[]> {
+export async function fetchCourses(): Promise<Course[]> {
   try {
     // Garantir que sempre use pt-BR (hardcoded)
     const localeToUse = "pt-BR";
@@ -86,8 +84,8 @@ export async function fetchCoursesWithEnrollment(): Promise<
   }>
 > {
   try {
-    // Usar a função existente fetchCourses com locale pt-BR
-    const courses = await fetchCourses("pt-BR");
+    // Usar a função existente fetchCourses
+    const courses = await fetchCourses();
 
     return courses.map((course: any) => {
       const enrolled = course.alunos?.length || 0;
@@ -140,8 +138,8 @@ export async function fetchStudentCoursesWithProgress(): Promise<
   }>
 > {
   try {
-    // Usar a função existente fetchCourses com locale pt-BR
-    const courses = await fetchCourses("pt-BR");
+    // Usar a função existente fetchCourses
+    const courses = await fetchCourses();
 
     return courses.map((course: any, index: number) => {
       // Simular progresso baseado no índice (para demonstração)

@@ -119,7 +119,6 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   });
 
   const handleSaveDetails = () => {
-    console.log("Saving course details:", courseDetails);
     setIsEditingDetails(false);
   };
 

@@ -246,7 +246,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorResult = await response.json();
-      console.log("Erro ao buscar alunos:", errorResult);
+      console.error("Erro ao buscar alunos:", errorResult);
       return NextResponse.json(
         { error: "Erro ao buscar alunos" },
         { status: response.status }

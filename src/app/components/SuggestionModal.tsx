@@ -76,11 +76,6 @@ export default function SuggestionModal({
   const handleSubmit = async () => {
     if (!suggestionData.weekdays.length || !suggestionData.time) return;
 
-    console.log(
-      "Submitting suggestion with weekdays:",
-      suggestionData.weekdays
-    );
-
     setIsSubmitting(true);
     try {
       // Primeiro, criar a sugestão no Strapi

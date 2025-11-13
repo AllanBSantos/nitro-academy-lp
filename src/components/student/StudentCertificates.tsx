@@ -35,13 +35,11 @@ const mockCertificates = [
 ];
 
 export function StudentCertificates() {
-  const handleDownload = (certificate: (typeof mockCertificates)[0]) => {
-    console.log("Downloading certificate:", certificate.certificateNumber);
+  const handleDownload = (_certificate: (typeof mockCertificates)[0]) => {
     // Mock download functionality
   };
 
-  const handleShare = (certificate: (typeof mockCertificates)[0]) => {
-    console.log("Sharing certificate:", certificate.certificateNumber);
+  const handleShare = (_certificate: (typeof mockCertificates)[0]) => {
     // Mock share functionality
   };
 

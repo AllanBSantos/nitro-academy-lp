@@ -36,7 +36,6 @@ export async function GET() {
     }
 
     const roles = await response.json();
-    console.log("Available roles:", roles);
 
     return NextResponse.json(roles);
   } catch (error) {

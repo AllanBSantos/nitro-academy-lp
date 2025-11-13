@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
     // Para cada mentor, buscar seus cursos para calcular alunos
     const processedMentors = await Promise.all(
-      mentors.map(async (mentor: any) => {
+      mentors.map(async (mentor: { id: number; attributes?: Record<string, unknown>; [key: string]: unknown }) => {
         const mentorData = mentor.attributes || mentor;
 
         // Buscar cursos deste mentor
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
             totalCursos = courses.length;
             const alunosUnicos = new Set<number>();
 
-            courses.forEach((course: any) => {
+            courses.forEach((course: { id?: number; attributes?: { id?: number; titulo?: string; alunos?: Array<{ id: number; nome: string }> }; [key: string]: unknown }) => {
               const courseData = course.attributes || course;
               cursosRelacionados.push({
                 id: courseData.id || course.id,

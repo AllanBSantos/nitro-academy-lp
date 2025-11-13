@@ -155,7 +155,6 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
   };
 
   const handleSave = () => {
-    console.log("Saving class data:", { students, notes, materials });
     toast.success("Dados da aula salvos com sucesso!");
   };
 

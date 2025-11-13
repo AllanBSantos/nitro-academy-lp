@@ -106,38 +106,15 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    // Log Zazu response for debugging
-    console.log("Zazu API response:", {
-      userType: data.userType,
-      environment: process.env.NODE_ENV,
-      whatsapp: formattedWhatsapp,
-      fullResponse: data,
-      responseStatus: response.status,
-      responseOk: response.ok,
-    });
-
     // For now, create a simple JWT token for WhatsApp users
     // This will allow them to access the protected routes
     const simpleJWT = createSimpleJWT(formattedWhatsapp);
 
-    console.log("CRITICAL DEBUG: JWT created", {
-      whatsapp: formattedWhatsapp,
-      jwt: simpleJWT,
-      environment: process.env.NODE_ENV,
-    });
-
     // Determine user type from Zazu response
     let userType = data.data?.userType;
 
-    console.log("User type determination:", {
-      zazuUserType: data.data?.userType,
-      determinedUserType: userType,
-      willSearchDatabase: !userType,
-    });
-
     // If Zazu didn't provide a specific user type, try to determine it from database
     if (!userType) {
-      console.log("Searching database for user type...");
       // Try to find admin first
       const adminResponse = await fetch(
         `${STRAPI_URL}/api/admins?filters[celular][$eq]=${formattedWhatsapp}`,
@@ -395,14 +372,6 @@ export async function POST(request: NextRequest) {
         // Continue with normal response if linking fails
       }
     }
-
-    // Log final user type determination
-    console.log("Final user type determination:", {
-      whatsapp: formattedWhatsapp,
-      zazuUserType: data.data?.userType,
-      finalUserType: userType,
-      environment: process.env.NODE_ENV,
-    });
 
     // Default response (if user type not found)
     return NextResponse.json({
