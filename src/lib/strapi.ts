@@ -8,6 +8,7 @@ import {
   ReviewCard,
 } from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
+import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
@@ -84,23 +85,85 @@ export async function fetchCoursesWithEnrollment(): Promise<
   }>
 > {
   try {
-    // Usar a função existente fetchCourses
-    const courses = await fetchCourses();
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+    const localeToUse = "pt-BR";
+    const isServer = typeof window === "undefined";
+
+    let courses: any[] = [];
+
+    if (isServer) {
+      // No servidor: chamar Strapi diretamente com autenticação
+      // Populando alunos com filtro habilitado = true
+      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[cronograma][fields][2]=data_inicio&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[campanhas][fields][0]=id&populate[campanhas][fields][1]=nome&populate[campanhas][fields][2]=createdAt&fields[0]=id&fields[1]=titulo&sort=createdAt:desc`;
+
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
+        },
+        next: { revalidate: 60 },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch courses: ${response.status}`);
+      }
+
+      const data = await response.json();
+      courses = data.data || [];
+    } else {
+      // No cliente: usar rota Next.js
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+      const response = await fetch(
+        `${baseUrl}/api/courses?locale=${localeToUse}`,
+        {
+          next: { revalidate: 60 },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch courses: ${response.status}`);
+      }
+
+      const data = await response.json();
+      courses = data.data || [];
+    }
 
     return courses.map((course: any) => {
-      const enrolled = course.alunos?.length || 0;
-      const totalSlots = 50; // Valor padrão, pode ser ajustado conforme necessário
+      // Normalizar estrutura de dados (pode vir com ou sem attributes)
+      const courseData = course.attributes || course;
+      
+      // Obter alunos do curso (pode estar em courseData.alunos ou courseData.alunos.data)
+      const alunosRaw = courseData.alunos?.data || courseData.alunos || [];
+      const alunosArray = Array.isArray(alunosRaw) ? alunosRaw : [];
+      
+      // Filtrar apenas alunos habilitados
+      const alunosHabilitados = alunosArray.filter((aluno: any) => {
+        // Normalizar estrutura do aluno (pode vir com ou sem attributes)
+        const alunoData = aluno.attributes || aluno;
+        // Verificar se o aluno tem habilitado = true
+        const habilitado = alunoData?.habilitado ?? true; // Default true se não especificado
+        return habilitado === true;
+      });
+      
+      const enrolled = alunosHabilitados.length;
+      const totalSlots = MAX_SLOTS_PER_COURSE;
       const available = Math.max(0, totalSlots - enrolled);
 
       // Usar a campanha real do Strapi ou fallback para data de início
       let campaign = "2024.1"; // Valor padrão
-
-      if (course.campanhas && course.campanhas.length > 0) {
-        // Usar o nome da primeira campanha encontrada
-        campaign = course.campanhas[0].nome || campaign;
-      } else if (course.cronograma?.[0]?.data_inicio) {
+      
+      // Normalizar campanhas (pode estar em courseData.campanhas ou courseData.campanhas.data)
+      const campanhasRaw = courseData.campanhas?.data || courseData.campanhas || [];
+      const campanhasArray = Array.isArray(campanhasRaw) ? campanhasRaw : [];
+      
+      if (campanhasArray.length > 0) {
+        // Normalizar primeira campanha
+        const primeiraCampanha = campanhasArray[0];
+        const campanhaData = primeiraCampanha.attributes || primeiraCampanha;
+        campaign = campanhaData.nome || campaign;
+      } else if (courseData.cronograma?.[0]?.data_inicio) {
         // Fallback para data de início se não houver campanha
-        const startDate = course.cronograma[0].data_inicio;
+        const startDate = courseData.cronograma[0].data_inicio;
         const date = new Date(startDate);
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
@@ -108,8 +171,8 @@ export async function fetchCoursesWithEnrollment(): Promise<
       }
 
       return {
-        id: course.id.toString(),
-        name: course.titulo,
+        id: (courseData.id || course.id || "").toString(),
+        name: courseData.titulo || "",
         campaign,
         enrolled,
         available,
