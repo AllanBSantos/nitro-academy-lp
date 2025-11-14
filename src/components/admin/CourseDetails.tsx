@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Users,
@@ -59,7 +60,16 @@ interface Student {
 
 export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const t = useTranslations("Admin.panel.course_details");
-  const [activeTab, setActiveTab] = useState("students");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Get initial tab from URL or default to "students"
+  const getInitialTab = () => {
+    const tab = searchParams.get("courseTab");
+    return tab && ["students", "classes", "schedules", "details"].includes(tab) ? tab : "students";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTurma, setSelectedTurma] = useState<string>("all");
   const [selectedEscola, setSelectedEscola] = useState<string>("all");
@@ -84,6 +94,46 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   });
 
   const availableSlots = course.totalSlots - course.students;
+
+  // Handle tab change - update URL
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("courseTab", tab);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle class selection - update URL
+  const handleClassSelect = (classItem: {
+    id: number;
+    title: string;
+    date: string;
+    time: string;
+    duration: string;
+    description: string;
+  }) => {
+    setSelectedClass(classItem);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("classId", classItem.id.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle back from class details
+  const handleBackFromClass = () => {
+    setSelectedClass(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("classId");
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Sync tab with URL
+  useEffect(() => {
+    const tab = getInitialTab();
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     async function loadStudents() {
@@ -157,7 +207,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     return (
       <ClassDetails
         classItem={selectedClass}
-        onBack={() => setSelectedClass(null)}
+        onBack={handleBackFromClass}
       />
     );
   }
@@ -233,7 +283,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
 
       {/* Tabs */}
       <Card className="bg-white border-gray-200 shadow-sm">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="border-b border-gray-200">
             <TabsList className="w-full justify-start bg-transparent p-0 h-auto">
               <TabsTrigger

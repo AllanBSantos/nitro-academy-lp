@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   BookOpen,
   Users,
@@ -25,9 +26,33 @@ import {
 type TabType = "home" | "courses" | "students";
 
 export function AdminDashboard() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Get initial tab from URL or default to "home"
+  const getInitialTab = (): TabType => {
+    const tab = searchParams.get("tab") as TabType;
+    return tab && ["home", "courses", "students"].includes(tab) ? tab : "home";
+  };
+
   const [activeTab, setActiveTab] = useState<TabType>("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Update URL when tab changes
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Sync state with URL on mount and when URL changes
+  useEffect(() => {
+    const tab = getInitialTab();
+    setActiveTab(tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleLogout = () => {
     window.location.hash = "";
@@ -115,7 +140,7 @@ export function AdminDashboard() {
                   <Tooltip key={item.id}>
                     <TooltipTrigger asChild>
                       <button
-                        onClick={() => setActiveTab(item.id)}
+                        onClick={() => handleTabChange(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                           isActive
                             ? "bg-[#f54a12] text-white shadow-lg shadow-[#f54a12]/20"
@@ -206,7 +231,7 @@ export function AdminDashboard() {
                   <button
                     key={item.id}
                     onClick={() => {
-                      setActiveTab(item.id);
+                      handleTabChange(item.id);
                       setSidebarOpen(false);
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${

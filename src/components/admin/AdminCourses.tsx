@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -31,12 +32,22 @@ type Course = {
 };
 
 export function AdminCourses() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const [selectedCampaign, setSelectedCampaign] = useState("Todas");
   const [sortBy, setSortBy] = useState<"name" | "enrolled">("name");
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Get course ID from URL
+  const courseIdFromUrl = searchParams.get("courseId");
+  
+  // Find selected course from URL or null
+  const selectedCourse = courseIdFromUrl
+    ? courses.find((c) => c.id === courseIdFromUrl) || null
+    : null;
 
   useEffect(() => {
     async function loadCourses() {
@@ -54,6 +65,38 @@ export function AdminCourses() {
 
     loadCourses();
   }, []);
+
+  // Update selected course when courses are loaded and URL has courseId
+  useEffect(() => {
+    if (courseIdFromUrl && courses.length > 0) {
+      const course = courses.find((c) => c.id === courseIdFromUrl);
+      if (!course) {
+        // Course not found, remove from URL
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("courseId");
+        params.delete("courseTab");
+        params.delete("classId");
+        router.push(`?${params.toString()}`, { scroll: false });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courses, courseIdFromUrl]);
+
+  // Handle course selection - update URL
+  const handleCourseSelect = (course: Course) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("courseId", course.id);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle back from course details
+  const handleBackFromCourse = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("courseId");
+    params.delete("courseTab"); // Also remove course tab if exists
+    params.delete("classId"); // Also remove class id if exists
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   // Extrair campanhas únicas dos cursos
   const campaigns = [
@@ -114,7 +157,7 @@ export function AdminCourses() {
           students: selectedCourse.enrolled,
           totalSlots: selectedCourse.total,
         }}
-        onBack={() => setSelectedCourse(null)}
+        onBack={handleBackFromCourse}
       />
     );
   }
@@ -243,7 +286,7 @@ export function AdminCourses() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + index * 0.1 }}
-              onClick={() => setSelectedCourse(course)}
+              onClick={() => handleCourseSelect(course)}
             >
               <Card className="bg-white border-gray-200 p-4 hover:border-gray-300 hover:shadow-md transition-all group shadow-sm cursor-pointer">
                 {/* Header */}
