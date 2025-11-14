@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
   Users,
@@ -58,6 +59,7 @@ interface Student {
 }
 
 export function CourseDetails({ course, onBack }: CourseDetailsProps) {
+  const t = useTranslations("Admin.panel.course_details");
   const [activeTab, setActiveTab] = useState("students");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTurma, setSelectedTurma] = useState<string>("all");
@@ -85,14 +87,14 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
         const response = await fetch(`/api/admin/all-students?cursoId=${course.id}`);
         
         if (!response.ok) {
-          throw new Error("Erro ao carregar alunos");
+          throw new Error(t("error_loading_students"));
         }
 
         const data = await response.json();
         setStudents(data.data || []);
       } catch (err) {
         console.error("Error loading students:", err);
-        setError("Erro ao carregar alunos");
+        setError(t("error_loading_students"));
         setStudents([]);
       } finally {
         setLoading(false);
@@ -164,11 +166,11 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
           className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 h-11 px-4"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Voltar
+          {t("back")}
         </Button>
         <div>
           <h1 className="text-3xl text-gray-900">{course.name}</h1>
-          <p className="text-gray-500 mt-1">Gerencie alunos, aulas e detalhes do curso</p>
+          <p className="text-gray-500 mt-1">{t("manage_course")}</p>
         </div>
       </div>
 
@@ -185,7 +187,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <Users className="w-5 h-5 text-blue-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-xs mb-1">Total de Vagas</p>
+            <p className="text-gray-600 text-xs mb-1">{t("total_spots")}</p>
             <p className="text-3xl text-gray-900">{course.totalSlots}</p>
           </Card>
         </motion.div>
@@ -201,7 +203,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <GraduationCap className="w-5 h-5 text-emerald-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-xs mb-1">Alunos Matriculados</p>
+            <p className="text-gray-600 text-xs mb-1">{t("enrolled_students")}</p>
             <p className="text-3xl text-gray-900">{course.students}</p>
           </Card>
         </motion.div>
@@ -217,7 +219,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <Calendar className="w-5 h-5 text-amber-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-xs mb-1">Vagas Disponíveis</p>
+            <p className="text-gray-600 text-xs mb-1">{t("available_spots")}</p>
             <p className="text-3xl text-gray-900">{availableSlots}</p>
           </Card>
         </motion.div>
@@ -232,25 +234,25 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 value="students"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Alunos
+                {t("tabs.students")}
               </TabsTrigger>
               <TabsTrigger
                 value="classes"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Aulas
+                {t("tabs.classes")}
               </TabsTrigger>
               <TabsTrigger
                 value="schedules"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Turmas
+                {t("tabs.schedules")}
               </TabsTrigger>
               <TabsTrigger
                 value="details"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Detalhes do curso
+                {t("tabs.details")}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -261,17 +263,17 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-gray-700 text-sm mb-2">
-                  Filtrar por Turma
+                  {t("filters.filter_by_class")}
                 </label>
                 <Select value={selectedTurma} onValueChange={setSelectedTurma}>
                   <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas as Turmas</SelectItem>
+                    <SelectItem value="all">{t("filters.all_classes")}</SelectItem>
                     {availableTurmas.map((turma) => (
                       <SelectItem key={turma} value={turma.toString()}>
-                        Turma {turma}
+                        {t("filters.class_label", { number: turma })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -280,14 +282,14 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
 
               <div className="flex-1">
                 <label className="block text-gray-700 text-sm mb-2">
-                  Filtrar por Escola
+                  {t("filters.filter_by_school")}
                 </label>
                 <Select value={selectedEscola} onValueChange={setSelectedEscola}>
                   <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas as Escolas</SelectItem>
+                    <SelectItem value="all">{t("filters.all_schools")}</SelectItem>
                     {availableEscolas.map((escola) => (
                       <SelectItem key={escola} value={escola}>
                         {escola}
@@ -298,14 +300,14 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               </div>
 
               <div className="flex-1">
-                <label className="block text-gray-700 text-sm mb-2">Buscar</label>
+                <label className="block text-gray-700 text-sm mb-2">{t("filters.search")}</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar por nome..."
+                    placeholder={t("filters.search_placeholder")}
                     className="pl-10 bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg"
                   />
                 </div>
@@ -314,7 +316,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               <div className="flex items-end">
                 <Button className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20">
                   <Download className="w-5 h-5 mr-2" />
-                  Exportar PDF
+                  {t("filters.export_pdf")}
                 </Button>
               </div>
             </div>
@@ -323,7 +325,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
             {loading ? (
               <div className="text-center py-16">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
-                <p className="text-gray-600 mt-4">Carregando alunos...</p>
+                <p className="text-gray-600 mt-4">{t("loading_students")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-16">
@@ -334,11 +336,11 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                   <Inbox className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg text-gray-900 mb-2">Nenhum aluno encontrado</h3>
+                <h3 className="text-lg text-gray-900 mb-2">{t("no_students_found")}</h3>
                 <p className="text-gray-500">
                   {searchTerm
-                    ? "Tente ajustar os filtros de busca."
-                    : "Não há alunos matriculados neste curso."}
+                    ? t("adjust_filters")
+                    : t("no_enrolled_students")}
                 </p>
               </div>
             ) : (
@@ -346,10 +348,10 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="text-gray-700">Nome</TableHead>
-                      <TableHead className="text-gray-700">Turma</TableHead>
-                      <TableHead className="text-gray-700">Escola</TableHead>
-                      <TableHead className="text-gray-700">Inscrito em</TableHead>
+                      <TableHead className="text-gray-700">{t("table.name")}</TableHead>
+                      <TableHead className="text-gray-700">{t("table.class")}</TableHead>
+                      <TableHead className="text-gray-700">{t("table.school")}</TableHead>
+                      <TableHead className="text-gray-700">{t("table.enrolled_at")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -366,7 +368,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                           </div>
                         </TableCell>
                         <TableCell className="text-gray-600">
-                          {student.turma ? `Turma ${student.turma}` : "-"}
+                          {student.turma ? t("filters.class_label", { number: student.turma }) : "-"}
                         </TableCell>
                         <TableCell className="text-gray-600">
                           {student.escola_parceira || "-"}
@@ -385,7 +387,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
           {/* Classes Tab */}
           <TabsContent value="classes" className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl text-gray-900">Aulas Registradas</h2>
+              <h2 className="text-xl text-gray-900">{t("classes.title")}</h2>
               <RegisterClassDialog />
             </div>
 
@@ -394,10 +396,10 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <Inbox className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg text-gray-900 mb-2">
-                Nenhuma aula registrada
+                {t("classes.no_classes")}
               </h3>
               <p className="text-gray-500 mb-6">
-                Não há aulas cadastradas para este curso.
+                {t("classes.no_classes_description")}
               </p>
             </div>
           </TabsContent>
@@ -410,14 +412,14 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
           {/* Details Tab */}
           <TabsContent value="details" className="p-6 space-y-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl text-gray-900">Informações do Curso</h2>
+              <h2 className="text-xl text-gray-900">{t("details.title")}</h2>
               {!isEditingDetails ? (
                 <Button
                   onClick={() => setIsEditingDetails(true)}
                   className="bg-[#599fe9] hover:bg-[#599fe9]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#599fe9]/20"
                 >
                   <Edit2 className="w-5 h-5 mr-2" />
-                  Editar
+                  {t("details.edit")}
                 </Button>
               ) : (
                 <div className="flex gap-3">
@@ -426,14 +428,14 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                     onClick={() => setIsEditingDetails(false)}
                     className="border-gray-300 text-gray-700 hover:bg-gray-50 h-11 px-6"
                   >
-                    Cancelar
+                    {t("details.cancel")}
                   </Button>
                   <Button
                     onClick={handleSaveDetails}
                     className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
                   >
                     <Save className="w-5 h-5 mr-2" />
-                    Salvar
+                    {t("details.save")}
                   </Button>
                 </div>
               )}
@@ -443,7 +445,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               {/* Title */}
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-gray-700">
-                  Título
+                  {t("details.course_title")}
                 </Label>
                 {isEditingDetails ? (
                   <Input
@@ -467,7 +469,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               {/* Description */}
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-gray-700">
-                  Descrição
+                  {t("details.description")}
                 </Label>
                 {isEditingDetails ? (
                   <Textarea
@@ -491,7 +493,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               {/* Mentor Description */}
               <div className="space-y-2">
                 <Label htmlFor="mentorDescription" className="text-gray-700">
-                  Descrição do Mentor
+                  {t("details.mentor_description")}
                 </Label>
                 {isEditingDetails ? (
                   <Textarea

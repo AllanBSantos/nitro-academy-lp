@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -44,6 +45,7 @@ type Student = {
 type ReportType = "all" | "partner" | "no-link";
 
 export function AdminStudents() {
+  const t = useTranslations("Admin.panel.admin_students");
   const [reportType, setReportType] = useState<ReportType>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [students, setStudents] = useState<Student[]>([]);
@@ -58,7 +60,7 @@ export function AdminStudents() {
         const response = await fetch("/api/admin/all-students");
 
         if (!response.ok) {
-          throw new Error("Erro ao carregar alunos");
+          throw new Error(t("error_loading"));
         }
 
         const data = await response.json();
@@ -87,7 +89,7 @@ export function AdminStudents() {
         setStudents(alunosFormatados);
       } catch (err) {
         console.error("Error loading students:", err);
-        setError("Erro ao carregar alunos");
+        setError(t("error_loading"));
         setStudents([]);
       } finally {
         setLoading(false);
@@ -95,7 +97,7 @@ export function AdminStudents() {
     }
 
     loadStudents();
-  }, []);
+  }, [t]);
 
   const filteredStudents = students.filter((student) => {
     // Filter by report type
@@ -129,7 +131,7 @@ export function AdminStudents() {
       <div className="space-y-8">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
-          <p className="text-gray-600 mt-4">Carregando alunos...</p>
+          <p className="text-gray-600 mt-4">{t("loading")}</p>
         </div>
       </div>
     );
@@ -161,7 +163,7 @@ export function AdminStudents() {
               </div>
               <TrendingUp className="w-4 h-4 text-[#599fe9]" />
             </div>
-            <p className="text-gray-600 text-xs mb-1">Total de Alunos</p>
+            <p className="text-gray-600 text-xs mb-1">{t("total_students")}</p>
             <p className="text-3xl text-gray-900">{totalStudents}</p>
           </Card>
         </motion.div>
@@ -178,7 +180,7 @@ export function AdminStudents() {
               </div>
               <TrendingUp className="w-4 h-4 text-emerald-500" />
             </div>
-            <p className="text-gray-600 text-xs mb-1">Escolas Parceiras</p>
+            <p className="text-gray-600 text-xs mb-1">{t("partner_schools")}</p>
             <p className="text-3xl text-gray-900">{partnersCount}</p>
           </Card>
         </motion.div>
@@ -195,7 +197,7 @@ export function AdminStudents() {
               </div>
               <TrendingUp className="w-4 h-4 text-amber-500" />
             </div>
-            <p className="text-gray-600 text-xs mb-1">Sem Vínculo</p>
+            <p className="text-gray-600 text-xs mb-1">{t("no_link")}</p>
             <p className="text-3xl text-gray-900">{noLinkCount}</p>
           </Card>
         </motion.div>
@@ -211,7 +213,7 @@ export function AdminStudents() {
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
               <label className="block text-gray-700 text-sm mb-3">
-                Tipo de Relatório
+                {t("report_type")}
               </label>
               <Select
                 value={reportType}
@@ -221,22 +223,26 @@ export function AdminStudents() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Alunos Matriculados</SelectItem>
+                  <SelectItem value="all">{t("all_enrolled")}</SelectItem>
                   <SelectItem value="partner">
-                    Alunos de Escolas Parceiras
+                    {t("partner_students")}
                   </SelectItem>
-                  <SelectItem value="no-link">Alunos sem Vínculos</SelectItem>
+                  <SelectItem value="no-link">
+                    {t("no_link_students")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex-1">
-              <label className="block text-gray-700 text-sm mb-3">Buscar</label>
+              <label className="block text-gray-700 text-sm mb-3">
+                {t("search")}
+              </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Nome, telefone, curso..."
+                  placeholder={t("search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 h-11 rounded-lg hover:bg-gray-100 transition-colors"
@@ -252,7 +258,7 @@ export function AdminStudents() {
                 className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
               >
                 <Download className="w-5 h-5 mr-2" />
-                Exportar
+                {t("export")}
               </Button>
             </div>
           </div>
@@ -270,17 +276,27 @@ export function AdminStudents() {
             <Table>
               <TableHeader>
                 <TableRow className="border-gray-200 hover:bg-transparent">
-                  <TableHead className="text-gray-700">Nome do Aluno</TableHead>
-                  <TableHead className="text-gray-700">Telefone</TableHead>
-                  <TableHead className="text-gray-700">Responsável</TableHead>
                   <TableHead className="text-gray-700">
-                    Tel. Responsável
+                    {t("table.student_name")}
                   </TableHead>
-                  <TableHead className="text-gray-700">Curso</TableHead>
                   <TableHead className="text-gray-700">
-                    Escola Parceira
+                    {t("table.phone")}
                   </TableHead>
-                  <TableHead className="text-gray-700">Turma</TableHead>
+                  <TableHead className="text-gray-700">
+                    {t("table.responsible")}
+                  </TableHead>
+                  <TableHead className="text-gray-700">
+                    {t("table.responsible_phone")}
+                  </TableHead>
+                  <TableHead className="text-gray-700">
+                    {t("table.course")}
+                  </TableHead>
+                  <TableHead className="text-gray-700">
+                    {t("table.partner_school")}
+                  </TableHead>
+                  <TableHead className="text-gray-700">
+                    {t("table.class")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -291,12 +307,12 @@ export function AdminStudents() {
                         <Inbox className="w-8 h-8 text-gray-400" />
                       </div>
                       <h3 className="text-lg text-gray-900 mb-2">
-                        Nenhum aluno encontrado
+                        {t("no_students_found")}
                       </h3>
                       <p className="text-gray-500">
                         {searchTerm || reportType !== "all"
-                          ? "Tente ajustar os filtros de busca."
-                          : "Não há alunos cadastrados no momento."}
+                          ? t("adjust_filters")
+                          : t("no_students_registered")}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -349,7 +365,7 @@ export function AdminStudents() {
                       <TableCell>
                         {student.class ? (
                           <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                            Turma {student.class}
+                            {t("table.class_label", { number: student.class })}
                           </Badge>
                         ) : (
                           <span className="text-gray-400">-</span>

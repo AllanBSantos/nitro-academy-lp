@@ -611,7 +611,117 @@
       "dashboard": "Dashboard",
       "partner_students": "Lista de Alunos Escola Parceira",
       "students_report": "Lista de Alunos",
-      "exceeded_students_report": "Alunos Excedentes"
+      "exceeded_students_report": "Alunos Excedentes",
+      "course_details": {
+        "back": "Voltar",
+        "manage_course": "Gerencie alunos, aulas e detalhes do curso",
+        "total_spots": "Total de Vagas",
+        "enrolled_students": "Alunos Matriculados",
+        "available_spots": "Vagas Disponíveis",
+        "tabs": {
+          "students": "Alunos",
+          "classes": "Aulas",
+          "schedules": "Turmas",
+          "details": "Detalhes do curso"
+        },
+        "filters": {
+          "filter_by_class": "Filtrar por Turma",
+          "filter_by_school": "Filtrar por Escola",
+          "all_classes": "Todas as Turmas",
+          "all_schools": "Todas as Escolas",
+          "class_label": "Turma {number}",
+          "search": "Buscar",
+          "search_placeholder": "Buscar por nome...",
+          "export_pdf": "Exportar PDF"
+        },
+        "loading_students": "Carregando alunos...",
+        "error_loading_students": "Erro ao carregar alunos",
+        "no_students_found": "Nenhum aluno encontrado",
+        "adjust_filters": "Tente ajustar os filtros de busca.",
+        "no_enrolled_students": "Não há alunos matriculados neste curso.",
+        "table": {
+          "name": "Nome",
+          "class": "Turma",
+          "school": "Escola",
+          "enrolled_at": "Inscrito em"
+        },
+        "classes": {
+          "title": "Aulas Registradas",
+          "no_classes": "Nenhuma aula registrada",
+          "no_classes_description": "Não há aulas cadastradas para este curso."
+        },
+        "details": {
+          "title": "Informações do Curso",
+          "edit": "Editar",
+          "cancel": "Cancelar",
+          "save": "Salvar",
+          "course_title": "Título",
+          "description": "Descrição",
+          "mentor_description": "Descrição do Mentor"
+        }
+      },
+      "admin_students": {
+        "loading": "Carregando alunos...",
+        "error_loading": "Erro ao carregar alunos",
+        "total_students": "Total de Alunos",
+        "partner_schools": "Escolas Parceiras",
+        "no_link": "Sem Vínculo",
+        "report_type": "Tipo de Relatório",
+        "all_enrolled": "Alunos Matriculados",
+        "partner_students": "Alunos de Escolas Parceiras",
+        "no_link_students": "Alunos sem Vínculos",
+        "search": "Buscar",
+        "search_placeholder": "Nome, telefone, curso...",
+        "export": "Exportar",
+        "no_students_found": "Nenhum aluno encontrado",
+        "adjust_filters": "Tente ajustar os filtros de busca.",
+        "no_students_registered": "Não há alunos cadastrados no momento.",
+        "table": {
+          "student_name": "Nome do Aluno",
+          "phone": "Telefone",
+          "responsible": "Responsável",
+          "responsible_phone": "Tel. Responsável",
+          "course": "Curso",
+          "partner_school": "Escola Parceira",
+          "class": "Turma",
+          "class_label": "Turma {number}"
+        }
+      },
+      "admin_home": {
+        "welcome": "Bem-vindo, Professor! 👋",
+        "manage_classes": "Gerencie suas aulas e tarefas de casa",
+        "tabs": {
+          "classes": "Aulas",
+          "homework": "Tarefas de Casa"
+        },
+        "upcoming_classes": {
+          "title": "Próximas Aulas",
+          "no_classes": "Nenhuma aula agendada",
+          "no_classes_description": "Não há aulas próximas no momento."
+        },
+        "past_classes": {
+          "title": "Aulas Realizadas",
+          "no_classes": "Nenhuma aula realizada",
+          "no_classes_description": "Não há aulas realizadas no momento."
+        },
+        "homework": {
+          "no_homework": "Nenhuma tarefa de casa",
+          "no_homework_description": "Não há tarefas de casa cadastradas no momento."
+        }
+      },
+      "class_details": {
+        "back": "Voltar",
+        "save_changes": "Salvar Alterações",
+        "present": "Presentes",
+        "absent": "Ausentes",
+        "attendance_percentage": "Percentual de Presença",
+        "attendance_and_score": "Presença e Pontuação",
+        "attendance_description": "Marque a presença dos alunos e atribua spinners (0-33)",
+        "student": "Aluno",
+        "attendance": "Presença",
+        "spinners": "Spinners",
+        "comment": "Comentário"
+      }
     },
     "exceededStudentsReport": {
       "title": "Relatório de Alunos Excedentes",

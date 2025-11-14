@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
   Save,
@@ -137,6 +138,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
   };
 
   const presentCount = students.filter((s) => s.present).length;
+  const t = useTranslations("Admin.panel.class_details");
   const absentCount = students.length - presentCount;
   const attendancePercentage = students.length > 0 ? (presentCount / students.length) * 100 : 0;
 
@@ -151,7 +153,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
             className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 h-11 px-4 mt-1"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            Voltar
+            {t("back")}
           </Button>
           <div>
             <h1 className="text-3xl text-gray-900 mb-2">{classItem.title}</h1>
@@ -166,7 +168,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
           className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
         >
           <Save className="w-5 h-5 mr-2" />
-          Salvar Alterações
+          {t("save_changes")}
         </Button>
       </div>
 
@@ -183,7 +185,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                 <CheckCircle2 className="w-6 h-6 text-emerald-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-sm mb-1">Presentes</p>
+            <p className="text-gray-600 text-sm mb-1">{t("present")}</p>
             <p className="text-4xl text-gray-900">{presentCount}</p>
           </Card>
         </motion.div>
@@ -199,7 +201,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                 <XCircle className="w-6 h-6 text-red-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-sm mb-1">Ausentes</p>
+            <p className="text-gray-600 text-sm mb-1">{t("absent")}</p>
             <p className="text-4xl text-gray-900">{absentCount}</p>
           </Card>
         </motion.div>
@@ -215,7 +217,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                 <Users className="w-6 h-6 text-[#599fe9]" />
               </div>
             </div>
-            <p className="text-gray-600 text-sm mb-1">Percentual de Presença</p>
+            <p className="text-gray-600 text-sm mb-1">{t("attendance_percentage")}</p>
             <p className="text-4xl text-gray-900">
               {attendancePercentage.toFixed(0)}%
             </p>
@@ -226,9 +228,9 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
       {/* Attendance and Spinners */}
       <Card className="bg-white border-gray-200 shadow-sm">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl text-gray-900">Presença e Pontuação</h2>
+          <h2 className="text-xl text-gray-900">{t("attendance_and_score")}</h2>
           <p className="text-gray-600 text-sm mt-1">
-            Marque a presença dos alunos e atribua spinners (0-33)
+            {t("attendance_description")}
           </p>
         </div>
         <div className="overflow-x-auto">
@@ -236,15 +238,15 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
             <TableHeader>
               <TableRow className="bg-gray-50">
                 <TableHead className="text-gray-700 w-12"></TableHead>
-                <TableHead className="text-gray-700">Aluno</TableHead>
+                <TableHead className="text-gray-700">{t("student")}</TableHead>
                 <TableHead className="text-gray-700 text-center">
-                  Presença
+                  {t("attendance")}
                 </TableHead>
                 <TableHead className="text-gray-700 text-center">
-                  Spinners (0-33)
+                  {t("spinners")} (0-33)
                 </TableHead>
                 <TableHead className="text-gray-700 text-center w-24">
-                  Comentário
+                  {t("comment")}
                 </TableHead>
               </TableRow>
             </TableHeader>

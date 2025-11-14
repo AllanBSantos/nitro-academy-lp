@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import { Card } from "../new-layout/ui/card";
 import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 
 export function AdminHome() {
+  const t = useTranslations("Admin.panel.admin_home");
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
@@ -30,9 +32,9 @@ export function AdminHome() {
         className="mb-6"
       >
         <h1 className="text-3xl text-gray-900 mb-2">
-          Bem-vindo, Professor! 👋
+          {t("welcome")}
         </h1>
-        <p className="text-gray-600">Gerencie suas aulas e tarefas de casa</p>
+        <p className="text-gray-600">{t("manage_classes")}</p>
       </motion.div>
 
       {/* Tabs Navigation */}
@@ -48,14 +50,14 @@ export function AdminHome() {
               className="flex items-center gap-2 data-[state=active]:bg-white text-gray-900"
             >
               <Video className="w-4 h-4" />
-              Aulas
+              {t("tabs.classes")}
             </TabsTrigger>
             <TabsTrigger
               value="tarefas"
               className="flex items-center gap-2 data-[state=active]:bg-white text-gray-900"
             >
               <ClipboardList className="w-4 h-4" />
-              Tarefas de Casa
+              {t("tabs.homework")}
             </TabsTrigger>
           </TabsList>
 
@@ -66,7 +68,7 @@ export function AdminHome() {
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center gap-2">
                   <PlayCircle className="w-5 h-5 text-[#599fe9]" />
-                  <h2 className="text-xl text-gray-900">Próximas Aulas</h2>
+                  <h2 className="text-xl text-gray-900">{t("upcoming_classes.title")}</h2>
                 </div>
               </div>
               <div className="p-6">
@@ -74,8 +76,8 @@ export function AdminHome() {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                     <Inbox className="w-8 h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg text-gray-900 mb-2">Nenhuma aula agendada</h3>
-                  <p className="text-gray-500">Não há aulas próximas no momento.</p>
+                  <h3 className="text-lg text-gray-900 mb-2">{t("upcoming_classes.no_classes")}</h3>
+                  <p className="text-gray-500">{t("upcoming_classes.no_classes_description")}</p>
                 </div>
               </div>
             </Card>
@@ -85,7 +87,7 @@ export function AdminHome() {
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <h2 className="text-xl text-gray-900">Aulas Realizadas</h2>
+                  <h2 className="text-xl text-gray-900">{t("past_classes.title")}</h2>
                 </div>
               </div>
               <div className="p-6">
@@ -93,8 +95,8 @@ export function AdminHome() {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                     <Inbox className="w-8 h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg text-gray-900 mb-2">Nenhuma aula realizada</h3>
-                  <p className="text-gray-500">Não há aulas realizadas no momento.</p>
+                  <h3 className="text-lg text-gray-900 mb-2">{t("past_classes.no_classes")}</h3>
+                  <p className="text-gray-500">{t("past_classes.no_classes_description")}</p>
                 </div>
               </div>
             </Card>
@@ -108,8 +110,8 @@ export function AdminHome() {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                     <Inbox className="w-8 h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg text-gray-900 mb-2">Nenhuma tarefa de casa</h3>
-                  <p className="text-gray-500">Não há tarefas de casa cadastradas no momento.</p>
+                  <h3 className="text-lg text-gray-900 mb-2">{t("homework.no_homework")}</h3>
+                  <p className="text-gray-500">{t("homework.no_homework_description")}</p>
                 </div>
               </div>
             </Card>

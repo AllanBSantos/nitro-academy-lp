@@ -609,7 +609,117 @@
       "dashboard": "Dashboard",
       "partner_students": "Partner School Students List",
       "students_report": "Students List",
-      "exceeded_students_report": "Exceeded Students"
+      "exceeded_students_report": "Exceeded Students",
+      "course_details": {
+        "back": "Back",
+        "manage_course": "Manage students, classes and course details",
+        "total_spots": "Total Spots",
+        "enrolled_students": "Enrolled Students",
+        "available_spots": "Available Spots",
+        "tabs": {
+          "students": "Students",
+          "classes": "Classes",
+          "schedules": "Schedules",
+          "details": "Course Details"
+        },
+        "filters": {
+          "filter_by_class": "Filter by Class",
+          "filter_by_school": "Filter by School",
+          "all_classes": "All Classes",
+          "all_schools": "All Schools",
+          "class_label": "Class {number}",
+          "search": "Search",
+          "search_placeholder": "Search by name...",
+          "export_pdf": "Export PDF"
+        },
+        "loading_students": "Loading students...",
+        "error_loading_students": "Error loading students",
+        "no_students_found": "No students found",
+        "adjust_filters": "Try adjusting the search filters.",
+        "no_enrolled_students": "There are no students enrolled in this course.",
+        "table": {
+          "name": "Name",
+          "class": "Class",
+          "school": "School",
+          "enrolled_at": "Enrolled at"
+        },
+        "classes": {
+          "title": "Registered Classes",
+          "no_classes": "No classes registered",
+          "no_classes_description": "There are no classes registered for this course."
+        },
+        "details": {
+          "title": "Course Information",
+          "edit": "Edit",
+          "cancel": "Cancel",
+          "save": "Save",
+          "course_title": "Title",
+          "description": "Description",
+          "mentor_description": "Mentor Description"
+        }
+      },
+      "admin_students": {
+        "loading": "Loading students...",
+        "error_loading": "Error loading students",
+        "total_students": "Total Students",
+        "partner_schools": "Partner Schools",
+        "no_link": "No Link",
+        "report_type": "Report Type",
+        "all_enrolled": "Enrolled Students",
+        "partner_students": "Partner School Students",
+        "no_link_students": "Students without Links",
+        "search": "Search",
+        "search_placeholder": "Name, phone, course...",
+        "export": "Export",
+        "no_students_found": "No students found",
+        "adjust_filters": "Try adjusting the search filters.",
+        "no_students_registered": "There are no students registered at the moment.",
+        "table": {
+          "student_name": "Student Name",
+          "phone": "Phone",
+          "responsible": "Responsible",
+          "responsible_phone": "Responsible Phone",
+          "course": "Course",
+          "partner_school": "Partner School",
+          "class": "Class",
+          "class_label": "Class {number}"
+        }
+      },
+      "admin_home": {
+        "welcome": "Welcome, Teacher! 👋",
+        "manage_classes": "Manage your classes and homework",
+        "tabs": {
+          "classes": "Classes",
+          "homework": "Homework"
+        },
+        "upcoming_classes": {
+          "title": "Upcoming Classes",
+          "no_classes": "No classes scheduled",
+          "no_classes_description": "There are no upcoming classes at the moment."
+        },
+        "past_classes": {
+          "title": "Past Classes",
+          "no_classes": "No classes completed",
+          "no_classes_description": "There are no completed classes at the moment."
+        },
+        "homework": {
+          "no_homework": "No homework",
+          "no_homework_description": "There is no homework registered at the moment."
+        }
+      },
+      "class_details": {
+        "back": "Back",
+        "save_changes": "Save Changes",
+        "present": "Present",
+        "absent": "Absent",
+        "attendance_percentage": "Attendance Percentage",
+        "attendance_and_score": "Attendance and Score",
+        "attendance_description": "Mark student attendance and assign spinners (0-33)",
+        "student": "Student",
+        "attendance": "Attendance",
+        "spinners": "Spinners",
+        "comment": "Comment"
+      }
     },
     "exceededStudentsReport": {
       "title": "Exceeded Students Report",
