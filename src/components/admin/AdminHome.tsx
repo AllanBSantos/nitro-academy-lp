@@ -1,8 +1,6 @@
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Card } from "../new-layout/ui/card";
-import { Button } from "../new-layout/ui/button";
-import { Badge } from "../new-layout/ui/badge";
 import {
   Tabs,
   TabsContent,
@@ -10,14 +8,10 @@ import {
   TabsTrigger,
 } from "../new-layout/ui/tabs";
 import {
-  Calendar,
-  Clock,
   PlayCircle,
   CheckCircle,
   ClipboardList,
-  AlertCircle,
   Video,
-  Edit,
   Inbox,
 } from "lucide-react";
 

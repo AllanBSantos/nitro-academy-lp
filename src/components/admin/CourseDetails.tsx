@@ -8,7 +8,6 @@ import {
   Calendar,
   Search,
   Download,
-  BookOpen,
   Save,
   Edit2,
   Inbox,
@@ -65,7 +64,14 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [selectedTurma, setSelectedTurma] = useState<string>("all");
   const [selectedEscola, setSelectedEscola] = useState<string>("all");
   const [isEditingDetails, setIsEditingDetails] = useState(false);
-  const [selectedClass, setSelectedClass] = useState<any | null>(null);
+  const [selectedClass, setSelectedClass] = useState<{
+    id: number;
+    title: string;
+    date: string;
+    time: string;
+    duration: string;
+    description: string;
+  } | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +108,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     }
 
     loadStudents();
-  }, [course.id]);
+  }, [course.id, t]);
 
   const availableTurmas = Array.from(
     new Set(students.map((s) => s.turma).filter((t): t is number => t !== undefined && t !== null))

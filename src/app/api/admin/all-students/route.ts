@@ -19,6 +19,52 @@ interface AlunoHabilitado {
   updatedAt: string;
 }
 
+interface StrapiAluno {
+  id?: number;
+  attributes?: {
+    id?: number;
+    nome?: string;
+    telefone_aluno?: string;
+    responsavel?: string;
+    telefone_responsavel?: string;
+    cursos?: StrapiCurso[] | { data?: StrapiCurso[] };
+    escola_parceira?: string;
+    turma?: number;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  cursos?: StrapiCurso[] | { data?: StrapiCurso[] };
+  nome?: string;
+  telefone_aluno?: string;
+  responsavel?: string;
+  telefone_responsavel?: string;
+  escola_parceira?: string;
+  turma?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface StrapiCurso {
+  id?: number | string;
+  attributes?: {
+    id?: number | string;
+    titulo?: string;
+  };
+  data?: {
+    id?: number | string;
+    attributes?: {
+      id?: number | string;
+      titulo?: string;
+    };
+  };
+  titulo?: string;
+}
+
+interface CursoFormatado {
+  id: number;
+  titulo: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     if (!STRAPI_API_URL) {
@@ -75,7 +121,7 @@ export async function GET(request: NextRequest) {
 
     if (cursoId) {
       const cursoIdNum = parseInt(cursoId, 10);
-      alunos = alunos.filter((aluno: any) => {
+      alunos = alunos.filter((aluno: StrapiAluno) => {
         try {
           const alunoData = aluno.attributes || aluno;
           const cursosRaw = alunoData.cursos || aluno.cursos;
@@ -84,11 +130,11 @@ export async function GET(request: NextRequest) {
           
           const cursos = Array.isArray(cursosRaw) 
             ? cursosRaw 
-            : cursosRaw?.data || [];
+            : (cursosRaw as { data?: StrapiCurso[] })?.data || [];
           
           if (!Array.isArray(cursos) || cursos.length === 0) return false;
           
-          return cursos.some((c: any) => {
+          return cursos.some((c: StrapiCurso) => {
             let cId: number | null = null;
             
             if (typeof c === 'number') {
@@ -96,11 +142,11 @@ export async function GET(request: NextRequest) {
             } else if (typeof c === 'string') {
               cId = parseInt(c, 10) || null;
             } else if (c?.id) {
-              cId = typeof c.id === 'number' ? c.id : parseInt(c.id, 10) || null;
+              cId = typeof c.id === 'number' ? c.id : parseInt(String(c.id), 10) || null;
             } else if (c?.attributes?.id) {
-              cId = typeof c.attributes.id === 'number' ? c.attributes.id : parseInt(c.attributes.id, 10) || null;
+              cId = typeof c.attributes.id === 'number' ? c.attributes.id : parseInt(String(c.attributes.id), 10) || null;
             } else if (c?.data?.id) {
-              cId = typeof c.data.id === 'number' ? c.data.id : parseInt(c.data.id, 10) || null;
+              cId = typeof c.data.id === 'number' ? c.data.id : parseInt(String(c.data.id), 10) || null;
             }
             
             return cId !== null && cId === cursoIdNum;
@@ -112,17 +158,17 @@ export async function GET(request: NextRequest) {
     }
 
     const alunosFormatados: AlunoHabilitado[] = alunos
-      .map((aluno: any) => {
+      .map((aluno: StrapiAluno) => {
         try {
           const alunoData = aluno.attributes || aluno;
           const cursosRaw = alunoData.cursos || aluno.cursos;
           
           const cursosArray = Array.isArray(cursosRaw) 
             ? cursosRaw 
-            : cursosRaw?.data || [];
+            : (cursosRaw as { data?: StrapiCurso[] })?.data || [];
           
           const cursosFormatados = cursosArray
-            .map((curso: any) => {
+            .map((curso: StrapiCurso): CursoFormatado | null => {
               try {
                 let cursoId: number = 0;
                 
@@ -131,11 +177,11 @@ export async function GET(request: NextRequest) {
                 } else if (typeof curso === 'string') {
                   cursoId = parseInt(curso, 10) || 0;
                 } else if (curso?.id) {
-                  cursoId = typeof curso.id === 'number' ? curso.id : parseInt(curso.id, 10) || 0;
+                  cursoId = typeof curso.id === 'number' ? curso.id : parseInt(String(curso.id), 10) || 0;
                 } else if (curso?.attributes?.id) {
-                  cursoId = typeof curso.attributes.id === 'number' ? curso.attributes.id : parseInt(curso.attributes.id, 10) || 0;
+                  cursoId = typeof curso.attributes.id === 'number' ? curso.attributes.id : parseInt(String(curso.attributes.id), 10) || 0;
                 } else if (curso?.data?.id) {
-                  cursoId = typeof curso.data.id === 'number' ? curso.data.id : parseInt(curso.data.id, 10) || 0;
+                  cursoId = typeof curso.data.id === 'number' ? curso.data.id : parseInt(String(curso.data.id), 10) || 0;
                 }
                 
                 const cursoTitulo = curso?.titulo || curso?.attributes?.titulo || curso?.data?.attributes?.titulo || "";
@@ -148,7 +194,7 @@ export async function GET(request: NextRequest) {
                 return null;
               }
             })
-            .filter((c: any) => c !== null && c.id > 0);
+            .filter((c: CursoFormatado | null): c is CursoFormatado => c !== null && c.id > 0);
 
           return {
             id: aluno.id || alunoData.id || 0,
@@ -166,7 +212,7 @@ export async function GET(request: NextRequest) {
           return null;
         }
       })
-      .filter((aluno: any) => aluno !== null && aluno.id > 0);
+      .filter((aluno: AlunoHabilitado | null): aluno is AlunoHabilitado => aluno !== null && aluno.id > 0);
 
     return NextResponse.json(
       { data: alunosFormatados },
