@@ -103,21 +103,6 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  // Handle class selection - update URL
-  const handleClassSelect = (classItem: {
-    id: number;
-    title: string;
-    date: string;
-    time: string;
-    duration: string;
-    description: string;
-  }) => {
-    setSelectedClass(classItem);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("classId", classItem.id.toString());
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
-
   // Handle back from class details
   const handleBackFromClass = () => {
     setSelectedClass(null);
@@ -125,6 +110,9 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     params.delete("classId");
     router.push(`?${params.toString()}`, { scroll: false });
   };
+
+  // Note: handleClassSelect will be added when class list is implemented
+  // It will update the URL with classId when a class is selected
 
   // Sync tab with URL
   useEffect(() => {
