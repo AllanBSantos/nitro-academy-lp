@@ -10,6 +10,7 @@ import {
   BookOpen,
   Save,
   Edit2,
+  Inbox,
 } from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
@@ -48,54 +49,11 @@ interface CourseDetailsProps {
   onBack: () => void;
 }
 
-const mockStudents = [
-  {
-    id: 1,
-    name: "Helena Azzi Verri",
-    class: "Turma 1",
-    school: "Colégio Anglo Araçatuba",
-    enrolledAt: "06/08/2025, 18:14:47",
-  },
-  {
-    id: 2,
-    name: "Pedro Silva Santos",
-    class: "Turma 1",
-    school: "Colégio Anglo Araçatuba",
-    enrolledAt: "08/08/2025, 10:23:15",
-  },
-  {
-    id: 3,
-    name: "Maria Oliveira Costa",
-    class: "Turma 2",
-    school: "Escola Estadual Prof. João",
-    enrolledAt: "10/08/2025, 14:30:22",
-  },
-];
-
-const mockClasses = [
-  {
-    id: 1,
-    title: "Introdução à Análise de Dados",
-    date: "15/08/2025",
-    time: "14:00",
-    duration: "90 min",
-    description: "Conceitos básicos de análise de dados",
-  },
-  {
-    id: 2,
-    title: "Python para Análise",
-    date: "22/08/2025",
-    time: "14:00",
-    duration: "120 min",
-    description: "Introdução ao Python aplicado à análise de dados",
-  },
-];
-
 export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [activeTab, setActiveTab] = useState("students");
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditingDetails, setIsEditingDetails] = useState(false);
-  const [selectedClass, setSelectedClass] = useState<typeof mockClasses[0] | null>(null);
+  const [selectedClass, setSelectedClass] = useState<any | null>(null);
   const [courseDetails, setCourseDetails] = useState({
     title: course.name,
     description:
@@ -105,18 +63,8 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   });
 
   const availableSlots = course.totalSlots - course.students;
-
-  const filteredStudents = mockStudents.filter((student) => {
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      return (
-        student.name.toLowerCase().includes(search) ||
-        student.class.toLowerCase().includes(search) ||
-        student.school.toLowerCase().includes(search)
-      );
-    }
-    return true;
-  });
+  const students: any[] = [];
+  const filteredStudents: any[] = [];
 
   const handleSaveDetails = () => {
     setIsEditingDetails(false);
@@ -303,47 +251,57 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
             </div>
 
             {/* Students Table */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="text-gray-700">Nome</TableHead>
-                    <TableHead className="text-gray-700">Turma</TableHead>
-                    <TableHead className="text-gray-700">Escola</TableHead>
-                    <TableHead className="text-gray-700">Inscrito em</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredStudents.map((student) => (
-                    <TableRow key={student.id} className="hover:bg-gray-50">
-                      <TableCell className="text-gray-900">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
-                            <AvatarFallback className="bg-[#599fe9] text-white">
-                              {getInitials(student.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          {student.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.class}
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.school}
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.enrolledAt}
-                      </TableCell>
+            {filteredStudents.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                  <Inbox className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg text-gray-900 mb-2">Nenhum aluno encontrado</h3>
+                <p className="text-gray-500">
+                  {searchTerm
+                    ? "Tente ajustar os filtros de busca."
+                    : "Não há alunos matriculados neste curso."}
+                </p>
+              </div>
+            ) : (
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="text-gray-700">Nome</TableHead>
+                      <TableHead className="text-gray-700">Turma</TableHead>
+                      <TableHead className="text-gray-700">Escola</TableHead>
+                      <TableHead className="text-gray-700">Inscrito em</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <p className="text-sm text-gray-500">
-              Mostrando {filteredStudents.length} de {mockStudents.length} alunos
-            </p>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student) => (
+                      <TableRow key={student.id} className="hover:bg-gray-50">
+                        <TableCell className="text-gray-900">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
+                              <AvatarFallback className="bg-[#599fe9] text-white">
+                                {getInitials(student.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            {student.name}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.class}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.school}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.enrolledAt}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
 
           {/* Classes Tab */}
@@ -353,63 +311,17 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               <RegisterClassDialog />
             </div>
 
-            {mockClasses.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                  <BookOpen className="w-8 h-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg text-gray-900 mb-2">
-                  Nenhuma aula registrada
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Comece registrando uma nova aula.
-                </p>
-                <RegisterClassDialog />
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                <Inbox className="w-8 h-8 text-gray-400" />
               </div>
-            ) : (
-              <div className="space-y-4">
-                {mockClasses.map((classItem) => (
-                  <Card
-                    key={classItem.id}
-                    className="bg-white border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group"
-                    onClick={() => setSelectedClass(classItem)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg text-gray-900 mb-2 group-hover:text-[#599fe9] transition-colors">
-                          {classItem.title}
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          {classItem.description}
-                        </p>
-                        <div className="flex items-center gap-6 text-sm text-gray-500">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            {classItem.date}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="w-4 h-4" />
-                            {classItem.time}
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedClass(classItem);
-                        }}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        <Edit2 className="w-4 h-4 mr-2" />
-                        Gerenciar
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
+              <h3 className="text-lg text-gray-900 mb-2">
+                Nenhuma aula registrada
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Não há aulas cadastradas para este curso.
+              </p>
+            </div>
           </TabsContent>
 
           {/* Schedules Tab */}

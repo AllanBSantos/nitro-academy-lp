@@ -17,7 +17,7 @@ import {
 } from "../new-layout/ui/table";
 import { Badge } from "../new-layout/ui/badge";
 import { Input } from "../new-layout/ui/input";
-import { Search, Download, FileText, School, UserX, TrendingUp } from "lucide-react";
+import { Search, Download, FileText, School, UserX, TrendingUp, Inbox } from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
 import { ImportStudentsDialog } from "./ImportStudentsDialog";
@@ -33,67 +33,14 @@ type Student = {
   class: string;
 };
 
-// Mock data based on the image
-const mockStudents: Student[] = [
-  {
-    id: "1",
-    name: "Luiza Fagnani",
-    phone: "189976559977",
-    responsibleName: "Antonio Fagnani Filho",
-    responsiblePhone: "189972277175",
-    course: "Investimento e Finanças",
-    partnerSchool: "Colégio Anglo Araçatuba",
-    class: "1",
-  },
-  {
-    id: "2",
-    name: "Samuel Tenório Dos Reis",
-    phone: "(11) 91494-9465",
-    responsibleName: "Evilaco Alves Dos Reis",
-    responsiblePhone: "(11) 96157-1134",
-    course: "Empreendedorismo",
-    partnerSchool: "Colégio Santa Mônica",
-    class: "1",
-  },
-  {
-    id: "3",
-    name: "Guilherme Marini Moreno",
-    phone: "(17) 98841-4299",
-    responsibleName: "Josiane Marini Moreno",
-    responsiblePhone: "(17) 98165-3344",
-    course: "Inteligência Artificial",
-    partnerSchool: "Colégio Plus",
-    class: "1",
-  },
-  {
-    id: "4",
-    name: "Maria Silva",
-    phone: "(11) 98765-4321",
-    responsibleName: "João Silva",
-    responsiblePhone: "(11) 98765-1234",
-    course: "Marketing Digital",
-    partnerSchool: null,
-    class: "2",
-  },
-  {
-    id: "5",
-    name: "Pedro Santos",
-    phone: "(11) 99876-5432",
-    responsibleName: "Ana Santos",
-    responsiblePhone: "(11) 99876-1234",
-    course: "Desenvolvimento de Produtos",
-    partnerSchool: null,
-    class: "2",
-  },
-];
-
 type ReportType = "all" | "partner" | "no-link";
 
 export function AdminStudents() {
   const [reportType, setReportType] = useState<ReportType>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const students: Student[] = [];
 
-  const filteredStudents = mockStudents.filter((student) => {
+  const filteredStudents = students.filter((student) => {
     // Filter by report type
     if (reportType === "partner" && !student.partnerSchool) return false;
     if (reportType === "no-link" && student.partnerSchool) return false;
@@ -113,12 +60,12 @@ export function AdminStudents() {
   });
 
   const handleExport = () => {
-    // Mock export functionality
+    // Export functionality to be implemented
   };
 
-  const totalStudents = mockStudents.length;
-  const partnersCount = mockStudents.filter((s) => s.partnerSchool).length;
-  const noLinkCount = mockStudents.filter((s) => !s.partnerSchool).length;
+  const totalStudents = students.length;
+  const partnersCount = students.filter((s) => s.partnerSchool).length;
+  const noLinkCount = students.filter((s) => !s.partnerSchool).length;
 
   return (
     <div className="space-y-8">
@@ -219,7 +166,8 @@ export function AdminStudents() {
               {reportType === "partner" && <ImportStudentsDialog />}
               <Button
                 onClick={handleExport}
-                className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
+                disabled={filteredStudents.length === 0}
+                className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#f54a12] disabled:hover:shadow-lg disabled:hover:shadow-[#f54a12]/20 disabled:bg-gray-400 disabled:hover:bg-gray-400"
               >
                 <Download className="w-5 h-5 mr-2" />
                 Exportar
@@ -250,50 +198,60 @@ export function AdminStudents() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.map((student) => (
-                  <TableRow
-                    key={student.id}
-                    className="border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <TableCell className="text-gray-900">{student.name}</TableCell>
-                    <TableCell className="text-gray-600 font-mono text-sm">
-                      {student.phone}
-                    </TableCell>
-                    <TableCell className="text-gray-900">{student.responsibleName}</TableCell>
-                    <TableCell className="text-gray-600 font-mono text-sm">
-                      {student.responsiblePhone}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
-                        {student.course}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {student.partnerSchool ? (
-                        <div className="flex items-center gap-2">
-                          <School className="w-4 h-4 text-emerald-500" />
-                          <span className="text-gray-900">{student.partnerSchool}</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                        Turma {student.class}
-                      </Badge>
+                {filteredStudents.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-16">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                        <Inbox className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-lg text-gray-900 mb-2">Nenhum aluno encontrado</h3>
+                      <p className="text-gray-500">
+                        {searchTerm || reportType !== "all"
+                          ? "Tente ajustar os filtros de busca."
+                          : "Não há alunos cadastrados no momento."}
+                      </p>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  filteredStudents.map((student) => (
+                    <TableRow
+                      key={student.id}
+                      className="border-gray-100 hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="text-gray-900">{student.name}</TableCell>
+                      <TableCell className="text-gray-600 font-mono text-sm">
+                        {student.phone}
+                      </TableCell>
+                      <TableCell className="text-gray-900">{student.responsibleName}</TableCell>
+                      <TableCell className="text-gray-600 font-mono text-sm">
+                        {student.responsiblePhone}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
+                          {student.course}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {student.partnerSchool ? (
+                          <div className="flex items-center gap-2">
+                            <School className="w-4 h-4 text-emerald-500" />
+                            <span className="text-gray-900">{student.partnerSchool}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                          Turma {student.class}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
-
-          {filteredStudents.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-gray-600 text-lg">Nenhum aluno encontrado.</p>
-            </div>
-          )}
         </Card>
       </motion.div>
     </div>

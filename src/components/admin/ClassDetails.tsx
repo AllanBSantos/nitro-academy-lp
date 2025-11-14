@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   XCircle,
   Users,
+  Inbox,
 } from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
@@ -55,40 +56,8 @@ interface Material {
   uploadedAt: string;
 }
 
-const mockStudents: StudentAttendance[] = [
-  {
-    id: 1,
-    name: "Helena Azzi Verri",
-    present: true,
-    spinners: 25,
-    comment: "Excelente participação, fez ótimas perguntas.",
-  },
-  {
-    id: 2,
-    name: "Pedro Silva Santos",
-    present: true,
-    spinners: 22,
-    comment: "",
-  },
-  {
-    id: 3,
-    name: "Maria Oliveira Costa",
-    present: false,
-    spinners: 0,
-    comment: "",
-  },
-  {
-    id: 4,
-    name: "João Pedro Alves",
-    present: true,
-    spinners: 28,
-    comment: "Liderou muito bem o grupo durante a atividade prática.",
-  },
-  { id: 5, name: "Ana Clara Souza", present: true, spinners: 30, comment: "" },
-];
-
 export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
-  const [students, setStudents] = useState<StudentAttendance[]>(mockStudents);
+  const [students, setStudents] = useState<StudentAttendance[]>([]);
   const [notes, setNotes] = useState(
     "Os alunos demonstraram grande interesse no tema. A aula foi produtiva e todos participaram ativamente das discussões."
   );
@@ -169,7 +138,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
 
   const presentCount = students.filter((s) => s.present).length;
   const absentCount = students.length - presentCount;
-  const attendancePercentage = (presentCount / students.length) * 100;
+  const attendancePercentage = students.length > 0 ? (presentCount / students.length) * 100 : 0;
 
   return (
     <div className="space-y-6">
@@ -280,7 +249,20 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map((student) => (
+              {students.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                      <Inbox className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg text-gray-900 mb-2">Nenhum aluno encontrado</h3>
+                    <p className="text-gray-500">
+                      Não há alunos matriculados nesta aula no momento.
+                    </p>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                students.map((student) => (
                 <TableRow
                   key={student.id}
                   className={`${
@@ -334,7 +316,8 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
