@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   ArrowLeft,
@@ -49,11 +49,24 @@ interface CourseDetailsProps {
   onBack: () => void;
 }
 
+interface Student {
+  id: number;
+  nome: string;
+  turma?: number;
+  escola_parceira?: string;
+  createdAt: string;
+}
+
 export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [activeTab, setActiveTab] = useState("students");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTurma, setSelectedTurma] = useState<string>("all");
+  const [selectedEscola, setSelectedEscola] = useState<string>("all");
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [selectedClass, setSelectedClass] = useState<any | null>(null);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [courseDetails, setCourseDetails] = useState({
     title: course.name,
     description:
@@ -63,8 +76,60 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   });
 
   const availableSlots = course.totalSlots - course.students;
-  const students: any[] = [];
-  const filteredStudents: any[] = [];
+
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(`/api/admin/all-students?cursoId=${course.id}`);
+        
+        if (!response.ok) {
+          throw new Error("Erro ao carregar alunos");
+        }
+
+        const data = await response.json();
+        setStudents(data.data || []);
+      } catch (err) {
+        console.error("Error loading students:", err);
+        setError("Erro ao carregar alunos");
+        setStudents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStudents();
+  }, [course.id]);
+
+  const availableTurmas = Array.from(
+    new Set(students.map((s) => s.turma).filter((t): t is number => t !== undefined && t !== null))
+  ).sort((a, b) => a - b);
+
+  const availableEscolas = Array.from(
+    new Set(students.map((s) => s.escola_parceira).filter((e): e is string => !!e))
+  ).sort();
+
+  const filteredStudents = students.filter((student) => {
+    if (selectedTurma !== "all") {
+      const turmaNum = parseInt(selectedTurma, 10);
+      if (student.turma !== turmaNum) return false;
+    }
+
+    if (selectedEscola !== "all") {
+      if (student.escola_parceira !== selectedEscola) return false;
+    }
+
+    if (searchTerm) {
+      const search = searchTerm.toLowerCase();
+      return (
+        student.nome.toLowerCase().includes(search) ||
+        (student.turma && `turma ${student.turma}`.includes(search)) ||
+        (student.escola_parceira && student.escola_parceira.toLowerCase().includes(search))
+      );
+    }
+    return true;
+  });
 
   const handleSaveDetails = () => {
     setIsEditingDetails(false);
@@ -198,14 +263,17 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <label className="block text-gray-700 text-sm mb-2">
                   Filtrar por Turma
                 </label>
-                <Select defaultValue="all">
+                <Select value={selectedTurma} onValueChange={setSelectedTurma}>
                   <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas as Turmas</SelectItem>
-                    <SelectItem value="turma1">Turma 1</SelectItem>
-                    <SelectItem value="turma2">Turma 2</SelectItem>
+                    {availableTurmas.map((turma) => (
+                      <SelectItem key={turma} value={turma.toString()}>
+                        Turma {turma}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -214,16 +282,17 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <label className="block text-gray-700 text-sm mb-2">
                   Filtrar por Escola
                 </label>
-                <Select defaultValue="all">
+                <Select value={selectedEscola} onValueChange={setSelectedEscola}>
                   <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas as Escolas</SelectItem>
-                    <SelectItem value="anglo">Colégio Anglo Araçatuba</SelectItem>
-                    <SelectItem value="estadual">
-                      Escola Estadual Prof. João
-                    </SelectItem>
+                    {availableEscolas.map((escola) => (
+                      <SelectItem key={escola} value={escola}>
+                        {escola}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -251,7 +320,16 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
             </div>
 
             {/* Students Table */}
-            {filteredStudents.length === 0 ? (
+            {loading ? (
+              <div className="text-center py-16">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
+                <p className="text-gray-600 mt-4">Carregando alunos...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-16">
+                <p className="text-red-600">{error}</p>
+              </div>
+            ) : filteredStudents.length === 0 ? (
               <div className="text-center py-16">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                   <Inbox className="w-8 h-8 text-gray-400" />
@@ -281,20 +359,20 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                           <div className="flex items-center gap-3">
                             <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
                               <AvatarFallback className="bg-[#599fe9] text-white">
-                                {getInitials(student.name)}
+                                {getInitials(student.nome)}
                               </AvatarFallback>
                             </Avatar>
-                            {student.name}
+                            {student.nome}
                           </div>
                         </TableCell>
                         <TableCell className="text-gray-600">
-                          {student.class}
+                          {student.turma ? `Turma ${student.turma}` : "-"}
                         </TableCell>
                         <TableCell className="text-gray-600">
-                          {student.school}
+                          {student.escola_parceira || "-"}
                         </TableCell>
                         <TableCell className="text-gray-600">
-                          {student.enrolledAt}
+                          {new Date(student.createdAt).toLocaleString("pt-BR")}
                         </TableCell>
                       </TableRow>
                     ))}

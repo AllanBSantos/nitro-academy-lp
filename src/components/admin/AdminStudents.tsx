@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   Select,
@@ -17,20 +17,28 @@ import {
 } from "../new-layout/ui/table";
 import { Badge } from "../new-layout/ui/badge";
 import { Input } from "../new-layout/ui/input";
-import { Search, Download, FileText, School, UserX, TrendingUp, Inbox } from "lucide-react";
+import {
+  Search,
+  Download,
+  FileText,
+  School,
+  UserX,
+  TrendingUp,
+  Inbox,
+} from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
 import { ImportStudentsDialog } from "./ImportStudentsDialog";
 
 type Student = {
-  id: string;
+  id: number;
   name: string;
   phone: string;
   responsibleName: string;
   responsiblePhone: string;
-  course: string;
+  courses: Array<{ id: number; titulo: string }>;
   partnerSchool: string | null;
-  class: string;
+  class: number | null;
 };
 
 type ReportType = "all" | "partner" | "no-link";
@@ -38,7 +46,56 @@ type ReportType = "all" | "partner" | "no-link";
 export function AdminStudents() {
   const [reportType, setReportType] = useState<ReportType>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const students: Student[] = [];
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch("/api/admin/all-students");
+
+        if (!response.ok) {
+          throw new Error("Erro ao carregar alunos");
+        }
+
+        const data = await response.json();
+        const alunosFormatados: Student[] = (data.data || []).map(
+          (aluno: {
+            id: number;
+            nome: string;
+            telefone_aluno?: string;
+            responsavel: string;
+            telefone_responsavel: string;
+            cursos: Array<{ id: number; titulo: string }>;
+            escola_parceira?: string;
+            turma?: number;
+          }) => ({
+            id: aluno.id,
+            name: aluno.nome || "",
+            phone: aluno.telefone_aluno || "",
+            responsibleName: aluno.responsavel || "",
+            responsiblePhone: aluno.telefone_responsavel || "",
+            courses: aluno.cursos || [],
+            partnerSchool: aluno.escola_parceira || null,
+            class: aluno.turma || null,
+          })
+        );
+
+        setStudents(alunosFormatados);
+      } catch (err) {
+        console.error("Error loading students:", err);
+        setError("Erro ao carregar alunos");
+        setStudents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStudents();
+  }, []);
 
   const filteredStudents = students.filter((student) => {
     // Filter by report type
@@ -52,7 +109,7 @@ export function AdminStudents() {
         student.name.toLowerCase().includes(search) ||
         student.phone.includes(search) ||
         student.responsibleName.toLowerCase().includes(search) ||
-        student.course.toLowerCase().includes(search)
+        student.courses.some((c) => c.titulo.toLowerCase().includes(search))
       );
     }
 
@@ -66,6 +123,27 @@ export function AdminStudents() {
   const totalStudents = students.length;
   const partnersCount = students.filter((s) => s.partnerSchool).length;
   const noLinkCount = students.filter((s) => !s.partnerSchool).length;
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
+          <p className="text-gray-600 mt-4">Carregando alunos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -132,7 +210,9 @@ export function AdminStudents() {
         <Card className="bg-white border-gray-200 p-6 shadow-sm">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-gray-700 text-sm mb-3">Tipo de Relatório</label>
+              <label className="block text-gray-700 text-sm mb-3">
+                Tipo de Relatório
+              </label>
               <Select
                 value={reportType}
                 onValueChange={(value: ReportType) => setReportType(value)}
@@ -142,7 +222,9 @@ export function AdminStudents() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alunos Matriculados</SelectItem>
-                  <SelectItem value="partner">Alunos de Escolas Parceiras</SelectItem>
+                  <SelectItem value="partner">
+                    Alunos de Escolas Parceiras
+                  </SelectItem>
                   <SelectItem value="no-link">Alunos sem Vínculos</SelectItem>
                 </SelectContent>
               </Select>
@@ -167,7 +249,7 @@ export function AdminStudents() {
               <Button
                 onClick={handleExport}
                 disabled={filteredStudents.length === 0}
-                className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#f54a12] disabled:hover:shadow-lg disabled:hover:shadow-[#f54a12]/20 disabled:bg-gray-400 disabled:hover:bg-gray-400"
+                className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
               >
                 <Download className="w-5 h-5 mr-2" />
                 Exportar
@@ -191,9 +273,13 @@ export function AdminStudents() {
                   <TableHead className="text-gray-700">Nome do Aluno</TableHead>
                   <TableHead className="text-gray-700">Telefone</TableHead>
                   <TableHead className="text-gray-700">Responsável</TableHead>
-                  <TableHead className="text-gray-700">Tel. Responsável</TableHead>
+                  <TableHead className="text-gray-700">
+                    Tel. Responsável
+                  </TableHead>
                   <TableHead className="text-gray-700">Curso</TableHead>
-                  <TableHead className="text-gray-700">Escola Parceira</TableHead>
+                  <TableHead className="text-gray-700">
+                    Escola Parceira
+                  </TableHead>
                   <TableHead className="text-gray-700">Turma</TableHead>
                 </TableRow>
               </TableHeader>
@@ -204,7 +290,9 @@ export function AdminStudents() {
                       <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                         <Inbox className="w-8 h-8 text-gray-400" />
                       </div>
-                      <h3 className="text-lg text-gray-900 mb-2">Nenhum aluno encontrado</h3>
+                      <h3 className="text-lg text-gray-900 mb-2">
+                        Nenhum aluno encontrado
+                      </h3>
                       <p className="text-gray-500">
                         {searchTerm || reportType !== "all"
                           ? "Tente ajustar os filtros de busca."
@@ -218,33 +306,54 @@ export function AdminStudents() {
                       key={student.id}
                       className="border-gray-100 hover:bg-gray-50 transition-colors"
                     >
-                      <TableCell className="text-gray-900">{student.name}</TableCell>
-                      <TableCell className="text-gray-600 font-mono text-sm">
-                        {student.phone}
+                      <TableCell className="text-gray-900">
+                        {student.name}
                       </TableCell>
-                      <TableCell className="text-gray-900">{student.responsibleName}</TableCell>
                       <TableCell className="text-gray-600 font-mono text-sm">
-                        {student.responsiblePhone}
+                        {student.phone || "-"}
+                      </TableCell>
+                      <TableCell className="text-gray-900">
+                        {student.responsibleName || "-"}
+                      </TableCell>
+                      <TableCell className="text-gray-600 font-mono text-sm">
+                        {student.responsiblePhone || "-"}
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
-                          {student.course}
-                        </Badge>
+                        {student.courses && student.courses.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {student.courses.map((curso) => (
+                              <Badge
+                                key={curso.id}
+                                className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30"
+                              >
+                                {curso.titulo}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-gray-600">
                         {student.partnerSchool ? (
                           <div className="flex items-center gap-2">
                             <School className="w-4 h-4 text-emerald-500" />
-                            <span className="text-gray-900">{student.partnerSchool}</span>
+                            <span className="text-gray-900">
+                              {student.partnerSchool}
+                            </span>
                           </div>
                         ) : (
                           <span className="text-gray-400">-</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                          Turma {student.class}
-                        </Badge>
+                        {student.class ? (
+                          <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                            Turma {student.class}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))
