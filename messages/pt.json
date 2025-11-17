@@ -648,7 +648,8 @@
         "classes": {
           "title": "Aulas Registradas",
           "no_classes": "Nenhuma aula registrada",
-          "no_classes_description": "Não há aulas cadastradas para este curso."
+          "no_classes_description": "Não há aulas cadastradas para este curso.",
+          "manage": "Gerenciar"
         },
         "details": {
           "title": "Informações do Curso",
@@ -712,6 +713,7 @@
       "class_details": {
         "back": "Voltar",
         "save_changes": "Salvar Alterações",
+        "saving": "Salvando...",
         "present": "Presentes",
         "absent": "Ausentes",
         "attendance_percentage": "Percentual de Presença",
@@ -720,7 +722,59 @@
         "student": "Aluno",
         "attendance": "Presença",
         "spinners": "Spinners",
-        "comment": "Comentário"
+        "comment": "Comentário",
+        "comment_dialog": {
+          "title": "Comentário sobre {name}",
+          "description": "Adicione observações sobre a participação e desempenho do aluno nesta aula",
+          "placeholder": "Escreva suas observações sobre o aluno...",
+          "add_comment": "Adicionar comentário",
+          "edit_comment": "Editar comentário",
+          "cancel": "Cancelar",
+          "save": "Salvar Comentário"
+        },
+        "loading": "Carregando dados da aula...",
+        "no_students": "Nenhum aluno encontrado",
+        "no_students_description": "Não há alunos matriculados nesta aula no momento.",
+        "materials": {
+          "title": "Materiais da Aula",
+          "description": "Anexe PDFs, documentos, slides e outros materiais",
+          "attach": "Anexar Material",
+          "no_materials": "Nenhum material anexado",
+          "attach_success_single": "Material anexado com sucesso!",
+          "attach_success_multiple": "{count} materiais anexados com sucesso!",
+          "attach_error": "Erro ao anexar material",
+          "remove_success": "Material removido com sucesso!",
+          "remove_error": "Erro ao remover material",
+          "upload_error": "Erro ao fazer upload dos arquivos",
+          "remove_file_error": "Erro ao remover arquivo",
+          "default_file_name": "Arquivo"
+        },
+        "notes": {
+          "title": "Anotações da Aula",
+          "description": "Registre observações sobre a aula, comportamento dos alunos, etc.",
+          "placeholder": "Escreva suas anotações aqui..."
+        },
+        "save_success": "Alterações salvas com sucesso!",
+        "save_success_toast": "Dados da aula salvos com sucesso!",
+        "save_error": "Erro ao salvar dados da aula",
+        "load_error": "Erro ao carregar dados da aula"
+      },
+      "register_class": {
+        "title": "Registrar Nova Aula",
+        "description": "Preencha os dados da aula para registrar no sistema",
+        "cancel": "Cancelar",
+        "register": "Registrar Aula",
+        "registering": "Registrando...",
+        "title_label": "Título da Aula",
+        "title_placeholder": "Ex: Introdução ao Python",
+        "date_label": "Data",
+        "time_label": "Horário",
+        "link_label": "Link da Aula",
+        "link_placeholder": "https://...",
+        "description_label": "Descrição",
+        "description_placeholder": "Descreva o conteúdo da aula...",
+        "success": "Aula registrada com sucesso!",
+        "error": "Erro ao criar aula"
       }
     },
     "exceededStudentsReport": {

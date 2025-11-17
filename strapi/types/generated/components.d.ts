@@ -1,5 +1,18 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ComentarioAlunoComentarioAluno extends Struct.ComponentSchema {
+  collectionName: 'components_comentario_aluno_comentario_alunos';
+  info: {
+    description: '';
+    displayName: 'comentario_aluno';
+  };
+  attributes: {
+    aluno: Schema.Attribute.Relation<'oneToOne', 'api::aluno.aluno'>;
+    comentario: Schema.Attribute.Text;
+    spinners_aula: Schema.Attribute.Integer;
+  };
+}
+
 export interface ComponentesDiasDaSemana extends Struct.ComponentSchema {
   collectionName: 'components_componentes_dias_da_semanas';
   info: {
@@ -104,6 +117,7 @@ export interface VideosVideos extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'comentario-aluno.comentario-aluno': ComentarioAlunoComentarioAluno;
       'componentes.dias-da-semana': ComponentesDiasDaSemana;
       'componentes.emenda-resumida': ComponentesEmendaResumida;
       'componentes.resumo-aulas': ComponentesResumoAulas;

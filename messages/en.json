@@ -646,7 +646,8 @@
         "classes": {
           "title": "Registered Classes",
           "no_classes": "No classes registered",
-          "no_classes_description": "There are no classes registered for this course."
+          "no_classes_description": "There are no classes registered for this course.",
+          "manage": "Manage"
         },
         "details": {
           "title": "Course Information",
@@ -710,6 +711,7 @@
       "class_details": {
         "back": "Back",
         "save_changes": "Save Changes",
+        "saving": "Saving...",
         "present": "Present",
         "absent": "Absent",
         "attendance_percentage": "Attendance Percentage",
@@ -718,7 +720,59 @@
         "student": "Student",
         "attendance": "Attendance",
         "spinners": "Spinners",
-        "comment": "Comment"
+        "comment": "Comment",
+        "comment_dialog": {
+          "title": "Comment about {name}",
+          "description": "Add observations about the student's participation and performance in this class",
+          "placeholder": "Write your observations about the student...",
+          "add_comment": "Add comment",
+          "edit_comment": "Edit comment",
+          "cancel": "Cancel",
+          "save": "Save Comment"
+        },
+        "loading": "Loading class data...",
+        "no_students": "No students found",
+        "no_students_description": "There are no students enrolled in this class at the moment.",
+        "materials": {
+          "title": "Class Materials",
+          "description": "Attach PDFs, documents, slides and other materials",
+          "attach": "Attach Material",
+          "no_materials": "No materials attached",
+          "attach_success_single": "Material attached successfully!",
+          "attach_success_multiple": "{count} materials attached successfully!",
+          "attach_error": "Error attaching material",
+          "remove_success": "Material removed successfully!",
+          "remove_error": "Error removing material",
+          "upload_error": "Error uploading files",
+          "remove_file_error": "Error removing file",
+          "default_file_name": "File"
+        },
+        "notes": {
+          "title": "Class Notes",
+          "description": "Record observations about the class, student behavior, etc.",
+          "placeholder": "Write your notes here..."
+        },
+        "save_success": "Changes saved successfully!",
+        "save_success_toast": "Class data saved successfully!",
+        "save_error": "Error saving class data",
+        "load_error": "Error loading class data"
+      },
+      "register_class": {
+        "title": "Register New Class",
+        "description": "Fill in the class data to register in the system",
+        "cancel": "Cancel",
+        "register": "Register Class",
+        "registering": "Registering...",
+        "title_label": "Class Title",
+        "title_placeholder": "Ex: Introduction to Python",
+        "date_label": "Date",
+        "time_label": "Time",
+        "link_label": "Class Link",
+        "link_placeholder": "https://...",
+        "description_label": "Description",
+        "description_placeholder": "Describe the class content...",
+        "success": "Class registered successfully!",
+        "error": "Error creating class"
       }
     },
     "exceededStudentsReport": {

@@ -24,11 +24,6 @@
         "PENDENTE"
       ]
     },
-    "alunos": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::aluno.aluno"
-    },
     "arquivos": {
       "type": "media",
       "multiple": true,
@@ -46,6 +41,22 @@
     },
     "link_aula": {
       "type": "string"
+    },
+    "titulo": {
+      "type": "string",
+      "required": true
+    },
+    "descricao": {
+      "type": "text"
+    },
+    "anotacoes": {
+      "type": "text"
+    },
+    "alunos": {
+      "displayName": "comentario_aluno",
+      "type": "component",
+      "repeatable": true,
+      "component": "comentario-aluno.comentario-aluno"
     }
   }
 }
