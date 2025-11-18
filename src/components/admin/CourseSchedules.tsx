@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
@@ -18,10 +18,15 @@ import { toast } from "sonner";
 
 interface Schedule {
   id: number;
+  index: number;
   dayOfWeek: string;
   startTime: string;
   maxStudents: number;
   currentStudents: number;
+}
+
+interface CourseSchedulesProps {
+  courseId: number;
 }
 
 // Helper function to add 50 minutes to a time string
@@ -194,32 +199,46 @@ const DraggableSchedule = ({
   );
 };
 
-export function CourseSchedules() {
-  const [schedules, setSchedules] = useState<Schedule[]>([
-    {
-      id: 1,
-      dayOfWeek: "monday",
-      startTime: "14:00",
-      maxStudents: 30,
-      currentStudents: 30,
-    },
-    {
-      id: 2,
-      dayOfWeek: "wednesday",
-      startTime: "14:00",
-      maxStudents: 30,
-      currentStudents: 15,
-    },
-    {
-      id: 3,
-      dayOfWeek: "friday",
-      startTime: "09:00",
-      maxStudents: 25,
-      currentStudents: 0,
-    },
-  ]);
+export function CourseSchedules({ courseId }: CourseSchedulesProps) {
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const moveSchedule = (dragIndex: number, hoverIndex: number) => {
+  // Carregar turmas do Strapi
+  useEffect(() => {
+    async function loadSchedules() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(
+          `/api/admin/courses/${courseId}/turmas`
+        );
+
+        if (!response.ok) {
+          throw new Error("Erro ao carregar turmas");
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setSchedules(data.data);
+        } else {
+          throw new Error(data.error || "Erro ao carregar turmas");
+        }
+      } catch (err) {
+        console.error("Error loading schedules:", err);
+        setError(err instanceof Error ? err.message : "Erro ao carregar turmas");
+        toast.error("Erro ao carregar turmas");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (courseId) {
+      loadSchedules();
+    }
+  }, [courseId]);
+
+  const moveSchedule = async (dragIndex: number, hoverIndex: number) => {
     // Prevent moving if either schedule is locked
     const dragSchedule = schedules[dragIndex];
     const hoverSchedule = schedules[hoverIndex];
@@ -229,34 +248,126 @@ export function CourseSchedules() {
       return;
     }
 
-    const updatedSchedules = [...schedules];
-    const [removed] = updatedSchedules.splice(dragIndex, 1);
-    updatedSchedules.splice(hoverIndex, 0, removed);
-    setSchedules(updatedSchedules);
+    // Criar nova ordem
+    const newOrder = [...schedules];
+    const [removed] = newOrder.splice(dragIndex, 1);
+    newOrder.splice(hoverIndex, 0, removed);
+
+    // Criar array de índices na nova ordem
+    const newOrderIndices = newOrder.map((s) => s.index);
+
+    try {
+      const response = await fetch(
+        `/api/admin/courses/${courseId}/turmas`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newOrder: newOrderIndices }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erro ao reordenar turmas");
+      }
+
+      // Atualizar localmente
+      setSchedules(newOrder);
+      toast.success("Turmas reordenadas com sucesso!");
+    } catch (err) {
+      console.error("Error reordering schedules:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao reordenar turmas"
+      );
+    }
   };
 
-  const handleAddSchedule = (newSchedule: {
+  const handleAddSchedule = async (newSchedule: {
     dayOfWeek: string;
     startTime: string;
-    maxStudents: number;
   }) => {
-    const schedule: Schedule = {
-      id: Date.now(),
-      ...newSchedule,
-      currentStudents: 0,
-    };
-    setSchedules([...schedules, schedule]);
-    toast.success("Turma adicionada com sucesso!");
+    try {
+      const response = await fetch(
+        `/api/admin/courses/${courseId}/turmas`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dayOfWeek: newSchedule.dayOfWeek,
+            startTime: newSchedule.startTime,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erro ao adicionar turma");
+      }
+
+      // Recarregar turmas
+      const loadResponse = await fetch(
+        `/api/admin/courses/${courseId}/turmas`
+      );
+      if (loadResponse.ok) {
+        const data = await loadResponse.json();
+        if (data.success) {
+          setSchedules(data.data);
+        }
+      }
+
+      toast.success("Turma adicionada com sucesso!");
+    } catch (err) {
+      console.error("Error adding schedule:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao adicionar turma"
+      );
+    }
   };
 
-  const handleDeleteSchedule = (id: number) => {
+  const handleDeleteSchedule = async (id: number) => {
     const schedule = schedules.find((s) => s.id === id);
-    if (schedule && schedule.currentStudents > 0) {
+    if (!schedule) return;
+
+    if (schedule.currentStudents > 0) {
       toast.error("Não é possível remover turmas com alunos matriculados");
       return;
     }
-    setSchedules(schedules.filter((s) => s.id !== id));
-    toast.success("Turma removida com sucesso!");
+
+    try {
+      const response = await fetch(
+        `/api/admin/courses/${courseId}/turmas?index=${schedule.index}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erro ao remover turma");
+      }
+
+      // Recarregar turmas
+      const loadResponse = await fetch(
+        `/api/admin/courses/${courseId}/turmas`
+      );
+      if (loadResponse.ok) {
+        const data = await loadResponse.json();
+        if (data.success) {
+          setSchedules(data.data);
+        }
+      }
+
+      toast.success("Turma removida com sucesso!");
+    } catch (err) {
+      console.error("Error deleting schedule:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao remover turma"
+      );
+    }
   };
 
   // Find the active schedule (first one that's not full)
@@ -271,6 +382,27 @@ export function CourseSchedules() {
     return allPreviousFull && schedule.currentStudents < schedule.maxStudents;
   });
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#599fe9] mx-auto"></div>
+          <p className="text-gray-600 mt-4">Carregando turmas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-16">
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-6">
@@ -283,7 +415,13 @@ export function CourseSchedules() {
               lotada será exibida no site.
             </p>
           </div>
-          <AddScheduleDialog onAdd={handleAddSchedule} />
+          <AddScheduleDialog 
+            onAdd={handleAddSchedule}
+            existingSchedules={schedules.map((s) => ({
+              dayOfWeek: s.dayOfWeek,
+              startTime: s.startTime,
+            }))}
+          />
         </div>
 
         {/* Info Card */}
@@ -327,7 +465,13 @@ export function CourseSchedules() {
             <p className="text-gray-500 mb-6">
               Comece adicionando a primeira turma disponível para o curso.
             </p>
-            <AddScheduleDialog onAdd={handleAddSchedule} />
+            <AddScheduleDialog 
+              onAdd={handleAddSchedule}
+              existingSchedules={schedules.map((s) => ({
+                dayOfWeek: s.dayOfWeek,
+                startTime: s.startTime,
+              }))}
+            />
           </Card>
         ) : (
           <div className="space-y-4">
