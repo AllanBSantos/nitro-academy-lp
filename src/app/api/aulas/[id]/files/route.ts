@@ -4,6 +4,41 @@ const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
 const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
 
+interface StrapiFile {
+  id: number;
+  name?: string;
+  url?: string;
+  mime?: string;
+  size?: number;
+  createdAt?: string;
+  attributes?: {
+    id?: number;
+    name?: string;
+    url?: string;
+    mime?: string;
+    size?: number;
+    createdAt?: string;
+  };
+}
+
+interface StrapiUploadResponse {
+  id: number;
+  [key: string]: unknown;
+}
+
+interface StrapiAulaEntry {
+  id?: number;
+  documentId?: string;
+  arquivos?: {
+    data?: StrapiFile[];
+  } | StrapiFile[];
+  attributes?: {
+    arquivos?: {
+      data?: StrapiFile[];
+    };
+  };
+}
+
 async function resolveAulaIdentifiers(aulaId: string) {
   const sanitized = aulaId.toString().replace(/\/+$/, "");
   const filters: string[] = [];
@@ -117,11 +152,11 @@ export async function POST(
       );
     }
 
-    const uploadData = await uploadResponse.json();
+    const uploadData = await uploadResponse.json() as StrapiUploadResponse | StrapiUploadResponse[];
     const uploadedFiles = Array.isArray(uploadData) ? uploadData : [uploadData];
     const fileIds = uploadedFiles
-      .map((file: any) => file.id)
-      .filter((id: any) => id != null);
+      .map((file: StrapiUploadResponse) => file.id)
+      .filter((id: number | undefined): id is number => id != null);
 
     if (fileIds.length === 0) {
       return NextResponse.json(
@@ -177,16 +212,17 @@ export async function POST(
     let arquivosIdsExistentes: number[] = [];
     
     // Tentar diferentes estruturas de resposta do Strapi
-    if (aulaEntry.arquivos?.data && Array.isArray(aulaEntry.arquivos.data)) {
-      arquivosIdsExistentes = aulaEntry.arquivos.data.map((arq: any) => arq.id).filter((id: any) => id != null);
-    } else if (aulaEntry.arquivos && Array.isArray(aulaEntry.arquivos)) {
-      arquivosIdsExistentes = aulaEntry.arquivos.map((arq: any) => arq.id).filter((id: any) => id != null);
-    } else if (aulaEntry.attributes?.arquivos?.data && Array.isArray(aulaEntry.attributes.arquivos.data)) {
-      arquivosIdsExistentes = aulaEntry.attributes.arquivos.data.map((arq: any) => arq.id).filter((id: any) => id != null);
+    const aulaEntryTypedPost = aulaEntry as StrapiAulaEntry;
+    if (aulaEntryTypedPost.arquivos && 'data' in aulaEntryTypedPost.arquivos && Array.isArray(aulaEntryTypedPost.arquivos.data)) {
+      arquivosIdsExistentes = aulaEntryTypedPost.arquivos.data.map((arq: StrapiFile) => arq.id).filter((id: number | undefined): id is number => id != null);
+    } else if (Array.isArray(aulaEntryTypedPost.arquivos)) {
+      arquivosIdsExistentes = aulaEntryTypedPost.arquivos.map((arq: StrapiFile) => arq.id).filter((id: number | undefined): id is number => id != null);
+    } else if (aulaEntryTypedPost.attributes?.arquivos?.data && Array.isArray(aulaEntryTypedPost.attributes.arquivos.data)) {
+      arquivosIdsExistentes = aulaEntryTypedPost.attributes.arquivos.data.map((arq: StrapiFile) => arq.id).filter((id: number | undefined): id is number => id != null);
     }
     
     // Combinar IDs existentes com novos, evitando duplicatas
-    const arquivosIds = [...new Set([...arquivosIdsExistentes, ...fileIds])];
+    const arquivosIds = Array.from(new Set([...arquivosIdsExistentes, ...fileIds]));
 
     // 3. Atualizar aula com todos os arquivos
     // Usar a mesma estratégia do endpoint principal - tentar múltiplos identificadores
@@ -366,12 +402,13 @@ export async function DELETE(
     let arquivosIdsExistentes: number[] = [];
     
     // Tentar diferentes estruturas de resposta do Strapi
-    if (aulaEntry.arquivos?.data && Array.isArray(aulaEntry.arquivos.data)) {
-      arquivosIdsExistentes = aulaEntry.arquivos.data.map((arq: any) => arq.id).filter((id: any) => id != null);
-    } else if (aulaEntry.arquivos && Array.isArray(aulaEntry.arquivos)) {
-      arquivosIdsExistentes = aulaEntry.arquivos.map((arq: any) => arq.id).filter((id: any) => id != null);
-    } else if (aulaEntry.attributes?.arquivos?.data && Array.isArray(aulaEntry.attributes.arquivos.data)) {
-      arquivosIdsExistentes = aulaEntry.attributes.arquivos.data.map((arq: any) => arq.id).filter((id: any) => id != null);
+    const aulaEntryTypedDelete = aulaEntry as StrapiAulaEntry;
+    if (aulaEntryTypedDelete.arquivos && 'data' in aulaEntryTypedDelete.arquivos && Array.isArray(aulaEntryTypedDelete.arquivos.data)) {
+      arquivosIdsExistentes = aulaEntryTypedDelete.arquivos.data.map((arq: StrapiFile) => arq.id).filter((id: number | undefined): id is number => id != null);
+    } else if (Array.isArray(aulaEntryTypedDelete.arquivos)) {
+      arquivosIdsExistentes = aulaEntryTypedDelete.arquivos.map((arq: StrapiFile) => arq.id).filter((id: number | undefined): id is number => id != null);
+    } else if (aulaEntryTypedDelete.attributes?.arquivos?.data && Array.isArray(aulaEntryTypedDelete.attributes.arquivos.data)) {
+      arquivosIdsExistentes = aulaEntryTypedDelete.attributes.arquivos.data.map((arq: StrapiFile) => arq.id).filter((id: number | undefined): id is number => id != null);
     }
     
     // Converter fileId para número para comparação correta

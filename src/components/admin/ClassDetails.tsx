@@ -35,6 +35,51 @@ import { toast } from "sonner";
 import { StudentCommentDialog } from "./StudentCommentDialog";
 import { ADMIN_TOKEN } from "@/lib/constants";
 
+interface StrapiAlunoEntry {
+  aluno?: number | string | { id?: number; data?: { id?: number } };
+  comentario?: string;
+  spinners_aula?: number;
+}
+
+interface StrapiAulaData {
+  id?: number;
+  documentId?: string;
+  alunos?: StrapiAlunoEntry[];
+  arquivos?:
+    | {
+        data?: StrapiFileData[];
+      }
+    | StrapiFileData[];
+  attributes?: {
+    arquivos?: {
+      data?: StrapiFileData[];
+    };
+  };
+}
+
+interface StrapiFileData {
+  id?: number;
+  documentId?: string;
+  name?: string;
+  url?: string;
+  mime?: string;
+  size?: number;
+  createdAt?: string;
+  attributes?: {
+    id?: number;
+    name?: string;
+    url?: string;
+    mime?: string;
+    size?: number;
+    createdAt?: string;
+  };
+}
+
+interface StrapiAlunoResponse {
+  id: number;
+  nome?: string;
+}
+
 // Helper para construir URL completa do arquivo do Strapi
 // Usa proxy do Next.js para evitar problemas de CORS
 const getFileUrl = (url: string): string => {
@@ -74,6 +119,7 @@ const ImageWithFallback = ({ src, alt }: { src: string; alt: string }) => {
   }
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}
@@ -204,7 +250,7 @@ export function ClassDetails({
     return () => clearTimeout(timeout);
   }, [saveMessage]);
 
-  const resolveAlunoId = (entry: any): number | null => {
+  const resolveAlunoId = (entry: StrapiAlunoEntry): number | null => {
     if (!entry || entry === null) return null;
     if (typeof entry.aluno === "number") return entry.aluno;
     if (typeof entry.aluno === "string")
@@ -215,14 +261,17 @@ export function ClassDetails({
   };
 
   const mapAulaStudents = useCallback(
-    (baseStudents: StudentAttendance[], aula: any): StudentAttendance[] => {
+    (
+      baseStudents: StudentAttendance[],
+      aula: StrapiAulaData
+    ): StudentAttendance[] => {
       const aulaStudents = Array.isArray(aula?.alunos) ? aula.alunos : [];
       const aulaMap = new Map<
         number,
         { comentario: string; spinners: number }
       >();
 
-      aulaStudents.forEach((entry: any) => {
+      aulaStudents.forEach((entry: StrapiAlunoEntry) => {
         const alunoId = resolveAlunoId(entry);
         if (!alunoId) return;
         aulaMap.set(alunoId, {
@@ -285,11 +334,16 @@ export function ClassDetails({
   };
 
   const formatMaterialsFromAula = useCallback(
-    (aula: any): Material[] => {
+    (aula: StrapiAulaData): Material[] => {
       // Tentar diferentes estruturas de dados do Strapi
-      let arquivosArray: any[] = [];
+      let arquivosArray: StrapiFileData[] = [];
 
-      if (aula?.arquivos?.data && Array.isArray(aula.arquivos.data)) {
+      if (
+        aula?.arquivos &&
+        !Array.isArray(aula.arquivos) &&
+        "data" in aula.arquivos &&
+        Array.isArray(aula.arquivos.data)
+      ) {
         arquivosArray = aula.arquivos.data;
       } else if (aula?.arquivos && Array.isArray(aula.arquivos)) {
         arquivosArray = aula.arquivos;
@@ -304,9 +358,16 @@ export function ClassDetails({
         return [];
       }
 
-      return arquivosArray.map((arq: any) => {
+      return arquivosArray.map((arq: StrapiFileData) => {
         const attributes = arq.attributes ?? {};
-        const id = arq.id ?? attributes.id ?? arq.documentId;
+        const rawId = arq.id ?? attributes.id;
+        // Garantir que id seja sempre um número
+        const id =
+          typeof rawId === "number"
+            ? rawId
+            : typeof rawId === "string"
+            ? parseInt(rawId, 10) || 0
+            : 0;
         const name =
           arq.name ||
           attributes.name ||
@@ -353,7 +414,7 @@ export function ClassDetails({
           : { data: [] };
 
         const baseStudents: StudentAttendance[] = (studentsData.data || []).map(
-          (aluno: any) => ({
+          (aluno: StrapiAlunoResponse) => ({
             id: aluno.id,
             name: aluno.nome || "",
             present: false,

@@ -40,6 +40,17 @@ import { Avatar, AvatarFallback } from "../new-layout/ui/avatar";
 import { ClassDetails } from "./ClassDetails";
 import { CourseSchedules } from "./CourseSchedules";
 
+interface Aula {
+  id?: number;
+  documentId?: string;
+  titulo?: string;
+  data?: string;
+  descricao?: string;
+  link_aula?: string;
+  aula_status?: string;
+  arquivos?: unknown[];
+}
+
 interface CourseDetailsProps {
   course: {
     id: number;
@@ -86,7 +97,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [aulas, setAulas] = useState<any[]>([]);
+  const [aulas, setAulas] = useState<Aula[]>([]);
   const [loadingAulas, setLoadingAulas] = useState(false);
   const [courseDetails, setCourseDetails] = useState({
     title: course.name,
@@ -489,7 +500,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 {aulas.map((aula) => {
                   const aulaIdentifier =
                     aula.documentId || aula.id?.toString() || "";
-                  const aulaDate = new Date(aula.data);
+                  const aulaDate = aula.data ? new Date(aula.data) : new Date();
                   const formattedDate = aulaDate.toLocaleDateString("pt-BR");
                   const formattedTime = aulaDate.toLocaleTimeString("pt-BR", {
                     hour: "2-digit",
@@ -509,7 +520,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                           onClick={() => {
                             setSelectedClass({
                               id: aulaIdentifier,
-                              title: aula.titulo,
+                              title: aula.titulo || "",
                               date: formattedDate,
                               time: formattedTime,
                               duration: "",

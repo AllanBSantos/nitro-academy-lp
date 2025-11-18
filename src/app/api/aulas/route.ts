@@ -78,14 +78,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let data = await response.json();
+    const responseData = await response.json();
     
     // Se buscou todas as aulas e tem cursoId, filtrar no código
-    if (cursoId && data.data && Array.isArray(data.data)) {
-      data.data = data.data.filter((aula: any) => {
+    if (cursoId && responseData.data && Array.isArray(responseData.data)) {
+      responseData.data = responseData.data.filter((aula: { curso?: { id?: number | string } }) => {
         return aula.curso && (aula.curso.id === parseInt(cursoId, 10) || aula.curso.id?.toString() === cursoId);
       });
     }
+    
+    const data = responseData;
 
     return NextResponse.json(data);
   } catch (error) {
