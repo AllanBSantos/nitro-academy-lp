@@ -25,7 +25,7 @@ const COURSE_FIELDS = [
   "fields[23]=plano",
 ];
 
-const COURSE_POPULATE = [
+const COURSE_POPULATE_BASE = [
   "populate[imagem][fields][0]=url",
   "populate[mentor][fields][0]=nome",
   "populate[mentor][fields][1]=profissao",
@@ -57,9 +57,19 @@ const COURSE_POPULATE = [
   "populate[ementa_resumida][fields][0]=descricao",
   "populate[resumo_aulas][fields][0]=nome_aula",
   "populate[resumo_aulas][fields][1]=descricao_aula",
+  "populate[review][fields][0]=id",
+  "populate[review][fields][1]=nota",
+  "populate[review][fields][2]=descricao",
+  "populate[review][fields][3]=nome",
+];
+
+const COURSE_ALUNOS_PUBLIC = [
   "populate[alunos][filters][habilitado][$eq]=true",
   "populate[alunos][fields][0]=id",
   "populate[alunos][fields][1]=turma",
+];
+
+const COURSE_ALUNOS_ADMIN_EXTRA = [
   "populate[alunos][fields][2]=documentId",
   "populate[alunos][fields][3]=nome",
   "populate[alunos][fields][4]=email_responsavel",
@@ -67,18 +77,26 @@ const COURSE_POPULATE = [
   "populate[alunos][fields][6]=telefone_aluno",
   "populate[alunos][fields][7]=escola_parceira",
   "populate[alunos][fields][8]=createdAt",
+];
+
+const COURSE_CAMPAIGNS = [
   "populate[campanhas][fields][0]=nome",
   "populate[campanhas][fields][1]=periodo_inscricao",
   "populate[campanhas][fields][2]=inicio_e_fim_aulas",
-  "populate[review][fields][0]=id",
-  "populate[review][fields][1]=nota",
-  "populate[review][fields][2]=descricao",
-  "populate[review][fields][3]=nome",
 ];
 
-export const COURSE_QUERY_PARAMS = [
-  ...COURSE_FIELDS,
-  ...COURSE_POPULATE,
+const COURSE_QUERY_BASE = [...COURSE_FIELDS, ...COURSE_POPULATE_BASE];
+
+export const COURSE_QUERY_PUBLIC_PARAMS = [
+  ...COURSE_QUERY_BASE,
+  ...COURSE_ALUNOS_PUBLIC,
+].join("&");
+
+export const COURSE_QUERY_ADMIN_PARAMS = [
+  ...COURSE_QUERY_BASE,
+  ...COURSE_ALUNOS_PUBLIC,
+  ...COURSE_ALUNOS_ADMIN_EXTRA,
+  ...COURSE_CAMPAIGNS,
 ].join("&");
 
 
