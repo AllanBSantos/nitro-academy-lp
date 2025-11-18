@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_comentario_aluno_comentario_alunos",
+  "info": {
+    "displayName": "comentario_aluno",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "aluno": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::aluno.aluno"
+    },
+    "comentario": {
+      "type": "text"
+    },
+    "spinners_aula": {
+      "type": "integer"
+    }
+  }
+}

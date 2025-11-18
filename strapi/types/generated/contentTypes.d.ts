@@ -497,7 +497,11 @@ export interface ApiAulaAula extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    alunos: Schema.Attribute.Relation<'oneToMany', 'api::aluno.aluno'>;
+    alunos: Schema.Attribute.Component<
+      'comentario-aluno.comentario-aluno',
+      true
+    >;
+    anotacoes: Schema.Attribute.Text;
     arquivos: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
     aula_status: Schema.Attribute.Enumeration<
       ['INICIADA', 'CONLU\u00CDDA ', 'EM ANDAMENTO', 'PENDENTE']
@@ -507,11 +511,13 @@ export interface ApiAulaAula extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     curso: Schema.Attribute.Relation<'oneToOne', 'api::curso.curso'>;
     data: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    descricao: Schema.Attribute.Text;
     link_aula: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::aula.aula'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    titulo: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

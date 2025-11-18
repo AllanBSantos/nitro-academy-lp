@@ -10,6 +10,11 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: [],
   },
+  env: {
+    NEXT_PUBLIC_ADMIN_TOKEN: process.env.STRAPI_TOKEN,
+    NEXT_PUBLIC_STRAPI_TOKEN:
+      process.env.NEXT_PUBLIC_STRAPI_TOKEN || process.env.STRAPI_TOKEN,
+  },
 
   // Cache configuration
   generateEtags: false,
@@ -102,7 +107,7 @@ const nextConfig = {
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  trailingSlash: true,
+  trailingSlash: false,
 
   webpack: (config) => {
     config.module.rules.push({

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -7,6 +7,7 @@ import {
   Users,
   GraduationCap,
   Calendar,
+  Clock,
   Search,
   Download,
   Save,
@@ -38,6 +39,17 @@ import { RegisterClassDialog } from "./RegisterClassDialog";
 import { Avatar, AvatarFallback } from "../new-layout/ui/avatar";
 import { ClassDetails } from "./ClassDetails";
 import { CourseSchedules } from "./CourseSchedules";
+
+interface Aula {
+  id?: number;
+  documentId?: string;
+  titulo?: string;
+  data?: string;
+  descricao?: string;
+  link_aula?: string;
+  aula_status?: string;
+  arquivos?: unknown[];
+}
 
 interface CourseDetailsProps {
   course: {
@@ -75,7 +87,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [selectedEscola, setSelectedEscola] = useState<string>("all");
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [selectedClass, setSelectedClass] = useState<{
-    id: number;
+    id: string;
     title: string;
     date: string;
     time: string;
@@ -85,6 +97,8 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [aulas, setAulas] = useState<Aula[]>([]);
+  const [loadingAulas, setLoadingAulas] = useState(false);
   const [courseDetails, setCourseDetails] = useState({
     title: course.name,
     description:
@@ -148,6 +162,34 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     loadStudents();
   }, [course.id, t]);
 
+  const loadAulas = useCallback(async () => {
+    try {
+      setLoadingAulas(true);
+      const response = await fetch(`/api/aulas?cursoId=${course.id}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Error loading aulas:", response.status, errorData);
+        setAulas([]);
+        return;
+      }
+
+      const data = await response.json();
+      setAulas(data.data || []);
+    } catch (err) {
+      console.error("Error loading aulas:", err);
+      setAulas([]);
+    } finally {
+      setLoadingAulas(false);
+    }
+  }, [course.id]);
+
+  useEffect(() => {
+    if (activeTab === "classes") {
+      loadAulas();
+    }
+  }, [activeTab, loadAulas]);
+
   const availableTurmas = Array.from(
     new Set(students.map((s) => s.turma).filter((t): t is number => t !== undefined && t !== null))
   ).sort((a, b) => a - b);
@@ -195,6 +237,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     return (
       <ClassDetails
         classItem={selectedClass}
+        courseId={course.id}
         onBack={handleBackFromClass}
       />
     );
@@ -432,20 +475,93 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
           <TabsContent value="classes" className="p-6 space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl text-gray-900">{t("classes.title")}</h2>
-              <RegisterClassDialog />
+              <RegisterClassDialog courseId={course.id} onSuccess={loadAulas} />
             </div>
 
-            <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                <Inbox className="w-8 h-8 text-gray-400" />
+            {loadingAulas ? (
+              <div className="text-center py-16">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
+                <p className="text-gray-600 mt-4">Carregando aulas...</p>
               </div>
-              <h3 className="text-lg text-gray-900 mb-2">
-                {t("classes.no_classes")}
-              </h3>
-              <p className="text-gray-500 mb-6">
-                {t("classes.no_classes_description")}
-              </p>
-            </div>
+            ) : aulas.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                  <Inbox className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg text-gray-900 mb-2">
+                  {t("classes.no_classes")}
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  {t("classes.no_classes_description")}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {aulas.map((aula) => {
+                  const aulaIdentifier =
+                    aula.documentId || aula.id?.toString() || "";
+                  const aulaDate = aula.data ? new Date(aula.data) : new Date();
+                  const formattedDate = aulaDate.toLocaleDateString("pt-BR");
+                  const formattedTime = aulaDate.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  
+                  return (
+                    <Card
+                      key={aulaIdentifier || aula.id}
+                      className="bg-white border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow relative flex flex-col"
+                    >
+                      {/* Botão Gerenciar no canto superior direito */}
+                      <div className="absolute top-4 right-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedClass({
+                              id: aulaIdentifier,
+                              title: aula.titulo || "",
+                              date: formattedDate,
+                              time: formattedTime,
+                              duration: "",
+                              description: "",
+                            });
+                          }}
+                          className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50 h-9 px-3"
+                        >
+                          <Edit2 className="w-4 h-4 mr-2" />
+                          {t("classes.manage")}
+                        </Button>
+                      </div>
+
+                      {/* Título */}
+                      <h3 className="text-lg font-bold text-gray-900 mb-1 pr-24">
+                        {aula.titulo}
+                      </h3>
+
+                      {/* Descrição */}
+                      {aula.descricao && (
+                        <p className="text-sm text-gray-500 mb-4">
+                          {aula.descricao}
+                        </p>
+                      )}
+
+                      {/* Data e Horário no canto inferior esquerdo */}
+                      <div className="flex items-center gap-4 text-gray-600 mt-auto">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span className="text-sm">{formattedDate}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span className="text-sm">{formattedTime}</span>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           {/* Schedules Tab */}

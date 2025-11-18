@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import {
@@ -6,6 +6,10 @@ import {
   Save,
   Upload,
   FileText,
+  File,
+  FileType,
+  Presentation,
+  Image as ImageIcon,
   Download,
   Trash2,
   CheckCircle2,
@@ -29,16 +33,177 @@ import {
 } from "../new-layout/ui/table";
 import { toast } from "sonner";
 import { StudentCommentDialog } from "./StudentCommentDialog";
+import { ADMIN_TOKEN } from "@/lib/constants";
+
+interface StrapiAlunoEntry {
+  aluno?: number | string | { id?: number; data?: { id?: number } };
+  comentario?: string;
+  spinners_aula?: number;
+}
+
+interface StrapiAulaData {
+  id?: number;
+  documentId?: string;
+  alunos?: StrapiAlunoEntry[];
+  arquivos?:
+    | {
+        data?: StrapiFileData[];
+      }
+    | StrapiFileData[];
+  attributes?: {
+    arquivos?: {
+      data?: StrapiFileData[];
+    };
+  };
+}
+
+interface StrapiFileData {
+  id?: number;
+  documentId?: string;
+  name?: string;
+  url?: string;
+  mime?: string;
+  size?: number;
+  createdAt?: string;
+  attributes?: {
+    id?: number;
+    name?: string;
+    url?: string;
+    mime?: string;
+    size?: number;
+    createdAt?: string;
+  };
+}
+
+interface StrapiAlunoResponse {
+  id: number;
+  nome?: string;
+}
+
+// Helper para construir URL completa do arquivo do Strapi
+// Usa proxy do Next.js para evitar problemas de CORS
+const getFileUrl = (url: string): string => {
+  if (!url) return "";
+
+  // Se já é uma URL completa (http:// ou https://), usar proxy
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    // Extrair o caminho relativo da URL completa
+    try {
+      const urlObj = new URL(url);
+      const path = urlObj.pathname;
+      return `/api/files${path}`;
+    } catch {
+      return url;
+    }
+  }
+
+  // Se começa com /, usar proxy do Next.js
+  if (url.startsWith("/")) {
+    return `/api/files${url}`;
+  }
+
+  // Caso contrário, retornar como está
+  return url;
+};
+
+// Componente para imagem com fallback
+const ImageWithFallback = ({ src, alt }: { src: string; alt: string }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <ImageIcon className="w-6 h-6 text-[#599fe9]" />
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover"
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
+// Helper para renderizar ícone ou miniatura baseado no tipo de arquivo
+const renderFileIcon = (material: Material) => {
+  const mimeType = material.mime?.toLowerCase() || "";
+  const fileName = material.name?.toLowerCase() || "";
+  const fileUrl = material.url || "";
+
+  // Verificar se é imagem
+  if (
+    mimeType.startsWith("image/") ||
+    /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(fileName)
+  ) {
+    return (
+      <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+        <ImageWithFallback src={fileUrl} alt={material.name} />
+      </div>
+    );
+  }
+
+  // Verificar se é PDF
+  if (mimeType === "application/pdf" || fileName.endsWith(".pdf")) {
+    return (
+      <div className="p-2 bg-red-50 rounded-lg">
+        <File className="w-6 h-6 text-red-600" />
+      </div>
+    );
+  }
+
+  // Verificar se é DOC/DOCX (Word)
+  if (
+    mimeType.includes("word") ||
+    mimeType === "application/msword" ||
+    mimeType ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    /\.(doc|docx)$/i.test(fileName)
+  ) {
+    return (
+      <div className="p-2 bg-blue-50 rounded-lg">
+        <FileText className="w-6 h-6 text-blue-600" />
+      </div>
+    );
+  }
+
+  // Verificar se é PPT/PPTX (PowerPoint)
+  if (
+    mimeType.includes("presentation") ||
+    mimeType === "application/vnd.ms-powerpoint" ||
+    mimeType ===
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+    /\.(ppt|pptx)$/i.test(fileName)
+  ) {
+    return (
+      <div className="p-2 bg-orange-50 rounded-lg">
+        <Presentation className="w-6 h-6 text-orange-600" />
+      </div>
+    );
+  }
+
+  // Ícone genérico para outros arquivos
+  return (
+    <div className="p-2 bg-[#599fe9]/10 rounded-lg">
+      <FileType className="w-6 h-6 text-[#599fe9]" />
+    </div>
+  );
+};
 
 interface ClassDetailsProps {
   classItem: {
-    id: number;
+    id: string;
     title: string;
     date: string;
     time: string;
     duration: string;
     description: string;
   };
+  courseId: number;
   onBack: () => void;
 }
 
@@ -55,33 +220,96 @@ interface Material {
   name: string;
   type: string;
   uploadedAt: string;
+  url?: string;
+  mime?: string;
+  size?: number;
 }
 
-export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
+export function ClassDetails({
+  classItem,
+  courseId,
+  onBack,
+}: ClassDetailsProps) {
   const [students, setStudents] = useState<StudentAttendance[]>([]);
-  const [notes, setNotes] = useState(
-    "Os alunos demonstraram grande interesse no tema. A aula foi produtiva e todos participaram ativamente das discussões."
+  const [notes, setNotes] = useState("");
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [resolvedDocumentId, setResolvedDocumentId] = useState(
+    classItem.id?.toString() ?? ""
   );
-  const [materials, setMaterials] = useState<Material[]>([
-    {
-      id: 1,
-      name: "Slides - Introdução.pdf",
-      type: "PDF",
-      uploadedAt: "15/08/2025, 14:30",
+  const [resolvedNumericId, setResolvedNumericId] = useState<string | null>(
+    null
+  );
+  const t = useTranslations("Admin.panel.class_details");
+
+  useEffect(() => {
+    if (!saveMessage) return;
+    const timeout = setTimeout(() => setSaveMessage(""), 4000);
+    return () => clearTimeout(timeout);
+  }, [saveMessage]);
+
+  const resolveAlunoId = (entry: StrapiAlunoEntry): number | null => {
+    if (!entry || entry === null) return null;
+    if (typeof entry.aluno === "number") return entry.aluno;
+    if (typeof entry.aluno === "string")
+      return Number.parseInt(entry.aluno, 10) || null;
+    if (entry.aluno?.id) return entry.aluno.id;
+    if (entry.aluno?.data?.id) return entry.aluno.data.id;
+    return null;
+  };
+
+  const mapAulaStudents = useCallback(
+    (
+      baseStudents: StudentAttendance[],
+      aula: StrapiAulaData
+    ): StudentAttendance[] => {
+      const aulaStudents = Array.isArray(aula?.alunos) ? aula.alunos : [];
+      const aulaMap = new Map<
+        number,
+        { comentario: string; spinners: number }
+      >();
+
+      aulaStudents.forEach((entry: StrapiAlunoEntry) => {
+        const alunoId = resolveAlunoId(entry);
+        if (!alunoId) return;
+        aulaMap.set(alunoId, {
+          comentario: entry.comentario || "",
+          spinners: entry.spinners_aula ?? 0,
+        });
+      });
+
+      return baseStudents.map((student) => {
+        const aulaInfo = aulaMap.get(student.id);
+        if (aulaInfo) {
+          return {
+            ...student,
+            present: true,
+            comment: aulaInfo.comentario,
+            spinners: aulaInfo.spinners,
+          };
+        }
+        return {
+          ...student,
+          present: false,
+          spinners: 0,
+          comment: "",
+        };
+      });
     },
-    {
-      id: 2,
-      name: "Exercícios Práticos.docx",
-      type: "DOCX",
-      uploadedAt: "15/08/2025, 15:00",
-    },
-  ]);
+    []
+  );
 
   const handlePresenceToggle = (studentId: number) => {
     setStudents(
       students.map((student) =>
         student.id === studentId
-          ? { ...student, present: !student.present }
+          ? {
+              ...student,
+              present: !student.present,
+              spinners: student.present ? 0 : student.spinners,
+            }
           : student
       )
     );
@@ -105,27 +333,261 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
     );
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const newMaterial: Material = {
-        id: materials.length + 1,
-        name: file.name,
-        type: file.name.split(".").pop()?.toUpperCase() || "FILE",
-        uploadedAt: new Date().toLocaleString("pt-BR"),
-      };
-      setMaterials([...materials, newMaterial]);
-      toast.success("Material anexado com sucesso!");
+  const formatMaterialsFromAula = useCallback(
+    (aula: StrapiAulaData): Material[] => {
+      // Tentar diferentes estruturas de dados do Strapi
+      let arquivosArray: StrapiFileData[] = [];
+
+      if (
+        aula?.arquivos &&
+        !Array.isArray(aula.arquivos) &&
+        "data" in aula.arquivos &&
+        Array.isArray(aula.arquivos.data)
+      ) {
+        arquivosArray = aula.arquivos.data;
+      } else if (aula?.arquivos && Array.isArray(aula.arquivos)) {
+        arquivosArray = aula.arquivos;
+      } else if (
+        aula?.attributes?.arquivos?.data &&
+        Array.isArray(aula.attributes.arquivos.data)
+      ) {
+        arquivosArray = aula.attributes.arquivos.data;
+      }
+
+      if (arquivosArray.length === 0) {
+        return [];
+      }
+
+      return arquivosArray.map((arq: StrapiFileData) => {
+        const attributes = arq.attributes ?? {};
+        const rawId = arq.id ?? attributes.id;
+        // Garantir que id seja sempre um número
+        const id =
+          typeof rawId === "number"
+            ? rawId
+            : typeof rawId === "string"
+            ? parseInt(rawId, 10) || 0
+            : 0;
+        const name =
+          arq.name ||
+          attributes.name ||
+          arq.attributes?.name ||
+          t("materials.default_file_name");
+        const mime = arq.mime || attributes.mime || arq.attributes?.mime || "";
+        const url = arq.url || attributes.url || arq.attributes?.url || "";
+        const createdAt =
+          arq.createdAt || attributes.createdAt || arq.attributes?.createdAt;
+        const size = arq.size || attributes.size || arq.attributes?.size;
+
+        return {
+          id: id,
+          name,
+          type:
+            mime?.split("/")[1]?.toUpperCase() ||
+            name.split(".").pop()?.toUpperCase() ||
+            "FILE",
+          uploadedAt: createdAt
+            ? new Date(createdAt).toLocaleString("pt-BR")
+            : "",
+          url: getFileUrl(url),
+          mime,
+          size,
+        };
+      });
+    },
+    [t]
+  );
+
+  // Carregar dados da aula e alunos do curso
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        const aulaId = `${classItem.id}`.toString().replace(/\/+$/, "");
+
+        // buscar alunos do curso
+        const studentsResponse = await fetch(
+          `/api/admin/all-students?cursoId=${courseId}`
+        );
+        const studentsData = studentsResponse.ok
+          ? await studentsResponse.json()
+          : { data: [] };
+
+        const baseStudents: StudentAttendance[] = (studentsData.data || []).map(
+          (aluno: StrapiAlunoResponse) => ({
+            id: aluno.id,
+            name: aluno.nome || "",
+            present: false,
+            spinners: 0,
+            comment: "",
+          })
+        );
+
+        // buscar dados completos da aula
+        const aulaResponse = await fetch(`/api/aulas/${aulaId}`);
+        if (!aulaResponse.ok) {
+          throw new Error(t("load_error"));
+        }
+        const aulaData = await aulaResponse.json();
+        const aula = aulaData.data;
+
+        if (aula?.documentId) {
+          setResolvedDocumentId(aula.documentId);
+        }
+        if (aula?.id) {
+          setResolvedNumericId(aula.id.toString());
+        }
+
+        if (aula?.anotacoes) {
+          setNotes(aula.anotacoes);
+        } else {
+          setNotes("");
+        }
+
+        const formattedMaterials = formatMaterialsFromAula(aula);
+        setMaterials(formattedMaterials);
+
+        const mergedStudents = mapAulaStudents(baseStudents, aula);
+        setStudents(mergedStudents);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        toast.error(t("load_error"));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [classItem.id, courseId, formatMaterialsFromAula, mapAulaStudents, t]);
+
+  const getRequestAulaId = () =>
+    (resolvedDocumentId ?? classItem.id ?? resolvedNumericId ?? "")
+      .toString()
+      .replace(/\/+$/, "");
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      const aulaId = getRequestAulaId();
+
+      try {
+        // Enviar todos os arquivos de uma vez
+        const formData = new FormData();
+        files.forEach((file) => {
+          formData.append("files[]", file);
+        });
+
+        const response = await fetch(`/api/aulas/${aulaId}/files`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || t("materials.upload_error"));
+        }
+
+        const result = await response.json();
+        const aula = result.data;
+
+        const formattedMaterials = formatMaterialsFromAula(aula);
+        setMaterials(formattedMaterials);
+
+        // Limpar o input para permitir selecionar os mesmos arquivos novamente
+        e.target.value = "";
+
+        toast.success(
+          files.length === 1
+            ? t("materials.attach_success_single")
+            : t("materials.attach_success_multiple", { count: files.length })
+        );
+      } catch (error) {
+        console.error("Erro ao fazer upload:", error);
+        toast.error(t("materials.attach_error"));
+      }
     }
   };
 
-  const handleDeleteMaterial = (materialId: number) => {
-    setMaterials(materials.filter((m) => m.id !== materialId));
-    toast.success("Material removido com sucesso!");
+  const handleDeleteMaterial = async (materialId: number) => {
+    try {
+      const aulaId = getRequestAulaId();
+      const response = await fetch(
+        `/api/aulas/${aulaId}/files?fileId=${materialId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(t("materials.remove_file_error"));
+      }
+
+      const result = await response.json();
+
+      // Se a resposta contém os dados atualizados, usar eles
+      if (result.data) {
+        const formattedMaterials = formatMaterialsFromAula(result.data);
+        setMaterials(formattedMaterials);
+      } else {
+        // Caso contrário, recarregar da API
+        const aulaResponse = await fetch(`/api/aulas/${aulaId}`);
+        if (aulaResponse.ok) {
+          const aulaData = await aulaResponse.json();
+          const formattedMaterials = formatMaterialsFromAula(aulaData.data);
+          setMaterials(formattedMaterials);
+        } else {
+          // Fallback: remover localmente
+          setMaterials((prev) => prev.filter((m) => m.id !== materialId));
+        }
+      }
+
+      toast.success(t("materials.remove_success"));
+    } catch (error) {
+      console.error("Erro ao remover arquivo:", error);
+      toast.error(t("materials.remove_error"));
+    }
   };
 
-  const handleSave = () => {
-    toast.success("Dados da aula salvos com sucesso!");
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setSaveMessage("");
+      const aulaId = getRequestAulaId();
+
+      const alunosPayload = students
+        .filter((student) => student.present)
+        .map((student) => {
+          return {
+            aluno: student.id,
+            comentario: student.comment || "",
+            spinners_aula: student.spinners,
+          };
+        });
+
+      const response = await fetch(`/api/aulas/${aulaId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
+        },
+        body: JSON.stringify({
+          anotacoes: notes,
+          alunos: alunosPayload,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(t("save_error"));
+      }
+
+      setSaveMessage(t("save_success"));
+      toast.success(t("save_success_toast"));
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      toast.error(t("save_error"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const getInitials = (name: string) => {
@@ -138,9 +600,20 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
   };
 
   const presentCount = students.filter((s) => s.present).length;
-  const t = useTranslations("Admin.panel.class_details");
   const absentCount = students.length - presentCount;
-  const attendancePercentage = students.length > 0 ? (presentCount / students.length) * 100 : 0;
+  const attendancePercentage =
+    students.length > 0 ? (presentCount / students.length) * 100 : 0;
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
+          <p className="text-gray-600 mt-4">{t("loading")}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -163,13 +636,19 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
             </div>
           </div>
         </div>
-        <Button
-          onClick={handleSave}
-          className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
-        >
-          <Save className="w-5 h-5 mr-2" />
-          {t("save_changes")}
-        </Button>
+        <div className="flex flex-col items-end">
+          <Button
+            onClick={handleSave}
+            disabled={saving || loading}
+            className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Save className="w-5 h-5 mr-2" />
+            {saving ? t("saving") : t("save_changes")}
+          </Button>
+          {saveMessage && (
+            <span className="text-sm text-emerald-600 mt-2">{saveMessage}</span>
+          )}
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -217,7 +696,9 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                 <Users className="w-6 h-6 text-[#599fe9]" />
               </div>
             </div>
-            <p className="text-gray-600 text-sm mb-1">{t("attendance_percentage")}</p>
+            <p className="text-gray-600 text-sm mb-1">
+              {t("attendance_percentage")}
+            </p>
             <p className="text-4xl text-gray-900">
               {attendancePercentage.toFixed(0)}%
             </p>
@@ -257,67 +738,71 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                       <Inbox className="w-8 h-8 text-gray-400" />
                     </div>
-                    <h3 className="text-lg text-gray-900 mb-2">Nenhum aluno encontrado</h3>
+                    <h3 className="text-lg text-gray-900 mb-2">
+                      {t("no_students")}
+                    </h3>
                     <p className="text-gray-500">
-                      Não há alunos matriculados nesta aula no momento.
+                      {t("no_students_description")}
                     </p>
                   </TableCell>
                 </TableRow>
               ) : (
                 students.map((student) => (
-                <TableRow
-                  key={student.id}
-                  className={`${
-                    student.present ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100 transition-colors`}
-                >
-                  <TableCell>
-                    <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
-                      <AvatarFallback className="bg-[#599fe9] text-white text-xs">
-                        {getInitials(student.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </TableCell>
-                  <TableCell className="text-gray-900">
-                    {student.name}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={student.present}
-                        onCheckedChange={() => handlePresenceToggle(student.id)}
-                        className="w-5 h-5"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="33"
-                      value={student.spinners}
-                      onChange={(e) =>
-                        handleSpinnersChange(
-                          student.id,
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                      disabled={!student.present}
-                      className="w-20 text-center bg-gray-50 border-gray-200 text-gray-900 h-9 mx-auto"
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <StudentCommentDialog
-                        studentName={student.name}
-                        comment={student.comment}
-                        onSave={(comment) =>
-                          handleCommentChange(student.id, comment)
+                  <TableRow
+                    key={student.id}
+                    className={`${
+                      student.present ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition-colors`}
+                  >
+                    <TableCell>
+                      <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
+                        <AvatarFallback className="bg-[#599fe9] text-white text-xs">
+                          {getInitials(student.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell className="text-gray-900">
+                      {student.name}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={student.present}
+                          onCheckedChange={() =>
+                            handlePresenceToggle(student.id)
+                          }
+                          className="w-5 h-5"
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Input
+                        type="number"
+                        min="0"
+                        max="33"
+                        value={student.spinners}
+                        onChange={(e) =>
+                          handleSpinnersChange(
+                            student.id,
+                            parseInt(e.target.value) || 0
+                          )
                         }
+                        disabled={!student.present}
+                        className="w-20 text-center bg-gray-50 border-gray-200 text-gray-900 h-9 mx-auto"
                       />
-                    </div>
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <StudentCommentDialog
+                          studentName={student.name}
+                          comment={student.comment}
+                          onSave={(comment) =>
+                            handleCommentChange(student.id, comment)
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
             </TableBody>
@@ -330,20 +815,21 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl text-gray-900">Materiais da Aula</h2>
+              <h2 className="text-xl text-gray-900">{t("materials.title")}</h2>
               <p className="text-gray-600 text-sm mt-1">
-                Anexe PDFs, documentos, slides e outros materiais
+                {t("materials.description")}
               </p>
             </div>
             <label className="cursor-pointer">
               <input
                 type="file"
+                multiple
                 onChange={handleFileUpload}
                 className="hidden"
               />
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#599fe9] text-white rounded-lg hover:bg-[#599fe9]/90 transition-colors h-11">
                 <Upload className="w-5 h-5" />
-                Anexar Material
+                {t("materials.attach")}
               </span>
             </label>
           </div>
@@ -354,7 +840,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
-              <p className="text-gray-500">Nenhum material anexado</p>
+              <p className="text-gray-500">{t("materials.no_materials")}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -364,9 +850,7 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-[#599fe9]/10 rounded-lg">
-                      <FileText className="w-5 h-5 text-[#599fe9]" />
-                    </div>
+                    {renderFileIcon(material)}
                     <div>
                       <p className="text-gray-900">{material.name}</p>
                       <p className="text-sm text-gray-500">
@@ -378,6 +862,11 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => {
+                        if (material.url) {
+                          window.open(material.url, "_blank");
+                        }
+                      }}
                       className="text-[#599fe9] hover:text-[#599fe9] hover:bg-[#599fe9]/10"
                     >
                       <Download className="w-4 h-4" />
@@ -401,16 +890,14 @@ export function ClassDetails({ classItem, onBack }: ClassDetailsProps) {
       {/* Notes */}
       <Card className="bg-white border-gray-200 shadow-sm">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl text-gray-900">Anotações da Aula</h2>
-          <p className="text-gray-600 text-sm mt-1">
-            Registre observações sobre a aula, comportamento dos alunos, etc.
-          </p>
+          <h2 className="text-xl text-gray-900">{t("notes.title")}</h2>
+          <p className="text-gray-600 text-sm mt-1">{t("notes.description")}</p>
         </div>
         <div className="p-6">
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Escreva suas anotações aqui..."
+            placeholder={t("notes.placeholder")}
             className="bg-gray-50 border-gray-200 text-gray-900 rounded-lg min-h-[150px] resize-none"
           />
         </div>

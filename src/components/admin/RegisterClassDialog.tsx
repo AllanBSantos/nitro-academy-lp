@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -12,27 +13,67 @@ import { Plus, Calendar, Clock, BookOpen } from "lucide-react";
 import { Input } from "../new-layout/ui/input";
 import { Textarea } from "../new-layout/ui/textarea";
 import { Label } from "../new-layout/ui/label";
+import { toast } from "sonner";
 
-export function RegisterClassDialog() {
+interface RegisterClassDialogProps {
+  courseId: number;
+  onSuccess?: () => void;
+}
+
+export function RegisterClassDialog({ courseId, onSuccess }: RegisterClassDialogProps) {
+  const t = useTranslations("Admin.panel.register_class");
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     date: "",
     time: "",
-    duration: "",
     description: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOpen(false);
-    setFormData({
-      title: "",
-      date: "",
-      time: "",
-      duration: "",
-      description: "",
-    });
+    
+    try {
+      setLoading(true);
+      
+      const response = await fetch("/api/aulas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          titulo: formData.title,
+          data: formData.date,
+          time: formData.time,
+          descricao: formData.description,
+          cursoId: courseId.toString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || t("error"));
+      }
+
+      toast.success(t("success"));
+      setOpen(false);
+      setFormData({
+        title: "",
+        date: "",
+        time: "",
+        description: "",
+      });
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error("Erro ao criar aula:", error);
+      toast.error(error instanceof Error ? error.message : t("error"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,17 +81,17 @@ export function RegisterClassDialog() {
       <DialogTrigger asChild>
         <Button className="bg-[#599fe9] hover:bg-[#599fe9]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#599fe9]/20">
           <Plus className="w-5 h-5 mr-2" />
-          Registrar nova aula
+          {t("title")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-xl bg-white">
         <DialogHeader>
           <DialogTitle className="text-2xl text-gray-900 flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-[#599fe9]" />
-            Registrar Nova Aula
+            {t("title")}
           </DialogTitle>
           <DialogDescription className="text-gray-600">
-            Preencha os dados da aula para registrar no sistema
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -58,7 +99,7 @@ export function RegisterClassDialog() {
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-gray-700">
-              Título da Aula *
+              {t("title_label")} *
             </Label>
             <Input
               id="title"
@@ -67,7 +108,7 @@ export function RegisterClassDialog() {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              placeholder="Ex: Introdução ao Python"
+              placeholder={t("title_placeholder")}
               className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg"
             />
           </div>
@@ -77,7 +118,7 @@ export function RegisterClassDialog() {
             <div className="space-y-2">
               <Label htmlFor="date" className="text-gray-700 flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                Data *
+                {t("date_label")} *
               </Label>
               <Input
                 id="date"
@@ -94,7 +135,7 @@ export function RegisterClassDialog() {
             <div className="space-y-2">
               <Label htmlFor="time" className="text-gray-700 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                Horário *
+                {t("time_label")} *
               </Label>
               <Input
                 id="time"
@@ -109,28 +150,10 @@ export function RegisterClassDialog() {
             </div>
           </div>
 
-          {/* Duration */}
-          <div className="space-y-2">
-            <Label htmlFor="duration" className="text-gray-700">
-              Duração (minutos) *
-            </Label>
-            <Input
-              id="duration"
-              type="number"
-              required
-              value={formData.duration}
-              onChange={(e) =>
-                setFormData({ ...formData, duration: e.target.value })
-              }
-              placeholder="Ex: 90"
-              className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg"
-            />
-          </div>
-
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-gray-700">
-              Descrição
+              {t("description_label")}
             </Label>
             <Textarea
               id="description"
@@ -138,7 +161,7 @@ export function RegisterClassDialog() {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              placeholder="Descreva o conteúdo da aula..."
+              placeholder={t("description_placeholder")}
               className="bg-gray-50 border-gray-200 text-gray-900 rounded-lg min-h-[100px] resize-none"
             />
           </div>
@@ -149,15 +172,16 @@ export function RegisterClassDialog() {
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="flex-1 h-11 border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="flex-1 h-11 bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             >
-              Cancelar
+              {t("cancel")}
             </Button>
             <Button
               type="submit"
-              className="flex-1 h-11 bg-[#f54a12] hover:bg-[#f54a12]/90 text-white"
+              disabled={loading}
+              className="flex-1 h-11 bg-[#f54a12] hover:bg-[#f54a12]/90 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Registrar Aula
+              {loading ? t("registering") : t("register")}
             </Button>
           </div>
         </form>
