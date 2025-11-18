@@ -8,14 +8,26 @@ import {
   ReviewCard,
 } from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
-import { COURSE_QUERY_PARAMS } from "@/lib/strapiCourseQuery";
+import {
+  COURSE_QUERY_ADMIN_PARAMS,
+  COURSE_QUERY_PUBLIC_PARAMS,
+} from "@/lib/strapiCourseQuery";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-export async function fetchCourses(): Promise<Course[]> {
+interface FetchCoursesOptions {
+  scope?: "public" | "admin";
+}
+
+export async function fetchCourses(
+  options: FetchCoursesOptions = {}
+): Promise<Course[]> {
   try {
     // Garantir que sempre use pt-BR (hardcoded)
     const localeToUse = "pt-BR";
+    const scope = options.scope ?? "public";
+    const queryParams =
+      scope === "admin" ? COURSE_QUERY_ADMIN_PARAMS : COURSE_QUERY_PUBLIC_PARAMS;
 
     // No servidor, precisamos usar URL absoluta ou chamar Strapi diretamente
     // Vamos chamar Strapi diretamente no servidor para evitar problemas com URL relativa
@@ -24,7 +36,7 @@ export async function fetchCourses(): Promise<Course[]> {
     if (isServer) {
       // No servidor: chamar Strapi diretamente com autenticação
       const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
-      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&${COURSE_QUERY_PARAMS}&sort=createdAt:desc`;
+      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&${queryParams}&sort=createdAt:desc`;
 
       const response = await fetch(url, {
         headers: {
@@ -194,7 +206,7 @@ export async function fetchStudentCoursesWithProgress(): Promise<
 export async function fetchCourse(documentId: string): Promise<Course> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${COURSE_QUERY_PARAMS}&publicationState=preview`
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${COURSE_QUERY_ADMIN_PARAMS}&publicationState=preview`
       /* {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,

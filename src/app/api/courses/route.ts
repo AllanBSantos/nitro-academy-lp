@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { COURSE_QUERY_PARAMS } from "@/lib/strapiCourseQuery";
+import { COURSE_QUERY_PUBLIC_PARAMS } from "@/lib/strapiCourseQuery";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
@@ -20,7 +20,7 @@ export async function GET(_request: NextRequest) {
 
     // URL para buscar cursos com todos os dados necessários
     // IMPORTANTE: Mantém filtro habilitado=true conforme solicitado
-    const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${locale}&${COURSE_QUERY_PARAMS}&sort=createdAt:desc`;
+    const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${locale}&${COURSE_QUERY_PUBLIC_PARAMS}&sort=createdAt:desc`;
 
     const response = await fetch(url, {
       headers: {
