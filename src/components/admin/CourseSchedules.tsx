@@ -268,8 +268,17 @@ export function CourseSchedules({ courseId }: CourseSchedulesProps) {
         throw new Error(errorData.error || t("error_reorder_message"));
       }
 
-      // Atualizar localmente
-      setSchedules(newOrder);
+      // Recarregar do servidor para garantir que os índices estão sincronizados
+      const loadResponse = await fetch(
+        `/api/admin/courses/${courseId}/turmas`
+      );
+      if (loadResponse.ok) {
+        const data = await loadResponse.json();
+        if (data.success) {
+          setSchedules(data.data);
+        }
+      }
+
       toast.success(t("success_reorder"));
     } catch (err) {
       console.error("Error reordering schedules:", err);
