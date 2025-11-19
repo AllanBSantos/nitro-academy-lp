@@ -7,6 +7,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { fetchAllMentors } from "@/lib/strapi";
 import { Mentor, StrapiImage } from "@/types/strapi";
 import { useTranslations } from "next-intl";
+import { normalizeStrapiImageUrl } from "@/lib/utils";
 
 export function Mentors() {
   const t = useTranslations("NewHome.Mentors");
@@ -192,11 +193,12 @@ export function Mentors() {
                   // Handle both Strapi v4 structure (with attributes) and direct structure
                   const mentorData = mentor.attributes ?? mentor;
                   const { rating, count } = calculateRating(mentorData.reviews);
-                  const mentorImage =
+                  const rawMentorImage =
                     ("data" in (mentorData.imagem || {})
                       ? (mentorData.imagem as StrapiImage)?.data?.attributes
                           ?.url
                       : (mentorData.imagem as { url: string })?.url) || "";
+                  const mentorImage = normalizeStrapiImageUrl(rawMentorImage);
 
                   return (
                     <div

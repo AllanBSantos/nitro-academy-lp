@@ -5,6 +5,7 @@ import { fetchPartnerSchools } from "@/lib/strapi";
 import { PartnerSchool } from "@/types/strapi";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { normalizeStrapiImageUrl } from "@/lib/utils";
 
 export function PartnerSchools() {
   const t = useTranslations("NewHome.PartnerSchools");
@@ -123,9 +124,9 @@ export function PartnerSchools() {
                 <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
                   <div className="text-center">
                     <div className="mb-4 h-20 flex items-center justify-center">
-                      {school.logo && school.logo.startsWith("http") ? (
+                      {school.logo ? (
                         <Image
-                          src={school.logo}
+                          src={normalizeStrapiImageUrl(school.logo)}
                           alt={t("logoAlt", { name: school.name })}
                           width={80}
                           height={80}
@@ -143,10 +144,7 @@ export function PartnerSchools() {
                       <div
                         className="text-7xl"
                         style={{
-                          display:
-                            school.logo && school.logo.startsWith("http")
-                              ? "none"
-                              : "block",
+                          display: school.logo ? "none" : "block",
                         }}
                       >
                         {school.logo || "🏫"}
