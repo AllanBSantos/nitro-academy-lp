@@ -76,3 +76,25 @@ export function formatPhoneForDisplay(phoneNumber: string): string {
     return `${digits.slice(0, 2)} ${digits.slice(2, 7)} ${digits.slice(7, 11)}`;
   }
 }
+
+/**
+ * Normalizes a Strapi image URL to an absolute URL
+ * If the URL is already absolute (starts with http), returns as is
+ * If the URL is relative (starts with /), prepends the Strapi API URL
+ * @param url - The image URL from Strapi
+ * @returns The normalized absolute URL
+ */
+export function normalizeStrapiImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  
+  // If already absolute, return as is
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  
+  // If relative, prepend Strapi API URL
+  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+  // Ensure URL starts with / if it doesn't
+  const normalizedPath = url.startsWith("/") ? url : `/${url}`;
+  return `${strapiUrl}${normalizedPath}`;
+}

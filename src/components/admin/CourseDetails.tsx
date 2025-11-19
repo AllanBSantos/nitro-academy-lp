@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -9,15 +9,11 @@ import {
   Calendar,
   Search,
   Download,
-  Save,
-  Edit2,
   Inbox,
 } from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
 import { Input } from "../new-layout/ui/input";
-import { Textarea } from "../new-layout/ui/textarea";
-import { Label } from "../new-layout/ui/label";
 import {
   Select,
   SelectContent,
@@ -38,10 +34,13 @@ import { RegisterClassDialog } from "./RegisterClassDialog";
 import { Avatar, AvatarFallback } from "../new-layout/ui/avatar";
 import { ClassDetails } from "./ClassDetails";
 import { CourseSchedules } from "./CourseSchedules";
+import CourseEditForm from "@/app/components/admin/CourseEditForm";
+import { AdminCourseDetails } from "@/types/adminCourse";
 
 interface CourseDetailsProps {
   course: {
     id: number;
+    documentId: string;
     name: string;
     campaign: string;
     students: number;
@@ -73,7 +72,6 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTurma, setSelectedTurma] = useState<string>("all");
   const [selectedEscola, setSelectedEscola] = useState<string>("all");
-  const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [selectedClass, setSelectedClass] = useState<{
     id: number;
     title: string;
@@ -85,13 +83,9 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [courseDetails, setCourseDetails] = useState({
-    title: course.name,
-    description:
-      "Neste curso, os estudantes aprendem como os dados estão por trás das decisões, dos negócios e das tecnologias que fazem parte do cotidiano. Por meio de desafios em equipe, ferramentas digitais e projetos práticos, desenvolvem a capacidade de coletar, organizar e interpretar informações, transformando-as em soluções inteligentes.",
-    mentorDescription:
-      "Engenheiro de manufatura formado pela Unicamp e técnico em mecatrônica pela ETEC Basilides de Godoy, possui experiência em marketing digital, análise de dados, docência, gestão de CRM e inteligência artificial.",
-  });
+  const [courseDetailsData, setCourseDetailsData] = useState<AdminCourseDetails | null>(null);
+  const [courseDetailsLoading, setCourseDetailsLoading] = useState(true);
+  const [courseDetailsError, setCourseDetailsError] = useState<string | null>(null);
 
   const availableSlots = course.totalSlots - course.students;
 
@@ -177,10 +171,6 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
     return true;
   });
 
-  const handleSaveDetails = () => {
-    setIsEditingDetails(false);
-  };
-
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -189,6 +179,31 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
       .substring(0, 2)
       .toUpperCase();
   };
+
+  const fetchCourseDetails = useCallback(async () => {
+    try {
+      setCourseDetailsLoading(true);
+      setCourseDetailsError(null);
+      const response = await fetch(
+        `/api/admin/course-details/${course.documentId}`
+      );
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload?.error || "Erro ao carregar detalhes");
+      }
+      setCourseDetailsData(payload.data);
+    } catch (err) {
+      console.error("Error loading course details:", err);
+      setCourseDetailsError("Erro ao carregar detalhes do curso.");
+      setCourseDetailsData(null);
+    } finally {
+      setCourseDetailsLoading(false);
+    }
+  }, [course.documentId]);
+
+  useEffect(() => {
+    fetchCourseDetails();
+  }, [fetchCourseDetails]);
 
   // If a class is selected, show class details
   if (selectedClass) {
@@ -457,107 +472,24 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
           <TabsContent value="details" className="p-6 space-y-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl text-gray-900">{t("details.title")}</h2>
-              {!isEditingDetails ? (
-                <Button
-                  onClick={() => setIsEditingDetails(true)}
-                  className="bg-[#599fe9] hover:bg-[#599fe9]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#599fe9]/20"
-                >
-                  <Edit2 className="w-5 h-5 mr-2" />
-                  {t("details.edit")}
-                </Button>
-              ) : (
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditingDetails(false)}
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50 h-11 px-6"
-                  >
-                    {t("details.cancel")}
-                  </Button>
-                  <Button
-                    onClick={handleSaveDetails}
-                    className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
-                  >
-                    <Save className="w-5 h-5 mr-2" />
-                    {t("details.save")}
-                  </Button>
-                </div>
-              )}
             </div>
-
-            <div className="space-y-6">
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-gray-700">
-                  {t("details.course_title")}
-                </Label>
-                {isEditingDetails ? (
-                  <Input
-                    id="title"
-                    value={courseDetails.title}
-                    onChange={(e) =>
-                      setCourseDetails({
-                        ...courseDetails,
-                        title: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg"
-                  />
-                ) : (
-                  <p className="text-gray-900 p-3 bg-gray-50 rounded-lg">
-                    {courseDetails.title}
-                  </p>
-                )}
+            {courseDetailsError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {courseDetailsError}
               </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-gray-700">
-                  {t("details.description")}
-                </Label>
-                {isEditingDetails ? (
-                  <Textarea
-                    id="description"
-                    value={courseDetails.description}
-                    onChange={(e) =>
-                      setCourseDetails({
-                        ...courseDetails,
-                        description: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 text-gray-900 rounded-lg min-h-[120px] resize-none"
-                  />
-                ) : (
-                  <p className="text-gray-900 p-3 bg-gray-50 rounded-lg">
-                    {courseDetails.description}
-                  </p>
-                )}
+            )}
+            {courseDetailsLoading || !courseDetailsData ? (
+              <div className="space-y-4 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-64 bg-gray-200 rounded"></div>
               </div>
-
-              {/* Mentor Description */}
-              <div className="space-y-2">
-                <Label htmlFor="mentorDescription" className="text-gray-700">
-                  {t("details.mentor_description")}
-                </Label>
-                {isEditingDetails ? (
-                  <Textarea
-                    id="mentorDescription"
-                    value={courseDetails.mentorDescription}
-                    onChange={(e) =>
-                      setCourseDetails({
-                        ...courseDetails,
-                        mentorDescription: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 text-gray-900 rounded-lg min-h-[100px] resize-none"
-                  />
-                ) : (
-                  <p className="text-gray-900 p-3 bg-gray-50 rounded-lg">
-                    {courseDetails.mentorDescription}
-                  </p>
-                )}
-              </div>
-            </div>
+            ) : (
+              <CourseEditForm
+                course={courseDetailsData}
+                documentId={course.documentId}
+                onUpdateSuccess={fetchCourseDetails}
+              />
+            )}
           </TabsContent>
         </Tabs>
       </Card>

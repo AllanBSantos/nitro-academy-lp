@@ -24,6 +24,7 @@ import { fetchCoursesWithEnrollment } from "@/lib/strapi";
 
 type Course = {
   id: string;
+  documentId: string;
   name: string;
   campaign: string;
   enrolled: number;
@@ -152,6 +153,7 @@ export function AdminCourses() {
       <CourseDetails
         course={{
           id: parseInt(selectedCourse.id),
+          documentId: selectedCourse.documentId,
           name: selectedCourse.name,
           campaign: selectedCourse.campaign,
           students: selectedCourse.enrolled,

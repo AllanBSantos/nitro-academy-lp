@@ -12,6 +12,54 @@ import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+
+const buildStrapiAuthHeaders = (): HeadersInit => {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  if (process.env.STRAPI_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.STRAPI_TOKEN}`;
+  }
+  return headers;
+};
+
+const cleanDataRecursively = (data: unknown): unknown => {
+  if (Array.isArray(data)) {
+    return data.map((item) => cleanDataRecursively(item));
+  }
+
+  if (data && typeof data === "object") {
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(
+      data as Record<string, unknown>
+    )) {
+      if (
+        [
+          "id",
+          "documentId",
+          "createdAt",
+          "updatedAt",
+          "publishedAt",
+          "alunos",
+          "cupons",
+          "localizations",
+          "imagem",
+        ].includes(key)
+      ) {
+        continue;
+      }
+
+      if (value && typeof value === "object") {
+        cleaned[key] = cleanDataRecursively(value);
+      } else {
+        cleaned[key] = value;
+      }
+    }
+    return cleaned;
+  }
+
+  return data;
+};
 export async function fetchCourses(): Promise<Course[]> {
   try {
     // Garantir que sempre use pt-BR (hardcoded)
@@ -77,6 +125,7 @@ export async function fetchCourses(): Promise<Course[]> {
 export async function fetchCoursesWithEnrollment(): Promise<
   Array<{
     id: string;
+    documentId: string;
     name: string;
     campaign: string;
     enrolled: number;
@@ -178,6 +227,7 @@ export async function fetchCoursesWithEnrollment(): Promise<
 
       return {
         id: (courseData.id || course.id || "").toString(),
+        documentId: courseData.documentId || course.documentId || "",
         name: courseData.titulo || "",
         campaign,
         enrolled,
@@ -262,7 +312,7 @@ export async function fetchStudentCoursesWithProgress(): Promise<
 export async function fetchCourse(documentId: string): Promise<Course> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_aluno&populate[alunos][fields][6]=escola_parceira&populate[alunos][fields][7]=createdAt&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=pt-BR`
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&fields[24]=habilitado&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][fields][10]=documentId&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_aluno&populate[alunos][fields][6]=escola_parceira&populate[alunos][fields][7]=createdAt&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=pt-BR`
       /* {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
@@ -291,6 +341,45 @@ export async function fetchCourse(documentId: string): Promise<Course> {
     console.error("Error in fetchCourse:", error);
     throw error;
   }
+}
+
+export async function fetchCourseWithAdminToken(
+  documentId: string,
+  queryString?: string
+): Promise<Course> {
+  const headers = buildStrapiAuthHeaders();
+
+  if (!headers || (typeof headers === "object" && !("Authorization" in headers))) {
+    throw new Error("STRAPI_TOKEN não configurado para chamadas administrativas");
+  }
+
+  const defaultQuery =
+    "fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&fields[24]=habilitado&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][fields][10]=documentId&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_aluno&populate[alunos][fields][6]=escola_parceira&populate[alunos][fields][7]=createdAt&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome";
+
+  const url = `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${queryString || defaultQuery}`;
+
+  const response = await fetch(url, {
+    headers,
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    console.error("Admin course fetch error:", {
+      status: response.status,
+      statusText: response.statusText,
+      errorData,
+    });
+    throw new Error(
+      `Failed to fetch course: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const { data } = await response.json();
+  if (!data || !data[0]) {
+    throw new Error("No course data received from API");
+  }
+  return data[0];
 }
 
 export async function fetchMentor(id: number): Promise<Mentor> {
@@ -1053,13 +1142,30 @@ export async function fetchPartnerSchools(): Promise<PartnerSchool[]> {
     // Filter schools with cliente=true and transform to PartnerSchool format
     const partnerSchools: PartnerSchool[] =
       data.data
-        ?.filter((school: Escola) => school.cliente === true)
-        ?.map((school: Escola) => ({
-          id: school.id,
-          documentId: school.documentId,
-          name: school.nome,
-          logo: school.logo?.url || "",
-        })) || [];
+        ?.filter((school: any) => {
+          const schoolData = school.attributes || school;
+          return schoolData.cliente === true;
+        })
+        ?.map((school: any) => {
+          const schoolData = school.attributes || school;
+          // Handle Strapi image structure (can be data.attributes.url or url directly)
+          let logoUrl = "";
+          if (schoolData.logo) {
+            if (schoolData.logo.data?.attributes?.url) {
+              logoUrl = schoolData.logo.data.attributes.url;
+            } else if (schoolData.logo.attributes?.url) {
+              logoUrl = schoolData.logo.attributes.url;
+            } else if (schoolData.logo.url) {
+              logoUrl = schoolData.logo.url;
+            }
+          }
+          return {
+            id: schoolData.id || school.id,
+            documentId: schoolData.documentId || school.documentId,
+            name: schoolData.nome || "",
+            logo: logoUrl,
+          };
+        }) || [];
 
     return partnerSchools;
   } catch (error) {
@@ -1420,6 +1526,9 @@ export async function updateCourse(
     tarefa_de_casa?: string;
     competencias?: string;
     inscricoes_abertas?: boolean;
+    habilitado?: boolean;
+    data_inicio_curso?: string | null;
+    sugestao_horario?: boolean;
     videos?: Array<{
       titulo: string;
       video_url: string;
@@ -1440,44 +1549,6 @@ export async function updateCourse(
   }
 ): Promise<void> {
   try {
-    const cleanDataRecursively = (data: unknown): unknown => {
-      if (Array.isArray(data)) {
-        return data.map((item) => cleanDataRecursively(item));
-      }
-
-      if (data && typeof data === "object") {
-        const cleaned: Record<string, unknown> = {};
-        for (const [key, value] of Object.entries(
-          data as Record<string, unknown>
-        )) {
-          if (
-            [
-              "id",
-              "documentId",
-              "createdAt",
-              "updatedAt",
-              "publishedAt",
-              "alunos",
-              "cupons",
-              "localizations",
-              "imagem",
-            ].includes(key)
-          ) {
-            continue;
-          }
-
-          if (value && typeof value === "object") {
-            cleaned[key] = cleanDataRecursively(value);
-          } else {
-            cleaned[key] = value;
-          }
-        }
-        return cleaned;
-      }
-
-      return data;
-    };
-
     // Remove faixa_etaria from cronograma items as it's no longer part of the schema
     const removeFaixaEtariaFromCronograma = (cronograma: unknown): unknown => {
       if (!Array.isArray(cronograma)) {
@@ -1500,7 +1571,11 @@ export async function updateCourse(
     };
 
     const findResponse = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=*`
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=*`,
+      {
+        headers: buildStrapiAuthHeaders(),
+        cache: "no-store",
+      }
     );
 
     if (!findResponse.ok) {
@@ -1516,32 +1591,58 @@ export async function updateCourse(
     const course = findData.data[0];
     const currentData = course.attributes || course;
 
-    const cleanData = {
-      ...(cleanDataRecursively(currentData) as Record<string, unknown>),
-      titulo: courseData.titulo || currentData.titulo,
-      descricao: courseData.descricao || currentData.descricao,
-      nivel: courseData.nivel || currentData.nivel,
-      modelo: courseData.modelo || currentData.modelo,
-      pre_requisitos: courseData.pre_requisitos || currentData.pre_requisitos,
-      projetos: courseData.projetos || currentData.projetos,
-      tarefa_de_casa: courseData.tarefa_de_casa || currentData.tarefa_de_casa,
-      competencias: courseData.competencias || currentData.competencias,
-      inscricoes_abertas:
-        courseData.inscricoes_abertas || currentData.inscricoes_abertas,
-      videos: courseData.videos || currentData.videos,
-      cronograma: cleanDataRecursively(
-        removeFaixaEtariaFromCronograma(
-          courseData.cronograma || currentData.cronograma
-        )
-      ),
-      ementa_resumida: cleanDataRecursively(
-        courseData.ementa_resumida || currentData.ementa_resumida
-      ),
-      resumo_aulas: cleanDataRecursively(
-        courseData.resumo_aulas || currentData.resumo_aulas
-      ),
-      imagem: currentData.imagem.id,
+    const cleanData = cleanDataRecursively(currentData) as Record<
+      string,
+      unknown
+    >;
+
+    if (cleanData.cronograma) {
+      cleanData.cronograma = cleanDataRecursively(
+        removeFaixaEtariaFromCronograma(cleanData.cronograma)
+      );
+    }
+
+    const assignIfDefined = (key: string, value: unknown) => {
+      if (value !== undefined) {
+        cleanData[key] = value;
+      }
     };
+
+    assignIfDefined("titulo", courseData.titulo);
+    assignIfDefined("descricao", courseData.descricao);
+    assignIfDefined("nivel", courseData.nivel);
+    assignIfDefined("modelo", courseData.modelo);
+    assignIfDefined("pre_requisitos", courseData.pre_requisitos);
+    assignIfDefined("projetos", courseData.projetos);
+    assignIfDefined("tarefa_de_casa", courseData.tarefa_de_casa);
+    assignIfDefined("competencias", courseData.competencias);
+    assignIfDefined("inscricoes_abertas", courseData.inscricoes_abertas);
+    assignIfDefined("habilitado", courseData.habilitado);
+    if (courseData.data_inicio_curso !== undefined) {
+      assignIfDefined("data_inicio_curso", courseData.data_inicio_curso);
+    }
+    assignIfDefined("sugestao_horario", courseData.sugestao_horario);
+    assignIfDefined("videos", courseData.videos);
+    if (courseData.cronograma !== undefined) {
+      cleanData.cronograma = cleanDataRecursively(
+        removeFaixaEtariaFromCronograma(courseData.cronograma)
+      );
+    }
+    if (courseData.ementa_resumida !== undefined) {
+      cleanData.ementa_resumida = cleanDataRecursively(
+        courseData.ementa_resumida
+      );
+    }
+    if (courseData.resumo_aulas !== undefined) {
+      cleanData.resumo_aulas = cleanDataRecursively(courseData.resumo_aulas);
+    }
+
+    if (currentData.imagem && typeof currentData.imagem === "object") {
+      const imagem = currentData.imagem as { id?: number };
+      if (imagem.id) {
+        cleanData.imagem = imagem.id;
+      }
+    }
 
     const requestBody = { data: cleanData };
 
@@ -1549,9 +1650,7 @@ export async function updateCourse(
       `${STRAPI_API_URL}/api/cursos/${documentId}?locale=pt-BR`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: buildStrapiAuthHeaders(),
         body: JSON.stringify(requestBody),
       }
     );
@@ -1563,6 +1662,137 @@ export async function updateCourse(
     }
   } catch (error) {
     console.error("Error updating course:", error);
+    throw error;
+  }
+}
+
+export async function updateMentor(
+  mentorRef: { id?: number | null; documentId?: string | null },
+  mentorData: {
+    nome?: string;
+    descricao?: string;
+    pais?: string;
+    instagram?: string;
+    instagram_label?: string;
+    linkedin_url?: string;
+    linkedin_label?: string;
+    imagem?: number | null;
+  }
+): Promise<void> {
+  try {
+    const headers = buildStrapiAuthHeaders();
+    if (!headers || (typeof headers === "object" && !("Authorization" in headers))) {
+      throw new Error("STRAPI_TOKEN não configurado para atualizar mentor");
+    }
+
+    const fetchMentorById = async (id: number) =>
+      fetch(`${STRAPI_API_URL}/api/mentores/${id}?locale=pt-BR&populate=imagem`, {
+        headers,
+        cache: "no-store",
+      });
+
+    const fetchMentorByDocumentId = async (documentId: string) =>
+      fetch(
+        `${STRAPI_API_URL}/api/mentores?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=imagem`,
+        {
+          headers,
+          cache: "no-store",
+        }
+      );
+
+    let mentorIdToUse: number | null =
+      typeof mentorRef.id === "number" && !Number.isNaN(mentorRef.id)
+        ? mentorRef.id
+        : null;
+    let mentorDocumentId: string | null = mentorRef.documentId ?? null;
+
+    let mentorPayload: { id?: number; documentId?: string; attributes?: any } | null = null;
+
+    if (mentorDocumentId) {
+      const byDocumentResponse = await fetchMentorByDocumentId(mentorDocumentId);
+      if (byDocumentResponse.ok) {
+        const responseJson = await byDocumentResponse.json();
+        mentorPayload = Array.isArray(responseJson.data)
+          ? responseJson.data[0]
+          : responseJson.data;
+      }
+    }
+
+    if (!mentorPayload && mentorIdToUse !== null) {
+      const byIdResponse = await fetchMentorById(mentorIdToUse);
+      if (byIdResponse.ok) {
+        const responseJson = await byIdResponse.json();
+        mentorPayload = responseJson.data || null;
+      } else {
+        mentorIdToUse = null;
+      }
+    }
+
+    if (!mentorPayload) {
+      throw new Error("Mentor not found");
+    }
+
+    if (!mentorIdToUse) {
+      const parsedId =
+        typeof mentorPayload.id === "number"
+          ? mentorPayload.id
+          : mentorPayload.id != null
+          ? parseInt(String(mentorPayload.id), 10)
+          : null;
+      mentorIdToUse =
+        parsedId && !Number.isNaN(parsedId) ? parsedId : null;
+    }
+
+    mentorDocumentId =
+      mentorDocumentId ||
+      mentorPayload.documentId ||
+      mentorPayload.attributes?.documentId ||
+      null;
+
+    if (!mentorDocumentId) {
+      throw new Error("Mentor documentId not available");
+    }
+
+    const mentor = mentorPayload;
+
+    const currentData = mentor.attributes || mentor;
+    const cleanData = cleanDataRecursively(currentData) as Record<
+      string,
+      unknown
+    >;
+
+    for (const [key, value] of Object.entries(mentorData)) {
+      if (value !== undefined) {
+        cleanData[key] = value;
+      }
+    }
+
+    if (!("imagem" in mentorData)) {
+      const currentImageId =
+        currentData.imagem?.data?.id ?? currentData.imagem?.id ?? null;
+      if (currentImageId) {
+        cleanData.imagem = currentImageId;
+      }
+    } else if (mentorData.imagem === null) {
+      cleanData.imagem = null;
+    }
+
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/mentores/${mentorDocumentId}?locale=pt-BR`,
+      {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ data: cleanData }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to update mentor: ${response.status} ${response.statusText}`
+      );
+    }
+  } catch (error) {
+    console.error("Error updating mentor:", error);
     throw error;
   }
 }
