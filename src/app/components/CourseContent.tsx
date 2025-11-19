@@ -5,6 +5,7 @@ import { CardProps } from "@/types/card";
 import { getCardsContent } from "@/lib/courses";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
 import TimeSelectionSection from "./TimeSelectionSection";
 import CourseDescription from "./course/CourseDescription";
 import CourseInformation from "./course/CourseInformation";
@@ -31,9 +32,6 @@ export default function CourseContent({ course }: CourseContentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
-  const maxStudentsPerClass = parseInt(
-    process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "15"
-  );
   const alunos = Array.isArray(course.alunos) ? course.alunos : [];
 
   useEffect(() => {
@@ -53,18 +51,26 @@ export default function CourseContent({ course }: CourseContentProps) {
   }, [course.id, locale]);
 
   function getStudentsInClass(classNumber: number) {
-    return alunos.filter((aluno) => aluno.turma === classNumber);
+    // Garantir que a comparação funcione tanto com número quanto string
+    // Filtrar apenas alunos que têm turma definida e que corresponde ao número da turma
+    return alunos.filter((aluno) => {
+      if (aluno.turma === undefined || aluno.turma === null) {
+        return false;
+      }
+      const alunoTurma = typeof aluno.turma === 'string' ? parseInt(aluno.turma, 10) : Number(aluno.turma);
+      return !isNaN(alunoTurma) && alunoTurma === classNumber;
+    });
   }
 
   const getClassAvailability = (classNumber: string) => {
-    const studentsInClass = getStudentsInClass(parseInt(classNumber));
-    // const turma = course.turmas?.find((t) => String(t.id) === classNumber);
+    const classNum = parseInt(classNumber);
+    const studentsInClass = getStudentsInClass(classNum);
 
-    // Considera turma cheia quando atingir o limite configurado
+    // Considera turma cheia quando atingir ou ultrapassar o limite configurado
     return {
-      isFull: studentsInClass.length > maxStudentsPerClass,
+      isFull: studentsInClass.length >= MAX_SLOTS_PER_COURSE,
       currentStudents: studentsInClass.length,
-      maxStudents: maxStudentsPerClass,
+      maxStudents: MAX_SLOTS_PER_COURSE,
     };
   };
 

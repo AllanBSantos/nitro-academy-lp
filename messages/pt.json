@@ -270,6 +270,7 @@
     "course_full": "Todas as turmas desse curso já excederam o limite de alunos matriculados",
     "suggest_new_time": "Sugerir novo horário",
     "class_full": "Turma cheia",
+    "all_classes_full": "Todas as turmas estão lotadas",
     "suggestion": {
       "weekdays": "Dias da semana",
       "time": "Horário sugerido",

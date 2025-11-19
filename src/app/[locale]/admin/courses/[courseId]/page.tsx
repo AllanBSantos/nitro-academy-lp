@@ -21,6 +21,7 @@ import CourseEditForm from "../../../../components/admin/CourseEditForm";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { normalizeName, formatPhone } from "@/lib/formatters";
+import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
 
 interface StudentDetails {
   nome: string;
@@ -115,12 +116,11 @@ export default function CourseDashboard() {
         throw new Error(t("error.course_not_found"));
       }
 
-      const maxStudentsPerClass = parseInt(
-        process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
-      );
-      const totalSpots = Array.isArray(courseData.cronograma)
-        ? courseData.cronograma.length * maxStudentsPerClass
+      // Calcular total de vagas: número de turmas (schedules) × vagas por turma
+      const numberOfSchedules = Array.isArray(courseData.cronograma)
+        ? courseData.cronograma.length
         : 0;
+      const totalSpots = numberOfSchedules * MAX_SLOTS_PER_COURSE;
       const studentCount = Array.isArray(courseData.alunos)
         ? courseData.alunos.length
         : 0;

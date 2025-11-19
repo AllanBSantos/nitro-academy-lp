@@ -271,6 +271,7 @@
     "course_full": "All classes for this course have exceeded the student enrollment limit",
     "suggest_new_time": "Suggest new time",
     "class_full": "Class full",
+    "all_classes_full": "All classes are full",
     "suggestion": {
       "weekdays": "Weekdays",
       "time": "Suggested time",

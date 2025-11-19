@@ -91,7 +91,20 @@ export async function getCardsContent(
       resumo_aulas: course.resumo_aulas || [],
       competencias: course.competencias || "",
       sugestao_horario: course.sugestao_horario ?? true,
-      alunos: course.alunos || [],
+      alunos: (() => {
+        // Normalizar estrutura de alunos (pode vir com ou sem attributes/data)
+        const alunosRaw = course.alunos?.data || course.alunos || [];
+        const alunosArray = Array.isArray(alunosRaw) ? alunosRaw : [];
+        
+        // Mapear alunos para garantir que turma está presente
+        return alunosArray.map((aluno: any) => {
+          const alunoData = aluno.attributes || aluno;
+          return {
+            id: alunoData?.id || aluno.id,
+            turma: alunoData?.turma ?? aluno.turma ?? undefined,
+          };
+        });
+      })(),
       data_inicio_curso: course.data_inicio_curso || "",
       reviews: (() => {
         if (Array.isArray(course.review)) {

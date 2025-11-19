@@ -72,31 +72,35 @@ export default function TimeSelectionSection({
 
   const schedules = useMemo(() => course.cronograma || [], [course.cronograma]);
 
-  // Seleção automática quando há apenas uma opção de cronograma
+  // Encontrar a primeira turma disponível (não lotada) na ordem de prioridade
+  const availableSchedule = useMemo(() => {
+    if (schedules.length === 0) return null;
+
+    // Encontrar a primeira turma que não está lotada
+    for (let i = 0; i < schedules.length; i++) {
+      const classNumber = (i + 1).toString();
+      if (!isScheduleFull(classNumber)) {
+        return { schedule: schedules[i], index: i, classNumber };
+      }
+    }
+
+    // Se todas estão lotadas, retorna null
+    return null;
+  }, [schedules, isScheduleFull]);
+
+  // Seleção automática da primeira turma disponível
   useEffect(() => {
-    if (schedules.length === 1 && inscricoes_abertas && !selectedTime) {
-      const schedule = schedules[0];
-      const classNumber = "1";
+    if (availableSchedule && inscricoes_abertas && !selectedTime) {
+      const { schedule, classNumber } = availableSchedule;
 
       // Verificar se o schedule tem as propriedades necessárias
       if (schedule.dia_semana && schedule.horario_aula) {
-        const isOnlyClassFull = isScheduleFull(classNumber);
-        if (isOnlyClassFull) {
-          return;
-        }
-
         setSelectedTime(`${schedule.dia_semana}-${schedule.horario_aula}`);
         setSelectedClass(classNumber);
         onScheduleClick(classNumber);
       }
     }
-  }, [
-    schedules,
-    inscricoes_abertas,
-    selectedTime,
-    isScheduleFull,
-    onScheduleClick,
-  ]);
+  }, [availableSchedule, inscricoes_abertas, selectedTime, onScheduleClick]);
 
   return (
     <section className="w-full bg-white py-16">
@@ -110,57 +114,65 @@ export default function TimeSelectionSection({
             )}
 
             <div className="space-y-4 max-w-md mx-auto mb-8">
-              {schedules.map((schedule, index) => {
-                const classNumber = (index + 1).toString();
-                const isSelected =
-                  selectedTime ===
-                  `${schedule.dia_semana}-${schedule.horario_aula}`;
+              {availableSchedule ? (
+                // Mostrar apenas a primeira turma disponível
+                (() => {
+                  const { schedule, index } = availableSchedule;
+                  const isSelected =
+                    selectedTime ===
+                    `${schedule.dia_semana}-${schedule.horario_aula}`;
 
-                const classIsFull = isScheduleFull(classNumber);
-
-                return (
-                  <div key={index} className="mb-4">
-                    <button
-                      onClick={() => handleTimeSelect(schedule, index)}
-                      disabled={!inscricoes_abertas || classIsFull}
-                      className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
-                        !inscricoes_abertas
-                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
-                          : classIsFull
-                          ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
-                          : isSelected
-                          ? "border-2 border-orange-500 bg-orange-50"
-                          : "border-2 border-gray-300 hover:border-[#3B82F6]"
-                      }`}
-                    >
-                      <div className="flex flex-col items-center">
+                  return (
+                    <div key={index} className="mb-4">
+                      <button
+                        onClick={() => handleTimeSelect(schedule, index)}
+                        disabled={!inscricoes_abertas}
+                        className={`w-full py-4 px-6 rounded-xl border-2 transition-colors ${
+                          !inscricoes_abertas
+                            ? "border-2 border-gray-300 bg-gray-100 cursor-not-allowed opacity-70"
+                            : isSelected
+                            ? "border-2 border-orange-500 bg-orange-50"
+                            : "border-2 border-gray-300 hover:border-[#3B82F6]"
+                        }`}
+                      >
                         <div className="flex flex-col items-center">
-                          <div className="text-[#3B82F6] text-lg font-medium">
-                            {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
-                              schedule.dia_semana}{" "}
-                            {formatTime(schedule.horario_aula)}
-                          </div>
-                          {classIsFull && (
-                            <div className="text-sm mt-1 text-red-600 font-medium">
-                              {t("class_full")}
+                          <div className="flex flex-col items-center">
+                            <div className="text-[#3B82F6] text-lg font-medium">
+                              {DAY_LABELS[(schedule.dia_semana || "").trim()] ||
+                                schedule.dia_semana}{" "}
+                              {formatTime(schedule.horario_aula)}
                             </div>
-                          )}
-                          <div className="text-sm mt-1 text-gray-500">
-                            {t("start_date")}:{" "}
-                            {schedule.data_inicio
-                              ? formatDate(schedule.data_inicio)
-                              : ""}
-                            {schedule.data_fim &&
-                              ` • ${t("end_date")}: ${formatDate(
-                                schedule.data_fim
-                              )}`}
+                            <div className="text-sm mt-1 text-gray-500">
+                              {t("start_date")}:{" "}
+                              {schedule.data_inicio
+                                ? formatDate(schedule.data_inicio)
+                                : ""}
+                              {schedule.data_fim &&
+                                ` • ${t("end_date")}: ${formatDate(
+                                  schedule.data_fim
+                                )}`}
+                            </div>
                           </div>
                         </div>
+                      </button>
+                    </div>
+                  );
+                })()
+              ) : schedules.length > 0 ? (
+                // Todas as turmas estão lotadas - mostrar mensagem
+                <div className="mb-4">
+                  <div className="w-full py-4 px-6 rounded-xl border-2 border-gray-300 bg-gray-100 opacity-70">
+                    <div className="flex flex-col items-center">
+                      <div className="text-red-600 text-lg font-medium">
+                        {t("class_full")}
                       </div>
-                    </button>
+                      <div className="text-sm mt-1 text-gray-500">
+                        {t("all_classes_full")}
+                      </div>
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+              ) : null}
 
               {course.sugestao_horario !== false && (
                 <button
