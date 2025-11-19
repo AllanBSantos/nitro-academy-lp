@@ -50,6 +50,7 @@ interface Aluno {
   nome: string;
   escola: string;
   turma: string;
+  cpf?: string;
 }
 
 export default function EnrollmentModal({
@@ -61,7 +62,6 @@ export default function EnrollmentModal({
   courseId,
   scheduleIndex,
   disabled = false,
-  aviso_matricula,
   pre_requisitos,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,10 +74,17 @@ export default function EnrollmentModal({
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [isLoadingTurmas, setIsLoadingTurmas] = useState(false);
-  const [isLoadingAlunos, setIsLoadingAlunos] = useState(false);
   const [showAlunosDropdown, setShowAlunosDropdown] = useState(false);
   const [isPartnerStudent, setIsPartnerStudent] = useState(false);
-  const [foundStudent, setFoundStudent] = useState<any>(null);
+  
+  interface FoundStudent {
+    nome?: string;
+    cpf?: string;
+    escola?: string;
+    turma?: string;
+  }
+  
+  const [foundStudent, setFoundStudent] = useState<FoundStudent | null>(null);
   const [isSearchingStudent, setIsSearchingStudent] = useState(false);
   const studentFoundRef = useRef(false);
   const params = useParams();
@@ -211,11 +218,18 @@ export default function EnrollmentModal({
           
           // Se encontrar múltiplos, mostrar dropdown
           if (data.data.length > 1) {
-            setAlunos(data.data.map((aluno: any) => ({
-              nome: aluno.nome,
-              escola: aluno.escola,
-              turma: aluno.turma,
-              cpf: aluno.cpf,
+            interface AlunoSearchResult {
+              nome?: string;
+              escola?: string;
+              turma?: string;
+              cpf?: string;
+            }
+            
+            setAlunos(data.data.map((aluno: AlunoSearchResult) => ({
+              nome: aluno.nome || "",
+              escola: aluno.escola || "",
+              turma: aluno.turma || "",
+              cpf: aluno.cpf || "",
             })));
             setShowAlunosDropdown(true);
             return null; // Não preencher automaticamente se múltiplos
@@ -238,7 +252,7 @@ export default function EnrollmentModal({
   };
 
   // Função para preencher dados do aluno encontrado
-  const fillStudentData = (student: any) => {
+  const fillStudentData = (student: FoundStudent | null) => {
     if (!student) return;
 
     setFoundStudent(student);
@@ -721,8 +735,8 @@ export default function EnrollmentModal({
                               fillStudentData(aluno);
                               setFormData((prev) => ({
                                 ...prev,
-                                studentName: aluno.nome,
-                                studentCPF: (aluno as any).cpf || prev.studentCPF,
+                                studentName: aluno.nome || "",
+                                studentCPF: aluno.cpf || prev.studentCPF,
                               }));
                               setShowAlunosDropdown(false);
                               setAlunos([]);

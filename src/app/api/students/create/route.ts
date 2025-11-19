@@ -29,8 +29,18 @@ interface StudentPayload {
   usou_voucher?: boolean;
 }
 
+interface StrapiStudent {
+  id?: number;
+  documentId?: string;
+  attributes?: {
+    id?: number;
+    nome?: string;
+    cpf_aluno?: string;
+  };
+}
+
 // Função auxiliar para buscar aluno por CPF
-async function findStudentByCPF(cpf: string): Promise<any | null> {
+async function findStudentByCPF(cpf: string): Promise<StrapiStudent | null> {
   try {
     const cleanCPF = cpf.replace(/\D/g, "");
     
@@ -149,7 +159,13 @@ export async function POST(request: NextRequest) {
 
     if (existingStudent) {
       // Atualizar cursos do aluno existente
-      const documentId = existingStudent.documentId || existingStudent.id;
+      const documentId = existingStudent.documentId || existingStudent.id?.toString();
+      if (!documentId) {
+        return NextResponse.json(
+          { error: "ID do aluno não encontrado" },
+          { status: 400 }
+        );
+      }
       await updateStudentCourses(
         documentId,
         student.cursos[0].id,

@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
 const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
 
 // GET - Buscar opções do enum do cronograma
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     if (!STRAPI_API_URL || !ADMIN_TOKEN) {
       return NextResponse.json(

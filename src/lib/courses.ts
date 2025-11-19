@@ -93,17 +93,37 @@ export async function getCardsContent(
       sugestao_horario: course.sugestao_horario ?? true,
       alunos: (() => {
         // Normalizar estrutura de alunos (pode vir com ou sem attributes/data)
-        const alunosRaw = course.alunos?.data || course.alunos || [];
+        const alunosRaw = (course.alunos && typeof course.alunos === 'object' && 'data' in course.alunos) 
+          ? course.alunos.data 
+          : course.alunos || [];
         const alunosArray = Array.isArray(alunosRaw) ? alunosRaw : [];
         
         // Mapear alunos para garantir que turma está presente
-        return alunosArray.map((aluno: any) => {
-          const alunoData = aluno.attributes || aluno;
-          return {
-            id: alunoData?.id || aluno.id,
-            turma: alunoData?.turma ?? aluno.turma ?? undefined,
+        interface AlunoRaw {
+          id?: number;
+          attributes?: {
+            id?: number;
+            turma?: number;
           };
-        });
+          turma?: number;
+        }
+        
+        return alunosArray
+          .filter((aluno: AlunoRaw) => {
+            const alunoData = aluno.attributes || aluno;
+            const alunoId = alunoData?.id || aluno.id;
+            return alunoId !== undefined && alunoId !== null;
+          })
+          .map((aluno: AlunoRaw) => {
+            const alunoData = aluno.attributes || aluno;
+            const alunoId = alunoData?.id || aluno.id;
+            const alunoTurma = alunoData?.turma ?? aluno.turma ?? undefined;
+            
+            return {
+              id: alunoId!,
+              turma: alunoTurma,
+            };
+          });
       })(),
       data_inicio_curso: course.data_inicio_curso || "",
       reviews: (() => {

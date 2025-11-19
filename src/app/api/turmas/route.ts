@@ -57,13 +57,21 @@ export async function GET(request: NextRequest) {
         const turmasResult = await turmasResponse.json();
         console.log(`[Turmas API] Resposta do Strapi (turmas diretas):`, JSON.stringify(turmasResult, null, 2));
         
+        interface TurmaItem {
+          id?: number;
+          attributes?: {
+            turma?: string;
+          };
+          turma?: string;
+        }
+
         const turmasArray = turmasResult.data || [];
         turmas = turmasArray
-          .map((item: any) => {
+          .map((item: TurmaItem) => {
             const itemData = item.attributes || item;
             return itemData.turma || item.turma;
           })
-          .filter((t: any) => t !== undefined && t !== null && t !== "")
+          .filter((t: string | undefined): t is string => t !== undefined && t !== null && t !== "")
           .sort();
       }
     }
@@ -87,23 +95,52 @@ export async function GET(request: NextRequest) {
         const alunosResult = await alunosResponse.json();
         console.log(`[Turmas API] Resposta do Strapi (alunos):`, JSON.stringify(alunosResult, null, 2));
 
+        interface AlunoItem {
+          attributes?: {
+            turma?: {
+              data?: {
+                attributes?: {
+                  turma?: string;
+                };
+              };
+              turma?: string;
+            } | string;
+          };
+          turma?: {
+            turma?: string;
+          } | string;
+        }
+
         const alunosArray = alunosResult.data || [];
         const turmasSet = new Set<string>();
         
-        alunosArray.forEach((aluno: any) => {
+        alunosArray.forEach((aluno: AlunoItem) => {
           const alunoData = aluno.attributes || aluno;
           
           let turmaValue: string | null = null;
           
-          if (alunoData.turma?.data) {
-            const turmaData = alunoData.turma.data.attributes || alunoData.turma.data;
-            turmaValue = turmaData?.turma || null;
-          } else if (alunoData.turma?.turma) {
-            turmaValue = alunoData.turma.turma;
-          } else if (aluno.turma?.turma) {
-            turmaValue = aluno.turma.turma;
-          } else if (typeof alunoData.turma === 'string') {
-            turmaValue = alunoData.turma;
+          const turmaData = alunoData.turma;
+          if (typeof turmaData === 'string') {
+            turmaValue = turmaData;
+          } else if (turmaData && typeof turmaData === 'object') {
+            if ('data' in turmaData && turmaData.data) {
+              const dataAttrs = turmaData.data.attributes || turmaData.data;
+              if (dataAttrs && typeof dataAttrs === 'object' && 'turma' in dataAttrs) {
+                turmaValue = dataAttrs.turma || null;
+              }
+            } else if ('turma' in turmaData) {
+              turmaValue = turmaData.turma || null;
+            }
+          }
+          
+          // Fallback para item.turma se não encontrou em alunoData
+          if (!turmaValue) {
+            const turmaItem = aluno.turma;
+            if (typeof turmaItem === 'string') {
+              turmaValue = turmaItem;
+            } else if (turmaItem && typeof turmaItem === 'object' && 'turma' in turmaItem) {
+              turmaValue = turmaItem.turma || null;
+            }
           }
           
           if (turmaValue) {

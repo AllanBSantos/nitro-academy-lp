@@ -230,6 +230,7 @@ export function CourseSchedules({ courseId }: CourseSchedulesProps) {
     if (courseId) {
       loadSchedules();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   const moveSchedule = async (dragIndex: number, hoverIndex: number) => {
