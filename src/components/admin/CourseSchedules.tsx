@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
@@ -15,13 +15,19 @@ import { Button } from "../new-layout/ui/button";
 import { Badge } from "../new-layout/ui/badge";
 import { AddScheduleDialog } from "./AddScheduleDialog";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface Schedule {
   id: number;
+  index: number;
   dayOfWeek: string;
   startTime: string;
   maxStudents: number;
   currentStudents: number;
+}
+
+interface CourseSchedulesProps {
+  courseId: number;
 }
 
 // Helper function to add 50 minutes to a time string
@@ -36,15 +42,6 @@ const addMinutes = (time: string, minutes: number): string => {
   )}`;
 };
 
-const dayLabels: { [key: string]: string } = {
-  monday: "Segunda-feira",
-  tuesday: "Terça-feira",
-  wednesday: "Quarta-feira",
-  thursday: "Quinta-feira",
-  friday: "Sexta-feira",
-  saturday: "Sábado",
-  sunday: "Domingo",
-};
 
 interface DraggableScheduleProps {
   schedule: Schedule;
@@ -63,6 +60,7 @@ const DraggableSchedule = ({
   isActive,
   isLocked,
 }: DraggableScheduleProps) => {
+  const t = useTranslations("Admin.panel.course_details.schedules");
   const [{ isDragging }, drag] = useDrag({
     type: "schedule",
     item: { index },
@@ -124,22 +122,22 @@ const DraggableSchedule = ({
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-lg text-gray-900">
-                    {dayLabels[schedule.dayOfWeek]}
+                    {t(`days.${schedule.dayOfWeek}`)}
                   </h3>
                   {isActive && (
                     <Badge className="bg-emerald-500/20 text-emerald-600 border-emerald-500/30">
-                      Ativa
+                      {t("active")}
                     </Badge>
                   )}
                   {isFull && !isActive && (
                     <Badge className="bg-red-500/20 text-red-600 border-red-500/30">
-                      Lotada
+                      {t("full")}
                     </Badge>
                   )}
                   {isLocked && (
                     <Badge className="bg-amber-500/20 text-amber-700 border-amber-500/30 flex items-center gap-1">
                       <Lock className="w-3 h-3" />
-                      Bloqueada
+                      {t("locked")}
                     </Badge>
                   )}
                 </div>
@@ -150,7 +148,7 @@ const DraggableSchedule = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
-                    {schedule.currentStudents} / {schedule.maxStudents} alunos
+                    {schedule.currentStudents} / {schedule.maxStudents} {t("students")}
                   </div>
                 </div>
               </div>
@@ -169,7 +167,7 @@ const DraggableSchedule = ({
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Ocupação</span>
+                <span>{t("occupation")}</span>
                 <span className="text-gray-900">
                   {Math.round(occupancyPercentage)}%
                 </span>
@@ -194,69 +192,186 @@ const DraggableSchedule = ({
   );
 };
 
-export function CourseSchedules() {
-  const [schedules, setSchedules] = useState<Schedule[]>([
-    {
-      id: 1,
-      dayOfWeek: "monday",
-      startTime: "14:00",
-      maxStudents: 30,
-      currentStudents: 30,
-    },
-    {
-      id: 2,
-      dayOfWeek: "wednesday",
-      startTime: "14:00",
-      maxStudents: 30,
-      currentStudents: 15,
-    },
-    {
-      id: 3,
-      dayOfWeek: "friday",
-      startTime: "09:00",
-      maxStudents: 25,
-      currentStudents: 0,
-    },
-  ]);
+export function CourseSchedules({ courseId }: CourseSchedulesProps) {
+  const t = useTranslations("Admin.panel.course_details.schedules");
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const moveSchedule = (dragIndex: number, hoverIndex: number) => {
+  // Carregar turmas do Strapi
+  useEffect(() => {
+    async function loadSchedules() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(
+          `/api/admin/courses/${courseId}/turmas`
+        );
+
+        if (!response.ok) {
+          throw new Error(t("error_loading"));
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setSchedules(data.data);
+        } else {
+          throw new Error(data.error || t("error_loading"));
+        }
+      } catch (err) {
+        console.error("Error loading schedules:", err);
+        setError(err instanceof Error ? err.message : t("error_loading"));
+        toast.error(t("error_loading"));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (courseId) {
+      loadSchedules();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId]);
+
+  const moveSchedule = async (dragIndex: number, hoverIndex: number) => {
     // Prevent moving if either schedule is locked
     const dragSchedule = schedules[dragIndex];
     const hoverSchedule = schedules[hoverIndex];
 
     if (dragSchedule.currentStudents > 0 || hoverSchedule.currentStudents > 0) {
-      toast.error("Não é possível reordenar turmas com alunos matriculados");
+      toast.error(t("error_reorder"));
       return;
     }
 
-    const updatedSchedules = [...schedules];
-    const [removed] = updatedSchedules.splice(dragIndex, 1);
-    updatedSchedules.splice(hoverIndex, 0, removed);
-    setSchedules(updatedSchedules);
+    // Criar nova ordem
+    const newOrder = [...schedules];
+    const [removed] = newOrder.splice(dragIndex, 1);
+    newOrder.splice(hoverIndex, 0, removed);
+
+    // Criar array de índices na nova ordem
+    const newOrderIndices = newOrder.map((s) => s.index);
+
+    try {
+      const response = await fetch(
+        `/api/admin/courses/${courseId}/turmas`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newOrder: newOrderIndices }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || t("error_reorder_message"));
+      }
+
+      // Recarregar do servidor para garantir que os índices estão sincronizados
+      const loadResponse = await fetch(
+        `/api/admin/courses/${courseId}/turmas`
+      );
+      if (loadResponse.ok) {
+        const data = await loadResponse.json();
+        if (data.success) {
+          setSchedules(data.data);
+        }
+      }
+
+      toast.success(t("success_reorder"));
+    } catch (err) {
+      console.error("Error reordering schedules:", err);
+      toast.error(
+        err instanceof Error ? err.message : t("error_reorder_message")
+      );
+    }
   };
 
-  const handleAddSchedule = (newSchedule: {
+  const handleAddSchedule = async (newSchedule: {
     dayOfWeek: string;
     startTime: string;
-    maxStudents: number;
   }) => {
-    const schedule: Schedule = {
-      id: Date.now(),
-      ...newSchedule,
-      currentStudents: 0,
-    };
-    setSchedules([...schedules, schedule]);
-    toast.success("Turma adicionada com sucesso!");
+    try {
+      const response = await fetch(
+        `/api/admin/courses/${courseId}/turmas`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dayOfWeek: newSchedule.dayOfWeek,
+            startTime: newSchedule.startTime,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || t("error_add"));
+      }
+
+      // Recarregar turmas
+      const loadResponse = await fetch(
+        `/api/admin/courses/${courseId}/turmas`
+      );
+      if (loadResponse.ok) {
+        const data = await loadResponse.json();
+        if (data.success) {
+          setSchedules(data.data);
+        }
+      }
+
+      toast.success(t("success_add"));
+    } catch (err) {
+      console.error("Error adding schedule:", err);
+      toast.error(
+        err instanceof Error ? err.message : t("error_add")
+      );
+    }
   };
 
-  const handleDeleteSchedule = (id: number) => {
+  const handleDeleteSchedule = async (id: number) => {
     const schedule = schedules.find((s) => s.id === id);
-    if (schedule && schedule.currentStudents > 0) {
-      toast.error("Não é possível remover turmas com alunos matriculados");
+    if (!schedule) return;
+
+    if (schedule.currentStudents > 0) {
+      toast.error(t("error_delete"));
       return;
     }
-    setSchedules(schedules.filter((s) => s.id !== id));
-    toast.success("Turma removida com sucesso!");
+
+    try {
+      const response = await fetch(
+        `/api/admin/courses/${courseId}/turmas?index=${schedule.index}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || t("error_delete_message"));
+      }
+
+      // Recarregar turmas
+      const loadResponse = await fetch(
+        `/api/admin/courses/${courseId}/turmas`
+      );
+      if (loadResponse.ok) {
+        const data = await loadResponse.json();
+        if (data.success) {
+          setSchedules(data.data);
+        }
+      }
+
+      toast.success(t("success_delete"));
+    } catch (err) {
+      console.error("Error deleting schedule:", err);
+      toast.error(
+        err instanceof Error ? err.message : t("error_delete_message")
+      );
+    }
   };
 
   // Find the active schedule (first one that's not full)
@@ -271,19 +386,45 @@ export function CourseSchedules() {
     return allPreviousFull && schedule.currentStudents < schedule.maxStudents;
   });
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#599fe9] mx-auto"></div>
+          <p className="text-gray-600 mt-4">{t("loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-16">
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl text-gray-900 mb-2">Turmas Disponíveis</h2>
+            <h2 className="text-xl text-gray-900 mb-2">{t("title")}</h2>
             <p className="text-gray-600">
-              Organize as turmas por ordem de prioridade. A primeira turma não
-              lotada será exibida no site.
+              {t("description")}
             </p>
           </div>
-          <AddScheduleDialog onAdd={handleAddSchedule} />
+          <AddScheduleDialog 
+            onAdd={handleAddSchedule}
+            existingSchedules={schedules.map((s) => ({
+              dayOfWeek: s.dayOfWeek,
+              startTime: s.startTime,
+            }))}
+          />
         </div>
 
         {/* Info Card */}
@@ -292,16 +433,10 @@ export function CourseSchedules() {
             <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="space-y-1 text-sm text-gray-900">
               <p>
-                <span className="font-medium">Como funciona:</span> As turmas
-                são exibidas no site pela ordem de prioridade. Quando uma turma
-                fica lotada, a próxima da lista automaticamente fica disponível
-                para novas matrículas.
+                <span className="font-medium">{t("how_it_works")}</span> {t("how_it_works_description")}
               </p>
               <p className="text-gray-700 mt-2">
-                💡 <span className="font-medium">Dica:</span> Arraste os cards
-                para reorganizar a ordem de prioridade. Turmas com alunos
-                matriculados ficam bloqueadas e não podem ser movidas ou
-                removidas.
+                💡 <span className="font-medium">{t("tip")}</span> {t("tip_description")}
               </p>
             </div>
           </div>
@@ -311,7 +446,7 @@ export function CourseSchedules() {
         {schedules.length > 0 && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Calendar className="w-4 h-4" />
-            <span>Ordem de Prioridade (1 = Maior prioridade)</span>
+            <span>{t("priority_order")}</span>
           </div>
         )}
 
@@ -322,12 +457,18 @@ export function CourseSchedules() {
               <Calendar className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg text-gray-900 mb-2">
-              Nenhuma turma cadastrada
+              {t("no_schedules")}
             </h3>
             <p className="text-gray-500 mb-6">
-              Comece adicionando a primeira turma disponível para o curso.
+              {t("no_schedules_description")}
             </p>
-            <AddScheduleDialog onAdd={handleAddSchedule} />
+            <AddScheduleDialog 
+              onAdd={handleAddSchedule}
+              existingSchedules={schedules.map((s) => ({
+                dayOfWeek: s.dayOfWeek,
+                startTime: s.startTime,
+              }))}
+            />
           </Card>
         ) : (
           <div className="space-y-4">

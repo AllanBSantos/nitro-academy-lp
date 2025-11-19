@@ -450,7 +450,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
 
           {/* Schedules Tab */}
           <TabsContent value="schedules" className="p-6">
-            <CourseSchedules />
+            <CourseSchedules courseId={course.id} />
           </TabsContent>
 
           {/* Details Tab */}
