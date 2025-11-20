@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import {
@@ -42,6 +42,130 @@ type Student = {
   class: number | null;
 };
 
+type RelationAttributes = {
+  nome?: string;
+  titulo?: string;
+  name?: string;
+};
+
+type RelationValue =
+  | string
+  | {
+      data?: { attributes?: RelationAttributes | null } | null;
+      attributes?: RelationAttributes | null;
+    }
+  | RelationAttributes
+  | null
+  | undefined;
+
+type PartnerStudent = {
+  id: number;
+  name: string;
+  phone: string;
+  responsibleName: string;
+  responsiblePhone: string;
+  courseName: string;
+  partnerSchool: string;
+  className: string;
+  status: "enrolled" | "not_enrolled";
+};
+
+type PartnerStudentAttributes = {
+  id?: number;
+  nome?: string;
+  telefone_aluno?: string;
+  telefone?: string;
+  phone?: string;
+  responsavel?: string;
+  nome_responsavel?: string;
+  telefone_responsavel?: string;
+  telefoneResponsavel?: string;
+  escola?: RelationValue;
+  escola_old?: string;
+  escola_parceira?: string;
+  turma?: RelationValue | string;
+  turma_old?: string;
+  courseInfo?: {
+    courseName?: string;
+    course?: RelationValue;
+  } | null;
+  isEnrolled?: boolean;
+};
+
+type RawPartnerStudent = PartnerStudentAttributes & {
+  id?: number;
+  attributes?: PartnerStudentAttributes;
+};
+
+type PartnerStudentsResponse = {
+  data?: RawPartnerStudent[];
+  meta?: {
+    pagination?: {
+      page?: number;
+      pageSize?: number;
+      pageCount?: number;
+      total?: number;
+    };
+  };
+};
+
+const getRelationValue = (relation: RelationValue): string => {
+  if (!relation) return "";
+  if (typeof relation === "string") return relation;
+
+  const fromAttributes = (attrs?: RelationAttributes | null): string => {
+    if (!attrs) return "";
+    return attrs.nome || attrs.titulo || attrs.name || "";
+  };
+
+  if ("data" in relation && relation.data) {
+    const value = fromAttributes(relation.data.attributes);
+    if (value) return value;
+  }
+
+  if ("attributes" in relation && relation.attributes) {
+    const value = fromAttributes(relation.attributes);
+    if (value) return value;
+  }
+
+  return fromAttributes(relation as RelationAttributes);
+};
+
+const mapPartnerStudent = (student: RawPartnerStudent): PartnerStudent => {
+  const attrs: PartnerStudentAttributes = student?.attributes
+    ? { ...student.attributes }
+    : { ...student };
+
+  const partnerSchool =
+    getRelationValue(attrs.escola) ||
+    attrs.escola_old ||
+    attrs.escola_parceira ||
+    "";
+
+  const className =
+    getRelationValue(attrs.turma as RelationValue) ||
+    attrs.turma_old ||
+    (typeof attrs.turma === "string" ? attrs.turma : "");
+
+  const courseName =
+    attrs.courseInfo?.courseName ||
+    getRelationValue(attrs.courseInfo?.course) ||
+    "";
+
+  return {
+    id: student.id ?? attrs.id ?? Date.now(),
+    name: attrs.nome || "",
+    phone: attrs.telefone_aluno || attrs.telefone || attrs.phone || "",
+    responsibleName: attrs.responsavel || attrs.nome_responsavel || "",
+    responsiblePhone:
+      attrs.telefone_responsavel || attrs.telefoneResponsavel || "",
+    courseName,
+    partnerSchool,
+    className,
+    status: attrs.isEnrolled ? "enrolled" : "not_enrolled",
+  };
+};
+
 type ReportType = "all" | "partner" | "no-link";
 
 export function AdminStudents() {
@@ -51,6 +175,13 @@ export function AdminStudents() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [partnerStudents, setPartnerStudents] = useState<PartnerStudent[]>([]);
+  const [partnerLoading, setPartnerLoading] = useState(true);
+  const [partnerError, setPartnerError] = useState<string | null>(null);
+  const [partnerSchoolFilter, setPartnerSchoolFilter] = useState("all");
+  const [partnerStatusFilter, setPartnerStatusFilter] = useState<
+    "all" | "enrolled" | "not_enrolled"
+  >("all");
 
   useEffect(() => {
     async function loadStudents() {
@@ -99,24 +230,165 @@ export function AdminStudents() {
     loadStudents();
   }, [t]);
 
+  useEffect(() => {
+    async function loadPartnerStudents() {
+      try {
+        setPartnerLoading(true);
+        setPartnerError(null);
+
+        const pageSize = 100;
+        let currentPage = 1;
+        let totalPages = 1;
+        const allStudents: PartnerStudent[] = [];
+        const timestamp = Date.now().toString();
+
+        while (currentPage <= totalPages) {
+          const params = new URLSearchParams({
+            page: currentPage.toString(),
+            pageSize: pageSize.toString(),
+            _t: timestamp,
+          });
+
+          const response = await fetch(
+            `/api/partner-students?${params.toString()}`,
+            {
+              cache: "no-store",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(t("error_loading"));
+          }
+
+          const data: PartnerStudentsResponse = await response.json();
+          const mapped: PartnerStudent[] = (data.data || []).map(
+            (student) => mapPartnerStudent(student)
+          );
+
+          allStudents.push(...mapped);
+
+          const pagination = data.meta?.pagination;
+          totalPages = pagination?.pageCount || 1;
+          currentPage += 1;
+        }
+
+        setPartnerStudents(allStudents);
+      } catch (err) {
+        console.error("Error loading partner students:", err);
+        setPartnerError(t("error_loading"));
+        setPartnerStudents([]);
+      } finally {
+        setPartnerLoading(false);
+      }
+    }
+
+    loadPartnerStudents();
+  }, [t]);
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const isPartnerView = reportType === "partner";
+  const schoolFilterActive = reportType === "all" || reportType === "partner";
+  const statusFilterActive = reportType === "partner";
+
   const filteredStudents = students.filter((student) => {
     // Filter by report type
     if (reportType === "partner" && !student.partnerSchool) return false;
     if (reportType === "no-link" && student.partnerSchool) return false;
 
+    if (
+      schoolFilterActive &&
+      partnerSchoolFilter !== "all" &&
+      student.partnerSchool !== partnerSchoolFilter
+    ) {
+      return false;
+    }
+
     // Filter by search term
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
+    if (normalizedSearch) {
       return (
-        student.name.toLowerCase().includes(search) ||
-        student.phone.includes(search) ||
-        student.responsibleName.toLowerCase().includes(search) ||
-        student.courses.some((c) => c.titulo.toLowerCase().includes(search))
+        student.name.toLowerCase().includes(normalizedSearch) ||
+        student.phone.includes(normalizedSearch) ||
+        student.responsibleName.toLowerCase().includes(normalizedSearch) ||
+        student.courses.some((c) =>
+          c.titulo.toLowerCase().includes(normalizedSearch)
+        )
       );
     }
 
     return true;
   });
+
+  const availablePartnerSchools = useMemo(() => {
+    const schools = new Set<string>();
+    students.forEach((student) => {
+      if (student.partnerSchool) {
+        schools.add(student.partnerSchool);
+      }
+    });
+    partnerStudents.forEach((student) => {
+      if (student.partnerSchool) {
+        schools.add(student.partnerSchool);
+      }
+    });
+    return Array.from(schools).sort((a, b) => a.localeCompare(b));
+  }, [students, partnerStudents]);
+
+  const partnerFilteredStudents = partnerStudents.filter((student) => {
+    if (
+      partnerSchoolFilter !== "all" &&
+      student.partnerSchool !== partnerSchoolFilter
+    ) {
+      return false;
+    }
+
+    if (
+      partnerStatusFilter !== "all" &&
+      student.status !== partnerStatusFilter
+    ) {
+      return false;
+    }
+
+    if (normalizedSearch) {
+      const valuesToSearch = [
+        student.name,
+        student.phone,
+        student.responsibleName,
+        student.responsiblePhone,
+        student.courseName,
+        student.partnerSchool,
+        student.className,
+      ]
+        .filter(Boolean)
+        .map((value) => value.toLowerCase());
+
+      return valuesToSearch.some((value) =>
+        value.includes(normalizedSearch)
+      );
+    }
+
+    return true;
+  });
+
+  const currentLoading = isPartnerView ? partnerLoading : loading;
+  const currentError = isPartnerView ? partnerError : error;
+  const displayedStudentsCount = isPartnerView
+    ? partnerFilteredStudents.length
+    : filteredStudents.length;
+  const exportDisabled = displayedStudentsCount === 0;
+  const columnCount = isPartnerView ? 8 : 7;
+
+  useEffect(() => {
+    if (!schoolFilterActive && partnerSchoolFilter !== "all") {
+      setPartnerSchoolFilter("all");
+    }
+  }, [schoolFilterActive, partnerSchoolFilter]);
+
+  useEffect(() => {
+    if (!statusFilterActive && partnerStatusFilter !== "all") {
+      setPartnerStatusFilter("all");
+    }
+  }, [statusFilterActive, partnerStatusFilter]);
 
   const handleExport = () => {
     // Export functionality to be implemented
@@ -126,7 +398,7 @@ export function AdminStudents() {
   const partnersCount = students.filter((s) => s.partnerSchool).length;
   const noLinkCount = students.filter((s) => !s.partnerSchool).length;
 
-  if (loading) {
+  if (currentLoading) {
     return (
       <div className="space-y-8">
         <div className="text-center py-12">
@@ -137,11 +409,11 @@ export function AdminStudents() {
     );
   }
 
-  if (error) {
+  if (currentError) {
     return (
       <div className="space-y-8">
         <div className="text-center py-12">
-          <p className="text-red-600">{error}</p>
+          <p className="text-red-600">{currentError}</p>
         </div>
       </div>
     );
@@ -210,51 +482,114 @@ export function AdminStudents() {
         transition={{ delay: 0.4 }}
       >
         <Card className="bg-white border-gray-200 p-6 shadow-sm">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-gray-700 text-sm mb-3">
-                {t("report_type")}
-              </label>
-              <Select
-                value={reportType}
-                onValueChange={(value: ReportType) => setReportType(value)}
-              >
-                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all_enrolled")}</SelectItem>
-                  <SelectItem value="partner">
-                    {t("partner_students")}
-                  </SelectItem>
-                  <SelectItem value="no-link">
-                    {t("no_link_students")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("report_type")}
+                </label>
+                <Select
+                  value={reportType}
+                  onValueChange={(value: ReportType) => setReportType(value)}
+                >
+                  <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("all_enrolled")}</SelectItem>
+                    <SelectItem value="partner">
+                      {t("partner_students")}
+                    </SelectItem>
+                    <SelectItem value="no-link">
+                      {t("no_link_students")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="flex-1">
-              <label className="block text-gray-700 text-sm mb-3">
-                {t("search")}
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder={t("search_placeholder")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 h-11 rounded-lg hover:bg-gray-100 transition-colors"
-                />
+              <div>
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("search")}
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder={t("search_placeholder")}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 h-11 rounded-lg hover:bg-gray-100 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="min-h-[110px]">
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("partner_school_filter")}
+                </label>
+                <Select
+                  value={partnerSchoolFilter}
+                  onValueChange={(value) => setPartnerSchoolFilter(value)}
+                  disabled={!schoolFilterActive}
+                >
+                  <SelectTrigger
+                    disabled={!schoolFilterActive}
+                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <SelectValue placeholder={t("all_partner_schools")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">
+                      {t("all_partner_schools")}
+                    </SelectItem>
+                    {availablePartnerSchools.map((school) => (
+                      <SelectItem key={school} value={school}>
+                        {school}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="min-h-[110px]">
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("status_filter")}
+                </label>
+                <Select
+                  value={partnerStatusFilter}
+                  onValueChange={(value) =>
+                    setPartnerStatusFilter(
+                      value as "all" | "enrolled" | "not_enrolled"
+                    )
+                  }
+                  disabled={!statusFilterActive}
+                >
+                  <SelectTrigger
+                    disabled={!statusFilterActive}
+                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <SelectValue placeholder={t("status_filter")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">
+                      {t("status_options.all")}
+                    </SelectItem>
+                    <SelectItem value="enrolled">
+                      {t("status_options.enrolled")}
+                    </SelectItem>
+                    <SelectItem value="not_enrolled">
+                      {t("status_options.not_enrolled")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <div className="flex items-end gap-3">
-              {reportType === "partner" && <ImportStudentsDialog />}
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-end">
+              {isPartnerView && <ImportStudentsDialog />}
               <Button
                 onClick={handleExport}
-                disabled={filteredStudents.length === 0}
+                disabled={exportDisabled}
                 className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
               >
                 <Download className="w-5 h-5 mr-2" />
@@ -297,12 +632,17 @@ export function AdminStudents() {
                   <TableHead className="text-gray-700">
                     {t("table.class")}
                   </TableHead>
+                  {isPartnerView && (
+                    <TableHead className="text-gray-700">
+                      {t("table.status")}
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.length === 0 ? (
+                {displayedStudentsCount === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-16">
+                    <TableCell colSpan={columnCount} className="text-center py-16">
                       <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                         <Inbox className="w-8 h-8 text-gray-400" />
                       </div>
@@ -316,6 +656,69 @@ export function AdminStudents() {
                       </p>
                     </TableCell>
                   </TableRow>
+                ) : isPartnerView ? (
+                  partnerFilteredStudents.map((student) => (
+                    <TableRow
+                      key={`partner-${student.id}`}
+                      className="border-gray-100 hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="text-gray-900">
+                        {student.name}
+                      </TableCell>
+                      <TableCell className="text-gray-600 font-mono text-sm">
+                        {student.phone || "-"}
+                      </TableCell>
+                      <TableCell className="text-gray-900">
+                        {student.responsibleName || "-"}
+                      </TableCell>
+                      <TableCell className="text-gray-600 font-mono text-sm">
+                        {student.responsiblePhone || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {student.courseName ? (
+                          <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
+                            {student.courseName}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {student.partnerSchool ? (
+                          <div className="flex items-center gap-2">
+                            <School className="w-4 h-4 text-emerald-500" />
+                            <span className="text-gray-900">
+                              {student.partnerSchool}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {student.className ? (
+                          <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                            {student.className}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={`border ${
+                            student.status === "enrolled"
+                              ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                              : "bg-amber-100 text-amber-700 border-amber-200"
+                          }`}
+                        >
+                          {student.status === "enrolled"
+                            ? t("status_options.enrolled")
+                            : t("status_options.not_enrolled")}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ) : (
                   filteredStudents.map((student) => (
                     <TableRow

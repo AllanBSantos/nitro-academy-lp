@@ -4,6 +4,18 @@ import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+const buildAuthHeaders = () => {
+  if (!ADMIN_TOKEN) {
+    throw new Error("STRAPI_TOKEN não configurado para partner-students");
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${ADMIN_TOKEN}`,
+  };
+};
 
 // Disable caching for this route
 export const dynamic = "force-dynamic";
@@ -51,10 +63,10 @@ export async function GET(request: NextRequest) {
         }
       }
 
+      const headers = buildAuthHeaders();
+
       const allStudentsResponse = await fetch(finalUrl, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         cache: "no-store",
       });
 
@@ -73,9 +85,7 @@ export async function GET(request: NextRequest) {
         const enrolledStudentsResponse = await fetch(
           `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*&publicationState=preview`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers,
             cache: "no-store",
           }
         );
@@ -237,10 +247,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const headers = buildAuthHeaders();
+
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       cache: "no-store", // Disable fetch caching
     });
 
@@ -257,12 +267,11 @@ export async function GET(request: NextRequest) {
 
     let enrolledStudents: any[] = [];
     try {
+      const headers = buildAuthHeaders();
       const enrolledStudentsResponse = await fetch(
         `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*&publicationState=preview`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
           cache: "no-store",
         }
       );
