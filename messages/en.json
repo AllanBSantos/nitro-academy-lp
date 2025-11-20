@@ -739,6 +739,14 @@
         "no_link_students": "Students without Links",
         "search": "Search",
         "search_placeholder": "Name, phone, course...",
+      "partner_school_filter": "Partner School",
+      "status_filter": "Status",
+      "all_partner_schools": "All",
+      "status_options": {
+        "all": "All",
+        "enrolled": "Enrolled",
+        "not_enrolled": "Not Enrolled"
+      },
         "export": "Export",
         "no_students_found": "No students found",
         "adjust_filters": "Try adjusting the search filters.",
@@ -746,11 +754,12 @@
         "table": {
           "student_name": "Student Name",
           "phone": "Phone",
-          "responsible": "Responsible",
-          "responsible_phone": "Responsible Phone",
+        "responsible": "Responsible",
+        "responsible_phone": "Responsible Phone",
           "course": "Course",
           "partner_school": "Partner School",
           "class": "Class",
+        "status": "Status",
           "class_label": "Class {number}"
         }
       },

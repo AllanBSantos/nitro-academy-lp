@@ -735,6 +735,14 @@
         "no_link_students": "Alunos sem Vínculos",
         "search": "Buscar",
         "search_placeholder": "Nome, telefone, curso...",
+      "partner_school_filter": "Escola Parceira",
+      "status_filter": "Status",
+      "all_partner_schools": "Todas",
+      "status_options": {
+        "all": "Todos",
+        "enrolled": "Matriculado",
+        "not_enrolled": "Não Matriculado"
+      },
         "export": "Exportar",
         "no_students_found": "Nenhum aluno encontrado",
         "adjust_filters": "Tente ajustar os filtros de busca.",
@@ -746,8 +754,9 @@
           "responsible_phone": "Tel. Responsável",
           "course": "Curso",
           "partner_school": "Escola Parceira",
-          "class": "Turma",
-          "class_label": "Turma {number}"
+        "class": "Turma",
+        "status": "Status",
+        "class_label": "Turma {number}"
         }
       },
       "admin_home": {
