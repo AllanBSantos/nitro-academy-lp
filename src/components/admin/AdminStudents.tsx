@@ -42,6 +42,22 @@ type Student = {
   class: number | null;
 };
 
+type RelationAttributes = {
+  nome?: string;
+  titulo?: string;
+  name?: string;
+};
+
+type RelationValue =
+  | string
+  | {
+      data?: { attributes?: RelationAttributes | null } | null;
+      attributes?: RelationAttributes | null;
+    }
+  | RelationAttributes
+  | null
+  | undefined;
+
 type PartnerStudent = {
   id: number;
   name: string;
@@ -52,6 +68,102 @@ type PartnerStudent = {
   partnerSchool: string;
   className: string;
   status: "enrolled" | "not_enrolled";
+};
+
+type PartnerStudentAttributes = {
+  id?: number;
+  nome?: string;
+  telefone_aluno?: string;
+  telefone?: string;
+  phone?: string;
+  responsavel?: string;
+  nome_responsavel?: string;
+  telefone_responsavel?: string;
+  telefoneResponsavel?: string;
+  escola?: RelationValue;
+  escola_old?: string;
+  escola_parceira?: string;
+  turma?: RelationValue | string;
+  turma_old?: string;
+  courseInfo?: {
+    courseName?: string;
+    course?: RelationValue;
+  } | null;
+  isEnrolled?: boolean;
+};
+
+type RawPartnerStudent = PartnerStudentAttributes & {
+  id?: number;
+  attributes?: PartnerStudentAttributes;
+};
+
+type PartnerStudentsResponse = {
+  data?: RawPartnerStudent[];
+  meta?: {
+    pagination?: {
+      page?: number;
+      pageSize?: number;
+      pageCount?: number;
+      total?: number;
+    };
+  };
+};
+
+const getRelationValue = (relation: RelationValue): string => {
+  if (!relation) return "";
+  if (typeof relation === "string") return relation;
+
+  const fromAttributes = (attrs?: RelationAttributes | null): string => {
+    if (!attrs) return "";
+    return attrs.nome || attrs.titulo || attrs.name || "";
+  };
+
+  if ("data" in relation && relation.data) {
+    const value = fromAttributes(relation.data.attributes);
+    if (value) return value;
+  }
+
+  if ("attributes" in relation && relation.attributes) {
+    const value = fromAttributes(relation.attributes);
+    if (value) return value;
+  }
+
+  return fromAttributes(relation as RelationAttributes);
+};
+
+const mapPartnerStudent = (student: RawPartnerStudent): PartnerStudent => {
+  const attrs: PartnerStudentAttributes = student?.attributes
+    ? { ...student.attributes }
+    : { ...student };
+
+  const partnerSchool =
+    getRelationValue(attrs.escola) ||
+    attrs.escola_old ||
+    attrs.escola_parceira ||
+    "";
+
+  const className =
+    getRelationValue(attrs.turma as RelationValue) ||
+    attrs.turma_old ||
+    (typeof attrs.turma === "string" ? attrs.turma : "");
+
+  const courseName =
+    attrs.courseInfo?.courseName ||
+    getRelationValue(attrs.courseInfo?.course) ||
+    "";
+
+  return {
+    id: student.id ?? attrs.id ?? Date.now(),
+    name: attrs.nome || "",
+    phone: attrs.telefone_aluno || attrs.telefone || attrs.phone || "",
+    responsibleName: attrs.responsavel || attrs.nome_responsavel || "",
+    responsiblePhone:
+      attrs.telefone_responsavel || attrs.telefoneResponsavel || "",
+    courseName,
+    partnerSchool,
+    className,
+    status: attrs.isEnrolled ? "enrolled" : "not_enrolled",
+  };
 };
 
 type ReportType = "all" | "partner" | "no-link";
@@ -70,70 +182,6 @@ export function AdminStudents() {
   const [partnerStatusFilter, setPartnerStatusFilter] = useState<
     "all" | "enrolled" | "not_enrolled"
   >("all");
-
-  const getRelationValue = (relation: any): string => {
-    if (!relation) return "";
-    if (typeof relation === "string") return relation;
-    if (relation?.data?.attributes) {
-      return (
-        relation.data.attributes.nome ||
-        relation.data.attributes.titulo ||
-        relation.data.attributes.name ||
-        ""
-      );
-    }
-    if (relation?.attributes) {
-      return (
-        relation.attributes.nome ||
-        relation.attributes.titulo ||
-        relation.attributes.name ||
-        ""
-      );
-    }
-    if (relation?.nome || relation?.titulo || relation?.name) {
-      return relation.nome || relation.titulo || relation.name;
-    }
-    return "";
-  };
-
-  const mapPartnerStudent = (student: any): PartnerStudent => {
-    const attrs = student?.attributes || student || {};
-
-    const partnerSchool =
-      getRelationValue(attrs.escola) ||
-      attrs.escola_old ||
-      attrs.escola_parceira ||
-      "";
-
-    const className =
-      getRelationValue(attrs.turma) ||
-      attrs.turma_old ||
-      (typeof attrs.turma === "string" ? attrs.turma : "");
-
-    const courseName =
-      attrs.courseInfo?.courseName ||
-      getRelationValue(attrs.courseInfo?.course) ||
-      "";
-
-    return {
-      id: student.id || attrs.id || Math.random(),
-      name: attrs.nome || "",
-      phone:
-        attrs.telefone_aluno ||
-        attrs.telefone ||
-        attrs.phone ||
-        "",
-      responsibleName: attrs.responsavel || attrs.nome_responsavel || "",
-      responsiblePhone:
-        attrs.telefone_responsavel ||
-        attrs.telefoneResponsavel ||
-        "",
-      courseName,
-      partnerSchool,
-      className,
-      status: attrs.isEnrolled ? "enrolled" : "not_enrolled",
-    };
-  };
 
   useEffect(() => {
     async function loadStudents() {
@@ -212,9 +260,9 @@ export function AdminStudents() {
             throw new Error(t("error_loading"));
           }
 
-          const data = await response.json();
+          const data: PartnerStudentsResponse = await response.json();
           const mapped: PartnerStudent[] = (data.data || []).map(
-            (student: any) => mapPartnerStudent(student)
+            (student) => mapPartnerStudent(student)
           );
 
           allStudents.push(...mapped);
