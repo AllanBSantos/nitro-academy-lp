@@ -630,6 +630,7 @@
       "logout_confirm": "Do you want to logout?",
       "logout_action": "Logout",
       "dashboard": "Dashboard",
+      "my_classes": "My Classes",
       "partner_students": "Partner School Students List",
       "students_report": "Students List",
       "exceeded_students_report": "Exceeded Students",
@@ -943,6 +944,57 @@
       "responsible_name": "Responsible Name",
       "responsible_phone": "Responsible Phone",
       "courses": "Courses"
+    },
+    "dashboard_home": {
+      "title": "Administrative Dashboard",
+      "subtitle": "Overview of enrollments and statistics from Nitro Academy",
+      "total_students": "Total Students",
+      "registered_in_system": "Registered in the system",
+      "enrolled": "Enrolled",
+      "not_enrolled": "Not Enrolled",
+      "waiting_enrollment": "Waiting for enrollment",
+      "partner_schools": "Partner Schools",
+      "active_institutions": "Active institutions",
+      "enrollment_by_school": {
+        "title": "Enrollments by School",
+        "description": "Comparison of enrolled and not enrolled students",
+        "enrolled": "Enrolled",
+        "not_enrolled": "Not Enrolled",
+        "no_data": "No data"
+      },
+      "enrollment_trend": {
+        "title": "Enrollment Trend",
+        "description": "Enrollment growth over the last months",
+        "enrollments": "Enrollments",
+        "no_data": "No data"
+      },
+      "popular_courses": {
+        "title": "Most Popular Courses",
+        "description": "Course ranking by number of students",
+        "no_courses": "No courses found"
+      }
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "my_classes": "My Classes",
+      "courses": "Courses",
+      "students": "Students",
+      "collapse": "Collapse Menu",
+      "expand": "Expand",
+      "logout": "Logout",
+      "admin_panel": "Administrative Panel"
+    },
+    "page_titles": {
+      "dashboard": "Dashboard",
+      "my_classes": "My Classes",
+      "courses": "Courses",
+      "students": "Students"
+    },
+    "page_descriptions": {
+      "dashboard": "Overview of enrollments and statistics",
+      "my_classes": "Overview of your classes and tasks",
+      "courses": "Manage courses and enrollments",
+      "students": "View and export student data"
     }
   },
   "CourseRating": {

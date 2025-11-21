@@ -55,7 +55,6 @@ export async function GET(request: NextRequest) {
 
       if (turmasResponse.ok) {
         const turmasResult = await turmasResponse.json();
-        console.log(`[Turmas API] Resposta do Strapi (turmas diretas):`, JSON.stringify(turmasResult, null, 2));
         
         interface TurmaItem {
           id?: number;
@@ -78,8 +77,6 @@ export async function GET(request: NextRequest) {
 
     // Se não encontrou turmas diretamente, buscar através dos alunos
     if (turmas.length === 0) {
-      console.log(`[Turmas API] Não encontrou turmas diretamente, buscando através dos alunos...`);
-      
       const alunosUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira?filters[escola][nome][$eq]=${encodeURIComponent(
         escola
       )}&populate[turma]=*&populate[escola]=*&pagination[pageSize]=10000`;
@@ -93,7 +90,6 @@ export async function GET(request: NextRequest) {
 
       if (alunosResponse.ok) {
         const alunosResult = await alunosResponse.json();
-        console.log(`[Turmas API] Resposta do Strapi (alunos):`, JSON.stringify(alunosResult, null, 2));
 
         interface AlunoItem {
           attributes?: {
@@ -151,8 +147,6 @@ export async function GET(request: NextRequest) {
         turmas = Array.from(turmasSet).sort();
       }
     }
-
-    console.log(`[Turmas API] Escola: ${escola}, Turmas encontradas: ${turmas.length}`, turmas);
 
     return NextResponse.json({
       success: true,

@@ -626,6 +626,7 @@
       "logout_confirm": "Deseja sair?",
       "logout_action": "Deslogar",
       "dashboard": "Dashboard",
+      "my_classes": "Minhas Aulas",
       "partner_students": "Lista de Alunos Escola Parceira",
       "students_report": "Lista de Alunos",
       "exceeded_students_report": "Alunos Excedentes",
@@ -936,6 +937,57 @@
       "responsible_name": "Nome do Responsável",
       "responsible_phone": "Telefone do Responsável",
       "courses": "Cursos"
+    },
+    "dashboard_home": {
+      "title": "Dashboard Administrativo",
+      "subtitle": "Visão geral de matrículas e estatísticas da Nitro Academy",
+      "total_students": "Total de Alunos",
+      "registered_in_system": "Registrados no sistema",
+      "enrolled": "Matriculados",
+      "not_enrolled": "Não Matriculados",
+      "waiting_enrollment": "Aguardando matrícula",
+      "partner_schools": "Escolas Parceiras",
+      "active_institutions": "Instituições ativas",
+      "enrollment_by_school": {
+        "title": "Matrículas por Escola",
+        "description": "Comparação de alunos matriculados e não matriculados",
+        "enrolled": "Matriculados",
+        "not_enrolled": "Não Matriculados",
+        "no_data": "Sem dados"
+      },
+      "enrollment_trend": {
+        "title": "Evolução de Matrículas",
+        "description": "Crescimento de matrículas nos últimos meses",
+        "enrollments": "Matrículas",
+        "no_data": "Sem dados"
+      },
+      "popular_courses": {
+        "title": "Cursos Mais Populares",
+        "description": "Ranking de cursos por número de alunos",
+        "no_courses": "Nenhum curso encontrado"
+      }
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "my_classes": "Minhas Aulas",
+      "courses": "Cursos",
+      "students": "Alunos",
+      "collapse": "Recolher Menu",
+      "expand": "Expandir",
+      "logout": "Sair",
+      "admin_panel": "Painel Administrativo"
+    },
+    "page_titles": {
+      "dashboard": "Dashboard",
+      "my_classes": "Minhas Aulas",
+      "courses": "Cursos",
+      "students": "Alunos"
+    },
+    "page_descriptions": {
+      "dashboard": "Visão geral de matrículas e estatísticas",
+      "my_classes": "Visão geral de suas aulas e tarefas",
+      "courses": "Gerencie os cursos e matrículas",
+      "students": "Visualize e exporte dados dos alunos"
     }
   },
   "CourseRating": {

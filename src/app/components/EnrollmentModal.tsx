@@ -136,12 +136,9 @@ export default function EnrollmentModal({
       );
       if (response.ok) {
         const data = await response.json();
-        console.log(`[EnrollmentModal] Resposta da API turmas:`, data);
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           setTurmas(data.data.map((turma: string) => ({ nome: turma })));
-          console.log(`[EnrollmentModal] Turmas carregadas:`, data.data);
         } else {
-          console.warn(`[EnrollmentModal] Nenhuma turma encontrada para a escola: ${escola}`);
           setTurmas([]);
         }
       } else {
@@ -192,11 +189,6 @@ export default function EnrollmentModal({
   // Função para buscar aluno por nome
   const searchStudentByName = async (nome: string) => {
     if (!nome || nome.length < 2 || !formData.partnerSchool || !formData.classNumber) {
-      console.log(`[EnrollmentModal] Busca por nome cancelada:`, { 
-        nome, 
-        escola: formData.partnerSchool, 
-        turma: formData.classNumber 
-      });
       return null;
     }
 
@@ -204,18 +196,12 @@ export default function EnrollmentModal({
     try {
       const url = `/api/alunos-escola-parceira/search?nome=${encodeURIComponent(nome)}&escola=${encodeURIComponent(formData.partnerSchool)}&turma=${encodeURIComponent(formData.classNumber)}`;
       
-      console.log(`[EnrollmentModal] Buscando aluno por nome:`, url);
-      
       const response = await fetch(url);
-      console.log(`[EnrollmentModal] Resposta da busca:`, response.status, response.ok);
       
       if (response.ok) {
         const data = await response.json();
-        console.log(`[EnrollmentModal] Dados retornados:`, data);
         
         if (data.success && data.data && data.data.length > 0) {
-          console.log(`[EnrollmentModal] Encontrados ${data.data.length} aluno(s)`);
-          
           // Se encontrar múltiplos, mostrar dropdown
           if (data.data.length > 1) {
             interface AlunoSearchResult {
@@ -235,8 +221,6 @@ export default function EnrollmentModal({
             return null; // Não preencher automaticamente se múltiplos
           }
           return data.data[0]; // Retorna o primeiro resultado se único
-        } else {
-          console.log(`[EnrollmentModal] Nenhum aluno encontrado`);
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
