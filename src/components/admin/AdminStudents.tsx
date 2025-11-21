@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Select,
   SelectContent,
@@ -46,6 +48,7 @@ type RelationAttributes = {
   nome?: string;
   titulo?: string;
   name?: string;
+  turma?: string;
 };
 
 type RelationValue =
@@ -115,19 +118,32 @@ const getRelationValue = (relation: RelationValue): string => {
 
   const fromAttributes = (attrs?: RelationAttributes | null): string => {
     if (!attrs) return "";
-    return attrs.nome || attrs.titulo || attrs.name || "";
+    return attrs.nome || attrs.titulo || attrs.name || attrs.turma || "";
   };
 
+  // Handle Strapi v5 format: { data: { id, documentId, attributes: {...} } }
   if ("data" in relation && relation.data) {
-    const value = fromAttributes(relation.data.attributes);
-    if (value) return value;
+    // Check if data is an array (many relations) or single object
+    if (Array.isArray(relation.data)) {
+      const firstItem = relation.data[0];
+      if (firstItem?.attributes) {
+        const value = fromAttributes(firstItem.attributes);
+        if (value) return value;
+      }
+    } else {
+      // Single relation
+      const value = fromAttributes(relation.data.attributes);
+      if (value) return value;
+    }
   }
 
+  // Handle direct attributes
   if ("attributes" in relation && relation.attributes) {
     const value = fromAttributes(relation.attributes);
     if (value) return value;
   }
 
+  // Fallback: try to extract directly
   return fromAttributes(relation as RelationAttributes);
 };
 
@@ -218,8 +234,7 @@ export function AdminStudents() {
         );
 
         setStudents(alunosFormatados);
-      } catch (err) {
-        console.error("Error loading students:", err);
+      } catch {
         setError(t("error_loading"));
         setStudents([]);
       } finally {
@@ -261,8 +276,8 @@ export function AdminStudents() {
           }
 
           const data: PartnerStudentsResponse = await response.json();
-          const mapped: PartnerStudent[] = (data.data || []).map(
-            (student) => mapPartnerStudent(student)
+          const mapped: PartnerStudent[] = (data.data || []).map((student) =>
+            mapPartnerStudent(student)
           );
 
           allStudents.push(...mapped);
@@ -273,8 +288,7 @@ export function AdminStudents() {
         }
 
         setPartnerStudents(allStudents);
-      } catch (err) {
-        console.error("Error loading partner students:", err);
+      } catch {
         setPartnerError(t("error_loading"));
         setPartnerStudents([]);
       } finally {
@@ -362,9 +376,7 @@ export function AdminStudents() {
         .filter(Boolean)
         .map((value) => value.toLowerCase());
 
-      return valuesToSearch.some((value) =>
-        value.includes(normalizedSearch)
-      );
+      return valuesToSearch.some((value) => value.includes(normalizedSearch));
     }
 
     return true;
@@ -391,12 +403,134 @@ export function AdminStudents() {
   }, [statusFilterActive, partnerStatusFilter]);
 
   const handleExport = () => {
-    // Export functionality to be implemented
+    const dataToExport = isPartnerView
+      ? partnerFilteredStudents
+      : filteredStudents;
+
+    if (dataToExport.length === 0) {
+      return;
+    }
+
+    try {
+      const doc = new jsPDF();
+
+      // Title
+      const reportTypeName = isPartnerView
+        ? t("partner_students")
+        : reportType === "no-link"
+        ? t("no_link_students")
+        : t("all_enrolled");
+
+      doc.setFontSize(18);
+      doc.text(reportTypeName, 14, 22);
+
+      // Summary info
+      doc.setFontSize(12);
+      doc.text(`Total de Alunos: ${dataToExport.length}`, 14, 35);
+
+      // Define headers based on view type
+      const headers = isPartnerView
+        ? [
+            t("table.student_name"),
+            t("table.phone"),
+            t("table.responsible"),
+            t("table.responsible_phone"),
+            t("table.course"),
+            t("table.partner_school"),
+            t("table.class"),
+            t("table.status"),
+          ]
+        : [
+            t("table.student_name"),
+            t("table.phone"),
+            t("table.responsible"),
+            t("table.responsible_phone"),
+            t("table.course"),
+            t("table.partner_school"),
+            t("table.class"),
+          ];
+
+      // Prepare table data
+      const tableData: string[][] = [];
+
+      if (isPartnerView) {
+        partnerFilteredStudents.forEach((student) => {
+          tableData.push([
+            student.name || "-",
+            student.phone || "-",
+            student.responsibleName || "-",
+            student.responsiblePhone || "-",
+            student.courseName || "-",
+            student.partnerSchool || "-",
+            student.className || "-",
+            student.status === "enrolled"
+              ? t("status_options.enrolled")
+              : t("status_options.not_enrolled"),
+          ]);
+        });
+      } else {
+        filteredStudents.forEach((student) => {
+          const courses = student.courses
+            ? student.courses.map((c) => c.titulo).join("; ")
+            : "-";
+          tableData.push([
+            student.name || "-",
+            student.phone || "-",
+            student.responsibleName || "-",
+            student.responsiblePhone || "-",
+            courses,
+            student.partnerSchool || "-",
+            student.class
+              ? t("table.class_label", { number: student.class })
+              : "-",
+          ]);
+        });
+      }
+
+      // Generate table
+      autoTable(doc, {
+        head: [headers],
+        body: tableData,
+        startY: 45,
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+        },
+        headStyles: {
+          fillColor: [89, 159, 233],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [245, 247, 250],
+        },
+        margin: { top: 45 },
+      });
+
+      // Save PDF
+      const fileName = isPartnerView
+        ? "alunos_escolas_parceiras"
+        : reportType === "no-link"
+        ? "alunos_sem_vinculos"
+        : "alunos_matriculados";
+
+      doc.save(`${fileName}_${new Date().toISOString().split("T")[0]}.pdf`);
+    } catch {
+      // Error exporting PDF - silently fail
+    }
   };
 
   const totalStudents = students.length;
   const partnersCount = students.filter((s) => s.partnerSchool).length;
   const noLinkCount = students.filter((s) => !s.partnerSchool).length;
+
+  // Statistics for partner students view - use filtered students for summary display
+  const enrolledCount = partnerFilteredStudents.filter(
+    (s) => s.status === "enrolled"
+  ).length;
+  const notEnrolledCount = partnerFilteredStudents.filter(
+    (s) => s.status === "not_enrolled"
+  ).length;
 
   if (currentLoading) {
     return (
@@ -423,56 +557,125 @@ export function AdminStudents() {
     <div className="space-y-8">
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="bg-white border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-[#599fe9]/10 rounded-lg">
-                <FileText className="w-5 h-5 text-[#599fe9]" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-[#599fe9]" />
-            </div>
-            <p className="text-gray-600 text-xs mb-1">{t("total_students")}</p>
-            <p className="text-3xl text-gray-900">{totalStudents}</p>
-          </Card>
-        </motion.div>
+        {isPartnerView ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-[#599fe9]/10 rounded-lg">
+                    <FileText className="w-5 h-5 text-[#599fe9]" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-[#599fe9]" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("total_students")}
+                </p>
+                <p className="text-3xl text-gray-900">
+                  {partnerFilteredStudents.length}
+                </p>
+              </Card>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="bg-white border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <School className="w-5 h-5 text-emerald-500" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
-            </div>
-            <p className="text-gray-600 text-xs mb-1">{t("partner_schools")}</p>
-            <p className="text-3xl text-gray-900">{partnersCount}</p>
-          </Card>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg">
+                    <School className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("status_options.enrolled")}
+                </p>
+                <p className="text-3xl text-gray-900">{enrolledCount}</p>
+              </Card>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="bg-white border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <UserX className="w-5 h-5 text-amber-500" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-amber-500" />
-            </div>
-            <p className="text-gray-600 text-xs mb-1">{t("no_link")}</p>
-            <p className="text-3xl text-gray-900">{noLinkCount}</p>
-          </Card>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-amber-500/10 rounded-lg">
+                    <UserX className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-amber-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("status_options.not_enrolled")}
+                </p>
+                <p className="text-3xl text-gray-900">{notEnrolledCount}</p>
+              </Card>
+            </motion.div>
+          </>
+        ) : (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-[#599fe9]/10 rounded-lg">
+                    <FileText className="w-5 h-5 text-[#599fe9]" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-[#599fe9]" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("total_students")}
+                </p>
+                <p className="text-3xl text-gray-900">{totalStudents}</p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg">
+                    <School className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("partner_schools")}
+                </p>
+                <p className="text-3xl text-gray-900">{partnersCount}</p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-amber-500/10 rounded-lg">
+                    <UserX className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-amber-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">{t("no_link")}</p>
+                <p className="text-3xl text-gray-900">{noLinkCount}</p>
+              </Card>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Filters */}
@@ -600,188 +803,314 @@ export function AdminStudents() {
         </Card>
       </motion.div>
 
-      {/* Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <Card className="bg-white border-gray-200 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-gray-200 hover:bg-transparent">
-                  <TableHead className="text-gray-700">
-                    {t("table.student_name")}
-                  </TableHead>
-                  <TableHead className="text-gray-700">
-                    {t("table.phone")}
-                  </TableHead>
-                  <TableHead className="text-gray-700">
-                    {t("table.responsible")}
-                  </TableHead>
-                  <TableHead className="text-gray-700">
-                    {t("table.responsible_phone")}
-                  </TableHead>
-                  <TableHead className="text-gray-700">
-                    {t("table.course")}
-                  </TableHead>
-                  <TableHead className="text-gray-700">
-                    {t("table.partner_school")}
-                  </TableHead>
-                  <TableHead className="text-gray-700">
-                    {t("table.class")}
-                  </TableHead>
-                  {isPartnerView && (
-                    <TableHead className="text-gray-700">
-                      {t("table.status")}
-                    </TableHead>
-                  )}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {displayedStudentsCount === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={columnCount} className="text-center py-16">
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                        <Inbox className="w-8 h-8 text-gray-400" />
+      {/* Summary Statistics and Table - Grouped for Partner View */}
+      {isPartnerView ? (
+        <div className="space-y-0">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+          >
+            <Card className="bg-white border-gray-200 p-6 pb-6 shadow-sm rounded-b-none">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-6">
+                  <div className="text-gray-900 font-medium">
+                    Exibindo {partnerFilteredStudents.length}{" "}
+                    {partnerFilteredStudents.length === 1 ? "aluno" : "alunos"}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span className="text-gray-700">
+                      {enrolledCount}{" "}
+                      {enrolledCount === 1 ? "Matriculado" : "Matriculados"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                    <span className="text-gray-700">
+                      {notEnrolledCount}{" "}
+                      {notEnrolledCount === 1
+                        ? "Não Matriculado"
+                        : "Não Matriculados"}
+                    </span>
+                  </div>
+                </div>
+                {partnerFilteredStudents.length > 0 && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-700 font-medium whitespace-nowrap">
+                      Taxa de Matrícula:
+                    </span>
+                    <div className="flex items-center gap-2 min-w-[120px]">
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 transition-all duration-300"
+                          style={{
+                            width: `${Math.round(
+                              (enrolledCount / partnerFilteredStudents.length) *
+                                100
+                            )}%`,
+                          }}
+                        ></div>
                       </div>
-                      <h3 className="text-lg text-gray-900 mb-2">
-                        {t("no_students_found")}
-                      </h3>
-                      <p className="text-gray-500">
-                        {searchTerm || reportType !== "all"
-                          ? t("adjust_filters")
-                          : t("no_students_registered")}
-                      </p>
-                    </TableCell>
-                  </TableRow>
-                ) : isPartnerView ? (
-                  partnerFilteredStudents.map((student) => (
-                    <TableRow
-                      key={`partner-${student.id}`}
-                      className="border-gray-100 hover:bg-gray-50 transition-colors"
-                    >
-                      <TableCell className="text-gray-900">
-                        {student.name}
-                      </TableCell>
-                      <TableCell className="text-gray-600 font-mono text-sm">
-                        {student.phone || "-"}
-                      </TableCell>
-                      <TableCell className="text-gray-900">
-                        {student.responsibleName || "-"}
-                      </TableCell>
-                      <TableCell className="text-gray-600 font-mono text-sm">
-                        {student.responsiblePhone || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {student.courseName ? (
-                          <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
-                            {student.courseName}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">-</span>
+                      <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+                        {Math.round(
+                          (enrolledCount / partnerFilteredStudents.length) * 100
                         )}
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.partnerSchool ? (
-                          <div className="flex items-center gap-2">
-                            <School className="w-4 h-4 text-emerald-500" />
-                            <span className="text-gray-900">
-                              {student.partnerSchool}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {student.className ? (
-                          <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                            {student.className}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={`border ${
-                            student.status === "enrolled"
-                              ? "bg-emerald-100 text-emerald-700 border-emerald-200"
-                              : "bg-amber-100 text-amber-700 border-amber-200"
-                          }`}
-                        >
-                          {student.status === "enrolled"
-                            ? t("status_options.enrolled")
-                            : t("status_options.not_enrolled")}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  filteredStudents.map((student) => (
-                    <TableRow
-                      key={student.id}
-                      className="border-gray-100 hover:bg-gray-50 transition-colors"
-                    >
-                      <TableCell className="text-gray-900">
-                        {student.name}
-                      </TableCell>
-                      <TableCell className="text-gray-600 font-mono text-sm">
-                        {student.phone || "-"}
-                      </TableCell>
-                      <TableCell className="text-gray-900">
-                        {student.responsibleName || "-"}
-                      </TableCell>
-                      <TableCell className="text-gray-600 font-mono text-sm">
-                        {student.responsiblePhone || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {student.courses && student.courses.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {student.courses.map((curso) => (
-                              <Badge
-                                key={curso.id}
-                                className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30"
-                              >
-                                {curso.titulo}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.partnerSchool ? (
-                          <div className="flex items-center gap-2">
-                            <School className="w-4 h-4 text-emerald-500" />
-                            <span className="text-gray-900">
-                              {student.partnerSchool}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {student.class ? (
-                          <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                            {t("table.class_label", { number: student.class })}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
+                        %
+                      </span>
+                    </div>
+                  </div>
                 )}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
-      </motion.div>
+              </div>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="bg-white border-gray-200 overflow-hidden shadow-sm rounded-t-none border-t-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gray-200 hover:bg-transparent">
+                      <TableHead className="text-gray-700">
+                        {t("table.student_name")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.phone")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.responsible")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.responsible_phone")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.course")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.partner_school")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.class")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.status")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {displayedStudentsCount === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columnCount}
+                          className="text-center py-16"
+                        >
+                          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <Inbox className="w-8 h-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg text-gray-900 mb-2">
+                            {t("no_students_found")}
+                          </h3>
+                          <p className="text-gray-500">
+                            {searchTerm
+                              ? t("adjust_filters")
+                              : t("no_students_registered")}
+                          </p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      partnerFilteredStudents.map((student) => (
+                        <TableRow
+                          key={`partner-${student.id}`}
+                          className="border-gray-100 hover:bg-gray-50 transition-colors"
+                        >
+                          <TableCell className="text-gray-900">
+                            {student.name}
+                          </TableCell>
+                          <TableCell className="text-gray-600 font-mono text-sm">
+                            {student.phone || "-"}
+                          </TableCell>
+                          <TableCell className="text-gray-900">
+                            {student.responsibleName || "-"}
+                          </TableCell>
+                          <TableCell className="text-gray-600 font-mono text-sm">
+                            {student.responsiblePhone || "-"}
+                          </TableCell>
+                          <TableCell>
+                            {student.courseName ? (
+                              <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
+                                {student.courseName}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            {student.partnerSchool ? (
+                              <div className="flex items-center gap-2">
+                                <School className="w-4 h-4 text-emerald-500" />
+                                <span className="text-gray-900">
+                                  {student.partnerSchool}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {student.className ? (
+                              <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                                {student.className}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`border ${
+                                student.status === "enrolled"
+                                  ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                  : "bg-amber-100 text-amber-700 border-amber-200"
+                              }`}
+                            >
+                              {student.status === "enrolled"
+                                ? t("status_options.enrolled")
+                                : t("status_options.not_enrolled")}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Card className="bg-white border-gray-200 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-200 hover:bg-transparent">
+                    <TableHead className="text-gray-700">
+                      {t("table.student_name")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.phone")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.responsible")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.responsible_phone")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.course")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.partner_school")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.class")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {displayedStudentsCount === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-16">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                          <Inbox className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg text-gray-900 mb-2">
+                          {t("no_students_found")}
+                        </h3>
+                        <p className="text-gray-500">
+                          {searchTerm || reportType === "no-link"
+                            ? t("adjust_filters")
+                            : t("no_students_registered")}
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    partnerFilteredStudents.map((student) => (
+                      <TableRow
+                        key={`partner-${student.id}`}
+                        className="border-gray-100 hover:bg-gray-50 transition-colors"
+                      >
+                        <TableCell className="text-gray-900">
+                          {student.name}
+                        </TableCell>
+                        <TableCell className="text-gray-600 font-mono text-sm">
+                          {student.phone || "-"}
+                        </TableCell>
+                        <TableCell className="text-gray-900">
+                          {student.responsibleName || "-"}
+                        </TableCell>
+                        <TableCell className="text-gray-600 font-mono text-sm">
+                          {student.responsiblePhone || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {student.courseName ? (
+                            <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
+                              {student.courseName}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.partnerSchool ? (
+                            <div className="flex items-center gap-2">
+                              <School className="w-4 h-4 text-emerald-500" />
+                              <span className="text-gray-900">
+                                {student.partnerSchool}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {student.className ? (
+                            <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                              {student.className}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`border ${
+                              student.status === "enrolled"
+                                ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                : "bg-amber-100 text-amber-700 border-amber-200"
+                            }`}
+                          >
+                            {student.status === "enrolled"
+                              ? t("status_options.enrolled")
+                              : t("status_options.not_enrolled")}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }

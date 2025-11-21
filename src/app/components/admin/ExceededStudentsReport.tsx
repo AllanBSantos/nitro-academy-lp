@@ -290,8 +290,7 @@ export default function ExceededStudentsReport() {
         new Date().toISOString().split("T")[0]
       }.pdf`;
       doc.save(fileName);
-    } catch (error) {
-      console.error("Export error:", error);
+    } catch {
       setError("Erro ao exportar PDF");
     } finally {
       setExporting(false);

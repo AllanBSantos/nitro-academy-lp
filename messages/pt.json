@@ -906,6 +906,7 @@
       "try_again": "Tentar novamente",
       "refresh": "Atualizar",
       "download_csv": "Baixar CSV",
+      "export_pdf": "Exportar PDF",
       "total_strapi_students": "Total de Alunos no Sistema",
       "total_partner_students": "Total de Alunos Parceiros",
       "non_partner_students": "Alunos Não Parceiros",
