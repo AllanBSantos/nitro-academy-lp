@@ -8,6 +8,7 @@ import {
   ReviewCard,
 } from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
+import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
 import {
   COURSE_QUERY_ADMIN_PARAMS,
   COURSE_QUERY_PUBLIC_PARAMS,
@@ -15,6 +16,55 @@ import {
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+
+const buildStrapiAuthHeaders = (): HeadersInit => {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  if (process.env.STRAPI_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.STRAPI_TOKEN}`;
+  }
+  return headers;
+};
+
+const cleanDataRecursively = (data: unknown): unknown => {
+  if (Array.isArray(data)) {
+    return data.map((item) => cleanDataRecursively(item));
+  }
+
+  if (data && typeof data === "object") {
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(
+      data as Record<string, unknown>
+    )) {
+      if (
+        [
+          "id",
+          "documentId",
+          "createdAt",
+          "updatedAt",
+          "publishedAt",
+          "alunos",
+          "cupons",
+          "localizations",
+          "imagem",
+        ].includes(key)
+      ) {
+        continue;
+      }
+
+      if (value && typeof value === "object") {
+        cleaned[key] = cleanDataRecursively(value);
+      } else {
+        cleaned[key] = value;
+      }
+    }
+    return cleaned;
+  }
+
+  return data;
+};
+
 interface FetchCoursesOptions {
   scope?: "public" | "admin";
 }
@@ -27,7 +77,9 @@ export async function fetchCourses(
     const localeToUse = "pt-BR";
     const scope = options.scope ?? "public";
     const queryParams =
-      scope === "admin" ? COURSE_QUERY_ADMIN_PARAMS : COURSE_QUERY_PUBLIC_PARAMS;
+      scope === "admin"
+        ? COURSE_QUERY_ADMIN_PARAMS
+        : COURSE_QUERY_PUBLIC_PARAMS;
 
     // No servidor, precisamos usar URL absoluta ou chamar Strapi diretamente
     // Vamos chamar Strapi diretamente no servidor para evitar problemas com URL relativa
@@ -89,6 +141,7 @@ export async function fetchCourses(
 export async function fetchCoursesWithEnrollment(): Promise<
   Array<{
     id: string;
+    documentId: string;
     name: string;
     campaign: string;
     enrolled: number;
@@ -97,23 +150,92 @@ export async function fetchCoursesWithEnrollment(): Promise<
   }>
 > {
   try {
-    // Usar a função existente fetchCourses
-    const courses = await fetchCourses();
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+    const localeToUse = "pt-BR";
+    const isServer = typeof window === "undefined";
+
+    let courses: any[] = [];
+
+    if (isServer) {
+      // No servidor: chamar Strapi diretamente com autenticação
+      // Populando alunos com filtro habilitado = true
+      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[cronograma][fields][2]=data_inicio&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[campanhas][fields][0]=id&populate[campanhas][fields][1]=nome&populate[campanhas][fields][2]=createdAt&fields[0]=id&fields[1]=titulo&sort=createdAt:desc`;
+
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ADMIN_TOKEN}`,
+        },
+        next: { revalidate: 60 },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch courses: ${response.status}`);
+      }
+
+      const data = await response.json();
+      courses = data.data || [];
+    } else {
+      // No cliente: usar rota Next.js
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+      const response = await fetch(
+        `${baseUrl}/api/courses?locale=${localeToUse}`,
+        {
+          next: { revalidate: 60 },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch courses: ${response.status}`);
+      }
+
+      const data = await response.json();
+      courses = data.data || [];
+    }
 
     return courses.map((course: any) => {
-      const enrolled = course.alunos?.length || 0;
-      const totalSlots = 50; // Valor padrão, pode ser ajustado conforme necessário
+      // Normalizar estrutura de dados (pode vir com ou sem attributes)
+      const courseData = course.attributes || course;
+
+      // Obter alunos do curso (pode estar em courseData.alunos ou courseData.alunos.data)
+      const alunosRaw = courseData.alunos?.data || courseData.alunos || [];
+      const alunosArray = Array.isArray(alunosRaw) ? alunosRaw : [];
+
+      // Filtrar apenas alunos habilitados
+      const alunosHabilitados = alunosArray.filter((aluno: any) => {
+        // Normalizar estrutura do aluno (pode vir com ou sem attributes)
+        const alunoData = aluno.attributes || aluno;
+        // Verificar se o aluno tem habilitado = true
+        const habilitado = alunoData?.habilitado ?? true; // Default true se não especificado
+        return habilitado === true;
+      });
+
+      const enrolled = alunosHabilitados.length;
+
+      // Calcular total de vagas: número de turmas (schedules) × vagas por turma
+      const cronogramaRaw = courseData.cronograma || [];
+      const cronogramaArray = Array.isArray(cronogramaRaw) ? cronogramaRaw : [];
+      const numberOfSchedules = cronogramaArray.length;
+      const totalSlots = numberOfSchedules * MAX_SLOTS_PER_COURSE;
+
       const available = Math.max(0, totalSlots - enrolled);
 
       // Usar a campanha real do Strapi ou fallback para data de início
       let campaign = "2024.1"; // Valor padrão
 
-      if (course.campanhas && course.campanhas.length > 0) {
-        // Usar o nome da primeira campanha encontrada
-        campaign = course.campanhas[0].nome || campaign;
-      } else if (course.cronograma?.[0]?.data_inicio) {
+      // Normalizar campanhas (pode estar em courseData.campanhas ou courseData.campanhas.data)
+      const campanhasRaw =
+        courseData.campanhas?.data || courseData.campanhas || [];
+      const campanhasArray = Array.isArray(campanhasRaw) ? campanhasRaw : [];
+
+      if (campanhasArray.length > 0) {
+        // Normalizar primeira campanha
+        const primeiraCampanha = campanhasArray[0];
+        const campanhaData = primeiraCampanha.attributes || primeiraCampanha;
+        campaign = campanhaData.nome || campaign;
+      } else if (courseData.cronograma?.[0]?.data_inicio) {
         // Fallback para data de início se não houver campanha
-        const startDate = course.cronograma[0].data_inicio;
+        const startDate = courseData.cronograma[0].data_inicio;
         const date = new Date(startDate);
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
@@ -121,8 +243,9 @@ export async function fetchCoursesWithEnrollment(): Promise<
       }
 
       return {
-        id: course.id.toString(),
-        name: course.titulo,
+        id: (courseData.id || course.id || "").toString(),
+        documentId: courseData.documentId || course.documentId || "",
+        name: courseData.titulo || "",
         campaign,
         enrolled,
         available,
@@ -235,6 +358,52 @@ export async function fetchCourse(documentId: string): Promise<Course> {
     console.error("Error in fetchCourse:", error);
     throw error;
   }
+}
+
+export async function fetchCourseWithAdminToken(
+  documentId: string,
+  queryString?: string
+): Promise<Course> {
+  const headers = buildStrapiAuthHeaders();
+
+  if (
+    !headers ||
+    (typeof headers === "object" && !("Authorization" in headers))
+  ) {
+    throw new Error(
+      "STRAPI_TOKEN não configurado para chamadas administrativas"
+    );
+  }
+
+  const defaultQuery =
+    "fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&fields[24]=habilitado&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][fields][10]=documentId&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_aluno&populate[alunos][fields][6]=escola_parceira&populate[alunos][fields][7]=createdAt&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome";
+
+  const url = `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${
+    queryString || defaultQuery
+  }`;
+
+  const response = await fetch(url, {
+    headers,
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    console.error("Admin course fetch error:", {
+      status: response.status,
+      statusText: response.statusText,
+      errorData,
+    });
+    throw new Error(
+      `Failed to fetch course: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const { data } = await response.json();
+  if (!data || !data[0]) {
+    throw new Error("No course data received from API");
+  }
+  return data[0];
 }
 
 export async function fetchMentor(id: number): Promise<Mentor> {
@@ -511,7 +680,7 @@ export async function fetchStudentsCount(): Promise<number> {
       ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       : "";
     const url = `${baseUrl}/api/stats/students-count`;
-    
+
     const response = await fetch(url, {
       next: { revalidate: 60 },
     });
@@ -534,7 +703,7 @@ export async function fetchMentorsCount(): Promise<number> {
       ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       : "";
     const url = `${baseUrl}/api/stats/mentors-count`;
-    
+
     const response = await fetch(url, {
       next: { revalidate: 60 },
     });
@@ -557,7 +726,7 @@ export async function fetchCoursesCount(): Promise<number> {
       ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       : "";
     const url = `${baseUrl}/api/stats/courses-count`;
-    
+
     const response = await fetch(url, {
       next: { revalidate: 60 },
     });
@@ -711,17 +880,29 @@ export interface Student {
 
 export async function findStudentByCPF(cpf: string): Promise<Student | null> {
   try {
-    if (!cpf || cpf.length !== 11) {
+    // Remover formatação do CPF (pontos, traços, espaços)
+    const cleanCPF = cpf.replace(/\D/g, "");
+
+    if (!cleanCPF || cleanCPF.length !== 11) {
       console.error("CPF inválido:", cpf);
       return null;
     }
 
-    const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cpf}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId&publicationState=preview`;
+    const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cleanCPF}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId&publicationState=preview`;
+
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    // Preparar headers com autenticação
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (ADMIN_TOKEN) {
+      headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+    }
 
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       cache: "no-store",
     });
 
@@ -815,11 +996,20 @@ export async function updateStudentCourses(
       updateData.descricao_deficiencia = descricaoDeficiencia;
     }
 
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    // Preparar headers com autenticação
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (ADMIN_TOKEN) {
+      headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+    }
+
     const response = await fetch(`${STRAPI_API_URL}/api/alunos/${documentId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
         data: updateData,
       }),
@@ -837,7 +1027,11 @@ export async function updateStudentCourses(
 export async function createStudent(
   student: Omit<Student, "id">
 ): Promise<Student> {
-  const existingStudent = await findStudentByCPF(student.cpf_aluno);
+  // Limpar formatação do CPF antes de processar
+  const cleanCPF = student.cpf_aluno.replace(/\D/g, "");
+  const cleanCPFResponsavel = student.cpf_responsavel?.replace(/\D/g, "") || "";
+
+  const existingStudent = await findStudentByCPF(cleanCPF);
   // Verificar se o cupom é gratuito baseado no campo usou_voucher do aluno
   // O campo usou_voucher já é definido no EnrollmentModal baseado no voucher_gratuito do cupom
   const isVoucherGratuito = student.usou_voucher;
@@ -854,14 +1048,16 @@ export async function createStudent(
     return existingStudent;
   }
 
+  const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
   const payload = {
     data: {
       nome: student.nome,
       data_nascimento: student.data_nascimento,
-      cpf_aluno: student.cpf_aluno,
+      cpf_aluno: cleanCPF, // Usar CPF sem formatação
       responsavel: student.responsavel,
       email_responsavel: student.email_responsavel,
-      cpf_responsavel: student.cpf_responsavel,
+      cpf_responsavel: cleanCPFResponsavel || undefined, // Usar CPF sem formatação
       telefone_responsavel: student.telefone_responsavel,
       pais: student.pais,
       estado: student.estado,
@@ -878,13 +1074,20 @@ export async function createStudent(
     },
   };
 
+  // Preparar headers com autenticação
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+
+  if (ADMIN_TOKEN) {
+    headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+  }
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/alunos`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(payload),
     }
   );
@@ -963,13 +1166,30 @@ export async function fetchPartnerSchools(): Promise<PartnerSchool[]> {
     // Filter schools with cliente=true and transform to PartnerSchool format
     const partnerSchools: PartnerSchool[] =
       data.data
-        ?.filter((school: Escola) => school.cliente === true)
-        ?.map((school: Escola) => ({
-          id: school.id,
-          documentId: school.documentId,
-          name: school.nome,
-          logo: school.logo?.url || "",
-        })) || [];
+        ?.filter((school: any) => {
+          const schoolData = school.attributes || school;
+          return schoolData.cliente === true;
+        })
+        ?.map((school: any) => {
+          const schoolData = school.attributes || school;
+          // Handle Strapi image structure (can be data.attributes.url or url directly)
+          let logoUrl = "";
+          if (schoolData.logo) {
+            if (schoolData.logo.data?.attributes?.url) {
+              logoUrl = schoolData.logo.data.attributes.url;
+            } else if (schoolData.logo.attributes?.url) {
+              logoUrl = schoolData.logo.attributes.url;
+            } else if (schoolData.logo.url) {
+              logoUrl = schoolData.logo.url;
+            }
+          }
+          return {
+            id: schoolData.id || school.id,
+            documentId: schoolData.documentId || school.documentId,
+            name: schoolData.nome || "",
+            logo: logoUrl,
+          };
+        }) || [];
 
     return partnerSchools;
   } catch (error) {
@@ -1058,66 +1278,111 @@ export interface CourseStudentsCount {
   studentCount: number;
 }
 
-interface CourseData {
-  id: number;
-  attributes: {
-    titulo: string;
-  };
-}
-
 export async function getStudentsPerCourse(): Promise<CourseStudentsCount[]> {
   try {
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    // Preparar headers com autenticação
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (ADMIN_TOKEN) {
+      headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+    }
+
     // Fetch all courses to get their titles
-    const coursesResponse = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&locale=pt-BR`
-    );
+    const coursesUrl = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&locale=pt-BR&pagination[pageSize]=1000`;
+    const coursesResponse = await fetch(coursesUrl, {
+      headers,
+      next: { revalidate: 60 },
+    });
 
     if (!coursesResponse.ok) {
+      console.error(
+        `Failed to fetch courses: ${coursesResponse.status} ${coursesResponse.statusText}`
+      );
       throw new Error("Failed to fetch courses");
     }
 
     const coursesData = await coursesResponse.json();
-    const courses = coursesData.data as CourseData[];
+    const coursesRaw = coursesData.data || [];
 
     // Fetch all students with their courses
-    const studentsResponse = await fetch(
-      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview`
-    );
+    const studentsUrl = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&publicationState=preview&pagination[pageSize]=1000`;
+    const studentsResponse = await fetch(studentsUrl, {
+      headers,
+      next: { revalidate: 60 },
+    });
 
     if (!studentsResponse.ok) {
+      console.error(
+        `Failed to fetch students: ${studentsResponse.status} ${studentsResponse.statusText}`
+      );
       throw new Error("Failed to fetch students");
     }
 
     const studentsData = await studentsResponse.json();
-    const students = studentsData.data;
+    const students = studentsData.data || [];
 
     // Create a map to store student counts for each course
     const courseStudentCounts = new Map<number, CourseStudentsCount>();
 
     // Initialize counts for each course
-    courses.forEach((course: CourseData) => {
-      courseStudentCounts.set(course.id, {
-        courseId: course.id,
-        courseTitle: course.attributes?.titulo || "",
-        studentCount: 0,
-      });
+    coursesRaw.forEach((course: any) => {
+      // Normalizar estrutura do curso (pode vir com ou sem attributes)
+      const courseData = course.attributes || course;
+      const courseId = courseData.id || course.id;
+      const courseTitle = courseData.titulo || "";
+
+      if (courseId) {
+        const normalizedId =
+          typeof courseId === "number"
+            ? courseId
+            : parseInt(String(courseId), 10);
+        if (!isNaN(normalizedId)) {
+          courseStudentCounts.set(normalizedId, {
+            courseId: normalizedId,
+            courseTitle,
+            studentCount: 0,
+          });
+        }
+      }
     });
 
     // Count students in each course
-    students.forEach((student: Student) => {
-      student.cursos?.forEach((course) => {
-        const courseStats = courseStudentCounts.get(course.id);
-        if (courseStats) {
-          courseStats.studentCount++;
+    students.forEach((student: any) => {
+      // Normalizar estrutura do aluno
+      const studentData = student.attributes || student;
+      const cursosRaw = studentData.cursos || [];
+
+      // Normalizar cursos (pode vir como array ou objeto com data)
+      const cursosArray = Array.isArray(cursosRaw)
+        ? cursosRaw
+        : cursosRaw.data || [];
+
+      cursosArray.forEach((course: any) => {
+        // Normalizar estrutura do curso
+        const courseId =
+          course.id ||
+          course.attributes?.id ||
+          (typeof course === "number" ? course : null);
+
+        if (courseId) {
+          const courseStats = courseStudentCounts.get(courseId);
+          if (courseStats) {
+            courseStats.studentCount++;
+          }
         }
       });
     });
 
-    // Convert map to array
-    return Array.from(courseStudentCounts.values());
+    // Convert map to array e filtrar apenas cursos com alunos
+    return Array.from(courseStudentCounts.values()).filter(
+      (course) => course.studentCount > 0
+    );
   } catch (error) {
     console.error("Error fetching course student counts:", error);
-    throw error;
+    return [];
   }
 }
 
@@ -1330,6 +1595,9 @@ export async function updateCourse(
     tarefa_de_casa?: string;
     competencias?: string;
     inscricoes_abertas?: boolean;
+    habilitado?: boolean;
+    data_inicio_curso?: string | null;
+    sugestao_horario?: boolean;
     videos?: Array<{
       titulo: string;
       video_url: string;
@@ -1350,44 +1618,6 @@ export async function updateCourse(
   }
 ): Promise<void> {
   try {
-    const cleanDataRecursively = (data: unknown): unknown => {
-      if (Array.isArray(data)) {
-        return data.map((item) => cleanDataRecursively(item));
-      }
-
-      if (data && typeof data === "object") {
-        const cleaned: Record<string, unknown> = {};
-        for (const [key, value] of Object.entries(
-          data as Record<string, unknown>
-        )) {
-          if (
-            [
-              "id",
-              "documentId",
-              "createdAt",
-              "updatedAt",
-              "publishedAt",
-              "alunos",
-              "cupons",
-              "localizations",
-              "imagem",
-            ].includes(key)
-          ) {
-            continue;
-          }
-
-          if (value && typeof value === "object") {
-            cleaned[key] = cleanDataRecursively(value);
-          } else {
-            cleaned[key] = value;
-          }
-        }
-        return cleaned;
-      }
-
-      return data;
-    };
-
     // Remove faixa_etaria from cronograma items as it's no longer part of the schema
     const removeFaixaEtariaFromCronograma = (cronograma: unknown): unknown => {
       if (!Array.isArray(cronograma)) {
@@ -1410,7 +1640,11 @@ export async function updateCourse(
     };
 
     const findResponse = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=*`
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=*`,
+      {
+        headers: buildStrapiAuthHeaders(),
+        cache: "no-store",
+      }
     );
 
     if (!findResponse.ok) {
@@ -1426,32 +1660,58 @@ export async function updateCourse(
     const course = findData.data[0];
     const currentData = course.attributes || course;
 
-    const cleanData = {
-      ...(cleanDataRecursively(currentData) as Record<string, unknown>),
-      titulo: courseData.titulo || currentData.titulo,
-      descricao: courseData.descricao || currentData.descricao,
-      nivel: courseData.nivel || currentData.nivel,
-      modelo: courseData.modelo || currentData.modelo,
-      pre_requisitos: courseData.pre_requisitos || currentData.pre_requisitos,
-      projetos: courseData.projetos || currentData.projetos,
-      tarefa_de_casa: courseData.tarefa_de_casa || currentData.tarefa_de_casa,
-      competencias: courseData.competencias || currentData.competencias,
-      inscricoes_abertas:
-        courseData.inscricoes_abertas || currentData.inscricoes_abertas,
-      videos: courseData.videos || currentData.videos,
-      cronograma: cleanDataRecursively(
-        removeFaixaEtariaFromCronograma(
-          courseData.cronograma || currentData.cronograma
-        )
-      ),
-      ementa_resumida: cleanDataRecursively(
-        courseData.ementa_resumida || currentData.ementa_resumida
-      ),
-      resumo_aulas: cleanDataRecursively(
-        courseData.resumo_aulas || currentData.resumo_aulas
-      ),
-      imagem: currentData.imagem.id,
+    const cleanData = cleanDataRecursively(currentData) as Record<
+      string,
+      unknown
+    >;
+
+    if (cleanData.cronograma) {
+      cleanData.cronograma = cleanDataRecursively(
+        removeFaixaEtariaFromCronograma(cleanData.cronograma)
+      );
+    }
+
+    const assignIfDefined = (key: string, value: unknown) => {
+      if (value !== undefined) {
+        cleanData[key] = value;
+      }
     };
+
+    assignIfDefined("titulo", courseData.titulo);
+    assignIfDefined("descricao", courseData.descricao);
+    assignIfDefined("nivel", courseData.nivel);
+    assignIfDefined("modelo", courseData.modelo);
+    assignIfDefined("pre_requisitos", courseData.pre_requisitos);
+    assignIfDefined("projetos", courseData.projetos);
+    assignIfDefined("tarefa_de_casa", courseData.tarefa_de_casa);
+    assignIfDefined("competencias", courseData.competencias);
+    assignIfDefined("inscricoes_abertas", courseData.inscricoes_abertas);
+    assignIfDefined("habilitado", courseData.habilitado);
+    if (courseData.data_inicio_curso !== undefined) {
+      assignIfDefined("data_inicio_curso", courseData.data_inicio_curso);
+    }
+    assignIfDefined("sugestao_horario", courseData.sugestao_horario);
+    assignIfDefined("videos", courseData.videos);
+    if (courseData.cronograma !== undefined) {
+      cleanData.cronograma = cleanDataRecursively(
+        removeFaixaEtariaFromCronograma(courseData.cronograma)
+      );
+    }
+    if (courseData.ementa_resumida !== undefined) {
+      cleanData.ementa_resumida = cleanDataRecursively(
+        courseData.ementa_resumida
+      );
+    }
+    if (courseData.resumo_aulas !== undefined) {
+      cleanData.resumo_aulas = cleanDataRecursively(courseData.resumo_aulas);
+    }
+
+    if (currentData.imagem && typeof currentData.imagem === "object") {
+      const imagem = currentData.imagem as { id?: number };
+      if (imagem.id) {
+        cleanData.imagem = imagem.id;
+      }
+    }
 
     const requestBody = { data: cleanData };
 
@@ -1459,9 +1719,7 @@ export async function updateCourse(
       `${STRAPI_API_URL}/api/cursos/${documentId}?locale=pt-BR`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: buildStrapiAuthHeaders(),
         body: JSON.stringify(requestBody),
       }
     );
@@ -1474,5 +1732,369 @@ export async function updateCourse(
   } catch (error) {
     console.error("Error updating course:", error);
     throw error;
+  }
+}
+
+export async function updateMentor(
+  mentorRef: { id?: number | null; documentId?: string | null },
+  mentorData: {
+    nome?: string;
+    descricao?: string;
+    pais?: string;
+    instagram?: string;
+    instagram_label?: string;
+    linkedin_url?: string;
+    linkedin_label?: string;
+    imagem?: number | null;
+  }
+): Promise<void> {
+  try {
+    const headers = buildStrapiAuthHeaders();
+    if (
+      !headers ||
+      (typeof headers === "object" && !("Authorization" in headers))
+    ) {
+      throw new Error("STRAPI_TOKEN não configurado para atualizar mentor");
+    }
+
+    const fetchMentorById = async (id: number) =>
+      fetch(
+        `${STRAPI_API_URL}/api/mentores/${id}?locale=pt-BR&populate=imagem`,
+        {
+          headers,
+          cache: "no-store",
+        }
+      );
+
+    const fetchMentorByDocumentId = async (documentId: string) =>
+      fetch(
+        `${STRAPI_API_URL}/api/mentores?filters[documentId][$eq]=${documentId}&locale=pt-BR&populate=imagem`,
+        {
+          headers,
+          cache: "no-store",
+        }
+      );
+
+    let mentorIdToUse: number | null =
+      typeof mentorRef.id === "number" && !Number.isNaN(mentorRef.id)
+        ? mentorRef.id
+        : null;
+    let mentorDocumentId: string | null = mentorRef.documentId ?? null;
+
+    let mentorPayload: {
+      id?: number;
+      documentId?: string;
+      attributes?: any;
+    } | null = null;
+
+    if (mentorDocumentId) {
+      const byDocumentResponse = await fetchMentorByDocumentId(
+        mentorDocumentId
+      );
+      if (byDocumentResponse.ok) {
+        const responseJson = await byDocumentResponse.json();
+        mentorPayload = Array.isArray(responseJson.data)
+          ? responseJson.data[0]
+          : responseJson.data;
+      }
+    }
+
+    if (!mentorPayload && mentorIdToUse !== null) {
+      const byIdResponse = await fetchMentorById(mentorIdToUse);
+      if (byIdResponse.ok) {
+        const responseJson = await byIdResponse.json();
+        mentorPayload = responseJson.data || null;
+      } else {
+        mentorIdToUse = null;
+      }
+    }
+
+    if (!mentorPayload) {
+      throw new Error("Mentor not found");
+    }
+
+    if (!mentorIdToUse) {
+      const parsedId =
+        typeof mentorPayload.id === "number"
+          ? mentorPayload.id
+          : mentorPayload.id != null
+          ? parseInt(String(mentorPayload.id), 10)
+          : null;
+      mentorIdToUse = parsedId && !Number.isNaN(parsedId) ? parsedId : null;
+    }
+
+    mentorDocumentId =
+      mentorDocumentId ||
+      mentorPayload.documentId ||
+      mentorPayload.attributes?.documentId ||
+      null;
+
+    if (!mentorDocumentId) {
+      throw new Error("Mentor documentId not available");
+    }
+
+    const mentor = mentorPayload;
+
+    const currentData = mentor.attributes || mentor;
+    const cleanData = cleanDataRecursively(currentData) as Record<
+      string,
+      unknown
+    >;
+
+    for (const [key, value] of Object.entries(mentorData)) {
+      if (value !== undefined) {
+        cleanData[key] = value;
+      }
+    }
+
+    if (!("imagem" in mentorData)) {
+      const currentImageId =
+        currentData.imagem?.data?.id ?? currentData.imagem?.id ?? null;
+      if (currentImageId) {
+        cleanData.imagem = currentImageId;
+      }
+    } else if (mentorData.imagem === null) {
+      cleanData.imagem = null;
+    }
+
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/mentores/${mentorDocumentId}?locale=pt-BR`,
+      {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ data: cleanData }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to update mentor: ${response.status} ${response.statusText}`
+      );
+    }
+  } catch (error) {
+    console.error("Error updating mentor:", error);
+    throw error;
+  }
+}
+
+// Interface para dados de matrícula por escola
+export interface EnrollmentBySchool {
+  school: string;
+  enrolled: number;
+  notEnrolled: number;
+}
+
+// Função para buscar matrículas por escola
+export async function fetchEnrollmentBySchool(): Promise<EnrollmentBySchool[]> {
+  try {
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+
+    // Buscar todos os alunos habilitados com seus cursos e escola_parceira
+    const url = `${baseUrl}/api/admin/all-students`;
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch students: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const students = data.data || [];
+
+    // Agrupar alunos por escola_parceira
+    const schoolMap = new Map<
+      string,
+      { enrolled: number; notEnrolled: number }
+    >();
+
+    students.forEach((student: any) => {
+      const escola = student.escola_parceira || "Sem escola";
+      const hasCourses =
+        student.cursos &&
+        Array.isArray(student.cursos) &&
+        student.cursos.length > 0;
+
+      if (!schoolMap.has(escola)) {
+        schoolMap.set(escola, { enrolled: 0, notEnrolled: 0 });
+      }
+
+      const stats = schoolMap.get(escola)!;
+      if (hasCourses) {
+        stats.enrolled++;
+      } else {
+        stats.notEnrolled++;
+      }
+    });
+
+    // Converter para array e ordenar por total de alunos
+    const result: EnrollmentBySchool[] = Array.from(schoolMap.entries())
+      .map(([school, stats]) => ({
+        school,
+        enrolled: stats.enrolled,
+        notEnrolled: stats.notEnrolled,
+      }))
+      .sort((a, b) => b.enrolled + b.notEnrolled - (a.enrolled + a.notEnrolled))
+      .slice(0, 10); // Top 10 escolas
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching enrollment by school:", error);
+    return [];
+  }
+}
+
+// Interface para evolução de matrículas
+export interface EnrollmentTrend {
+  month: string;
+  matriculas: number;
+}
+
+// Função para buscar evolução de matrículas ao longo do tempo
+export async function fetchEnrollmentTrend(
+  locale: string = "pt-BR"
+): Promise<EnrollmentTrend[]> {
+  try {
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+
+    // Buscar todos os alunos habilitados com createdAt
+    const url = `${baseUrl}/api/admin/all-students`;
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch students: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const students = data.data || [];
+
+    // Definir nomes de meses baseados no locale
+    const isEnglish = locale === "en" || locale === "en-US";
+    const monthNames = isEnglish
+      ? [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ]
+      : [
+          "Jan",
+          "Fev",
+          "Mar",
+          "Abr",
+          "Mai",
+          "Jun",
+          "Jul",
+          "Ago",
+          "Set",
+          "Out",
+          "Nov",
+          "Dez",
+        ];
+
+    // Agrupar por mês usando createdAt
+    const monthMap = new Map<string, number>();
+
+    students.forEach((student: any) => {
+      if (student.createdAt) {
+        const date = new Date(student.createdAt);
+        // Usar índice do mês (0-11) para garantir consistência
+        const monthIndex = date.getMonth();
+        const monthKey = monthNames[monthIndex];
+        monthMap.set(monthKey, (monthMap.get(monthKey) || 0) + 1);
+      }
+    });
+
+    // Ordenar por data (mais antigo primeiro) e pegar últimos 7 meses
+    const sortedEntries = Array.from(monthMap.entries())
+      .sort((a, b) => {
+        const aIndex = monthNames.indexOf(a[0]);
+        const bIndex = monthNames.indexOf(b[0]);
+        return aIndex - bIndex;
+      })
+      .slice(-7); // Últimos 7 meses
+
+    const result: EnrollmentTrend[] = sortedEntries.map(([month, count]) => ({
+      month,
+      matriculas: count,
+    }));
+
+    return result.length > 0 ? result : [];
+  } catch (error) {
+    console.error("Error fetching enrollment trend:", error);
+    return [];
+  }
+}
+
+// Interface para cursos populares
+export interface PopularCourse {
+  name: string;
+  students: number;
+  color: string;
+}
+
+// Função para buscar cursos mais populares
+export async function fetchPopularCourses(): Promise<PopularCourse[]> {
+  try {
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+
+    // Usar rota API do Next.js que faz autenticação no servidor
+    const url = `${baseUrl}/api/stats/popular-courses`;
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      console.error(
+        `Failed to fetch popular courses: ${response.status} ${response.statusText}`
+      );
+      return [];
+    }
+
+    const data = await response.json();
+    const courseCounts = data.data || [];
+
+    if (!courseCounts || courseCounts.length === 0) {
+      console.warn("No course counts found");
+      return [];
+    }
+
+    // Cores para os gráficos
+    const colors = [
+      "#599fe9",
+      "#f54a12",
+      "#10b981",
+      "#8b5cf6",
+      "#f59e0b",
+      "#ec4899",
+    ];
+
+    return courseCounts.map((course: any, index: number) => ({
+      name: course.courseTitle || "Curso sem nome",
+      students: course.studentCount,
+      color: colors[index % colors.length],
+    }));
+  } catch (error) {
+    console.error("Error fetching popular courses:", error);
+    return [];
   }
 }

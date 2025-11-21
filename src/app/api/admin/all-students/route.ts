@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
 
 interface AlunoHabilitado {
   id: number;
@@ -18,6 +19,52 @@ interface AlunoHabilitado {
   updatedAt: string;
 }
 
+interface StrapiAluno {
+  id?: number;
+  attributes?: {
+    id?: number;
+    nome?: string;
+    telefone_aluno?: string;
+    responsavel?: string;
+    telefone_responsavel?: string;
+    cursos?: StrapiCurso[] | { data?: StrapiCurso[] };
+    escola_parceira?: string;
+    turma?: number;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  cursos?: StrapiCurso[] | { data?: StrapiCurso[] };
+  nome?: string;
+  telefone_aluno?: string;
+  responsavel?: string;
+  telefone_responsavel?: string;
+  escola_parceira?: string;
+  turma?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface StrapiCurso {
+  id?: number | string;
+  attributes?: {
+    id?: number | string;
+    titulo?: string;
+  };
+  data?: {
+    id?: number | string;
+    attributes?: {
+      id?: number | string;
+      titulo?: string;
+    };
+  };
+  titulo?: string;
+}
+
+interface CursoFormatado {
+  id: number;
+  titulo: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     if (!STRAPI_API_URL) {
@@ -27,80 +74,145 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Extrair parâmetros de filtro da query string
+    if (!ADMIN_TOKEN) {
+      return NextResponse.json(
+        { error: "STRAPI_TOKEN não configurado" },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const curso = searchParams.get("curso");
     const escola = searchParams.get("escola");
+    const cursoId = searchParams.get("cursoId");
 
-    // Construir URL base
     let url = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&fields[0]=nome&fields[1]=telefone_aluno&fields[2]=responsavel&fields[3]=telefone_responsavel&fields[4]=escola_parceira&fields[5]=turma&fields[6]=createdAt&fields[7]=updatedAt&pagination[pageSize]=1000&publicationState=preview`;
 
-    // Adicionar filtro de pesquisa por nome
     if (search) {
       url += `&filters[nome][$containsi]=${encodeURIComponent(search)}`;
     }
 
-    // Adicionar filtro por curso
     if (curso) {
       url += `&filters[cursos][titulo][$containsi]=${encodeURIComponent(
         curso
       )}`;
     }
 
-    // Adicionar filtro por escola
     if (escola) {
       url += `&filters[escola_parceira][$containsi]=${encodeURIComponent(
         escola
       )}`;
     }
 
-    // Buscar todos os alunos habilitados com os dados necessários
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_TOKEN}`,
       },
     });
 
     if (!response.ok) {
-      console.error(`HTTP error! status: ${response.status}`);
       throw new Error(`Failed to fetch alunos: ${response.status}`);
     }
 
     const data = await response.json();
-    const alunos = data.data || [];
+    let alunos = data?.data || [];
 
-    // Formatar os dados para retorno
-    const alunosFormatados: AlunoHabilitado[] = alunos.map(
-      (aluno: {
-        id: number;
-        nome?: string;
-        telefone_aluno?: string;
-        responsavel?: string;
-        telefone_responsavel?: string;
-        cursos?: Array<{ id: number; titulo?: string }>;
-        escola_parceira?: string;
-        turma?: number;
-        createdAt?: string;
-        updatedAt?: string;
-      }) => ({
-        id: aluno.id,
-        nome: aluno.nome || "",
-        telefone_aluno: aluno.telefone_aluno || "",
-        responsavel: aluno.responsavel || "",
-        telefone_responsavel: aluno.telefone_responsavel || "",
-        cursos: (aluno.cursos || []).map(
-          (curso: { id: number; titulo?: string }) => ({
-            id: curso.id,
-            titulo: curso.titulo || "",
-          })
-        ),
-        escola_parceira: aluno.escola_parceira || "",
-        turma: aluno.turma || undefined,
-        createdAt: aluno.createdAt || "",
-        updatedAt: aluno.updatedAt || "",
+    if (cursoId) {
+      const cursoIdNum = parseInt(cursoId, 10);
+      alunos = alunos.filter((aluno: StrapiAluno) => {
+        try {
+          const alunoData = aluno.attributes || aluno;
+          const cursosRaw = alunoData.cursos || aluno.cursos;
+          
+          if (!cursosRaw) return false;
+          
+          const cursos = Array.isArray(cursosRaw) 
+            ? cursosRaw 
+            : (cursosRaw as { data?: StrapiCurso[] })?.data || [];
+          
+          if (!Array.isArray(cursos) || cursos.length === 0) return false;
+          
+          return cursos.some((c: StrapiCurso) => {
+            let cId: number | null = null;
+            
+            if (typeof c === 'number') {
+              cId = c;
+            } else if (typeof c === 'string') {
+              cId = parseInt(c, 10) || null;
+            } else if (c?.id) {
+              cId = typeof c.id === 'number' ? c.id : parseInt(String(c.id), 10) || null;
+            } else if (c?.attributes?.id) {
+              cId = typeof c.attributes.id === 'number' ? c.attributes.id : parseInt(String(c.attributes.id), 10) || null;
+            } else if (c?.data?.id) {
+              cId = typeof c.data.id === 'number' ? c.data.id : parseInt(String(c.data.id), 10) || null;
+            }
+            
+            return cId !== null && cId === cursoIdNum;
+          });
+        } catch {
+          return false;
+        }
+      });
+    }
+
+    const alunosFormatados: AlunoHabilitado[] = alunos
+      .map((aluno: StrapiAluno) => {
+        try {
+          const alunoData = aluno.attributes || aluno;
+          const cursosRaw = alunoData.cursos || aluno.cursos;
+          
+          const cursosArray = Array.isArray(cursosRaw) 
+            ? cursosRaw 
+            : (cursosRaw as { data?: StrapiCurso[] })?.data || [];
+          
+          const cursosFormatados = cursosArray
+            .map((curso: StrapiCurso): CursoFormatado | null => {
+              try {
+                let cursoId: number = 0;
+                
+                if (typeof curso === 'number') {
+                  cursoId = curso;
+                } else if (typeof curso === 'string') {
+                  cursoId = parseInt(curso, 10) || 0;
+                } else if (curso?.id) {
+                  cursoId = typeof curso.id === 'number' ? curso.id : parseInt(String(curso.id), 10) || 0;
+                } else if (curso?.attributes?.id) {
+                  cursoId = typeof curso.attributes.id === 'number' ? curso.attributes.id : parseInt(String(curso.attributes.id), 10) || 0;
+                } else if (curso?.data?.id) {
+                  cursoId = typeof curso.data.id === 'number' ? curso.data.id : parseInt(String(curso.data.id), 10) || 0;
+                }
+                
+                const cursoTitulo = curso?.titulo || curso?.attributes?.titulo || curso?.data?.attributes?.titulo || "";
+                
+                return {
+                  id: cursoId,
+                  titulo: cursoTitulo,
+                };
+              } catch {
+                return null;
+              }
+            })
+            .filter((c: CursoFormatado | null): c is CursoFormatado => c !== null && c.id > 0);
+
+          return {
+            id: aluno.id || alunoData.id || 0,
+            nome: alunoData.nome || "",
+            telefone_aluno: alunoData.telefone_aluno || "",
+            responsavel: alunoData.responsavel || "",
+            telefone_responsavel: alunoData.telefone_responsavel || "",
+            cursos: cursosFormatados,
+            escola_parceira: alunoData.escola_parceira || "",
+            turma: alunoData.turma || undefined,
+            createdAt: alunoData.createdAt || aluno.createdAt || "",
+            updatedAt: alunoData.updatedAt || aluno.updatedAt || "",
+          };
+        } catch {
+          return null;
+        }
       })
-    );
+      .filter((aluno: AlunoHabilitado | null): aluno is AlunoHabilitado => aluno !== null && aluno.id > 0);
 
     return NextResponse.json(
       { data: alunosFormatados },

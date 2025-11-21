@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { createStudent, fetchSchools } from "@/lib/strapi";
+import { fetchSchools } from "@/lib/strapi";
 // import { X } from "lucide-react";
 
 interface EnrollmentModalProps {
@@ -50,6 +50,7 @@ interface Aluno {
   nome: string;
   escola: string;
   turma: string;
+  cpf?: string;
 }
 
 export default function EnrollmentModal({
@@ -61,7 +62,7 @@ export default function EnrollmentModal({
   courseId,
   scheduleIndex,
   disabled = false,
-  aviso_matricula,
+  pre_requisitos,
 }: EnrollmentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -73,19 +74,19 @@ export default function EnrollmentModal({
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [isLoadingTurmas, setIsLoadingTurmas] = useState(false);
-  const [isLoadingAlunos, setIsLoadingAlunos] = useState(false);
   const [showAlunosDropdown, setShowAlunosDropdown] = useState(false);
-  // const [appliedCoupon, setAppliedCoupon] = useState<{
-  //   id: number;
-  //   documentId: string;
-  //   nome: string;
-  //   url: string | null;
-  //   valido: boolean;
-  //   validade: string | null;
-  //   voucher_gratuito: boolean;
-  // } | null>(null);
-  // const [couponError, setCouponError] = useState("");
   const [isPartnerStudent, setIsPartnerStudent] = useState(false);
+  
+  interface FoundStudent {
+    nome?: string;
+    cpf?: string;
+    escola?: string;
+    turma?: string;
+  }
+  
+  const [foundStudent, setFoundStudent] = useState<FoundStudent | null>(null);
+  const [isSearchingStudent, setIsSearchingStudent] = useState(false);
+  const studentFoundRef = useRef(false);
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || "pt";
@@ -135,13 +136,14 @@ export default function EnrollmentModal({
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           setTurmas(data.data.map((turma: string) => ({ nome: turma })));
         } else {
           setTurmas([]);
         }
       } else {
-        console.error("Erro na resposta da API turmas:", response.status);
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Erro na resposta da API turmas:", response.status, errorData);
         setTurmas([]);
       }
     } catch (error) {
@@ -157,60 +159,93 @@ export default function EnrollmentModal({
     setIsPartnerStudent(false);
   };
 
-  // Função para carregar alunos quando uma turma é selecionada
-  const loadAlunos = async (escola: string, turma: string, search?: string) => {
-    if (!escola || !turma) {
-      setAlunos([]);
-      setFormData((prev) => ({ ...prev, studentName: "" }));
-      setIsPartnerStudent(false);
-      setShowAlunosDropdown(false);
-      return;
+  // Função para buscar aluno por CPF
+  const searchStudentByCPF = async (cpf: string) => {
+    if (!cpf || !formData.partnerSchool || !formData.classNumber) {
+      return null;
     }
 
-    // Só buscar se não há busca ou se a busca tem pelo menos 2 caracteres
-    if (search && search.length < 2) {
-      setAlunos([]);
-      setShowAlunosDropdown(false);
-      return;
-    }
-
-    setIsLoadingAlunos(true);
+    setIsSearchingStudent(true);
     try {
-      let url = `/api/alunos-turma?escola=${encodeURIComponent(
-        escola
-      )}&turma=${encodeURIComponent(turma)}`;
-
-      if (search) {
-        url += `&search=${encodeURIComponent(search)}`;
-      }
-
+      const cleanCPF = cpf.replace(/\D/g, "");
+      const url = `/api/alunos-escola-parceira/search?cpf=${encodeURIComponent(cleanCPF)}&escola=${encodeURIComponent(formData.partnerSchool)}&turma=${encodeURIComponent(formData.classNumber)}`;
+      
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
-          setAlunos(data.data);
-          setShowAlunosDropdown(data.data.length > 0);
-        } else {
-          setAlunos([]);
-          setShowAlunosDropdown(false);
+        if (data.success && data.data && data.data.length > 0) {
+          return data.data[0]; // Retorna o primeiro resultado
         }
-      } else {
-        setAlunos([]);
-        setShowAlunosDropdown(false);
       }
+      return null;
     } catch (error) {
-      console.error("Erro ao carregar alunos:", error);
-      setAlunos([]);
-      setShowAlunosDropdown(false);
+      console.error("Erro ao buscar aluno por CPF:", error);
+      return null;
     } finally {
-      setIsLoadingAlunos(false);
+      setIsSearchingStudent(false);
+    }
+  };
+
+  // Função para buscar aluno por nome
+  const searchStudentByName = async (nome: string) => {
+    if (!nome || nome.length < 2 || !formData.partnerSchool || !formData.classNumber) {
+      return null;
     }
 
-    // Limpar dados dependentes se não há busca
-    if (!search) {
-      setFormData((prev) => ({ ...prev, studentName: "" }));
-      setIsPartnerStudent(false);
+    setIsSearchingStudent(true);
+    try {
+      const url = `/api/alunos-escola-parceira/search?nome=${encodeURIComponent(nome)}&escola=${encodeURIComponent(formData.partnerSchool)}&turma=${encodeURIComponent(formData.classNumber)}`;
+      
+      const response = await fetch(url);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.length > 0) {
+          // Se encontrar múltiplos, mostrar dropdown
+          if (data.data.length > 1) {
+            interface AlunoSearchResult {
+              nome?: string;
+              escola?: string;
+              turma?: string;
+              cpf?: string;
+            }
+            
+            setAlunos(data.data.map((aluno: AlunoSearchResult) => ({
+              nome: aluno.nome || "",
+              escola: aluno.escola || "",
+              turma: aluno.turma || "",
+              cpf: aluno.cpf || "",
+            })));
+            setShowAlunosDropdown(true);
+            return null; // Não preencher automaticamente se múltiplos
+          }
+          return data.data[0]; // Retorna o primeiro resultado se único
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`[EnrollmentModal] Erro na resposta:`, response.status, errorData);
+      }
+      return null;
+    } catch (error) {
+      console.error("[EnrollmentModal] Erro ao buscar aluno por nome:", error);
+      return null;
+    } finally {
+      setIsSearchingStudent(false);
     }
+  };
+
+  // Função para preencher dados do aluno encontrado
+  const fillStudentData = (student: FoundStudent | null) => {
+    if (!student) return;
+
+    setFoundStudent(student);
+    setIsPartnerStudent(true);
+    studentFoundRef.current = true;
+    
+    // Preencher campos básicos (se disponíveis)
+    // Nota: alunos-escola-parceira pode não ter todos os campos
+    // Os campos serão preenchidos apenas se disponíveis
   };
 
   // const handleApplyCoupon = async () => {
@@ -266,7 +301,8 @@ export default function EnrollmentModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (aviso_matricula) {
+    // Mostrar modal de pré-requisitos apenas se o campo estiver preenchido
+    if (pre_requisitos && pre_requisitos.trim() !== "") {
       setIsMaterialComplementarModalOpen(true);
       return;
     }
@@ -388,26 +424,37 @@ export default function EnrollmentModal({
       //   appliedCoupon?.voucher_gratuito || isPartnerStudent;
       const isVoucherGratuito = isPartnerStudent;
 
-      await createStudent({
-        nome: formData.studentName,
-        data_nascimento: formData.studentBirthDate,
-        cpf_aluno: formData.studentCPF,
-        responsavel: formData.guardianName,
-        email_responsavel: formData.guardianEmail,
-        cpf_responsavel: formData.guardianCPF,
-        telefone_responsavel: formData.guardianPhone,
-        pais: formData.country,
-        estado: formData.state,
-        cidade: formData.city,
-        telefone_aluno: formData.studentPhone,
-        portador_deficiencia: formData.portadorDeficiencia,
-        descricao_deficiencia: formData.descricaoDeficiencia,
-        cursos: [{ id: courseId, documentId: courseId.toString() }],
-        escola_parceira: schoolName,
-        turma: scheduleIndex + 1,
-        usou_voucher: isVoucherGratuito, // Set as true if partner student or voucher gratuito
-        publishedAt: new Date().toISOString(),
+      // Criar aluno através da API route (que tem autenticação)
+      const createResponse = await fetch("/api/students/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: formData.studentName,
+          data_nascimento: formData.studentBirthDate,
+          cpf_aluno: formData.studentCPF,
+          responsavel: formData.guardianName,
+          email_responsavel: formData.guardianEmail,
+          cpf_responsavel: formData.guardianCPF,
+          telefone_responsavel: formData.guardianPhone,
+          pais: formData.country,
+          estado: formData.state,
+          cidade: formData.city,
+          telefone_aluno: formData.studentPhone,
+          portador_deficiencia: formData.portadorDeficiencia,
+          descricao_deficiencia: formData.descricaoDeficiencia,
+          cursos: [{ id: courseId }],
+          escola_parceira: schoolName,
+          turma: scheduleIndex + 1,
+          usou_voucher: isVoucherGratuito,
+        }),
       });
+
+      if (!createResponse.ok) {
+        const errorData = await createResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to create student");
+      }
 
       setIsOpen(false);
 
@@ -480,7 +527,7 @@ export default function EnrollmentModal({
             onKeyDown={handleKeyDown}
             className="space-y-6 p-4"
           >
-            {/* School, Class and Student Selection */}
+            {/* School, Class, CPF and Name Selection */}
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -496,7 +543,13 @@ export default function EnrollmentModal({
                       setFormData((prev) => ({
                         ...prev,
                         partnerSchool: selectedSchool,
+                        classNumber: "",
+                        studentCPF: "",
+                        studentName: "",
                       }));
+                      setFoundStudent(null);
+                      setIsPartnerStudent(false);
+                      studentFoundRef.current = false;
                       loadTurmas(selectedSchool);
                     }}
                     className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2"
@@ -525,12 +578,14 @@ export default function EnrollmentModal({
                       setFormData((prev) => ({
                         ...prev,
                         classNumber: selectedTurma,
+                        studentCPF: "",
+                        studentName: "",
                       }));
-                      // Limpar alunos quando trocar de turma
+                      setFoundStudent(null);
+                      setIsPartnerStudent(false);
+                      studentFoundRef.current = false;
                       setAlunos([]);
                       setShowAlunosDropdown(false);
-                      setFormData((prev) => ({ ...prev, studentName: "" }));
-                      setIsPartnerStudent(false);
                     }}
                     disabled={!formData.partnerSchool || isLoadingTurmas}
                     className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] rounded-md p-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -549,95 +604,147 @@ export default function EnrollmentModal({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="studentName">{modalT("student.name")}</Label>
-                <div className="relative">
-                  <Input
-                    id="studentName"
-                    type="text"
-                    required
-                    value={formData.studentName}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData((prev) => ({
-                        ...prev,
-                        studentName: value,
-                      }));
-
-                      // Buscar alunos quando digitar 2 ou mais caracteres
-                      if (
-                        value.length >= 2 &&
-                        formData.partnerSchool &&
-                        formData.classNumber
-                      ) {
-                        loadAlunos(
-                          formData.partnerSchool,
-                          formData.classNumber,
-                          value
-                        );
-                      } else if (value.length < 2) {
-                        setAlunos([]);
-                        setShowAlunosDropdown(false);
-                      }
-
-                      // Resetar status de aluno parceiro
-                      setIsPartnerStudent(false);
-                    }}
-                    onFocus={() => {
-                      if (
-                        formData.studentName.length >= 2 &&
-                        formData.partnerSchool &&
-                        formData.classNumber
-                      ) {
-                        setShowAlunosDropdown(true);
-                      }
-                    }}
-                    onBlur={() => {
-                      // Delay para permitir clicar no dropdown
-                      setTimeout(() => setShowAlunosDropdown(false), 200);
-                    }}
-                    placeholder=""
-                    disabled={!formData.classNumber}
-                    className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
-
-                  {/* Dropdown de alunos */}
-                  {showAlunosDropdown && alunos.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                      {alunos.map((aluno, index) => (
-                        <div
-                          key={index}
-                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              studentName: aluno.nome,
-                            }));
-                            setIsPartnerStudent(true);
-                            setShowAlunosDropdown(false);
-                            setAlunos([]);
-                          }}
-                        >
-                          {aluno.nome}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {isLoadingAlunos && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                    </div>
-                  )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="studentCPF">{modalT("student.cpf")}</Label>
+                  <div className="relative">
+                    <Input
+                      id="studentCPF"
+                      required
+                      value={formData.studentCPF}
+                      onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, "");
+                        // Formatar CPF: XXX.XXX.XXX-XX
+                        if (value.length > 3) {
+                          value = value.slice(0, 3) + "." + value.slice(3);
+                        }
+                        if (value.length > 7) {
+                          value = value.slice(0, 7) + "." + value.slice(7);
+                        }
+                        if (value.length > 11) {
+                          value = value.slice(0, 11) + "-" + value.slice(11);
+                        }
+                        value = value.slice(0, 14);
+                        setFormData((prev) => ({
+                          ...prev,
+                          studentCPF: value,
+                        }));
+                        setFoundStudent(null);
+                        setIsPartnerStudent(false);
+                        studentFoundRef.current = false;
+                      }}
+                      onBlur={async () => {
+                        if (formData.studentCPF && formData.partnerSchool && formData.classNumber) {
+                          const cleanCPF = formData.studentCPF.replace(/\D/g, "");
+                          if (cleanCPF.length >= 11) {
+                            const student = await searchStudentByCPF(cleanCPF);
+                            if (student) {
+                              fillStudentData(student);
+                              setFormData((prev) => ({
+                                ...prev,
+                                studentName: student.nome || prev.studentName,
+                              }));
+                            } else {
+                              // Se não encontrou por CPF, limpar estado
+                              setFoundStudent(null);
+                              setIsPartnerStudent(false);
+                              studentFoundRef.current = false;
+                            }
+                          }
+                        }
+                      }}
+                      disabled={!formData.classNumber}
+                      placeholder="000.000.000-00"
+                      className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    {isSearchingStudent && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {isPartnerStudent && (
-                  <p className="text-sm text-green-600 bg-green-50 p-2 rounded">
-                    {modalT("student_found")}
-                  </p>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="studentName">{modalT("student.name")}</Label>
+                  <div className="relative">
+                    <Input
+                      id="studentName"
+                      type="text"
+                      required
+                      value={formData.studentName}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormData((prev) => ({
+                          ...prev,
+                          studentName: value,
+                        }));
+                        // Não limpar foundStudent aqui, apenas se o usuário mudar manualmente
+                        if (!value) {
+                          setFoundStudent(null);
+                          setIsPartnerStudent(false);
+                          studentFoundRef.current = false;
+                        }
+                      }}
+                      onBlur={async () => {
+                        // Se não encontrou por CPF e tem nome, buscar por nome
+                        // Aguardar um pouco para garantir que a busca por CPF terminou
+                        setTimeout(async () => {
+                          if (!studentFoundRef.current && formData.studentName && formData.studentName.length >= 2 && formData.partnerSchool && formData.classNumber) {
+                            const student = await searchStudentByName(formData.studentName);
+                            if (student) {
+                              fillStudentData(student);
+                              setFormData((prev) => ({
+                                ...prev,
+                                studentCPF: student.cpf || prev.studentCPF,
+                                studentName: student.nome || prev.studentName,
+                              }));
+                            }
+                          }
+                        }, 500);
+                      }}
+                      disabled={!formData.classNumber}
+                      placeholder=""
+                      className="w-full bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6] disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+
+                    {/* Dropdown de alunos */}
+                    {showAlunosDropdown && alunos.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {alunos.map((aluno, index) => (
+                          <div
+                            key={index}
+                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => {
+                              fillStudentData(aluno);
+                              setFormData((prev) => ({
+                                ...prev,
+                                studentName: aluno.nome || "",
+                                studentCPF: aluno.cpf || prev.studentCPF,
+                              }));
+                              setShowAlunosDropdown(false);
+                              setAlunos([]);
+                            }}
+                          >
+                            {aluno.nome}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {isPartnerStudent && (
+                    <p className="text-sm text-green-600 bg-green-50 p-2 rounded">
+                      {modalT("student_found")}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
+
+            {/* Demais campos - só aparecem quando aluno for encontrado */}
+            {isPartnerStudent && foundStudent && (
+              <>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Student Information */}
@@ -713,19 +820,6 @@ export default function EnrollmentModal({
                         }
                       }
                     }}
-                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="studentCPF">{modalT("student.cpf")}</Label>
-                  <Input
-                    id="studentCPF"
-                    required
-                    value={formData.studentCPF}
-                    onChange={(e) =>
-                      setFormData({ ...formData, studentCPF: e.target.value })
-                    }
                     className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
                   />
                 </div>
@@ -910,50 +1004,14 @@ export default function EnrollmentModal({
               )}
             </div>
 
-            {/* Coupon Section - COMMENTED OUT FOR FUTURE USE */}
-            {/* <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="couponCode">{modalT("coupon.label")}</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="couponCode"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    className="bg-gray-50 border-gray-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]"
-                    placeholder={modalT("coupon.placeholder")}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleApplyCoupon}
-                    className="bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!couponCode}
-                  >
-                    {modalT("coupon.apply")}
-                  </Button>
-                </div>
-                {couponError && (
-                  <p className="text-red-500 text-sm">{couponError}</p>
-                )}
-                {appliedCoupon && (
-                  <div className="flex items-center gap-2 bg-green-50 p-2 rounded-lg border border-green-200">
-                    <span className="text-green-700">{appliedCoupon.nome}</span>
-                    <button
-                      type="button"
-                      onClick={handleRemoveCoupon}
-                      className="text-green-700 hover:text-red-500"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div> */}
+            </>
+            )}
 
             <Button
               type="submit"
               id="enrollment-button-modal"
               className="w-full bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading || !isPartnerStudent}
+              disabled={isLoading || !isPartnerStudent || !foundStudent}
             >
               {isLoading ? modalT("loading") : modalT("enroll")}
             </Button>
@@ -993,7 +1051,9 @@ export default function EnrollmentModal({
             </DialogTitle>
           </DialogHeader>
           <div className="text-center space-y-6">
-            <p className="text-lg text-gray-700">{aviso_matricula}</p>
+            <div className="text-lg text-gray-700 whitespace-pre-line">
+              {pre_requisitos}
+            </div>
             <Button
               onClick={handleMaterialComplementarAcknowledge}
               className="bg-orange-600 text-white hover:bg-orange-500 py-6 text-lg font-semibold w-full"
@@ -1003,6 +1063,7 @@ export default function EnrollmentModal({
           </div>
         </DialogContent>
       </Dialog>
+
     </>
   );
 }

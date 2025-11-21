@@ -271,6 +271,7 @@
     "course_full": "All classes for this course have exceeded the student enrollment limit",
     "suggest_new_time": "Suggest new time",
     "class_full": "Class full",
+    "all_classes_full": "All classes are full",
     "suggestion": {
       "weekdays": "Weekdays",
       "time": "Suggested time",
@@ -601,15 +602,203 @@
       "course_edit": {
         "saving": "Saving...",
         "save": "Save changes",
-        "success": "Changes saved successfully!"
+        "success": "Updated successfully!",
+        "no_changes": "No changes to save.",
+        "error_saving": "Error saving changes.",
+        "error_uploading_image": "Failed to upload image. Please try again.",
+        "course_settings": "Course settings",
+        "enable_description": "Enable or disable the availability of this course",
+        "schedule_suggestion_description": "Allow students to suggest new schedules",
+        "mentor_photo": "Mentor Photo",
+        "remove_photo": "Remove Photo",
+        "upload": "Upload",
+        "upload_new_image": "Upload new image",
+        "uploading": "Uploading image...",
+        "accepted_formats": "Accepted formats: JPG, PNG. Maximum size: 5MB",
+        "no_mentor": "No mentor related to the course was found.",
+        "add_video": "Add video",
+        "add_ementa": "Add item",
+        "add_resumo": "Add class",
+        "mentor_data": "Mentor Data",
+        "remove_video": "Remove video",
+        "remove_ementa": "Remove item",
+        "remove_resumo": "Remove class",
+        "course_details_section_title": "Course Details",
+        "date_placeholder": "Ex: March 10th"
       },
       "logout": "Logout",
       "logout_confirm": "Do you want to logout?",
       "logout_action": "Logout",
       "dashboard": "Dashboard",
+      "my_classes": "My Classes",
       "partner_students": "Partner School Students List",
       "students_report": "Students List",
-      "exceeded_students_report": "Exceeded Students"
+      "exceeded_students_report": "Exceeded Students",
+      "course_details": {
+        "back": "Back",
+        "manage_course": "Manage students, classes and course details",
+        "total_spots": "Total Spots",
+        "enrolled_students": "Enrolled Students",
+        "available_spots": "Available Spots",
+        "tabs": {
+          "students": "Students",
+          "classes": "Classes",
+          "schedules": "Schedules",
+          "details": "Course Details"
+        },
+        "filters": {
+          "filter_by_class": "Filter by Class",
+          "filter_by_school": "Filter by School",
+          "all_classes": "All Classes",
+          "all_schools": "All Schools",
+          "class_label": "Class {number}",
+          "search": "Search",
+          "search_placeholder": "Search by name...",
+          "export_pdf": "Export PDF"
+        },
+        "loading_students": "Loading students...",
+        "error_loading_students": "Error loading students",
+        "no_students_found": "No students found",
+        "adjust_filters": "Try adjusting the search filters.",
+        "no_enrolled_students": "There are no students enrolled in this course.",
+        "table": {
+          "name": "Name",
+          "class": "Class",
+          "school": "School",
+          "enrolled_at": "Enrolled at"
+        },
+        "classes": {
+          "title": "Registered Classes",
+          "no_classes": "No classes registered",
+          "no_classes_description": "There are no classes registered for this course."
+        },
+        "details": {
+          "title": "Course Information",
+          "edit": "Edit",
+          "cancel": "Cancel",
+          "save": "Save",
+          "course_title": "Title",
+          "description": "Description",
+          "mentor_description": "Mentor Description"
+        },
+        "schedules": {
+          "loading": "Loading schedules...",
+          "error_loading": "Error loading schedules",
+          "title": "Available Schedules",
+          "description": "Organize schedules by priority order. The first non-full schedule will be displayed on the site.",
+          "how_it_works": "How it works:",
+          "how_it_works_description": "Schedules are displayed on the site by priority order. When a schedule becomes full, the next one in the list automatically becomes available for new enrollments.",
+          "tip": "Tip:",
+          "tip_description": "Drag the cards to reorganize the priority order. Schedules with enrolled students are locked and cannot be moved or removed.",
+          "priority_order": "Priority Order (1 = Highest priority)",
+          "no_schedules": "No schedules registered",
+          "no_schedules_description": "Start by adding the first available schedule for the course.",
+          "add_schedule": "Add Schedule",
+          "add_new_schedule": "Add New Schedule",
+          "add_schedule_description": "Configure the day and time of the schedule. The maximum capacity will be set automatically.",
+          "day_of_week": "Day of Week *",
+          "select_day": "Select the day",
+          "start_time": "Start Time *",
+          "select_time": "Select the time",
+          "no_time_available": "No time available for this day",
+          "class_duration": "Class duration: 50 minutes",
+          "cancel": "Cancel",
+          "loading_options": "Loading options...",
+          "active": "Active",
+          "full": "Full",
+          "locked": "Locked",
+          "occupation": "Occupation",
+          "students": "students",
+          "error_reorder": "Cannot reorder schedules with enrolled students",
+          "error_reorder_message": "Error reordering schedules",
+          "success_reorder": "Schedules reordered successfully!",
+          "error_add": "Error adding schedule",
+          "success_add": "Schedule added successfully!",
+          "error_delete": "Cannot remove schedules with enrolled students",
+          "error_delete_message": "Error removing schedule",
+          "success_delete": "Schedule removed successfully!",
+          "days": {
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+          }
+        }
+      },
+      "admin_students": {
+        "loading": "Loading students...",
+        "error_loading": "Error loading students",
+        "total_students": "Total Students",
+        "partner_schools": "Partner Schools",
+        "no_link": "No Link",
+        "report_type": "Report Type",
+        "all_enrolled": "Enrolled Students",
+        "partner_students": "Partner School Students",
+        "no_link_students": "Students without Links",
+        "search": "Search",
+        "search_placeholder": "Name, phone, course...",
+      "partner_school_filter": "Partner School",
+      "status_filter": "Status",
+      "all_partner_schools": "All",
+      "status_options": {
+        "all": "All",
+        "enrolled": "Enrolled",
+        "not_enrolled": "Not Enrolled"
+      },
+        "export": "Export",
+        "no_students_found": "No students found",
+        "adjust_filters": "Try adjusting the search filters.",
+        "no_students_registered": "There are no students registered at the moment.",
+        "table": {
+          "student_name": "Student Name",
+          "phone": "Phone",
+        "responsible": "Responsible",
+        "responsible_phone": "Responsible Phone",
+          "course": "Course",
+          "partner_school": "Partner School",
+          "class": "Class",
+        "status": "Status",
+          "class_label": "Class {number}"
+        }
+      },
+      "admin_home": {
+        "welcome": "Welcome, Teacher! 👋",
+        "manage_classes": "Manage your classes and homework",
+        "tabs": {
+          "classes": "Classes",
+          "homework": "Homework"
+        },
+        "upcoming_classes": {
+          "title": "Upcoming Classes",
+          "no_classes": "No classes scheduled",
+          "no_classes_description": "There are no upcoming classes at the moment."
+        },
+        "past_classes": {
+          "title": "Past Classes",
+          "no_classes": "No classes completed",
+          "no_classes_description": "There are no completed classes at the moment."
+        },
+        "homework": {
+          "no_homework": "No homework",
+          "no_homework_description": "There is no homework registered at the moment."
+        }
+      },
+      "class_details": {
+        "back": "Back",
+        "save_changes": "Save Changes",
+        "present": "Present",
+        "absent": "Absent",
+        "attendance_percentage": "Attendance Percentage",
+        "attendance_and_score": "Attendance and Score",
+        "attendance_description": "Mark student attendance and assign spinners (0-33)",
+        "student": "Student",
+        "attendance": "Attendance",
+        "spinners": "Spinners",
+        "comment": "Comment"
+      }
     },
     "exceededStudentsReport": {
       "title": "Exceeded Students Report",
@@ -725,6 +914,7 @@
       "try_again": "Try again",
       "refresh": "Refresh",
       "download_csv": "Download CSV",
+      "export_pdf": "Export PDF",
       "total_strapi_students": "Total Students in System",
       "total_partner_students": "Total Partner Students",
       "non_partner_students": "Non-Partner Students",
@@ -754,6 +944,57 @@
       "responsible_name": "Responsible Name",
       "responsible_phone": "Responsible Phone",
       "courses": "Courses"
+    },
+    "dashboard_home": {
+      "title": "Administrative Dashboard",
+      "subtitle": "Overview of enrollments and statistics from Nitro Academy",
+      "total_students": "Total Students",
+      "registered_in_system": "Registered in the system",
+      "enrolled": "Enrolled",
+      "not_enrolled": "Not Enrolled",
+      "waiting_enrollment": "Waiting for enrollment",
+      "partner_schools": "Partner Schools",
+      "active_institutions": "Active institutions",
+      "enrollment_by_school": {
+        "title": "Enrollments by School",
+        "description": "Comparison of enrolled and not enrolled students",
+        "enrolled": "Enrolled",
+        "not_enrolled": "Not Enrolled",
+        "no_data": "No data"
+      },
+      "enrollment_trend": {
+        "title": "Enrollment Trend",
+        "description": "Enrollment growth over the last months",
+        "enrollments": "Enrollments",
+        "no_data": "No data"
+      },
+      "popular_courses": {
+        "title": "Most Popular Courses",
+        "description": "Course ranking by number of students",
+        "no_courses": "No courses found"
+      }
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "my_classes": "My Classes",
+      "courses": "Courses",
+      "students": "Students",
+      "collapse": "Collapse Menu",
+      "expand": "Expand",
+      "logout": "Logout",
+      "admin_panel": "Administrative Panel"
+    },
+    "page_titles": {
+      "dashboard": "Dashboard",
+      "my_classes": "My Classes",
+      "courses": "Courses",
+      "students": "Students"
+    },
+    "page_descriptions": {
+      "dashboard": "Overview of enrollments and statistics",
+      "my_classes": "Overview of your classes and tasks",
+      "courses": "Manage courses and enrollments",
+      "students": "View and export student data"
     }
   },
   "CourseRating": {

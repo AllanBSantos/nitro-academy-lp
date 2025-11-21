@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Select,
   SelectContent,
@@ -17,163 +20,662 @@ import {
 } from "../new-layout/ui/table";
 import { Badge } from "../new-layout/ui/badge";
 import { Input } from "../new-layout/ui/input";
-import { Search, Download, FileText, School, UserX, TrendingUp } from "lucide-react";
+import {
+  Search,
+  Download,
+  FileText,
+  School,
+  UserX,
+  TrendingUp,
+  Inbox,
+} from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
 import { ImportStudentsDialog } from "./ImportStudentsDialog";
 
 type Student = {
-  id: string;
+  id: number;
   name: string;
   phone: string;
   responsibleName: string;
   responsiblePhone: string;
-  course: string;
+  courses: Array<{ id: number; titulo: string }>;
   partnerSchool: string | null;
-  class: string;
+  class: number | null;
 };
 
-// Mock data based on the image
-const mockStudents: Student[] = [
-  {
-    id: "1",
-    name: "Luiza Fagnani",
-    phone: "189976559977",
-    responsibleName: "Antonio Fagnani Filho",
-    responsiblePhone: "189972277175",
-    course: "Investimento e Finanças",
-    partnerSchool: "Colégio Anglo Araçatuba",
-    class: "1",
-  },
-  {
-    id: "2",
-    name: "Samuel Tenório Dos Reis",
-    phone: "(11) 91494-9465",
-    responsibleName: "Evilaco Alves Dos Reis",
-    responsiblePhone: "(11) 96157-1134",
-    course: "Empreendedorismo",
-    partnerSchool: "Colégio Santa Mônica",
-    class: "1",
-  },
-  {
-    id: "3",
-    name: "Guilherme Marini Moreno",
-    phone: "(17) 98841-4299",
-    responsibleName: "Josiane Marini Moreno",
-    responsiblePhone: "(17) 98165-3344",
-    course: "Inteligência Artificial",
-    partnerSchool: "Colégio Plus",
-    class: "1",
-  },
-  {
-    id: "4",
-    name: "Maria Silva",
-    phone: "(11) 98765-4321",
-    responsibleName: "João Silva",
-    responsiblePhone: "(11) 98765-1234",
-    course: "Marketing Digital",
-    partnerSchool: null,
-    class: "2",
-  },
-  {
-    id: "5",
-    name: "Pedro Santos",
-    phone: "(11) 99876-5432",
-    responsibleName: "Ana Santos",
-    responsiblePhone: "(11) 99876-1234",
-    course: "Desenvolvimento de Produtos",
-    partnerSchool: null,
-    class: "2",
-  },
-];
+type RelationAttributes = {
+  nome?: string;
+  titulo?: string;
+  name?: string;
+  turma?: string;
+};
+
+type RelationValue =
+  | string
+  | {
+      data?: { attributes?: RelationAttributes | null } | null;
+      attributes?: RelationAttributes | null;
+    }
+  | RelationAttributes
+  | null
+  | undefined;
+
+type PartnerStudent = {
+  id: number;
+  name: string;
+  phone: string;
+  responsibleName: string;
+  responsiblePhone: string;
+  courseName: string;
+  partnerSchool: string;
+  className: string;
+  status: "enrolled" | "not_enrolled";
+};
+
+type PartnerStudentAttributes = {
+  id?: number;
+  nome?: string;
+  telefone_aluno?: string;
+  telefone?: string;
+  phone?: string;
+  responsavel?: string;
+  nome_responsavel?: string;
+  telefone_responsavel?: string;
+  telefoneResponsavel?: string;
+  escola?: RelationValue;
+  escola_old?: string;
+  escola_parceira?: string;
+  turma?: RelationValue | string;
+  turma_old?: string;
+  courseInfo?: {
+    courseName?: string;
+    course?: RelationValue;
+  } | null;
+  isEnrolled?: boolean;
+};
+
+type RawPartnerStudent = PartnerStudentAttributes & {
+  id?: number;
+  attributes?: PartnerStudentAttributes;
+};
+
+type PartnerStudentsResponse = {
+  data?: RawPartnerStudent[];
+  meta?: {
+    pagination?: {
+      page?: number;
+      pageSize?: number;
+      pageCount?: number;
+      total?: number;
+    };
+  };
+};
+
+const getRelationValue = (relation: RelationValue): string => {
+  if (!relation) return "";
+  if (typeof relation === "string") return relation;
+
+  const fromAttributes = (attrs?: RelationAttributes | null): string => {
+    if (!attrs) return "";
+    return attrs.nome || attrs.titulo || attrs.name || attrs.turma || "";
+  };
+
+  // Handle Strapi v5 format: { data: { id, documentId, attributes: {...} } }
+  if ("data" in relation && relation.data) {
+    // Check if data is an array (many relations) or single object
+    if (Array.isArray(relation.data)) {
+      const firstItem = relation.data[0];
+      if (firstItem?.attributes) {
+        const value = fromAttributes(firstItem.attributes);
+        if (value) return value;
+      }
+    } else {
+      // Single relation
+      const value = fromAttributes(relation.data.attributes);
+      if (value) return value;
+    }
+  }
+
+  // Handle direct attributes
+  if ("attributes" in relation && relation.attributes) {
+    const value = fromAttributes(relation.attributes);
+    if (value) return value;
+  }
+
+  // Fallback: try to extract directly
+  return fromAttributes(relation as RelationAttributes);
+};
+
+const mapPartnerStudent = (student: RawPartnerStudent): PartnerStudent => {
+  const attrs: PartnerStudentAttributes = student?.attributes
+    ? { ...student.attributes }
+    : { ...student };
+
+  const partnerSchool =
+    getRelationValue(attrs.escola) ||
+    attrs.escola_old ||
+    attrs.escola_parceira ||
+    "";
+
+  const className =
+    getRelationValue(attrs.turma as RelationValue) ||
+    attrs.turma_old ||
+    (typeof attrs.turma === "string" ? attrs.turma : "");
+
+  const courseName =
+    attrs.courseInfo?.courseName ||
+    getRelationValue(attrs.courseInfo?.course) ||
+    "";
+
+  return {
+    id: student.id ?? attrs.id ?? Date.now(),
+    name: attrs.nome || "",
+    phone: attrs.telefone_aluno || attrs.telefone || attrs.phone || "",
+    responsibleName: attrs.responsavel || attrs.nome_responsavel || "",
+    responsiblePhone:
+      attrs.telefone_responsavel || attrs.telefoneResponsavel || "",
+    courseName,
+    partnerSchool,
+    className,
+    status: attrs.isEnrolled ? "enrolled" : "not_enrolled",
+  };
+};
 
 type ReportType = "all" | "partner" | "no-link";
 
 export function AdminStudents() {
+  const t = useTranslations("Admin.panel.admin_students");
   const [reportType, setReportType] = useState<ReportType>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [partnerStudents, setPartnerStudents] = useState<PartnerStudent[]>([]);
+  const [partnerLoading, setPartnerLoading] = useState(true);
+  const [partnerError, setPartnerError] = useState<string | null>(null);
+  const [partnerSchoolFilter, setPartnerSchoolFilter] = useState("all");
+  const [partnerStatusFilter, setPartnerStatusFilter] = useState<
+    "all" | "enrolled" | "not_enrolled"
+  >("all");
 
-  const filteredStudents = mockStudents.filter((student) => {
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch("/api/admin/all-students");
+
+        if (!response.ok) {
+          throw new Error(t("error_loading"));
+        }
+
+        const data = await response.json();
+        const alunosFormatados: Student[] = (data.data || []).map(
+          (aluno: {
+            id: number;
+            nome: string;
+            telefone_aluno?: string;
+            responsavel: string;
+            telefone_responsavel: string;
+            cursos: Array<{ id: number; titulo: string }>;
+            escola_parceira?: string;
+            turma?: number;
+          }) => ({
+            id: aluno.id,
+            name: aluno.nome || "",
+            phone: aluno.telefone_aluno || "",
+            responsibleName: aluno.responsavel || "",
+            responsiblePhone: aluno.telefone_responsavel || "",
+            courses: aluno.cursos || [],
+            partnerSchool: aluno.escola_parceira || null,
+            class: aluno.turma || null,
+          })
+        );
+
+        setStudents(alunosFormatados);
+      } catch {
+        setError(t("error_loading"));
+        setStudents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStudents();
+  }, [t]);
+
+  useEffect(() => {
+    async function loadPartnerStudents() {
+      try {
+        setPartnerLoading(true);
+        setPartnerError(null);
+
+        const pageSize = 100;
+        let currentPage = 1;
+        let totalPages = 1;
+        const allStudents: PartnerStudent[] = [];
+        const timestamp = Date.now().toString();
+
+        while (currentPage <= totalPages) {
+          const params = new URLSearchParams({
+            page: currentPage.toString(),
+            pageSize: pageSize.toString(),
+            _t: timestamp,
+          });
+
+          const response = await fetch(
+            `/api/partner-students?${params.toString()}`,
+            {
+              cache: "no-store",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(t("error_loading"));
+          }
+
+          const data: PartnerStudentsResponse = await response.json();
+          const mapped: PartnerStudent[] = (data.data || []).map((student) =>
+            mapPartnerStudent(student)
+          );
+
+          allStudents.push(...mapped);
+
+          const pagination = data.meta?.pagination;
+          totalPages = pagination?.pageCount || 1;
+          currentPage += 1;
+        }
+
+        setPartnerStudents(allStudents);
+      } catch {
+        setPartnerError(t("error_loading"));
+        setPartnerStudents([]);
+      } finally {
+        setPartnerLoading(false);
+      }
+    }
+
+    loadPartnerStudents();
+  }, [t]);
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const isPartnerView = reportType === "partner";
+  const schoolFilterActive = reportType === "all" || reportType === "partner";
+  const statusFilterActive = reportType === "partner";
+
+  const filteredStudents = students.filter((student) => {
     // Filter by report type
     if (reportType === "partner" && !student.partnerSchool) return false;
     if (reportType === "no-link" && student.partnerSchool) return false;
 
+    if (
+      schoolFilterActive &&
+      partnerSchoolFilter !== "all" &&
+      student.partnerSchool !== partnerSchoolFilter
+    ) {
+      return false;
+    }
+
     // Filter by search term
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
+    if (normalizedSearch) {
       return (
-        student.name.toLowerCase().includes(search) ||
-        student.phone.includes(search) ||
-        student.responsibleName.toLowerCase().includes(search) ||
-        student.course.toLowerCase().includes(search)
+        student.name.toLowerCase().includes(normalizedSearch) ||
+        student.phone.includes(normalizedSearch) ||
+        student.responsibleName.toLowerCase().includes(normalizedSearch) ||
+        student.courses.some((c) =>
+          c.titulo.toLowerCase().includes(normalizedSearch)
+        )
       );
     }
 
     return true;
   });
 
+  const availablePartnerSchools = useMemo(() => {
+    const schools = new Set<string>();
+    students.forEach((student) => {
+      if (student.partnerSchool) {
+        schools.add(student.partnerSchool);
+      }
+    });
+    partnerStudents.forEach((student) => {
+      if (student.partnerSchool) {
+        schools.add(student.partnerSchool);
+      }
+    });
+    return Array.from(schools).sort((a, b) => a.localeCompare(b));
+  }, [students, partnerStudents]);
+
+  const partnerFilteredStudents = partnerStudents.filter((student) => {
+    if (
+      partnerSchoolFilter !== "all" &&
+      student.partnerSchool !== partnerSchoolFilter
+    ) {
+      return false;
+    }
+
+    if (
+      partnerStatusFilter !== "all" &&
+      student.status !== partnerStatusFilter
+    ) {
+      return false;
+    }
+
+    if (normalizedSearch) {
+      const valuesToSearch = [
+        student.name,
+        student.phone,
+        student.responsibleName,
+        student.responsiblePhone,
+        student.courseName,
+        student.partnerSchool,
+        student.className,
+      ]
+        .filter(Boolean)
+        .map((value) => value.toLowerCase());
+
+      return valuesToSearch.some((value) => value.includes(normalizedSearch));
+    }
+
+    return true;
+  });
+
+  const currentLoading = isPartnerView ? partnerLoading : loading;
+  const currentError = isPartnerView ? partnerError : error;
+  const displayedStudentsCount = isPartnerView
+    ? partnerFilteredStudents.length
+    : filteredStudents.length;
+  const exportDisabled = displayedStudentsCount === 0;
+  const columnCount = isPartnerView ? 8 : 7;
+
+  useEffect(() => {
+    if (!schoolFilterActive && partnerSchoolFilter !== "all") {
+      setPartnerSchoolFilter("all");
+    }
+  }, [schoolFilterActive, partnerSchoolFilter]);
+
+  useEffect(() => {
+    if (!statusFilterActive && partnerStatusFilter !== "all") {
+      setPartnerStatusFilter("all");
+    }
+  }, [statusFilterActive, partnerStatusFilter]);
+
   const handleExport = () => {
-    // Mock export functionality
+    const dataToExport = isPartnerView
+      ? partnerFilteredStudents
+      : filteredStudents;
+
+    if (dataToExport.length === 0) {
+      return;
+    }
+
+    try {
+      const doc = new jsPDF();
+
+      // Title
+      const reportTypeName = isPartnerView
+        ? t("partner_students")
+        : reportType === "no-link"
+        ? t("no_link_students")
+        : t("all_enrolled");
+
+      doc.setFontSize(18);
+      doc.text(reportTypeName, 14, 22);
+
+      // Summary info
+      doc.setFontSize(12);
+      doc.text(`Total de Alunos: ${dataToExport.length}`, 14, 35);
+
+      // Define headers based on view type
+      const headers = isPartnerView
+        ? [
+            t("table.student_name"),
+            t("table.phone"),
+            t("table.responsible"),
+            t("table.responsible_phone"),
+            t("table.course"),
+            t("table.partner_school"),
+            t("table.class"),
+            t("table.status"),
+          ]
+        : [
+            t("table.student_name"),
+            t("table.phone"),
+            t("table.responsible"),
+            t("table.responsible_phone"),
+            t("table.course"),
+            t("table.partner_school"),
+            t("table.class"),
+          ];
+
+      // Prepare table data
+      const tableData: string[][] = [];
+
+      if (isPartnerView) {
+        partnerFilteredStudents.forEach((student) => {
+          tableData.push([
+            student.name || "-",
+            student.phone || "-",
+            student.responsibleName || "-",
+            student.responsiblePhone || "-",
+            student.courseName || "-",
+            student.partnerSchool || "-",
+            student.className || "-",
+            student.status === "enrolled"
+              ? t("status_options.enrolled")
+              : t("status_options.not_enrolled"),
+          ]);
+        });
+      } else {
+        filteredStudents.forEach((student) => {
+          const courses = student.courses
+            ? student.courses.map((c) => c.titulo).join("; ")
+            : "-";
+          tableData.push([
+            student.name || "-",
+            student.phone || "-",
+            student.responsibleName || "-",
+            student.responsiblePhone || "-",
+            courses,
+            student.partnerSchool || "-",
+            student.class
+              ? t("table.class_label", { number: student.class })
+              : "-",
+          ]);
+        });
+      }
+
+      // Generate table
+      autoTable(doc, {
+        head: [headers],
+        body: tableData,
+        startY: 45,
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+        },
+        headStyles: {
+          fillColor: [89, 159, 233],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [245, 247, 250],
+        },
+        margin: { top: 45 },
+      });
+
+      // Save PDF
+      const fileName = isPartnerView
+        ? "alunos_escolas_parceiras"
+        : reportType === "no-link"
+        ? "alunos_sem_vinculos"
+        : "alunos_matriculados";
+
+      doc.save(`${fileName}_${new Date().toISOString().split("T")[0]}.pdf`);
+    } catch {
+      // Error exporting PDF - silently fail
+    }
   };
 
-  const totalStudents = mockStudents.length;
-  const partnersCount = mockStudents.filter((s) => s.partnerSchool).length;
-  const noLinkCount = mockStudents.filter((s) => !s.partnerSchool).length;
+  const totalStudents = students.length;
+  const partnersCount = students.filter((s) => s.partnerSchool).length;
+  const noLinkCount = students.filter((s) => !s.partnerSchool).length;
+
+  // Statistics for partner students view - use filtered students for summary display
+  const enrolledCount = partnerFilteredStudents.filter(
+    (s) => s.status === "enrolled"
+  ).length;
+  const notEnrolledCount = partnerFilteredStudents.filter(
+    (s) => s.status === "not_enrolled"
+  ).length;
+
+  if (currentLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
+          <p className="text-gray-600 mt-4">{t("loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentError) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <p className="text-red-600">{currentError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="bg-white border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-[#599fe9]/10 rounded-lg">
-                <FileText className="w-5 h-5 text-[#599fe9]" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-[#599fe9]" />
-            </div>
-            <p className="text-gray-600 text-xs mb-1">Total de Alunos</p>
-            <p className="text-3xl text-gray-900">{totalStudents}</p>
-          </Card>
-        </motion.div>
+        {isPartnerView ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-[#599fe9]/10 rounded-lg">
+                    <FileText className="w-5 h-5 text-[#599fe9]" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-[#599fe9]" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("total_students")}
+                </p>
+                <p className="text-3xl text-gray-900">
+                  {partnerFilteredStudents.length}
+                </p>
+              </Card>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="bg-white border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <School className="w-5 h-5 text-emerald-500" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
-            </div>
-            <p className="text-gray-600 text-xs mb-1">Escolas Parceiras</p>
-            <p className="text-3xl text-gray-900">{partnersCount}</p>
-          </Card>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg">
+                    <School className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("status_options.enrolled")}
+                </p>
+                <p className="text-3xl text-gray-900">{enrolledCount}</p>
+              </Card>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="bg-white border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <UserX className="w-5 h-5 text-amber-500" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-amber-500" />
-            </div>
-            <p className="text-gray-600 text-xs mb-1">Sem Vínculo</p>
-            <p className="text-3xl text-gray-900">{noLinkCount}</p>
-          </Card>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-amber-500/10 rounded-lg">
+                    <UserX className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-amber-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("status_options.not_enrolled")}
+                </p>
+                <p className="text-3xl text-gray-900">{notEnrolledCount}</p>
+              </Card>
+            </motion.div>
+          </>
+        ) : (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-[#599fe9]/10 rounded-lg">
+                    <FileText className="w-5 h-5 text-[#599fe9]" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-[#599fe9]" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("total_students")}
+                </p>
+                <p className="text-3xl text-gray-900">{totalStudents}</p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg">
+                    <School className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">
+                  {t("partner_schools")}
+                </p>
+                <p className="text-3xl text-gray-900">{partnersCount}</p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="bg-white border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-amber-500/10 rounded-lg">
+                    <UserX className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-amber-500" />
+                </div>
+                <p className="text-gray-600 text-xs mb-1">{t("no_link")}</p>
+                <p className="text-3xl text-gray-900">{noLinkCount}</p>
+              </Card>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Filters */}
@@ -183,119 +685,432 @@ export function AdminStudents() {
         transition={{ delay: 0.4 }}
       >
         <Card className="bg-white border-gray-200 p-6 shadow-sm">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-gray-700 text-sm mb-3">Tipo de Relatório</label>
-              <Select
-                value={reportType}
-                onValueChange={(value: ReportType) => setReportType(value)}
-              >
-                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alunos Matriculados</SelectItem>
-                  <SelectItem value="partner">Alunos de Escolas Parceiras</SelectItem>
-                  <SelectItem value="no-link">Alunos sem Vínculos</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("report_type")}
+                </label>
+                <Select
+                  value={reportType}
+                  onValueChange={(value: ReportType) => setReportType(value)}
+                >
+                  <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("all_enrolled")}</SelectItem>
+                    <SelectItem value="partner">
+                      {t("partner_students")}
+                    </SelectItem>
+                    <SelectItem value="no-link">
+                      {t("no_link_students")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="flex-1">
-              <label className="block text-gray-700 text-sm mb-3">Buscar</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Nome, telefone, curso..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 h-11 rounded-lg hover:bg-gray-100 transition-colors"
-                />
+              <div>
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("search")}
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder={t("search_placeholder")}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 h-11 rounded-lg hover:bg-gray-100 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="min-h-[110px]">
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("partner_school_filter")}
+                </label>
+                <Select
+                  value={partnerSchoolFilter}
+                  onValueChange={(value) => setPartnerSchoolFilter(value)}
+                  disabled={!schoolFilterActive}
+                >
+                  <SelectTrigger
+                    disabled={!schoolFilterActive}
+                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <SelectValue placeholder={t("all_partner_schools")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">
+                      {t("all_partner_schools")}
+                    </SelectItem>
+                    {availablePartnerSchools.map((school) => (
+                      <SelectItem key={school} value={school}>
+                        {school}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="min-h-[110px]">
+                <label className="block text-gray-700 text-sm mb-3">
+                  {t("status_filter")}
+                </label>
+                <Select
+                  value={partnerStatusFilter}
+                  onValueChange={(value) =>
+                    setPartnerStatusFilter(
+                      value as "all" | "enrolled" | "not_enrolled"
+                    )
+                  }
+                  disabled={!statusFilterActive}
+                >
+                  <SelectTrigger
+                    disabled={!statusFilterActive}
+                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <SelectValue placeholder={t("status_filter")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">
+                      {t("status_options.all")}
+                    </SelectItem>
+                    <SelectItem value="enrolled">
+                      {t("status_options.enrolled")}
+                    </SelectItem>
+                    <SelectItem value="not_enrolled">
+                      {t("status_options.not_enrolled")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <div className="flex items-end gap-3">
-              {reportType === "partner" && <ImportStudentsDialog />}
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-end">
+              {isPartnerView && <ImportStudentsDialog />}
               <Button
                 onClick={handleExport}
-                className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
+                disabled={exportDisabled}
+                className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
               >
                 <Download className="w-5 h-5 mr-2" />
-                Exportar
+                {t("export")}
               </Button>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      {/* Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <Card className="bg-white border-gray-200 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-gray-200 hover:bg-transparent">
-                  <TableHead className="text-gray-700">Nome do Aluno</TableHead>
-                  <TableHead className="text-gray-700">Telefone</TableHead>
-                  <TableHead className="text-gray-700">Responsável</TableHead>
-                  <TableHead className="text-gray-700">Tel. Responsável</TableHead>
-                  <TableHead className="text-gray-700">Curso</TableHead>
-                  <TableHead className="text-gray-700">Escola Parceira</TableHead>
-                  <TableHead className="text-gray-700">Turma</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStudents.map((student) => (
-                  <TableRow
-                    key={student.id}
-                    className="border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <TableCell className="text-gray-900">{student.name}</TableCell>
-                    <TableCell className="text-gray-600 font-mono text-sm">
-                      {student.phone}
-                    </TableCell>
-                    <TableCell className="text-gray-900">{student.responsibleName}</TableCell>
-                    <TableCell className="text-gray-600 font-mono text-sm">
-                      {student.responsiblePhone}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
-                        {student.course}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {student.partnerSchool ? (
-                        <div className="flex items-center gap-2">
-                          <School className="w-4 h-4 text-emerald-500" />
-                          <span className="text-gray-900">{student.partnerSchool}</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                        Turma {student.class}
-                      </Badge>
-                    </TableCell>
+      {/* Summary Statistics and Table - Grouped for Partner View */}
+      {isPartnerView ? (
+        <div className="space-y-0">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+          >
+            <Card className="bg-white border-gray-200 p-6 pb-6 shadow-sm rounded-b-none">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-6">
+                  <div className="text-gray-900 font-medium">
+                    Exibindo {partnerFilteredStudents.length}{" "}
+                    {partnerFilteredStudents.length === 1 ? "aluno" : "alunos"}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span className="text-gray-700">
+                      {enrolledCount}{" "}
+                      {enrolledCount === 1 ? "Matriculado" : "Matriculados"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                    <span className="text-gray-700">
+                      {notEnrolledCount}{" "}
+                      {notEnrolledCount === 1
+                        ? "Não Matriculado"
+                        : "Não Matriculados"}
+                    </span>
+                  </div>
+                </div>
+                {partnerFilteredStudents.length > 0 && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-700 font-medium whitespace-nowrap">
+                      Taxa de Matrícula:
+                    </span>
+                    <div className="flex items-center gap-2 min-w-[120px]">
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 transition-all duration-300"
+                          style={{
+                            width: `${Math.round(
+                              (enrolledCount / partnerFilteredStudents.length) *
+                                100
+                            )}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <span className="text-gray-900 font-medium text-sm whitespace-nowrap">
+                        {Math.round(
+                          (enrolledCount / partnerFilteredStudents.length) * 100
+                        )}
+                        %
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="bg-white border-gray-200 overflow-hidden shadow-sm rounded-t-none border-t-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gray-200 hover:bg-transparent">
+                      <TableHead className="text-gray-700">
+                        {t("table.student_name")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.phone")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.responsible")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.responsible_phone")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.course")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.partner_school")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.class")}
+                      </TableHead>
+                      <TableHead className="text-gray-700">
+                        {t("table.status")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {displayedStudentsCount === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columnCount}
+                          className="text-center py-16"
+                        >
+                          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <Inbox className="w-8 h-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg text-gray-900 mb-2">
+                            {t("no_students_found")}
+                          </h3>
+                          <p className="text-gray-500">
+                            {searchTerm
+                              ? t("adjust_filters")
+                              : t("no_students_registered")}
+                          </p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      partnerFilteredStudents.map((student) => (
+                        <TableRow
+                          key={`partner-${student.id}`}
+                          className="border-gray-100 hover:bg-gray-50 transition-colors"
+                        >
+                          <TableCell className="text-gray-900">
+                            {student.name}
+                          </TableCell>
+                          <TableCell className="text-gray-600 font-mono text-sm">
+                            {student.phone || "-"}
+                          </TableCell>
+                          <TableCell className="text-gray-900">
+                            {student.responsibleName || "-"}
+                          </TableCell>
+                          <TableCell className="text-gray-600 font-mono text-sm">
+                            {student.responsiblePhone || "-"}
+                          </TableCell>
+                          <TableCell>
+                            {student.courseName ? (
+                              <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
+                                {student.courseName}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            {student.partnerSchool ? (
+                              <div className="flex items-center gap-2">
+                                <School className="w-4 h-4 text-emerald-500" />
+                                <span className="text-gray-900">
+                                  {student.partnerSchool}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {student.className ? (
+                              <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                                {student.className}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`border ${
+                                student.status === "enrolled"
+                                  ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                  : "bg-amber-100 text-amber-700 border-amber-200"
+                              }`}
+                            >
+                              {student.status === "enrolled"
+                                ? t("status_options.enrolled")
+                                : t("status_options.not_enrolled")}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Card className="bg-white border-gray-200 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-200 hover:bg-transparent">
+                    <TableHead className="text-gray-700">
+                      {t("table.student_name")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.phone")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.responsible")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.responsible_phone")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.course")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.partner_school")}
+                    </TableHead>
+                    <TableHead className="text-gray-700">
+                      {t("table.class")}
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {filteredStudents.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-gray-600 text-lg">Nenhum aluno encontrado.</p>
+                </TableHeader>
+                <TableBody>
+                  {displayedStudentsCount === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-16">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                          <Inbox className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg text-gray-900 mb-2">
+                          {t("no_students_found")}
+                        </h3>
+                        <p className="text-gray-500">
+                          {searchTerm || reportType === "no-link"
+                            ? t("adjust_filters")
+                            : t("no_students_registered")}
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    partnerFilteredStudents.map((student) => (
+                      <TableRow
+                        key={`partner-${student.id}`}
+                        className="border-gray-100 hover:bg-gray-50 transition-colors"
+                      >
+                        <TableCell className="text-gray-900">
+                          {student.name}
+                        </TableCell>
+                        <TableCell className="text-gray-600 font-mono text-sm">
+                          {student.phone || "-"}
+                        </TableCell>
+                        <TableCell className="text-gray-900">
+                          {student.responsibleName || "-"}
+                        </TableCell>
+                        <TableCell className="text-gray-600 font-mono text-sm">
+                          {student.responsiblePhone || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {student.courseName ? (
+                            <Badge className="bg-[#599fe9]/20 text-[#599fe9] border-[#599fe9]/30">
+                              {student.courseName}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.partnerSchool ? (
+                            <div className="flex items-center gap-2">
+                              <School className="w-4 h-4 text-emerald-500" />
+                              <span className="text-gray-900">
+                                {student.partnerSchool}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {student.className ? (
+                            <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                              {student.className}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`border ${
+                              student.status === "enrolled"
+                                ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                : "bg-amber-100 text-amber-700 border-amber-200"
+                            }`}
+                          >
+                            {student.status === "enrolled"
+                              ? t("status_options.enrolled")
+                              : t("status_options.not_enrolled")}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
             </div>
-          )}
-        </Card>
-      </motion.div>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }

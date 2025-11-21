@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Users,
@@ -7,15 +9,11 @@ import {
   Calendar,
   Search,
   Download,
-  BookOpen,
-  Save,
-  Edit2,
+  Inbox,
 } from "lucide-react";
 import { Button } from "../new-layout/ui/button";
 import { Card } from "../new-layout/ui/card";
 import { Input } from "../new-layout/ui/input";
-import { Textarea } from "../new-layout/ui/textarea";
-import { Label } from "../new-layout/ui/label";
 import {
   Select,
   SelectContent,
@@ -36,10 +34,13 @@ import { RegisterClassDialog } from "./RegisterClassDialog";
 import { Avatar, AvatarFallback } from "../new-layout/ui/avatar";
 import { ClassDetails } from "./ClassDetails";
 import { CourseSchedules } from "./CourseSchedules";
+import CourseEditForm from "@/app/components/admin/CourseEditForm";
+import { AdminCourseDetails } from "@/types/adminCourse";
 
 interface CourseDetailsProps {
   course: {
     id: number;
+    documentId: string;
     name: string;
     campaign: string;
     students: number;
@@ -48,79 +49,127 @@ interface CourseDetailsProps {
   onBack: () => void;
 }
 
-const mockStudents = [
-  {
-    id: 1,
-    name: "Helena Azzi Verri",
-    class: "Turma 1",
-    school: "Colégio Anglo Araçatuba",
-    enrolledAt: "06/08/2025, 18:14:47",
-  },
-  {
-    id: 2,
-    name: "Pedro Silva Santos",
-    class: "Turma 1",
-    school: "Colégio Anglo Araçatuba",
-    enrolledAt: "08/08/2025, 10:23:15",
-  },
-  {
-    id: 3,
-    name: "Maria Oliveira Costa",
-    class: "Turma 2",
-    school: "Escola Estadual Prof. João",
-    enrolledAt: "10/08/2025, 14:30:22",
-  },
-];
-
-const mockClasses = [
-  {
-    id: 1,
-    title: "Introdução à Análise de Dados",
-    date: "15/08/2025",
-    time: "14:00",
-    duration: "90 min",
-    description: "Conceitos básicos de análise de dados",
-  },
-  {
-    id: 2,
-    title: "Python para Análise",
-    date: "22/08/2025",
-    time: "14:00",
-    duration: "120 min",
-    description: "Introdução ao Python aplicado à análise de dados",
-  },
-];
+interface Student {
+  id: number;
+  nome: string;
+  turma?: number;
+  escola_parceira?: string;
+  createdAt: string;
+}
 
 export function CourseDetails({ course, onBack }: CourseDetailsProps) {
-  const [activeTab, setActiveTab] = useState("students");
+  const t = useTranslations("Admin.panel.course_details");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Get initial tab from URL or default to "students"
+  const getInitialTab = () => {
+    const tab = searchParams.get("courseTab");
+    return tab && ["students", "classes", "schedules", "details"].includes(tab) ? tab : "students";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isEditingDetails, setIsEditingDetails] = useState(false);
-  const [selectedClass, setSelectedClass] = useState<typeof mockClasses[0] | null>(null);
-  const [courseDetails, setCourseDetails] = useState({
-    title: course.name,
-    description:
-      "Neste curso, os estudantes aprendem como os dados estão por trás das decisões, dos negócios e das tecnologias que fazem parte do cotidiano. Por meio de desafios em equipe, ferramentas digitais e projetos práticos, desenvolvem a capacidade de coletar, organizar e interpretar informações, transformando-as em soluções inteligentes.",
-    mentorDescription:
-      "Engenheiro de manufatura formado pela Unicamp e técnico em mecatrônica pela ETEC Basilides de Godoy, possui experiência em marketing digital, análise de dados, docência, gestão de CRM e inteligência artificial.",
-  });
+  const [selectedTurma, setSelectedTurma] = useState<string>("all");
+  const [selectedEscola, setSelectedEscola] = useState<string>("all");
+  const [selectedClass, setSelectedClass] = useState<{
+    id: number;
+    title: string;
+    date: string;
+    time: string;
+    duration: string;
+    description: string;
+  } | null>(null);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [courseDetailsData, setCourseDetailsData] = useState<AdminCourseDetails | null>(null);
+  const [courseDetailsLoading, setCourseDetailsLoading] = useState(true);
+  const [courseDetailsError, setCourseDetailsError] = useState<string | null>(null);
 
   const availableSlots = course.totalSlots - course.students;
 
-  const filteredStudents = mockStudents.filter((student) => {
+  // Handle tab change - update URL
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("courseTab", tab);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle back from class details
+  const handleBackFromClass = () => {
+    setSelectedClass(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("classId");
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Note: handleClassSelect will be added when class list is implemented
+  // It will update the URL with classId when a class is selected
+
+  // Sync tab with URL
+  useEffect(() => {
+    const tab = getInitialTab();
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(`/api/admin/all-students?cursoId=${course.id}`);
+        
+        if (!response.ok) {
+          throw new Error(t("error_loading_students"));
+        }
+
+        const data = await response.json();
+        setStudents(data.data || []);
+      } catch (err) {
+        console.error("Error loading students:", err);
+        setError(t("error_loading_students"));
+        setStudents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStudents();
+  }, [course.id, t]);
+
+  const availableTurmas = Array.from(
+    new Set(students.map((s) => s.turma).filter((t): t is number => t !== undefined && t !== null))
+  ).sort((a, b) => a - b);
+
+  const availableEscolas = Array.from(
+    new Set(students.map((s) => s.escola_parceira).filter((e): e is string => !!e))
+  ).sort();
+
+  const filteredStudents = students.filter((student) => {
+    if (selectedTurma !== "all") {
+      const turmaNum = parseInt(selectedTurma, 10);
+      if (student.turma !== turmaNum) return false;
+    }
+
+    if (selectedEscola !== "all") {
+      if (student.escola_parceira !== selectedEscola) return false;
+    }
+
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       return (
-        student.name.toLowerCase().includes(search) ||
-        student.class.toLowerCase().includes(search) ||
-        student.school.toLowerCase().includes(search)
+        student.nome.toLowerCase().includes(search) ||
+        (student.turma && `turma ${student.turma}`.includes(search)) ||
+        (student.escola_parceira && student.escola_parceira.toLowerCase().includes(search))
       );
     }
     return true;
   });
-
-  const handleSaveDetails = () => {
-    setIsEditingDetails(false);
-  };
 
   const getInitials = (name: string) => {
     return name
@@ -131,12 +180,37 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
       .toUpperCase();
   };
 
+  const fetchCourseDetails = useCallback(async () => {
+    try {
+      setCourseDetailsLoading(true);
+      setCourseDetailsError(null);
+      const response = await fetch(
+        `/api/admin/course-details/${course.documentId}`
+      );
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload?.error || "Erro ao carregar detalhes");
+      }
+      setCourseDetailsData(payload.data);
+    } catch (err) {
+      console.error("Error loading course details:", err);
+      setCourseDetailsError("Erro ao carregar detalhes do curso.");
+      setCourseDetailsData(null);
+    } finally {
+      setCourseDetailsLoading(false);
+    }
+  }, [course.documentId]);
+
+  useEffect(() => {
+    fetchCourseDetails();
+  }, [fetchCourseDetails]);
+
   // If a class is selected, show class details
   if (selectedClass) {
     return (
       <ClassDetails
         classItem={selectedClass}
-        onBack={() => setSelectedClass(null)}
+        onBack={handleBackFromClass}
       />
     );
   }
@@ -151,11 +225,11 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
           className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 h-11 px-4"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Voltar
+          {t("back")}
         </Button>
         <div>
           <h1 className="text-3xl text-gray-900">{course.name}</h1>
-          <p className="text-gray-500 mt-1">Gerencie alunos, aulas e detalhes do curso</p>
+          <p className="text-gray-500 mt-1">{t("manage_course")}</p>
         </div>
       </div>
 
@@ -172,7 +246,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <Users className="w-5 h-5 text-blue-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-xs mb-1">Total de Vagas</p>
+            <p className="text-gray-600 text-xs mb-1">{t("total_spots")}</p>
             <p className="text-3xl text-gray-900">{course.totalSlots}</p>
           </Card>
         </motion.div>
@@ -188,7 +262,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <GraduationCap className="w-5 h-5 text-emerald-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-xs mb-1">Alunos Matriculados</p>
+            <p className="text-gray-600 text-xs mb-1">{t("enrolled_students")}</p>
             <p className="text-3xl text-gray-900">{course.students}</p>
           </Card>
         </motion.div>
@@ -204,7 +278,7 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
                 <Calendar className="w-5 h-5 text-amber-500" />
               </div>
             </div>
-            <p className="text-gray-600 text-xs mb-1">Vagas Disponíveis</p>
+            <p className="text-gray-600 text-xs mb-1">{t("available_spots")}</p>
             <p className="text-3xl text-gray-900">{availableSlots}</p>
           </Card>
         </motion.div>
@@ -212,32 +286,32 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
 
       {/* Tabs */}
       <Card className="bg-white border-gray-200 shadow-sm">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="border-b border-gray-200">
             <TabsList className="w-full justify-start bg-transparent p-0 h-auto">
               <TabsTrigger
                 value="students"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Alunos
+                {t("tabs.students")}
               </TabsTrigger>
               <TabsTrigger
                 value="classes"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Aulas
+                {t("tabs.classes")}
               </TabsTrigger>
               <TabsTrigger
                 value="schedules"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Turmas
+                {t("tabs.schedules")}
               </TabsTrigger>
               <TabsTrigger
                 value="details"
                 className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#599fe9] rounded-none px-6 py-4 text-gray-600 data-[state=active]:text-[#599fe9]"
               >
-                Detalhes do curso
+                {t("tabs.details")}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -248,47 +322,51 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-gray-700 text-sm mb-2">
-                  Filtrar por Turma
+                  {t("filters.filter_by_class")}
                 </label>
-                <Select defaultValue="all">
+                <Select value={selectedTurma} onValueChange={setSelectedTurma}>
                   <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas as Turmas</SelectItem>
-                    <SelectItem value="turma1">Turma 1</SelectItem>
-                    <SelectItem value="turma2">Turma 2</SelectItem>
+                    <SelectItem value="all">{t("filters.all_classes")}</SelectItem>
+                    {availableTurmas.map((turma) => (
+                      <SelectItem key={turma} value={turma.toString()}>
+                        {t("filters.class_label", { number: turma })}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex-1">
                 <label className="block text-gray-700 text-sm mb-2">
-                  Filtrar por Escola
+                  {t("filters.filter_by_school")}
                 </label>
-                <Select defaultValue="all">
+                <Select value={selectedEscola} onValueChange={setSelectedEscola}>
                   <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas as Escolas</SelectItem>
-                    <SelectItem value="anglo">Colégio Anglo Araçatuba</SelectItem>
-                    <SelectItem value="estadual">
-                      Escola Estadual Prof. João
-                    </SelectItem>
+                    <SelectItem value="all">{t("filters.all_schools")}</SelectItem>
+                    {availableEscolas.map((escola) => (
+                      <SelectItem key={escola} value={escola}>
+                        {escola}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex-1">
-                <label className="block text-gray-700 text-sm mb-2">Buscar</label>
+                <label className="block text-gray-700 text-sm mb-2">{t("filters.search")}</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar por nome..."
+                    placeholder={t("filters.search_placeholder")}
                     className="pl-10 bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg"
                   />
                 </div>
@@ -297,231 +375,121 @@ export function CourseDetails({ course, onBack }: CourseDetailsProps) {
               <div className="flex items-end">
                 <Button className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20">
                   <Download className="w-5 h-5 mr-2" />
-                  Exportar PDF
+                  {t("filters.export_pdf")}
                 </Button>
               </div>
             </div>
 
             {/* Students Table */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="text-gray-700">Nome</TableHead>
-                    <TableHead className="text-gray-700">Turma</TableHead>
-                    <TableHead className="text-gray-700">Escola</TableHead>
-                    <TableHead className="text-gray-700">Inscrito em</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredStudents.map((student) => (
-                    <TableRow key={student.id} className="hover:bg-gray-50">
-                      <TableCell className="text-gray-900">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
-                            <AvatarFallback className="bg-[#599fe9] text-white">
-                              {getInitials(student.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          {student.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.class}
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.school}
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {student.enrolledAt}
-                      </TableCell>
+            {loading ? (
+              <div className="text-center py-16">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f54a12] mx-auto"></div>
+                <p className="text-gray-600 mt-4">{t("loading_students")}</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-16">
+                <p className="text-red-600">{error}</p>
+              </div>
+            ) : filteredStudents.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                  <Inbox className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg text-gray-900 mb-2">{t("no_students_found")}</h3>
+                <p className="text-gray-500">
+                  {searchTerm
+                    ? t("adjust_filters")
+                    : t("no_enrolled_students")}
+                </p>
+              </div>
+            ) : (
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="text-gray-700">{t("table.name")}</TableHead>
+                      <TableHead className="text-gray-700">{t("table.class")}</TableHead>
+                      <TableHead className="text-gray-700">{t("table.school")}</TableHead>
+                      <TableHead className="text-gray-700">{t("table.enrolled_at")}</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <p className="text-sm text-gray-500">
-              Mostrando {filteredStudents.length} de {mockStudents.length} alunos
-            </p>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student) => (
+                      <TableRow key={student.id} className="hover:bg-gray-50">
+                        <TableCell className="text-gray-900">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-8 h-8 bg-[#599fe9] text-white">
+                              <AvatarFallback className="bg-[#599fe9] text-white">
+                                {getInitials(student.nome)}
+                              </AvatarFallback>
+                            </Avatar>
+                            {student.nome}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.turma ? t("filters.class_label", { number: student.turma }) : "-"}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {student.escola_parceira || "-"}
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {new Date(student.createdAt).toLocaleString("pt-BR")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
 
           {/* Classes Tab */}
           <TabsContent value="classes" className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl text-gray-900">Aulas Registradas</h2>
+              <h2 className="text-xl text-gray-900">{t("classes.title")}</h2>
               <RegisterClassDialog />
             </div>
 
-            {mockClasses.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                  <BookOpen className="w-8 h-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg text-gray-900 mb-2">
-                  Nenhuma aula registrada
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Comece registrando uma nova aula.
-                </p>
-                <RegisterClassDialog />
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                <Inbox className="w-8 h-8 text-gray-400" />
               </div>
-            ) : (
-              <div className="space-y-4">
-                {mockClasses.map((classItem) => (
-                  <Card
-                    key={classItem.id}
-                    className="bg-white border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group"
-                    onClick={() => setSelectedClass(classItem)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg text-gray-900 mb-2 group-hover:text-[#599fe9] transition-colors">
-                          {classItem.title}
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          {classItem.description}
-                        </p>
-                        <div className="flex items-center gap-6 text-sm text-gray-500">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            {classItem.date}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="w-4 h-4" />
-                            {classItem.time}
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedClass(classItem);
-                        }}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        <Edit2 className="w-4 h-4 mr-2" />
-                        Gerenciar
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
+              <h3 className="text-lg text-gray-900 mb-2">
+                {t("classes.no_classes")}
+              </h3>
+              <p className="text-gray-500 mb-6">
+                {t("classes.no_classes_description")}
+              </p>
+            </div>
           </TabsContent>
 
           {/* Schedules Tab */}
           <TabsContent value="schedules" className="p-6">
-            <CourseSchedules />
+            <CourseSchedules courseId={course.id} />
           </TabsContent>
 
           {/* Details Tab */}
           <TabsContent value="details" className="p-6 space-y-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl text-gray-900">Informações do Curso</h2>
-              {!isEditingDetails ? (
-                <Button
-                  onClick={() => setIsEditingDetails(true)}
-                  className="bg-[#599fe9] hover:bg-[#599fe9]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#599fe9]/20"
-                >
-                  <Edit2 className="w-5 h-5 mr-2" />
-                  Editar
-                </Button>
-              ) : (
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditingDetails(false)}
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50 h-11 px-6"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    onClick={handleSaveDetails}
-                    className="bg-[#f54a12] hover:bg-[#f54a12]/90 text-white h-11 px-6 rounded-lg shadow-lg shadow-[#f54a12]/20"
-                  >
-                    <Save className="w-5 h-5 mr-2" />
-                    Salvar
-                  </Button>
-                </div>
-              )}
+              <h2 className="text-xl text-gray-900">{t("details.title")}</h2>
             </div>
-
-            <div className="space-y-6">
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-gray-700">
-                  Título
-                </Label>
-                {isEditingDetails ? (
-                  <Input
-                    id="title"
-                    value={courseDetails.title}
-                    onChange={(e) =>
-                      setCourseDetails({
-                        ...courseDetails,
-                        title: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 rounded-lg"
-                  />
-                ) : (
-                  <p className="text-gray-900 p-3 bg-gray-50 rounded-lg">
-                    {courseDetails.title}
-                  </p>
-                )}
+            {courseDetailsError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {courseDetailsError}
               </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-gray-700">
-                  Descrição
-                </Label>
-                {isEditingDetails ? (
-                  <Textarea
-                    id="description"
-                    value={courseDetails.description}
-                    onChange={(e) =>
-                      setCourseDetails({
-                        ...courseDetails,
-                        description: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 text-gray-900 rounded-lg min-h-[120px] resize-none"
-                  />
-                ) : (
-                  <p className="text-gray-900 p-3 bg-gray-50 rounded-lg">
-                    {courseDetails.description}
-                  </p>
-                )}
+            )}
+            {courseDetailsLoading || !courseDetailsData ? (
+              <div className="space-y-4 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-64 bg-gray-200 rounded"></div>
               </div>
-
-              {/* Mentor Description */}
-              <div className="space-y-2">
-                <Label htmlFor="mentorDescription" className="text-gray-700">
-                  Descrição do Mentor
-                </Label>
-                {isEditingDetails ? (
-                  <Textarea
-                    id="mentorDescription"
-                    value={courseDetails.mentorDescription}
-                    onChange={(e) =>
-                      setCourseDetails({
-                        ...courseDetails,
-                        mentorDescription: e.target.value,
-                      })
-                    }
-                    className="bg-gray-50 border-gray-200 text-gray-900 rounded-lg min-h-[100px] resize-none"
-                  />
-                ) : (
-                  <p className="text-gray-900 p-3 bg-gray-50 rounded-lg">
-                    {courseDetails.mentorDescription}
-                  </p>
-                )}
-              </div>
-            </div>
+            ) : (
+              <CourseEditForm
+                course={courseDetailsData}
+                documentId={course.documentId}
+                onUpdateSuccess={fetchCourseDetails}
+              />
+            )}
           </TabsContent>
         </Tabs>
       </Card>

@@ -270,6 +270,7 @@
     "course_full": "Todas as turmas desse curso já excederam o limite de alunos matriculados",
     "suggest_new_time": "Sugerir novo horário",
     "class_full": "Turma cheia",
+    "all_classes_full": "Todas as turmas estão lotadas",
     "suggestion": {
       "weekdays": "Dias da semana",
       "time": "Horário sugerido",
@@ -603,15 +604,197 @@
       "course_edit": {
         "saving": "Salvando...",
         "save": "Salvar alterações",
-        "success": "Alterações salvas com sucesso!"
+        "success": "Atualizado com sucesso!",
+        "no_changes": "Nenhuma alteração para salvar.",
+        "error_saving": "Erro ao salvar alterações.",
+        "course_settings": "Configurações do curso",
+        "enable_description": "Ative ou desative a disponibilidade deste curso",
+        "schedule_suggestion_description": "Permita que os alunos sugiram novos horários",
+        "mentor_photo": "Foto do Mentor",
+        "remove_photo": "Remover Foto",
+        "upload": "Fazer Upload",
+        "upload_new_image": "Enviar nova imagem",
+        "uploading": "Enviando imagem...",
+        "accepted_formats": "Formatos aceitos: JPG, PNG. Tamanho máximo: 5MB",
+        "no_mentor": "Nenhum mentor relacionado ao curso foi encontrado.",
+        "add_video": "Adicionar vídeo",
+        "add_ementa": "Adicionar ementa",
+        "add_resumo": "Adicionar aula",
+        "mentor_data": "Dados do Mentor"
       },
       "logout": "Sair",
       "logout_confirm": "Deseja sair?",
       "logout_action": "Deslogar",
       "dashboard": "Dashboard",
+      "my_classes": "Minhas Aulas",
       "partner_students": "Lista de Alunos Escola Parceira",
       "students_report": "Lista de Alunos",
-      "exceeded_students_report": "Alunos Excedentes"
+      "exceeded_students_report": "Alunos Excedentes",
+      "course_details": {
+        "back": "Voltar",
+        "manage_course": "Gerencie alunos, aulas e detalhes do curso",
+        "total_spots": "Total de Vagas",
+        "enrolled_students": "Alunos Matriculados",
+        "available_spots": "Vagas Disponíveis",
+        "tabs": {
+          "students": "Alunos",
+          "classes": "Aulas",
+          "schedules": "Turmas",
+          "details": "Detalhes do curso"
+        },
+        "filters": {
+          "filter_by_class": "Filtrar por Turma",
+          "filter_by_school": "Filtrar por Escola",
+          "all_classes": "Todas as Turmas",
+          "all_schools": "Todas as Escolas",
+          "class_label": "Turma {number}",
+          "search": "Buscar",
+          "search_placeholder": "Buscar por nome...",
+          "export_pdf": "Exportar PDF"
+        },
+        "loading_students": "Carregando alunos...",
+        "error_loading_students": "Erro ao carregar alunos",
+        "no_students_found": "Nenhum aluno encontrado",
+        "adjust_filters": "Tente ajustar os filtros de busca.",
+        "no_enrolled_students": "Não há alunos matriculados neste curso.",
+        "table": {
+          "name": "Nome",
+          "class": "Turma",
+          "school": "Escola",
+          "enrolled_at": "Inscrito em"
+        },
+        "classes": {
+          "title": "Aulas Registradas",
+          "no_classes": "Nenhuma aula registrada",
+          "no_classes_description": "Não há aulas cadastradas para este curso."
+        },
+        "details": {
+          "title": "Informações do Curso",
+          "edit": "Editar",
+          "cancel": "Cancelar",
+          "save": "Salvar",
+          "course_title": "Título",
+          "description": "Descrição",
+          "mentor_description": "Descrição do Mentor"
+        },
+        "schedules": {
+          "loading": "Carregando turmas...",
+          "error_loading": "Erro ao carregar turmas",
+          "title": "Turmas Disponíveis",
+          "description": "Organize as turmas por ordem de prioridade. A primeira turma não lotada será exibida no site.",
+          "how_it_works": "Como funciona:",
+          "how_it_works_description": "As turmas são exibidas no site pela ordem de prioridade. Quando uma turma fica lotada, a próxima da lista automaticamente fica disponível para novas matrículas.",
+          "tip": "Dica:",
+          "tip_description": "Arraste os cards para reorganizar a ordem de prioridade. Turmas com alunos matriculados ficam bloqueadas e não podem ser movidas ou removidas.",
+          "priority_order": "Ordem de Prioridade (1 = Maior prioridade)",
+          "no_schedules": "Nenhuma turma cadastrada",
+          "no_schedules_description": "Comece adicionando a primeira turma disponível para o curso.",
+          "add_schedule": "Adicionar Turma",
+          "add_new_schedule": "Adicionar Nova Turma",
+          "add_schedule_description": "Configure o dia e horário da turma. A capacidade máxima será definida automaticamente.",
+          "day_of_week": "Dia da Semana *",
+          "select_day": "Selecione o dia",
+          "start_time": "Horário de Início *",
+          "select_time": "Selecione o horário",
+          "no_time_available": "Nenhum horário disponível para este dia",
+          "class_duration": "Duração da aula: 50 minutos",
+          "cancel": "Cancelar",
+          "loading_options": "Carregando opções...",
+          "active": "Ativa",
+          "full": "Lotada",
+          "locked": "Bloqueada",
+          "occupation": "Ocupação",
+          "students": "alunos",
+          "error_reorder": "Não é possível reordenar turmas com alunos matriculados",
+          "error_reorder_message": "Erro ao reordenar turmas",
+          "success_reorder": "Turmas reordenadas com sucesso!",
+          "error_add": "Erro ao adicionar turma",
+          "success_add": "Turma adicionada com sucesso!",
+          "error_delete": "Não é possível remover turmas com alunos matriculados",
+          "error_delete_message": "Erro ao remover turma",
+          "success_delete": "Turma removida com sucesso!",
+          "days": {
+            "monday": "Segunda-feira",
+            "tuesday": "Terça-feira",
+            "wednesday": "Quarta-feira",
+            "thursday": "Quinta-feira",
+            "friday": "Sexta-feira",
+            "saturday": "Sábado",
+            "sunday": "Domingo"
+          }
+        }
+      },
+      "admin_students": {
+        "loading": "Carregando alunos...",
+        "error_loading": "Erro ao carregar alunos",
+        "total_students": "Total de Alunos",
+        "partner_schools": "Escolas Parceiras",
+        "no_link": "Sem Vínculo",
+        "report_type": "Tipo de Relatório",
+        "all_enrolled": "Alunos Matriculados",
+        "partner_students": "Alunos de Escolas Parceiras",
+        "no_link_students": "Alunos sem Vínculos",
+        "search": "Buscar",
+        "search_placeholder": "Nome, telefone, curso...",
+      "partner_school_filter": "Escola Parceira",
+      "status_filter": "Status",
+      "all_partner_schools": "Todas",
+      "status_options": {
+        "all": "Todos",
+        "enrolled": "Matriculado",
+        "not_enrolled": "Não Matriculado"
+      },
+        "export": "Exportar",
+        "no_students_found": "Nenhum aluno encontrado",
+        "adjust_filters": "Tente ajustar os filtros de busca.",
+        "no_students_registered": "Não há alunos cadastrados no momento.",
+        "table": {
+          "student_name": "Nome do Aluno",
+          "phone": "Telefone",
+          "responsible": "Responsável",
+          "responsible_phone": "Tel. Responsável",
+          "course": "Curso",
+          "partner_school": "Escola Parceira",
+        "class": "Turma",
+        "status": "Status",
+        "class_label": "Turma {number}"
+        }
+      },
+      "admin_home": {
+        "welcome": "Bem-vindo, Professor! 👋",
+        "manage_classes": "Gerencie suas aulas e tarefas de casa",
+        "tabs": {
+          "classes": "Aulas",
+          "homework": "Tarefas de Casa"
+        },
+        "upcoming_classes": {
+          "title": "Próximas Aulas",
+          "no_classes": "Nenhuma aula agendada",
+          "no_classes_description": "Não há aulas próximas no momento."
+        },
+        "past_classes": {
+          "title": "Aulas Realizadas",
+          "no_classes": "Nenhuma aula realizada",
+          "no_classes_description": "Não há aulas realizadas no momento."
+        },
+        "homework": {
+          "no_homework": "Nenhuma tarefa de casa",
+          "no_homework_description": "Não há tarefas de casa cadastradas no momento."
+        }
+      },
+      "class_details": {
+        "back": "Voltar",
+        "save_changes": "Salvar Alterações",
+        "present": "Presentes",
+        "absent": "Ausentes",
+        "attendance_percentage": "Percentual de Presença",
+        "attendance_and_score": "Presença e Pontuação",
+        "attendance_description": "Marque a presença dos alunos e atribua spinners (0-33)",
+        "student": "Aluno",
+        "attendance": "Presença",
+        "spinners": "Spinners",
+        "comment": "Comentário"
+      }
     },
     "exceededStudentsReport": {
       "title": "Relatório de Alunos Excedentes",
@@ -724,6 +907,7 @@
       "try_again": "Tentar novamente",
       "refresh": "Atualizar",
       "download_csv": "Baixar CSV",
+      "export_pdf": "Exportar PDF",
       "total_strapi_students": "Total de Alunos no Sistema",
       "total_partner_students": "Total de Alunos Parceiros",
       "non_partner_students": "Alunos Não Parceiros",
@@ -753,6 +937,57 @@
       "responsible_name": "Nome do Responsável",
       "responsible_phone": "Telefone do Responsável",
       "courses": "Cursos"
+    },
+    "dashboard_home": {
+      "title": "Dashboard Administrativo",
+      "subtitle": "Visão geral de matrículas e estatísticas da Nitro Academy",
+      "total_students": "Total de Alunos",
+      "registered_in_system": "Registrados no sistema",
+      "enrolled": "Matriculados",
+      "not_enrolled": "Não Matriculados",
+      "waiting_enrollment": "Aguardando matrícula",
+      "partner_schools": "Escolas Parceiras",
+      "active_institutions": "Instituições ativas",
+      "enrollment_by_school": {
+        "title": "Matrículas por Escola",
+        "description": "Comparação de alunos matriculados e não matriculados",
+        "enrolled": "Matriculados",
+        "not_enrolled": "Não Matriculados",
+        "no_data": "Sem dados"
+      },
+      "enrollment_trend": {
+        "title": "Evolução de Matrículas",
+        "description": "Crescimento de matrículas nos últimos meses",
+        "enrollments": "Matrículas",
+        "no_data": "Sem dados"
+      },
+      "popular_courses": {
+        "title": "Cursos Mais Populares",
+        "description": "Ranking de cursos por número de alunos",
+        "no_courses": "Nenhum curso encontrado"
+      }
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "my_classes": "Minhas Aulas",
+      "courses": "Cursos",
+      "students": "Alunos",
+      "collapse": "Recolher Menu",
+      "expand": "Expandir",
+      "logout": "Sair",
+      "admin_panel": "Painel Administrativo"
+    },
+    "page_titles": {
+      "dashboard": "Dashboard",
+      "my_classes": "Minhas Aulas",
+      "courses": "Cursos",
+      "students": "Alunos"
+    },
+    "page_descriptions": {
+      "dashboard": "Visão geral de matrículas e estatísticas",
+      "my_classes": "Visão geral de suas aulas e tarefas",
+      "courses": "Gerencie os cursos e matrículas",
+      "students": "Visualize e exporte dados dos alunos"
     }
   },
   "CourseRating": {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { fetchCourse, fetchSchools } from "@/lib/strapi";
+import { fetchSchools, fetchCourseWithAdminToken } from "@/lib/strapi";
 import {
   ArrowLeft,
   Users,
@@ -21,6 +21,9 @@ import CourseEditForm from "../../../../components/admin/CourseEditForm";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { normalizeName, formatPhone } from "@/lib/formatters";
+import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
+import { AdminCourseDetails } from "@/types/adminCourse";
+import { mapStrapiCourseToAdminDetails } from "@/lib/mapAdminCourseDetails";
 
 interface StudentDetails {
   nome: string;
@@ -50,6 +53,22 @@ interface CronogramaAula {
   horario_aula?: string;
 }
 
+interface MentorDetails {
+  id: number;
+  documentId?: string;
+  nome: string;
+  descricao?: string;
+  pais?: string;
+  instagram?: string;
+  instagram_label?: string;
+  linkedin_url?: string;
+  linkedin_label?: string;
+  imagem?: {
+    id?: number;
+    url?: string;
+  };
+}
+
 interface CourseDetails {
   id: number;
   titulo: string;
@@ -61,6 +80,9 @@ interface CourseDetails {
   projetos: string;
   tarefa_de_casa: string;
   competencias: string;
+  habilitado: boolean;
+  data_inicio_curso?: string | null;
+  sugestao_horario?: boolean | null;
   videos: Array<{
     titulo: string;
     video_url: string;
@@ -80,6 +102,7 @@ interface CourseDetails {
   cronograma: CronogramaAula[];
   totalSpots: number;
   availableSpots: number;
+  mentor: MentorDetails | null;
 }
 
 interface School {
@@ -105,53 +128,108 @@ export default function CourseDashboard() {
   type SortOption = "name" | "createdAt";
   const [sortOption, setSortOption] = useState<SortOption>("createdAt");
   const [searchQuery, setSearchQuery] = useState("");
+  const [editableCourse, setEditableCourse] = useState<AdminCourseDetails | null>(null);
 
   const loadCourseData = useCallback(async () => {
     try {
       const documentId = params.courseId as string;
-      const courseData = await fetchCourse(documentId);
+      const courseData = await fetchCourseWithAdminToken(documentId);
 
       if (!courseData) {
         throw new Error(t("error.course_not_found"));
       }
 
-      const maxStudentsPerClass = parseInt(
-        process.env.NEXT_PUBLIC_MAX_STUDENTS_PER_CLASS || "10"
-      );
-      const totalSpots = Array.isArray(courseData.cronograma)
-        ? courseData.cronograma.length * maxStudentsPerClass
-        : 0;
-      const studentCount = Array.isArray(courseData.alunos)
-        ? courseData.alunos.length
-        : 0;
+      const courseDataWithAttrs = courseData as unknown as {
+        id: number;
+        documentId: string;
+        attributes?: Record<string, unknown>;
+        [key: string]: unknown;
+      };
+      const courseAttributes = (courseDataWithAttrs.attributes
+        ? {
+            id: courseDataWithAttrs.id,
+            documentId: courseDataWithAttrs.documentId,
+            ...courseDataWithAttrs.attributes,
+          }
+        : courseDataWithAttrs) as Record<string, unknown> & {
+        id: number;
+        documentId: string;
+        titulo?: string;
+        descricao?: string;
+        nivel?: string;
+        modelo?: string;
+        pre_requisitos?: string;
+        projetos?: string;
+        tarefa_de_casa?: string;
+        competencias?: string;
+        habilitado?: boolean;
+        data_inicio_curso?: string;
+        sugestao_horario?: boolean | null;
+        videos?: Array<{ titulo?: string; video_url?: string }>;
+        cronograma?: Array<Record<string, unknown>>;
+        alunos?: Array<Record<string, unknown>>;
+        ementa_resumida?: Array<{ descricao?: string }>;
+        resumo_aulas?: Array<{ nome_aula?: string; descricao_aula?: string }>;
+        mentor?: unknown;
+      };
+
+      const adminDetails = mapStrapiCourseToAdminDetails(courseData as unknown as Parameters<typeof mapStrapiCourseToAdminDetails>[0]);
+      setEditableCourse(adminDetails);
+
+      // Calcular total de vagas: número de turmas (schedules) × vagas por turma
+      const cronogramaArray = Array.isArray(courseAttributes.cronograma)
+        ? courseAttributes.cronograma
+        : [];
+      const numberOfSchedules = cronogramaArray.length;
+      const alunosArray = Array.isArray(courseAttributes.alunos)
+        ? courseAttributes.alunos
+        : [];
+      const totalSpots = numberOfSchedules * MAX_SLOTS_PER_COURSE;
+      const studentCount = alunosArray.length;
+
+      const mentor: MentorDetails | null = adminDetails.mentor
+        ? {
+            id: adminDetails.mentor.id,
+            documentId: adminDetails.mentor.documentId,
+            nome: adminDetails.mentor.nome,
+            descricao: adminDetails.mentor.descricao,
+            pais: adminDetails.mentor.pais,
+            instagram: adminDetails.mentor.instagram,
+            instagram_label: adminDetails.mentor.instagram_label,
+            linkedin_url: adminDetails.mentor.linkedin_url,
+            linkedin_label: adminDetails.mentor.linkedin_label,
+            imagem: adminDetails.mentor.imagemUrl
+              ? {
+                  id: Number(adminDetails.mentor.imagemId) || undefined,
+                  url: adminDetails.mentor.imagemUrl,
+                }
+              : undefined,
+          }
+        : null;
 
       const transformedCourse: CourseDetails = {
-        id: courseData.id,
-        titulo: courseData.titulo,
-        descricao: courseData.descricao,
-        descricaoMentor: courseData.mentor?.descricao || "",
-        nivel: courseData.nivel,
-        modelo: courseData.modelo,
-        pre_requisitos: courseData.pre_requisitos,
-        projetos: courseData.projetos,
-        tarefa_de_casa: courseData.tarefa_de_casa,
-        competencias: courseData.competencias || "",
-        videos: (courseData.videos || []).map((video) => ({
-          titulo: video.titulo || "",
-          video_url: video.video_url || "",
+        id: courseAttributes.id,
+        titulo: courseAttributes.titulo || "",
+        descricao: courseAttributes.descricao || "",
+        descricaoMentor: mentor?.descricao || "",
+        nivel: courseAttributes.nivel || "",
+        modelo: courseAttributes.modelo || "",
+        pre_requisitos: courseAttributes.pre_requisitos || "",
+        projetos: courseAttributes.projetos || "",
+        tarefa_de_casa: courseAttributes.tarefa_de_casa || "",
+        competencias: adminDetails.competencias || "",
+        habilitado: adminDetails.habilitado,
+        data_inicio_curso: adminDetails.data_inicio_curso || "",
+        sugestao_horario: adminDetails.sugestao_horario,
+        videos: adminDetails.videos,
+        turmas: cronogramaArray.map((aula: CronogramaAula, index: number) => ({
+          id: index + 1,
+          faixa_etaria: aula.faixa_etaria || "",
         })),
-        turmas: Array.isArray(courseData.cronograma)
-          ? courseData.cronograma.map(
-              (aula: CronogramaAula, index: number) => ({
-                id: index + 1,
-                faixa_etaria: aula.faixa_etaria || "",
-              })
-            )
-          : [],
-        ementa_resumida: courseData.ementa_resumida || [],
-        resumo_aulas: courseData.resumo_aulas || [],
-        alunos: (courseData.alunos || []).map(
-          (aluno: {
+        ementa_resumida: adminDetails.ementa_resumida,
+        resumo_aulas: adminDetails.resumo_aulas,
+        alunos: alunosArray.map((aluno) => {
+          const alunoData = aluno as {
             id: number;
             turma: number;
             documentId?: string;
@@ -159,32 +237,24 @@ export default function CourseDashboard() {
             escola_parceira?: string;
             createdAt?: string;
             telefone_aluno?: string;
-          }) => ({
-            id: aluno.id,
-            turma: aluno.turma,
-            documentId: aluno.documentId || "",
-            nome: aluno.nome || "",
-            escola_parceira: aluno.escola_parceira || "",
-            createdAt: aluno.createdAt || "",
-            telefone_aluno: aluno.telefone_aluno || "",
-          })
-        ),
-        cronograma: Array.isArray(courseData.cronograma)
-          ? courseData.cronograma
-          : [],
+          };
+          return {
+            id: alunoData.id,
+            turma: alunoData.turma,
+            documentId: alunoData.documentId || "",
+            nome: alunoData.nome || "",
+            escola_parceira: alunoData.escola_parceira || "",
+            createdAt: alunoData.createdAt || "",
+            telefone_aluno: alunoData.telefone_aluno || "",
+          };
+        }),
+        cronograma: cronogramaArray,
         totalSpots,
         availableSpots: Math.max(0, totalSpots - studentCount),
+        mentor,
       };
       setCourse(transformedCourse);
-    } catch (err) {
-      console.error("Error loading course data:", err);
-      if (err instanceof Error) {
-        console.error("Error details:", {
-          message: err.message,
-          stack: err.stack,
-          name: err.name,
-        });
-      }
+    } catch {
       setError(t("error.loading_error"));
     } finally {
       setLoading(false);
@@ -195,8 +265,8 @@ export default function CourseDashboard() {
     try {
       const schoolsData = await fetchSchools();
       setSchools(schoolsData);
-    } catch (err) {
-      console.error("Error loading schools:", err);
+    } catch {
+      // Silently handle error
     }
   }, []);
 
@@ -613,7 +683,18 @@ export default function CourseDashboard() {
       case "pagina":
         return (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-8">
-            <CourseEditForm course={course} onUpdateSuccess={loadCourseData} />
+            {editableCourse ? (
+              <CourseEditForm
+                course={editableCourse}
+                documentId={params.courseId as string}
+                onUpdateSuccess={loadCourseData}
+              />
+            ) : (
+              <div className="animate-pulse space-y-4">
+                <div className="h-6 bg-gray-200 rounded w-1/4" />
+                <div className="h-64 bg-gray-200 rounded" />
+              </div>
+            )}
           </div>
         );
     }

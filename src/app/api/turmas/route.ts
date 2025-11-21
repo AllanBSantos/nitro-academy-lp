@@ -20,33 +20,133 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Buscar turmas da escola específica
-    const url = `${STRAPI_API_URL}/api/turmas?filters[escola][nome][$eq]=${encodeURIComponent(
-      escola
-    )}&populate=escola&sort=turma:asc`;
-
-    const response = await fetch(url, {
+    // Tentar buscar turmas diretamente da collection turmas
+    // Primeiro, buscar a escola pelo nome para obter o ID
+    const escolaUrl = `${STRAPI_API_URL}/api/escolas?filters[nome][$eq]=${encodeURIComponent(escola)}`;
+    
+    const escolaResponse = await fetch(escolaUrl, {
       headers: {
         "Content-Type": "application/json",
       },
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Erro ao buscar turmas" },
-        { status: response.status }
-      );
+    let escolaId: number | null = null;
+    if (escolaResponse.ok) {
+      const escolaData = await escolaResponse.json();
+      const escolaItem = escolaData.data?.[0];
+      if (escolaItem) {
+        escolaId = escolaItem.id || escolaItem.documentId;
+      }
     }
 
-    const result = await response.json();
+    // Se encontrou a escola, buscar turmas diretamente
+    let turmas: string[] = [];
+    
+    if (escolaId) {
+      const turmasUrl = `${STRAPI_API_URL}/api/turmas?filters[escola][id][$eq]=${escolaId}&populate=escola&sort=turma:asc`;
+      
+      const turmasResponse = await fetch(turmasUrl, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
 
-    // Extrair turmas da resposta
-    const turmas = result.data
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((item: any) => item.turma)
-      .filter(Boolean)
-      .sort();
+      if (turmasResponse.ok) {
+        const turmasResult = await turmasResponse.json();
+        
+        interface TurmaItem {
+          id?: number;
+          attributes?: {
+            turma?: string;
+          };
+          turma?: string;
+        }
+
+        const turmasArray = turmasResult.data || [];
+        turmas = turmasArray
+          .map((item: TurmaItem) => {
+            const itemData = item.attributes || item;
+            return itemData.turma || item.turma;
+          })
+          .filter((t: string | undefined): t is string => t !== undefined && t !== null && t !== "")
+          .sort();
+      }
+    }
+
+    // Se não encontrou turmas diretamente, buscar através dos alunos
+    if (turmas.length === 0) {
+      const alunosUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira?filters[escola][nome][$eq]=${encodeURIComponent(
+        escola
+      )}&populate[turma]=*&populate[escola]=*&pagination[pageSize]=10000`;
+
+      const alunosResponse = await fetch(alunosUrl, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (alunosResponse.ok) {
+        const alunosResult = await alunosResponse.json();
+
+        interface AlunoItem {
+          attributes?: {
+            turma?: {
+              data?: {
+                attributes?: {
+                  turma?: string;
+                };
+              };
+              turma?: string;
+            } | string;
+          };
+          turma?: {
+            turma?: string;
+          } | string;
+        }
+
+        const alunosArray = alunosResult.data || [];
+        const turmasSet = new Set<string>();
+        
+        alunosArray.forEach((aluno: AlunoItem) => {
+          const alunoData = aluno.attributes || aluno;
+          
+          let turmaValue: string | null = null;
+          
+          const turmaData = alunoData.turma;
+          if (typeof turmaData === 'string') {
+            turmaValue = turmaData;
+          } else if (turmaData && typeof turmaData === 'object') {
+            if ('data' in turmaData && turmaData.data) {
+              const dataAttrs = turmaData.data.attributes || turmaData.data;
+              if (dataAttrs && typeof dataAttrs === 'object' && 'turma' in dataAttrs) {
+                turmaValue = dataAttrs.turma || null;
+              }
+            } else if ('turma' in turmaData) {
+              turmaValue = turmaData.turma || null;
+            }
+          }
+          
+          // Fallback para item.turma se não encontrou em alunoData
+          if (!turmaValue) {
+            const turmaItem = aluno.turma;
+            if (typeof turmaItem === 'string') {
+              turmaValue = turmaItem;
+            } else if (turmaItem && typeof turmaItem === 'object' && 'turma' in turmaItem) {
+              turmaValue = turmaItem.turma || null;
+            }
+          }
+          
+          if (turmaValue) {
+            turmasSet.add(turmaValue);
+          }
+        });
+        
+        turmas = Array.from(turmasSet).sort();
+      }
+    }
 
     return NextResponse.json({
       success: true,

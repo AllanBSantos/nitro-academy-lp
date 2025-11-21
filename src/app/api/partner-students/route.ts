@@ -4,6 +4,18 @@ import { normalizeName } from "@/lib/utils";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+const buildAuthHeaders = () => {
+  if (!ADMIN_TOKEN) {
+    throw new Error("STRAPI_TOKEN não configurado para partner-students");
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${ADMIN_TOKEN}`,
+  };
+};
 
 // Disable caching for this route
 export const dynamic = "force-dynamic";
@@ -23,7 +35,7 @@ export async function GET(request: NextRequest) {
     // Se há filtro de status de matrícula, buscar todos os dados primeiro
     if (enrollmentStatus && enrollmentStatus !== "all") {
       // Buscar TODOS os alunos sem paginação para aplicar filtro corretamente
-      const allStudentsUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira?pagination[pageSize]=10000&sort=nome:asc`;
+      const allStudentsUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira?pagination[pageSize]=10000&sort=nome:asc&populate[escola][fields][0]=nome&populate[turma][fields][0]=turma`;
 
       // Adicionar filtros de escola e turma
       let finalUrl = allStudentsUrl;
@@ -51,10 +63,10 @@ export async function GET(request: NextRequest) {
         }
       }
 
+      const headers = buildAuthHeaders();
+
       const allStudentsResponse = await fetch(finalUrl, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         cache: "no-store",
       });
 
@@ -73,9 +85,7 @@ export async function GET(request: NextRequest) {
         const enrolledStudentsResponse = await fetch(
           `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*&publicationState=preview`,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers,
             cache: "no-store",
           }
         );
@@ -211,7 +221,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Se não há filtro de status de matrícula, usar a lógica original
-    let url = `${STRAPI_API_URL}/api/alunos-escola-parceira?sort=nome:asc&pagination[pageSize]=${pageSize}&pagination[page]=${page}`;
+    let url = `${STRAPI_API_URL}/api/alunos-escola-parceira?sort=nome:asc&pagination[pageSize]=${pageSize}&pagination[page]=${page}&populate[escola][fields][0]=nome&populate[turma][fields][0]=turma`;
 
     // Add school filters
     if (escolas.length > 0) {
@@ -237,10 +247,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const headers = buildAuthHeaders();
+
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       cache: "no-store", // Disable fetch caching
     });
 
@@ -257,12 +267,11 @@ export async function GET(request: NextRequest) {
 
     let enrolledStudents: any[] = [];
     try {
+      const headers = buildAuthHeaders();
       const enrolledStudentsResponse = await fetch(
         `${STRAPI_API_URL}/api/alunos?pagination[pageSize]=10000&populate[cursos][populate]=*&publicationState=preview`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
           cache: "no-store",
         }
       );
