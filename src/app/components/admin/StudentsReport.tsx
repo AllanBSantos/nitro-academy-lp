@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Download,
   RefreshCw,
@@ -82,26 +84,74 @@ export default function StudentsReport() {
   const downloadCSV = () => {
     if (!reportData?.alunos) return;
 
-    const headers = ["Nome"];
-    const csvContent = [
-      headers.join(","),
-      ...reportData.alunos.map((aluno) =>
-        [`"${normalizeName(aluno.nome)}"`].join(",")
-      ),
-    ].join("\n");
+    try {
+      const doc = new jsPDF();
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `alunos_nao_parceiros_${new Date().toISOString().split("T")[0]}.csv`
-    );
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      // Title
+      doc.setFontSize(18);
+      doc.text(t("students_report.title"), 14, 22);
+
+      // Summary info
+      doc.setFontSize(12);
+      doc.text(
+        `Total de Alunos: ${reportData.alunos.length}`,
+        14,
+        35
+      );
+
+      const headers = [
+        t("name"),
+        t("cpf"),
+        t("email"),
+        t("phone"),
+        t("birth_date"),
+        t("created_at"),
+      ];
+
+      const tableData: string[][] = [];
+
+      reportData.alunos.forEach((aluno) => {
+        tableData.push([
+          normalizeName(aluno.nome),
+          aluno.cpf || "-",
+          aluno.email || "-",
+          aluno.telefone || "-",
+          aluno.dataNascimento
+            ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")
+            : "-",
+          aluno.createdAt
+            ? new Date(aluno.createdAt).toLocaleDateString("pt-BR")
+            : "-",
+        ]);
+      });
+
+      // Generate table
+      autoTable(doc, {
+        head: [headers],
+        body: tableData,
+        startY: 45,
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+        },
+        headStyles: {
+          fillColor: [89, 159, 233],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [245, 247, 250],
+        },
+        margin: { top: 45 },
+      });
+
+      // Save PDF
+      doc.save(
+        `alunos_nao_parceiros_${new Date().toISOString().split("T")[0]}.pdf`
+      );
+    } catch {
+      // Error exporting PDF - silently fail
+    }
   };
 
   if (loading) {
@@ -146,7 +196,7 @@ export default function StudentsReport() {
           {reportData && reportData.total > 0 && (
             <Button onClick={downloadCSV}>
               <Download className="w-4 h-4 mr-2" />
-              {t("download_csv")}
+              {t("export_pdf")}
             </Button>
           )}
         </div>

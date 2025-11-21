@@ -913,6 +913,7 @@
       "try_again": "Try again",
       "refresh": "Refresh",
       "download_csv": "Download CSV",
+      "export_pdf": "Export PDF",
       "total_strapi_students": "Total Students in System",
       "total_partner_students": "Total Partner Students",
       "non_partner_students": "Non-Partner Students",

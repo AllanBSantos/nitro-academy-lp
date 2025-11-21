@@ -48,6 +48,31 @@ interface PartnerStudent {
 
 const BATCH_SIZE = 20;
 
+// Helper function to extract relation value
+const getRelationValue = (relation: any): string => {
+  if (!relation) return "";
+  if (typeof relation === "string") return relation;
+  
+  // Handle Strapi v5 format: { data: { id, documentId, attributes: {...} } }
+  if (relation.data) {
+    if (Array.isArray(relation.data)) {
+      const firstItem = relation.data[0];
+      if (firstItem?.attributes) {
+        return firstItem.attributes.nome || firstItem.attributes.turma || "";
+      }
+    } else if (relation.data.attributes) {
+      return relation.data.attributes.nome || relation.data.attributes.turma || "";
+    }
+  }
+  
+  // Handle direct attributes
+  if (relation.attributes) {
+    return relation.attributes.nome || relation.attributes.turma || "";
+  }
+  
+  return "";
+};
+
 export default function PartnerStudentsList() {
   const t = useTranslations("Admin.partnerStudents");
   const [allStudents, setAllStudents] = useState<PartnerStudent[]>([]);
@@ -342,12 +367,15 @@ export default function PartnerStudentsList() {
       if (response.ok) {
         const data = await response.json();
         const mappedStudents = (data.data || []).map((student: any) => {
+          const escolaRaw = student.attributes?.escola || student.escola;
+          const turmaRaw = student.attributes?.turma || student.turma;
+          
           const mappedStudent = {
             id: student.id,
             nome: student.attributes?.nome || student.nome,
             cpf: student.attributes?.cpf || student.cpf,
-            escola: student.attributes?.escola || student.escola,
-            turma: student.attributes?.turma || student.turma,
+            escola: getRelationValue(escolaRaw) || student.attributes?.escola_old || student.escola_old || "",
+            turma: getRelationValue(turmaRaw) || student.attributes?.turma_old || student.turma_old || "",
             data_importacao:
               student.attributes?.data_importacao || student.data_importacao,
             isEnrolled: student.attributes?.isEnrolled || student.isEnrolled,
@@ -565,7 +593,7 @@ Pedro Oliveira,11122233344,Outra Escola,7º ano`;
       const tableData = allStudents.map((student) => [
         normalizeName(student.nome),
         student.cpf || "-",
-        normalizeName(student.escola),
+        student.escola || "-",
         student.turma || "-",
         student.isEnrolled ? "Matriculado" : "Não Matriculado",
         student.isEnrolled && student.courseInfo

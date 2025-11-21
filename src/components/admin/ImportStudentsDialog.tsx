@@ -10,10 +10,16 @@ import {
 import { Button } from "../new-layout/ui/button";
 import { Upload, Download, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { Card } from "../new-layout/ui/card";
+import Papa from "papaparse";
 
 export function ImportStudentsDialog() {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
+  const [importStatus, setImportStatus] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -38,15 +44,163 @@ export function ImportStudentsDialog() {
     }
   };
 
-  const handleImport = () => {
-    if (file) {
-      // Mock import logic
+  const parseCsvFile = (csvFile: File): Promise<
+    Array<{
+      nome: string;
+      cpf: string;
+      escola: string;
+      turma: string;
+    }>
+  > =>
+    new Promise((resolve, reject) => {
+      Papa.parse(csvFile, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: (header) => header.trim(),
+        complete: (results) => {
+          const { data, errors } = results;
+          if (errors.length > 0) {
+            reject(new Error("Erro ao processar o CSV. Verifique o arquivo."));
+            return;
+          }
+
+          const normalizedRows = (data as Record<string, string>[])
+            .map((row) => {
+              const normalized: Record<string, string> = {};
+              Object.keys(row).forEach((key) => {
+                normalized[key.trim().toLowerCase()] = row[key];
+              });
+
+              const nome =
+                normalized["nome"] || row["Nome"] || row["NOME"] || "";
+              const escola =
+                normalized["escola"] || row["Escola"] || row["ESCOLA"] || "";
+              const cpf =
+                normalized["cpf"] || row["CPF"] || row["cpf "] || "";
+              const turma =
+                normalized["turma"] || row["Turma"] || row["TURMA"] || "";
+
+              return {
+                nome: nome?.trim() || "",
+                escola: escola?.trim() || "",
+                cpf: cpf?.trim() || "",
+                turma: turma?.trim() || "",
+              };
+            })
+            .filter((row) => row.nome && row.escola);
+
+          if (!normalizedRows.length) {
+            reject(
+              new Error(
+                "Não foram encontradas linhas válidas. Verifique as colunas Nome e Escola."
+              )
+            );
+            return;
+          }
+
+          resolve(normalizedRows);
+        },
+        error: () => {
+          reject(new Error("Erro ao ler o arquivo CSV."));
+        },
+      });
+    });
+
+  const uploadBatch = async (batch: unknown[]) => {
+    const response = await fetch("/api/partner-students/import", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: batch }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result?.error ||
+          result?.message ||
+          "Erro ao importar alunos. Verifique o arquivo."
+      );
+    }
+
+    return result;
+  };
+
+  const handleImport = async () => {
+    if (!file) {
+      setImportError("Selecione um arquivo CSV para continuar.");
+      return;
+    }
+
+    setImporting(true);
+    setImportProgress(0);
+    setImportStatus("Lendo arquivo...");
+    setImportError(null);
+    setImportSuccess(null);
+
+    try {
+      const rows = await parseCsvFile(file);
+
+      const BATCH_SIZE = 20;
+      let importedTotal = 0;
+      const collectedErrors: string[] = [];
+
+      for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+        const batch = rows.slice(i, i + BATCH_SIZE);
+        setImportStatus(
+          `Importando alunos ${Math.min(i + 1, rows.length)}-${Math.min(
+            i + batch.length,
+            rows.length
+          )} de ${rows.length}`
+        );
+
+        const result = await uploadBatch(batch);
+        importedTotal += result.imported || 0;
+        if (Array.isArray(result.errors)) {
+          collectedErrors.push(...result.errors.filter(Boolean));
+        }
+
+        const progress = Math.round(((i + batch.length) / rows.length) * 100);
+        setImportProgress(progress);
+      }
+
+      setImportStatus("Importação concluída.");
+      setImportSuccess(
+        `${importedTotal} aluno(s) importado(s) com sucesso${
+          collectedErrors.length ? " (alguns registros não foram importados)." : "."
+        }`
+      );
+      if (collectedErrors.length) {
+        setImportError(collectedErrors.join(" | "));
+      }
       setFile(null);
+    } catch (error) {
+      setImportError(
+        error instanceof Error ? error.message : "Erro ao importar alunos."
+      );
+    } finally {
+      setImporting(false);
+      setImportProgress((prev) => (prev === 0 ? prev : 100));
     }
   };
 
   const handleDownloadTemplate = () => {
-    // Mock download template logic
+    const csvContent =
+      "Nome,Escola,CPF,Turma\n" +
+      "Alice Souza,Colégio Nitro,12345678900,8º A\n" +
+      "Bruno Lima,Escola Horizonte,98765432100,9º B\n";
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "template_alunos_escola_parceira.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -115,7 +269,7 @@ export function ImportStudentsDialog() {
                       onChange={handleFileChange}
                       className="hidden"
                     />
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#599fe9] text-white rounded-lg hover:bg-[#599fe9]/90 transition-colors">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#599fe9] bg-white text-[#599fe9] hover:bg-[#599fe9]/10 transition-colors">
                       <Upload className="w-4 h-4" />
                       Selecionar Arquivo
                     </span>
@@ -155,20 +309,44 @@ export function ImportStudentsDialog() {
             <Button
               onClick={handleDownloadTemplate}
               variant="outline"
-              className="flex-1 h-11 border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="flex-1 h-11 border-[#d8deff] bg-white text-[#1f235a] hover:bg-[#f4f6ff]"
             >
               <Download className="w-4 h-4 mr-2" />
               Baixar Template
             </Button>
             <Button
               onClick={handleImport}
-              disabled={!file}
+              disabled={!file || importing}
               className="flex-1 h-11 bg-[#f54a12] hover:bg-[#f54a12]/90 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload className="w-4 h-4 mr-2" />
-              Importar CSV
+              {importing ? "Importando..." : "Importar CSV"}
             </Button>
           </div>
+
+          {(importStatus || importProgress > 0 || importError || importSuccess) && (
+            <div className="space-y-2 text-sm">
+              {importProgress > 0 && (
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-[#599fe9] h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${importProgress}%` }}
+                  />
+                </div>
+              )}
+              {importStatus && (
+                <p className="text-gray-600 font-medium">{importStatus}</p>
+              )}
+              {importSuccess && (
+                <p className="text-green-600 font-medium">{importSuccess}</p>
+              )}
+              {importError && (
+                <p className="text-red-600">
+                  <strong>Erros:</strong> {importError}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

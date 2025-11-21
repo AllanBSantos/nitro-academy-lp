@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
 
 const BATCH_SIZE = 5;
 const BATCH_DELAY = 2000;
@@ -17,6 +18,135 @@ export const runtime = "nodejs";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const buildAuthHeaders = () => {
+  if (!ADMIN_TOKEN) {
+    throw new Error("STRAPI_TOKEN não configurado para importar alunos");
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${ADMIN_TOKEN}`,
+  };
+};
+
+async function ensureSchoolExists(escolaNome: string): Promise<string> {
+  const headers = buildAuthHeaders();
+
+  const searchParams = new URLSearchParams({
+    "filters[nome][$eq]": escolaNome,
+    locale: "pt-BR",
+    "pagination[pageSize]": "1",
+  });
+
+  const findResponse = await fetch(
+    `${STRAPI_API_URL}/api/escolas?${searchParams.toString()}`,
+    {
+      headers,
+      cache: "no-store",
+    }
+  );
+
+  if (findResponse.ok) {
+    const payload = await findResponse.json();
+    const existingDoc = payload?.data?.[0];
+    if (existingDoc?.documentId) {
+      return existingDoc.documentId;
+    }
+  }
+
+  const createResponse = await fetch(`${STRAPI_API_URL}/api/escolas`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      data: {
+        nome: escolaNome,
+        cliente: true,
+      },
+    }),
+    cache: "no-store",
+  });
+
+  if (!createResponse.ok) {
+    const errorPayload = await createResponse.json().catch(() => null);
+    throw new Error(
+      errorPayload?.error?.message ||
+        `Erro ao criar escola "${escolaNome}": ${createResponse.statusText}`
+    );
+  }
+
+  const createdData = await createResponse.json();
+  const createdDocId = createdData?.data?.documentId;
+  if (!createdDocId) {
+    throw new Error(
+      `Escola "${escolaNome}" criada, mas o documentId não foi retornado pelo Strapi.`
+    );
+  }
+  return createdDocId;
+}
+
+async function ensureTurmaExists(
+  turmaNome: string,
+  escolaDocumentId: string
+): Promise<string | null> {
+  if (!turmaNome || !turmaNome.trim()) {
+    return null;
+  }
+
+  const headers = buildAuthHeaders();
+
+  const searchParams = new URLSearchParams({
+    "filters[turma][$eq]": turmaNome.trim(),
+    "filters[escola][documentId][$eq]": escolaDocumentId,
+    "pagination[pageSize]": "1",
+  });
+
+  const findResponse = await fetch(
+    `${STRAPI_API_URL}/api/turmas?${searchParams.toString()}`,
+    {
+      headers,
+      cache: "no-store",
+    }
+  );
+
+  if (findResponse.ok) {
+    const payload = await findResponse.json();
+    const existingDoc = payload?.data?.[0];
+    if (existingDoc?.documentId) {
+      return existingDoc.documentId;
+    }
+  }
+
+  // Create new turma if not found
+  const createResponse = await fetch(`${STRAPI_API_URL}/api/turmas`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      data: {
+        turma: turmaNome.trim(),
+        escola: escolaDocumentId,
+      },
+    }),
+    cache: "no-store",
+  });
+
+  if (!createResponse.ok) {
+    const errorPayload = await createResponse.json().catch(() => null);
+    throw new Error(
+      errorPayload?.error?.message ||
+        `Erro ao criar turma "${turmaNome}": ${createResponse.statusText}`
+    );
+  }
+
+  const createdData = await createResponse.json();
+  const createdDocId = createdData?.data?.documentId;
+  if (!createdDocId) {
+    throw new Error(
+      `Turma "${turmaNome}" criada, mas o documentId não foi retornado pelo Strapi.`
+    );
+  }
+  return createdDocId;
+}
+
 async function processStudentWithRetry(
   studentData: {
     nome: string;
@@ -27,20 +157,37 @@ async function processStudentWithRetry(
   retryCount = 0
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const escolaDocumentId = await ensureSchoolExists(studentData.escola);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-    const strapiUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira`;
+    const headers = buildAuthHeaders();
 
-    const response = await fetch(strapiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ data: studentData }),
-      signal: controller.signal,
-      cache: "no-store", // Disable fetch caching
-    });
+    const payload = {
+      nome: studentData.nome,
+      cpf: studentData.cpf,
+      escola: escolaDocumentId,
+      escola_old: studentData.escola,
+    } as Record<string, unknown>;
+
+    if (studentData.turma && studentData.turma.trim()) {
+      const turmaDocumentId = await ensureTurmaExists(studentData.turma, escolaDocumentId);
+      payload.turma_old = studentData.turma;
+      if (turmaDocumentId) {
+        payload.turma = turmaDocumentId;
+      }
+    }
+
+    const response = await fetch(
+      `${STRAPI_API_URL}/api/alunos-escola-parceira`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ data: payload }),
+        signal: controller.signal,
+        cache: "no-store", // Disable fetch caching
+      }
+    );
 
     clearTimeout(timeoutId);
 

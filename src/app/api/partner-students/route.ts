@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     // Se há filtro de status de matrícula, buscar todos os dados primeiro
     if (enrollmentStatus && enrollmentStatus !== "all") {
       // Buscar TODOS os alunos sem paginação para aplicar filtro corretamente
-      const allStudentsUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira?pagination[pageSize]=10000&sort=nome:asc`;
+      const allStudentsUrl = `${STRAPI_API_URL}/api/alunos-escola-parceira?pagination[pageSize]=10000&sort=nome:asc&populate[escola][fields][0]=nome&populate[turma][fields][0]=turma`;
 
       // Adicionar filtros de escola e turma
       let finalUrl = allStudentsUrl;
@@ -221,7 +221,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Se não há filtro de status de matrícula, usar a lógica original
-    let url = `${STRAPI_API_URL}/api/alunos-escola-parceira?sort=nome:asc&pagination[pageSize]=${pageSize}&pagination[page]=${page}`;
+    let url = `${STRAPI_API_URL}/api/alunos-escola-parceira?sort=nome:asc&pagination[pageSize]=${pageSize}&pagination[page]=${page}&populate[escola][fields][0]=nome&populate[turma][fields][0]=turma`;
 
     // Add school filters
     if (escolas.length > 0) {
