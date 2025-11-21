@@ -9,6 +9,10 @@ import {
 } from "@/types/strapi";
 import { normalizeName } from "@/lib/utils";
 import { MAX_SLOTS_PER_COURSE } from "@/config/constants";
+import {
+  COURSE_QUERY_ADMIN_PARAMS,
+  COURSE_QUERY_PUBLIC_PARAMS,
+} from "@/lib/strapiCourseQuery";
 
 const STRAPI_API_URL =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
@@ -60,10 +64,22 @@ const cleanDataRecursively = (data: unknown): unknown => {
 
   return data;
 };
-export async function fetchCourses(): Promise<Course[]> {
+
+interface FetchCoursesOptions {
+  scope?: "public" | "admin";
+}
+
+export async function fetchCourses(
+  options: FetchCoursesOptions = {}
+): Promise<Course[]> {
   try {
     // Garantir que sempre use pt-BR (hardcoded)
     const localeToUse = "pt-BR";
+    const scope = options.scope ?? "public";
+    const queryParams =
+      scope === "admin"
+        ? COURSE_QUERY_ADMIN_PARAMS
+        : COURSE_QUERY_PUBLIC_PARAMS;
 
     // No servidor, precisamos usar URL absoluta ou chamar Strapi diretamente
     // Vamos chamar Strapi diretamente no servidor para evitar problemas com URL relativa
@@ -72,7 +88,7 @@ export async function fetchCourses(): Promise<Course[]> {
     if (isServer) {
       // No servidor: chamar Strapi diretamente com autenticação
       const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
-      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&populate[cronograma][fields][0]=dia_semana&populate[cronograma][fields][1]=horario_aula&populate[cronograma][fields][2]=data_inicio&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][populate][reviews]=*&populate[imagem][fields][0]=url&populate[tags][fields][0]=nome&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&sort=createdAt:desc`;
+      const url = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&locale=${localeToUse}&${queryParams}&sort=createdAt:desc`;
 
       const response = await fetch(url, {
         headers: {
@@ -180,11 +196,11 @@ export async function fetchCoursesWithEnrollment(): Promise<
     return courses.map((course: any) => {
       // Normalizar estrutura de dados (pode vir com ou sem attributes)
       const courseData = course.attributes || course;
-      
+
       // Obter alunos do curso (pode estar em courseData.alunos ou courseData.alunos.data)
       const alunosRaw = courseData.alunos?.data || courseData.alunos || [];
       const alunosArray = Array.isArray(alunosRaw) ? alunosRaw : [];
-      
+
       // Filtrar apenas alunos habilitados
       const alunosHabilitados = alunosArray.filter((aluno: any) => {
         // Normalizar estrutura do aluno (pode vir com ou sem attributes)
@@ -193,24 +209,25 @@ export async function fetchCoursesWithEnrollment(): Promise<
         const habilitado = alunoData?.habilitado ?? true; // Default true se não especificado
         return habilitado === true;
       });
-      
+
       const enrolled = alunosHabilitados.length;
-      
+
       // Calcular total de vagas: número de turmas (schedules) × vagas por turma
       const cronogramaRaw = courseData.cronograma || [];
       const cronogramaArray = Array.isArray(cronogramaRaw) ? cronogramaRaw : [];
       const numberOfSchedules = cronogramaArray.length;
       const totalSlots = numberOfSchedules * MAX_SLOTS_PER_COURSE;
-      
+
       const available = Math.max(0, totalSlots - enrolled);
 
       // Usar a campanha real do Strapi ou fallback para data de início
       let campaign = "2024.1"; // Valor padrão
-      
+
       // Normalizar campanhas (pode estar em courseData.campanhas ou courseData.campanhas.data)
-      const campanhasRaw = courseData.campanhas?.data || courseData.campanhas || [];
+      const campanhasRaw =
+        courseData.campanhas?.data || courseData.campanhas || [];
       const campanhasArray = Array.isArray(campanhasRaw) ? campanhasRaw : [];
-      
+
       if (campanhasArray.length > 0) {
         // Normalizar primeira campanha
         const primeiraCampanha = campanhasArray[0];
@@ -312,7 +329,7 @@ export async function fetchStudentCoursesWithProgress(): Promise<
 export async function fetchCourse(documentId: string): Promise<Course> {
   try {
     const response = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&fields[24]=habilitado&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][fields][10]=documentId&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_aluno&populate[alunos][fields][6]=escola_parceira&populate[alunos][fields][7]=createdAt&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome&locale=pt-BR`
+      `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${COURSE_QUERY_ADMIN_PARAMS}&publicationState=preview`
       /* {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
@@ -349,14 +366,21 @@ export async function fetchCourseWithAdminToken(
 ): Promise<Course> {
   const headers = buildStrapiAuthHeaders();
 
-  if (!headers || (typeof headers === "object" && !("Authorization" in headers))) {
-    throw new Error("STRAPI_TOKEN não configurado para chamadas administrativas");
+  if (
+    !headers ||
+    (typeof headers === "object" && !("Authorization" in headers))
+  ) {
+    throw new Error(
+      "STRAPI_TOKEN não configurado para chamadas administrativas"
+    );
   }
 
   const defaultQuery =
     "fields[0]=id&fields[1]=titulo&fields[2]=descricao&fields[3]=nota&fields[4]=nivel&fields[5]=modelo&fields[6]=pre_requisitos&fields[7]=projetos&fields[8]=tarefa_de_casa&fields[9]=preco&fields[10]=parcelas&fields[11]=slug&fields[12]=link_pagamento&fields[13]=moeda&fields[14]=informacoes_adicionais&fields[15]=badge&fields[16]=link_desconto&fields[17]=competencias&fields[18]=sugestao_horario&fields[19]=inscricoes_abertas&fields[20]=data_inicio_curso&fields[21]=lingua&fields[22]=aviso_matricula&fields[23]=plano&fields[24]=habilitado&populate[imagem][fields][0]=url&populate[mentor][populate][imagem][fields][0]=url&populate[mentor][fields][0]=nome&populate[mentor][fields][1]=profissao&populate[mentor][fields][2]=descricao&populate[mentor][fields][3]=alunos&populate[mentor][fields][4]=cursos&populate[mentor][fields][5]=instagram&populate[mentor][fields][6]=instagram_label&populate[mentor][fields][7]=linkedin_url&populate[mentor][fields][8]=linkedin_label&populate[mentor][fields][9]=pais&populate[mentor][fields][10]=documentId&populate[mentor][populate][reviews]=*&populate[videos][populate]=video&populate[tags][fields][0]=nome&populate[cronograma][fields][0]=data_fim&populate[cronograma][fields][1]=data_inicio&populate[cronograma][fields][2]=dia_semana&populate[cronograma][fields][3]=horario_aula&populate[cronograma][fields][4]=link_aula&populate[cupons][fields][0]=nome&populate[cupons][fields][1]=url&populate[cupons][fields][2]=valido&populate[cupons][fields][3]=validade&populate[cupons][fields][4]=voucher_gratuito&populate[ementa_resumida][fields][0]=descricao&populate[resumo_aulas][fields][0]=nome_aula&populate[resumo_aulas][fields][1]=descricao_aula&populate[alunos][filters][habilitado][$eq]=true&populate[alunos][fields][0]=id&populate[alunos][fields][1]=turma&populate[alunos][fields][2]=documentId&populate[alunos][fields][3]=nome&populate[alunos][fields][4]=email_responsavel&populate[alunos][fields][5]=telefone_aluno&populate[alunos][fields][6]=escola_parceira&populate[alunos][fields][7]=createdAt&populate[review][fields][0]=id&populate[review][fields][1]=nota&populate[review][fields][2]=descricao&populate[review][fields][3]=nome";
 
-  const url = `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${queryString || defaultQuery}`;
+  const url = `${STRAPI_API_URL}/api/cursos?filters[documentId][$eq]=${documentId}&locale=pt-BR&${
+    queryString || defaultQuery
+  }`;
 
   const response = await fetch(url, {
     headers,
@@ -656,7 +680,7 @@ export async function fetchStudentsCount(): Promise<number> {
       ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       : "";
     const url = `${baseUrl}/api/stats/students-count`;
-    
+
     const response = await fetch(url, {
       next: { revalidate: 60 },
     });
@@ -679,7 +703,7 @@ export async function fetchMentorsCount(): Promise<number> {
       ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       : "";
     const url = `${baseUrl}/api/stats/mentors-count`;
-    
+
     const response = await fetch(url, {
       next: { revalidate: 60 },
     });
@@ -702,7 +726,7 @@ export async function fetchCoursesCount(): Promise<number> {
       ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
       : "";
     const url = `${baseUrl}/api/stats/courses-count`;
-    
+
     const response = await fetch(url, {
       next: { revalidate: 60 },
     });
@@ -858,7 +882,7 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
   try {
     // Remover formatação do CPF (pontos, traços, espaços)
     const cleanCPF = cpf.replace(/\D/g, "");
-    
+
     if (!cleanCPF || cleanCPF.length !== 11) {
       console.error("CPF inválido:", cpf);
       return null;
@@ -867,12 +891,12 @@ export async function findStudentByCPF(cpf: string): Promise<Student | null> {
     const url = `${STRAPI_API_URL}/api/alunos?filters[cpf_aluno][$eq]=${cleanCPF}&filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=documentId&publicationState=preview`;
 
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
-    
+
     // Preparar headers com autenticação
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };
-    
+
     if (ADMIN_TOKEN) {
       headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
     }
@@ -973,12 +997,12 @@ export async function updateStudentCourses(
     }
 
     const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
-    
+
     // Preparar headers com autenticação
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };
-    
+
     if (ADMIN_TOKEN) {
       headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
     }
@@ -1006,7 +1030,7 @@ export async function createStudent(
   // Limpar formatação do CPF antes de processar
   const cleanCPF = student.cpf_aluno.replace(/\D/g, "");
   const cleanCPFResponsavel = student.cpf_responsavel?.replace(/\D/g, "") || "";
-  
+
   const existingStudent = await findStudentByCPF(cleanCPF);
   // Verificar se o cupom é gratuito baseado no campo usou_voucher do aluno
   // O campo usou_voucher já é definido no EnrollmentModal baseado no voucher_gratuito do cupom
@@ -1025,7 +1049,7 @@ export async function createStudent(
   }
 
   const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
-  
+
   const payload = {
     data: {
       nome: student.nome,
@@ -1054,7 +1078,7 @@ export async function createStudent(
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
-  
+
   if (ADMIN_TOKEN) {
     headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
   }
@@ -1681,15 +1705,21 @@ export async function updateMentor(
 ): Promise<void> {
   try {
     const headers = buildStrapiAuthHeaders();
-    if (!headers || (typeof headers === "object" && !("Authorization" in headers))) {
+    if (
+      !headers ||
+      (typeof headers === "object" && !("Authorization" in headers))
+    ) {
       throw new Error("STRAPI_TOKEN não configurado para atualizar mentor");
     }
 
     const fetchMentorById = async (id: number) =>
-      fetch(`${STRAPI_API_URL}/api/mentores/${id}?locale=pt-BR&populate=imagem`, {
-        headers,
-        cache: "no-store",
-      });
+      fetch(
+        `${STRAPI_API_URL}/api/mentores/${id}?locale=pt-BR&populate=imagem`,
+        {
+          headers,
+          cache: "no-store",
+        }
+      );
 
     const fetchMentorByDocumentId = async (documentId: string) =>
       fetch(
@@ -1706,10 +1736,16 @@ export async function updateMentor(
         : null;
     let mentorDocumentId: string | null = mentorRef.documentId ?? null;
 
-    let mentorPayload: { id?: number; documentId?: string; attributes?: any } | null = null;
+    let mentorPayload: {
+      id?: number;
+      documentId?: string;
+      attributes?: any;
+    } | null = null;
 
     if (mentorDocumentId) {
-      const byDocumentResponse = await fetchMentorByDocumentId(mentorDocumentId);
+      const byDocumentResponse = await fetchMentorByDocumentId(
+        mentorDocumentId
+      );
       if (byDocumentResponse.ok) {
         const responseJson = await byDocumentResponse.json();
         mentorPayload = Array.isArray(responseJson.data)
@@ -1739,8 +1775,7 @@ export async function updateMentor(
           : mentorPayload.id != null
           ? parseInt(String(mentorPayload.id), 10)
           : null;
-      mentorIdToUse =
-        parsedId && !Number.isNaN(parsedId) ? parsedId : null;
+      mentorIdToUse = parsedId && !Number.isNaN(parsedId) ? parsedId : null;
     }
 
     mentorDocumentId =

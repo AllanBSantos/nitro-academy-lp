@@ -1,0 +1,102 @@
+const COURSE_FIELDS = [
+  "fields[0]=id",
+  "fields[1]=titulo",
+  "fields[2]=descricao",
+  "fields[3]=nota",
+  "fields[4]=nivel",
+  "fields[5]=modelo",
+  "fields[6]=pre_requisitos",
+  "fields[7]=projetos",
+  "fields[8]=tarefa_de_casa",
+  "fields[9]=preco",
+  "fields[10]=parcelas",
+  "fields[11]=slug",
+  "fields[12]=link_pagamento",
+  "fields[13]=moeda",
+  "fields[14]=informacoes_adicionais",
+  "fields[15]=badge",
+  "fields[16]=link_desconto",
+  "fields[17]=competencias",
+  "fields[18]=sugestao_horario",
+  "fields[19]=inscricoes_abertas",
+  "fields[20]=data_inicio_curso",
+  "fields[21]=lingua",
+  "fields[22]=aviso_matricula",
+  "fields[23]=plano",
+];
+
+const COURSE_POPULATE_BASE = [
+  "populate[imagem][fields][0]=url",
+  "populate[mentor][fields][0]=nome",
+  "populate[mentor][fields][1]=profissao",
+  "populate[mentor][fields][2]=descricao",
+  "populate[mentor][fields][3]=alunos",
+  "populate[mentor][fields][4]=cursos",
+  "populate[mentor][fields][5]=instagram",
+  "populate[mentor][fields][6]=instagram_label",
+  "populate[mentor][fields][7]=linkedin_url",
+  "populate[mentor][fields][8]=linkedin_label",
+  "populate[mentor][fields][9]=pais",
+  "populate[mentor][populate][imagem][fields][0]=url",
+  "populate[mentor][populate][reviews]=*",
+  "populate[videos][fields][0]=titulo",
+  "populate[videos][fields][1]=descricao",
+  "populate[videos][fields][2]=video_url",
+  "populate[videos][populate][video][fields][0]=url",
+  "populate[tags][fields][0]=nome",
+  "populate[cronograma][fields][0]=data_fim",
+  "populate[cronograma][fields][1]=data_inicio",
+  "populate[cronograma][fields][2]=dia_semana",
+  "populate[cronograma][fields][3]=horario_aula",
+  "populate[cronograma][fields][4]=link_aula",
+  "populate[cupons][fields][0]=nome",
+  "populate[cupons][fields][1]=url",
+  "populate[cupons][fields][2]=valido",
+  "populate[cupons][fields][3]=validade",
+  "populate[cupons][fields][4]=voucher_gratuito",
+  "populate[ementa_resumida][fields][0]=descricao",
+  "populate[resumo_aulas][fields][0]=nome_aula",
+  "populate[resumo_aulas][fields][1]=descricao_aula",
+  "populate[review][fields][0]=id",
+  "populate[review][fields][1]=nota",
+  "populate[review][fields][2]=descricao",
+  "populate[review][fields][3]=nome",
+];
+
+const COURSE_ALUNOS_PUBLIC = [
+  "populate[alunos][filters][habilitado][$eq]=true",
+  "populate[alunos][fields][0]=id",
+  "populate[alunos][fields][1]=turma",
+];
+
+const COURSE_ALUNOS_ADMIN_EXTRA = [
+  "populate[alunos][fields][2]=documentId",
+  "populate[alunos][fields][3]=nome",
+  "populate[alunos][fields][4]=email_responsavel",
+  "populate[alunos][fields][5]=telefone_responsavel",
+  "populate[alunos][fields][6]=telefone_aluno",
+  "populate[alunos][fields][7]=escola_parceira",
+  "populate[alunos][fields][8]=createdAt",
+];
+
+const COURSE_CAMPAIGNS = [
+  "populate[campanhas][fields][0]=nome",
+  "populate[campanhas][fields][1]=periodo_inscricao",
+  "populate[campanhas][fields][2]=inicio_e_fim_aulas",
+];
+
+const COURSE_QUERY_BASE = [...COURSE_FIELDS, ...COURSE_POPULATE_BASE];
+
+export const COURSE_QUERY_PUBLIC_PARAMS = [
+  ...COURSE_QUERY_BASE,
+  ...COURSE_ALUNOS_PUBLIC,
+].join("&");
+
+export const COURSE_QUERY_ADMIN_PARAMS = [
+  ...COURSE_QUERY_BASE,
+  ...COURSE_ALUNOS_PUBLIC,
+  ...COURSE_ALUNOS_ADMIN_EXTRA,
+  ...COURSE_CAMPAIGNS,
+].join("&");
+
+
