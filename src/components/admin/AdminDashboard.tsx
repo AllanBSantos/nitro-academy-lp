@@ -1,17 +1,22 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   BookOpen,
   Users,
-  Home,
+  Video,
   LogOut,
   Menu,
   X,
   ChevronsLeft,
   ChevronsRight,
+  BarChart3,
 } from "lucide-react";
+import { AdminDashboardHome } from "./AdminDashboardHome";
 import { AdminHome } from "./AdminHome";
 import { AdminCourses } from "./AdminCourses";
 import { AdminStudents } from "./AdminStudents";
@@ -23,19 +28,20 @@ import {
 } from "../new-layout/ui/tooltip";
 // import logoImage from "/pt/logo_nitro_transparente.png";
 
-type TabType = "home" | "courses" | "students";
+type TabType = "dashboard" | "home" | "courses" | "students";
 
 export function AdminDashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const t = useTranslations("Admin");
   
-  // Get initial tab from URL or default to "home"
+  // Get initial tab from URL or default to "dashboard"
   const getInitialTab = (): TabType => {
     const tab = searchParams.get("tab") as TabType;
-    return tab && ["home", "courses", "students"].includes(tab) ? tab : "home";
+    return tab && ["dashboard", "home", "courses", "students"].includes(tab) ? tab : "dashboard";
   };
 
-  const [activeTab, setActiveTab] = useState<TabType>("home");
+  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -59,9 +65,10 @@ export function AdminDashboard() {
   };
 
   const menuItems = [
-    { id: "home" as TabType, label: "Home", icon: Home },
-    { id: "courses" as TabType, label: "Cursos", icon: BookOpen },
-    { id: "students" as TabType, label: "Alunos", icon: Users },
+    { id: "dashboard" as TabType, label: t("menu.dashboard"), icon: BarChart3 },
+    { id: "home" as TabType, label: t("menu.my_classes"), icon: Video },
+    { id: "courses" as TabType, label: t("menu.courses"), icon: BookOpen },
+    { id: "students" as TabType, label: t("menu.students"), icon: Users },
   ];
 
   return (
@@ -89,7 +96,7 @@ export function AdminDashboard() {
                   className="h-10 w-auto"
                 />
                 <p className="mt-2 text-white/40 text-sm">
-                  Painel Administrativo
+                  {t("menu.admin_panel")}
                 </p>
               </div>
             )}
@@ -117,14 +124,14 @@ export function AdminDashboard() {
                   ) : (
                     <>
                       <ChevronsLeft className="w-5 h-5" />
-                      <span>Recolher Menu</span>
+                      <span>{t("menu.collapse")}</span>
                     </>
                   )}
                 </button>
               </TooltipTrigger>
               {sidebarCollapsed && (
                 <TooltipContent side="right">
-                  <p>Expandir</p>
+                  <p>{t("menu.expand")}</p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -173,12 +180,12 @@ export function AdminDashboard() {
                   }`}
                 >
                   <LogOut className="w-5 h-5 flex-shrink-0" />
-                  {!sidebarCollapsed && <span>Sair</span>}
+                  {!sidebarCollapsed && <span>{t("menu.logout")}</span>}
                 </button>
               </TooltipTrigger>
               {sidebarCollapsed && (
                 <TooltipContent side="right">
-                  <p>Sair</p>
+                  <p>{t("menu.logout")}</p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -210,7 +217,7 @@ export function AdminDashboard() {
                 className="h-10 w-auto"
               />
               <p className="mt-2 text-white/40 text-sm">
-                Painel Administrativo
+                {t("menu.admin_panel")}
               </p>
             </div>
             <button
@@ -255,7 +262,7 @@ export function AdminDashboard() {
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
             >
               <LogOut className="w-5 h-5" />
-              <span>Sair</span>
+              <span>{t("menu.logout")}</span>
             </button>
           </div>
         </aside>
@@ -278,18 +285,22 @@ export function AdminDashboard() {
                 </button>
                 <div>
                   <h1 className="text-2xl text-white">
-                    {activeTab === "home"
-                      ? "Home"
+                    {activeTab === "dashboard"
+                      ? t("page_titles.dashboard")
+                      : activeTab === "home"
+                      ? t("page_titles.my_classes")
                       : activeTab === "courses"
-                      ? "Cursos"
-                      : "Alunos"}
+                      ? t("page_titles.courses")
+                      : t("page_titles.students")}
                   </h1>
                   <p className="text-white/40 text-sm mt-1">
-                    {activeTab === "home"
-                      ? "Visão geral de suas aulas e tarefas"
+                    {activeTab === "dashboard"
+                      ? t("page_descriptions.dashboard")
+                      : activeTab === "home"
+                      ? t("page_descriptions.my_classes")
                       : activeTab === "courses"
-                      ? "Gerencie os cursos e matrículas"
-                      : "Visualize e exporte dados dos alunos"}
+                      ? t("page_descriptions.courses")
+                      : t("page_descriptions.students")}
                   </p>
                 </div>
               </div>
@@ -304,6 +315,7 @@ export function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
+              {activeTab === "dashboard" && <AdminDashboardHome />}
               {activeTab === "home" && <AdminHome />}
               {activeTab === "courses" && <AdminCourses />}
               {activeTab === "students" && <AdminStudents />}

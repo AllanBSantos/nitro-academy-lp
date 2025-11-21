@@ -17,8 +17,6 @@ export async function GET(request: NextRequest) {
     const escola = searchParams.get("escola");
     const turma = searchParams.get("turma");
 
-    console.log(`[Search API] Parâmetros recebidos:`, { cpf, nome, escola, turma });
-
     if (!cpf && !nome) {
       return NextResponse.json(
         { error: "Parâmetro 'cpf' ou 'nome' é obrigatório" },
@@ -38,8 +36,6 @@ export async function GET(request: NextRequest) {
     // Se for CPF, podemos usar filtro direto
     const filtersString = filters.length > 0 ? filters.join("&") : "";
     const url = `${STRAPI_API_URL}/api/alunos-escola-parceira?${filtersString}&populate=escola&populate=turma&pagination[pageSize]=10000`;
-
-    console.log(`[Search API] URL completa (sem filtros de relação):`, url);
 
     // Preparar headers com autenticação se disponível
     const headers: HeadersInit = {
@@ -65,10 +61,8 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await response.json();
-    console.log(`[Search API] Resposta do Strapi:`, JSON.stringify(result, null, 2));
     
     const alunosArray = result.data || [];
-    console.log(`[Search API] Total de alunos retornados (antes do filtro): ${alunosArray.length}`);
 
     // Normalizar estrutura e filtrar por escola/turma no código (já que filtros de relação causam erro 500)
     interface AlunoItem {
@@ -190,7 +184,6 @@ export async function GET(request: NextRequest) {
         // Verificar se todas as palavras da busca estão presentes no nome do aluno
         return palavrasBusca.every((palavra: string) => alunoNome.includes(palavra));
       });
-      console.log(`[Search API] Após filtrar por nome "${nome}" (${palavrasBusca.length} palavras): ${alunos.length} alunos`);
     }
 
     // Filtrar por escola e turma no código se fornecidos
@@ -201,7 +194,6 @@ export async function GET(request: NextRequest) {
         const escolaBusca = escola.toLowerCase().trim();
         return alunoEscola === escolaBusca;
       });
-      console.log(`[Search API] Após filtrar por escola "${escola}": ${alunos.length} alunos`);
     }
 
     if (turma) {
@@ -210,10 +202,7 @@ export async function GET(request: NextRequest) {
         const turmaBusca = turma.toLowerCase().trim();
         return alunoTurma === turmaBusca;
       });
-      console.log(`[Search API] Após filtrar por turma "${turma}": ${alunos.length} alunos`);
     }
-
-    console.log(`[Search API] Alunos encontrados (final): ${alunos.length}`, alunos);
 
     return NextResponse.json({
       success: true,

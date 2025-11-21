@@ -1,6 +1,6 @@
 import { routing } from "@/i18n/routing";
 
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { hasLocale, NextIntlClientProvider, useMessages } from "next-intl";
 import { notFound } from "next/navigation";
 
 import { setRequestLocale } from "next-intl/server";
@@ -27,8 +27,11 @@ export default function LocaleLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
+  // Get messages for the current locale
+  const messages = useMessages();
+
   return (
-    <NextIntlClientProvider>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <LayoutWrapper>{children}</LayoutWrapper>
     </NextIntlClientProvider>
   );

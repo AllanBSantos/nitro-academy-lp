@@ -1278,66 +1278,111 @@ export interface CourseStudentsCount {
   studentCount: number;
 }
 
-interface CourseData {
-  id: number;
-  attributes: {
-    titulo: string;
-  };
-}
-
 export async function getStudentsPerCourse(): Promise<CourseStudentsCount[]> {
   try {
+    const ADMIN_TOKEN = process.env.STRAPI_TOKEN;
+
+    // Preparar headers com autenticação
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (ADMIN_TOKEN) {
+      headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+    }
+
     // Fetch all courses to get their titles
-    const coursesResponse = await fetch(
-      `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&locale=pt-BR`
-    );
+    const coursesUrl = `${STRAPI_API_URL}/api/cursos?filters[habilitado][$eq]=true&fields[0]=id&fields[1]=titulo&locale=pt-BR&pagination[pageSize]=1000`;
+    const coursesResponse = await fetch(coursesUrl, {
+      headers,
+      next: { revalidate: 60 },
+    });
 
     if (!coursesResponse.ok) {
+      console.error(
+        `Failed to fetch courses: ${coursesResponse.status} ${coursesResponse.statusText}`
+      );
       throw new Error("Failed to fetch courses");
     }
 
     const coursesData = await coursesResponse.json();
-    const courses = coursesData.data as CourseData[];
+    const coursesRaw = coursesData.data || [];
 
     // Fetch all students with their courses
-    const studentsResponse = await fetch(
-      `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&publicationState=preview`
-    );
+    const studentsUrl = `${STRAPI_API_URL}/api/alunos?filters[habilitado][$eq]=true&populate[cursos][fields][0]=id&populate[cursos][fields][1]=titulo&publicationState=preview&pagination[pageSize]=1000`;
+    const studentsResponse = await fetch(studentsUrl, {
+      headers,
+      next: { revalidate: 60 },
+    });
 
     if (!studentsResponse.ok) {
+      console.error(
+        `Failed to fetch students: ${studentsResponse.status} ${studentsResponse.statusText}`
+      );
       throw new Error("Failed to fetch students");
     }
 
     const studentsData = await studentsResponse.json();
-    const students = studentsData.data;
+    const students = studentsData.data || [];
 
     // Create a map to store student counts for each course
     const courseStudentCounts = new Map<number, CourseStudentsCount>();
 
     // Initialize counts for each course
-    courses.forEach((course: CourseData) => {
-      courseStudentCounts.set(course.id, {
-        courseId: course.id,
-        courseTitle: course.attributes?.titulo || "",
-        studentCount: 0,
-      });
+    coursesRaw.forEach((course: any) => {
+      // Normalizar estrutura do curso (pode vir com ou sem attributes)
+      const courseData = course.attributes || course;
+      const courseId = courseData.id || course.id;
+      const courseTitle = courseData.titulo || "";
+
+      if (courseId) {
+        const normalizedId =
+          typeof courseId === "number"
+            ? courseId
+            : parseInt(String(courseId), 10);
+        if (!isNaN(normalizedId)) {
+          courseStudentCounts.set(normalizedId, {
+            courseId: normalizedId,
+            courseTitle,
+            studentCount: 0,
+          });
+        }
+      }
     });
 
     // Count students in each course
-    students.forEach((student: Student) => {
-      student.cursos?.forEach((course) => {
-        const courseStats = courseStudentCounts.get(course.id);
-        if (courseStats) {
-          courseStats.studentCount++;
+    students.forEach((student: any) => {
+      // Normalizar estrutura do aluno
+      const studentData = student.attributes || student;
+      const cursosRaw = studentData.cursos || [];
+
+      // Normalizar cursos (pode vir como array ou objeto com data)
+      const cursosArray = Array.isArray(cursosRaw)
+        ? cursosRaw
+        : cursosRaw.data || [];
+
+      cursosArray.forEach((course: any) => {
+        // Normalizar estrutura do curso
+        const courseId =
+          course.id ||
+          course.attributes?.id ||
+          (typeof course === "number" ? course : null);
+
+        if (courseId) {
+          const courseStats = courseStudentCounts.get(courseId);
+          if (courseStats) {
+            courseStats.studentCount++;
+          }
         }
       });
     });
 
-    // Convert map to array
-    return Array.from(courseStudentCounts.values());
+    // Convert map to array e filtrar apenas cursos com alunos
+    return Array.from(courseStudentCounts.values()).filter(
+      (course) => course.studentCount > 0
+    );
   } catch (error) {
     console.error("Error fetching course student counts:", error);
-    throw error;
+    return [];
   }
 }
 
@@ -1829,5 +1874,227 @@ export async function updateMentor(
   } catch (error) {
     console.error("Error updating mentor:", error);
     throw error;
+  }
+}
+
+// Interface para dados de matrícula por escola
+export interface EnrollmentBySchool {
+  school: string;
+  enrolled: number;
+  notEnrolled: number;
+}
+
+// Função para buscar matrículas por escola
+export async function fetchEnrollmentBySchool(): Promise<EnrollmentBySchool[]> {
+  try {
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+
+    // Buscar todos os alunos habilitados com seus cursos e escola_parceira
+    const url = `${baseUrl}/api/admin/all-students`;
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch students: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const students = data.data || [];
+
+    // Agrupar alunos por escola_parceira
+    const schoolMap = new Map<
+      string,
+      { enrolled: number; notEnrolled: number }
+    >();
+
+    students.forEach((student: any) => {
+      const escola = student.escola_parceira || "Sem escola";
+      const hasCourses =
+        student.cursos &&
+        Array.isArray(student.cursos) &&
+        student.cursos.length > 0;
+
+      if (!schoolMap.has(escola)) {
+        schoolMap.set(escola, { enrolled: 0, notEnrolled: 0 });
+      }
+
+      const stats = schoolMap.get(escola)!;
+      if (hasCourses) {
+        stats.enrolled++;
+      } else {
+        stats.notEnrolled++;
+      }
+    });
+
+    // Converter para array e ordenar por total de alunos
+    const result: EnrollmentBySchool[] = Array.from(schoolMap.entries())
+      .map(([school, stats]) => ({
+        school,
+        enrolled: stats.enrolled,
+        notEnrolled: stats.notEnrolled,
+      }))
+      .sort((a, b) => b.enrolled + b.notEnrolled - (a.enrolled + a.notEnrolled))
+      .slice(0, 10); // Top 10 escolas
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching enrollment by school:", error);
+    return [];
+  }
+}
+
+// Interface para evolução de matrículas
+export interface EnrollmentTrend {
+  month: string;
+  matriculas: number;
+}
+
+// Função para buscar evolução de matrículas ao longo do tempo
+export async function fetchEnrollmentTrend(
+  locale: string = "pt-BR"
+): Promise<EnrollmentTrend[]> {
+  try {
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+
+    // Buscar todos os alunos habilitados com createdAt
+    const url = `${baseUrl}/api/admin/all-students`;
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch students: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const students = data.data || [];
+
+    // Definir nomes de meses baseados no locale
+    const isEnglish = locale === "en" || locale === "en-US";
+    const monthNames = isEnglish
+      ? [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ]
+      : [
+          "Jan",
+          "Fev",
+          "Mar",
+          "Abr",
+          "Mai",
+          "Jun",
+          "Jul",
+          "Ago",
+          "Set",
+          "Out",
+          "Nov",
+          "Dez",
+        ];
+
+    // Agrupar por mês usando createdAt
+    const monthMap = new Map<string, number>();
+
+    students.forEach((student: any) => {
+      if (student.createdAt) {
+        const date = new Date(student.createdAt);
+        // Usar índice do mês (0-11) para garantir consistência
+        const monthIndex = date.getMonth();
+        const monthKey = monthNames[monthIndex];
+        monthMap.set(monthKey, (monthMap.get(monthKey) || 0) + 1);
+      }
+    });
+
+    // Ordenar por data (mais antigo primeiro) e pegar últimos 7 meses
+    const sortedEntries = Array.from(monthMap.entries())
+      .sort((a, b) => {
+        const aIndex = monthNames.indexOf(a[0]);
+        const bIndex = monthNames.indexOf(b[0]);
+        return aIndex - bIndex;
+      })
+      .slice(-7); // Últimos 7 meses
+
+    const result: EnrollmentTrend[] = sortedEntries.map(([month, count]) => ({
+      month,
+      matriculas: count,
+    }));
+
+    return result.length > 0 ? result : [];
+  } catch (error) {
+    console.error("Error fetching enrollment trend:", error);
+    return [];
+  }
+}
+
+// Interface para cursos populares
+export interface PopularCourse {
+  name: string;
+  students: number;
+  color: string;
+}
+
+// Função para buscar cursos mais populares
+export async function fetchPopularCourses(): Promise<PopularCourse[]> {
+  try {
+    const isServer = typeof window === "undefined";
+    const baseUrl = isServer
+      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      : "";
+
+    // Usar rota API do Next.js que faz autenticação no servidor
+    const url = `${baseUrl}/api/stats/popular-courses`;
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      console.error(
+        `Failed to fetch popular courses: ${response.status} ${response.statusText}`
+      );
+      return [];
+    }
+
+    const data = await response.json();
+    const courseCounts = data.data || [];
+
+    if (!courseCounts || courseCounts.length === 0) {
+      console.warn("No course counts found");
+      return [];
+    }
+
+    // Cores para os gráficos
+    const colors = [
+      "#599fe9",
+      "#f54a12",
+      "#10b981",
+      "#8b5cf6",
+      "#f59e0b",
+      "#ec4899",
+    ];
+
+    return courseCounts.map((course: any, index: number) => ({
+      name: course.courseTitle || "Curso sem nome",
+      students: course.studentCount,
+      color: colors[index % colors.length],
+    }));
+  } catch (error) {
+    console.error("Error fetching popular courses:", error);
+    return [];
   }
 }
